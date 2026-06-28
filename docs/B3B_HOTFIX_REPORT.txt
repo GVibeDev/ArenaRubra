@@ -1,0 +1,7 @@
+JS check: OK
+hexDistance null-safe: True
+neighbors null-safe: True
+canAttack structure block: True
+canAttack ATT>0: True
+abilityLogTarget present: True
+AI dead-checks after attack: 3

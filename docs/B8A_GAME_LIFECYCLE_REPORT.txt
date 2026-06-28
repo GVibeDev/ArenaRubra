@@ -1,0 +1,38 @@
+JS check: OK
+normalizeBlueprints: total 1, game 1, main 0
+capGroupForBlueprint: total 1, game 1, main 0
+validateDataModel: total 1, game 1, main 0
+newGame: total 1, game 1, main 0
+chooseFirstPlayer: total 1, game 1, main 0
+duplicate function definitions: none
+main.js function count: 22
+game.js function count: 5
+game.js script in index: True
+script order contains main before game: True
+script order contains game before ui: True
+Avatex retained: True
+Nodo retained as structure att0: True
+
+Remaining main.js functions:
+staticLimitLabel
+unitCardHtml
+handleCellClick
+toggleAbilityMode
+passUnit
+postActionChecks
+endTurn
+startTurn
+applyStartTurnStatuses
+applyEndTurnStatuses
+applyAgathoiIdleGuardThorns
+doctrineSummary
+unitStatusSummary
+statusPillsHtml
+hasAnyInhibition
+endUnitAction
+clearSelection
+isAttackTarget
+isAbilityTarget
+adjacentAlliedAuras
+attackAuraBonus
+defenseAuraBonus

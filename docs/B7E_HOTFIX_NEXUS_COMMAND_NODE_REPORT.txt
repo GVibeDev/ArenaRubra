@@ -1,0 +1,11 @@
+JS check: OK
+Nodo entry found: True
+Nodo type Struttura: True
+Nodo role command_node: True
+Nodo weight Pesante: True
+Protocollo Ripristino retained: True
+activeStructureCount checks type Struttura: True
+activeCommanderCount checks type Comandante: True
+spawnSourcesFor includes structures: True
+structureBlueprintFor finds structures: True
+canAttack blocks structures: False

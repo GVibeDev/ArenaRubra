@@ -1,0 +1,5 @@
+EventTypes: 1
+emitGameEvent: 1
+logGameEvent: 1
+appendLogLine: 1
+function log: 1

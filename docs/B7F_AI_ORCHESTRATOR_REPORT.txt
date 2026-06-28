@@ -1,0 +1,9 @@
+JS check: OK
+maybeRunBot: total 1, ai 1, main 0
+chooseNextBotUnit: total 1, ai 1, main 0
+chooseNextAdvancedBotUnit: total 1, ai 1, main 0
+runBotTurn: total 1, ai 1, main 0
+botAct: total 1, ai 1, main 0
+duplicate function definitions: none
+main.js bytes: 64243
+ai.js bytes: 43033

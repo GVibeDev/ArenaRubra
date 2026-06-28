@@ -1,0 +1,23 @@
+JS check: OK
+advancedAiEnabled: total 1, ai 1, main 0
+controlledPsCells: total 1, ai 1, main 0
+centerPsCell: total 1, ai 1, main 0
+centerPsOccupant: total 1, ai 1, main 0
+centerControlledBy: total 1, ai 1, main 0
+centerControlledByEnemy: total 1, ai 1, main 0
+centerOpeningActive: total 1, ai 1, main 0
+centerContestUrgent: total 1, ai 1, main 0
+sidePsCells: total 1, ai 1, main 0
+homePsCell: total 1, ai 1, main 0
+homePsOccupant: total 1, ai 1, main 0
+homePsControlled: total 1, ai 1, main 0
+homePsDutyActive: total 1, ai 1, main 0
+alliesNear: total 1, ai 1, main 0
+enemiesNear: total 1, ai 1, main 0
+commanderOf: total 1, ai 1, main 0
+unitIsGarrisoningPs: total 1, ai 1, main 0
+threatenedOwnHqUnits: total 1, ai 1, main 0
+commanderThreatLevel: total 1, ai 1, main 0
+duplicate function definitions: none
+main.js bytes: 100310
+ai.js bytes: 4216

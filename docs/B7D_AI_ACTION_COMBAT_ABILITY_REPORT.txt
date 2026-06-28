@@ -1,0 +1,23 @@
+JS check: OK
+botTryStationaryAction: total 1, ai 1, main 0
+botTryAttackOnly: total 1, ai 1, main 0
+finishBotMove: total 1, ai 1, main 0
+emergencyBotAction: total 1, ai 1, main 0
+scoreAttackTarget: total 1, ai 1, main 0
+scoreAbility: total 1, ai 1, main 0
+duplicate function definitions: none
+main.js bytes: 32433
+ai.js bytes: 76397
+maybeRunBot in ai.js: True
+runBotTurn in ai.js: True
+botAct in ai.js: True
+maybeUseBotTactic in ai.js: True
+botPurchasePhase in ai.js: True
+chooseBotPurchase in ai.js: True
+chooseBotMove in ai.js: True
+chooseAdvancedMove in ai.js: True
+botTryStationaryAction in ai.js: True
+finishBotMove in ai.js: True
+scoreAbility in ai.js: True
+Avatex retained: True
+Nodo retained as structure att0: True

@@ -1,0 +1,9 @@
+JS check: OK
+Strozzatura non consuma status: True
+triggerLogisticChoke in tactics: 1
+applyAgathoiRaduraAutoHeal defined: 1
+startTurn calls Radura auto-heal: True
+purchaseLimitReached checks Pivot before Struttura: True
+bot pre-purchase economy ability defined: 1
+botPurchasePhase calls pre-purchase ability: True
+botAct structure guard present: True

@@ -1,0 +1,17 @@
+bindUiEvents: 1
+bootArenaRubra: 1
+newGameBtn in ui.js: 1
+newGameBtn in main.js: 0
+resetStatsBtn in ui.js: 1
+resetStatsBtn in main.js: 0
+copyStatsBtn in ui.js: 1
+copyStatsBtn in main.js: 0
+endTurnBtn in ui.js: 1
+endTurnBtn in main.js: 0
+runBotBtn in ui.js: 1
+runBotBtn in main.js: 0
+concedeBtn in ui.js: 1
+concedeBtn in main.js: 0
+pacePreset in ui.js: 3
+pacePreset in main.js: 12
+JS check: OK

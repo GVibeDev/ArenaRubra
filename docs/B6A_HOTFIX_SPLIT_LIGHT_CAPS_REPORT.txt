@@ -1,0 +1,7 @@
+JS check: OK
+lightBucketCount definitions: 1
+purchaseLimitReached uses lightBucketCount: True
+limitLabel uses lightBucketCount: True
+conversionCapAllows uses lightBucketCount: True
+activeLightCount aggregate still available: 1
+activeLightCountByType available: 1

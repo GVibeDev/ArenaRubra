@@ -1,0 +1,33 @@
+JS check: OK
+postActionChecks: total 1, turns 1, main 0
+endTurn: total 1, turns 1, main 0
+startTurn: total 1, turns 1, main 0
+applyStartTurnStatuses: total 1, turns 1, main 0
+applyEndTurnStatuses: total 1, turns 1, main 0
+applyAgathoiIdleGuardThorns: total 1, turns 1, main 0
+endUnitAction: total 1, turns 1, main 0
+duplicate function definitions: none
+main.js function count: 15
+turns.js function count: 7
+turns.js script in index: True
+script order game before turns: True
+script order turns before ui: True
+Avatex retained: True
+Nodo retained as structure att0: True
+
+Remaining main.js functions:
+staticLimitLabel
+unitCardHtml
+handleCellClick
+toggleAbilityMode
+passUnit
+doctrineSummary
+unitStatusSummary
+statusPillsHtml
+hasAnyInhibition
+clearSelection
+isAttackTarget
+isAbilityTarget
+adjacentAlliedAuras
+attackAuraBonus
+defenseAuraBonus

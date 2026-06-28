@@ -1,0 +1,51 @@
+JS check: OK
+duplicate function definitions: none
+C1c title present: True
+starter operative heading present: True
+starter CSS present: True
+starterCardsForPlayer in deployment.js: 1
+starterCardByUid in deployment.js: 1
+blueprintForStarterCard in deployment.js: 1
+starterCardActionState in deployment.js: 1
+beginStarterCardPurchase in deployment.js: 1
+renderStarterCardSlotDebug in render.js: 1
+beginStarterCardPurchase called by UI: True
+starterCardActionState used by UI: True
+data/cards_base.js in index: True
+src/cards.js in index: True
+src/deck.js in index: True
+Avatex retained: True
+Nodo retained as structure att0: True
+duplicate blueprint IDs: none
+
+Script order:
+data/maps.js
+src/constants.js
+src/enums.js
+src/hex.js
+src/events.js
+src/board.js
+src/ai.js
+data/factions.js
+data/units_base.js
+data/tactics_base.js
+data/cards_base.js
+src/state.js
+src/cards.js
+src/deck.js
+src/rules.js
+src/economy.js
+src/statuses.js
+src/movement.js
+src/combat.js
+src/abilities.js
+src/tactics.js
+src/deployment.js
+src/stats.js
+src/render.js
+src/main.js
+src/game.js
+src/turns.js
+src/controller.js
+src/precheck.js
+src/ui.js

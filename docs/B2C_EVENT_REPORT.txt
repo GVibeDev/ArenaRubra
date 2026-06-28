@@ -1,0 +1,10 @@
+TACTIC_USED: 1
+STATUS_APPLIED: 1
+STATUS_EXPIRED: 1
+AI_PLAN_CHANGED: 1
+PS_CONTROL_CHANGED: 1
+exportEventsJson: 1
+copyEventsJson: 1
+downloadEventsJson: 1
+eventCountsByType: 1
+JS check: OK

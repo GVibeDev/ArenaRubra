@@ -1,0 +1,13 @@
+JS check: OK
+duplicate function definitions: none
+old version label removed: True
+new version label present: True
+debug passive note present: True
+GAME_STARTED buildLabel metadata present: True
+GAME_STARTED cardFoundation metadata present: True
+data/cards_base.js in index: True
+src/cards.js in index: True
+src/deck.js in index: True
+Avatex retained: True
+Nodo retained as structure att0: True
+duplicate blueprint IDs: none

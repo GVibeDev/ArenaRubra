@@ -1,0 +1,7 @@
+JS check: OK
+resetTurnEconomyFlags: total 1, economy 1, main 0
+resolveStartTurnIncome: total 1, economy 1, main 0
+tickPlayerEffects: total 1, economy 1, main 0
+startTurn calls resetTurnEconomyFlags: True
+startTurn calls resolveStartTurnIncome: True
+main no old income log block: True

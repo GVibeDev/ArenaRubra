@@ -1,0 +1,13 @@
+JS check: OK
+handleUnitDestroyed: total 1, combat 1, main 0
+adjacentAttackTargets: total 1, combat 1, main 0
+effectiveAtt: total 1, combat 1, main 0
+numericalSuperiorityBonus: total 1, combat 1, main 0
+effectiveThorns: total 1, combat 1, main 0
+applyDamage: total 1, combat 1, main 0
+attackUnit: total 1, combat 1, main 0
+canAttack: total 1, combat 1, main 0
+vehicleHasFollowupAfterAttack: total 1, combat 1, main 0
+shouldEndAfterAttack: total 1, combat 1, main 0
+canBleed: total 1, combat 1, main 0
+applyBleed: total 1, combat 1, main 0

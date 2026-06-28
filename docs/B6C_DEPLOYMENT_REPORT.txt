@@ -1,0 +1,13 @@
+JS check: OK
+beginPurchase: total 1, deployment 1, main 0
+toggleBuildMode: total 1, deployment 1, main 0
+isBuildTarget: total 1, deployment 1, main 0
+isSpawnTarget: total 1, deployment 1, main 0
+spawnSourcesFor: total 1, deployment 1, main 0
+spawnCellsFor: total 1, deployment 1, main 0
+canBuildStructures: total 1, deployment 1, main 0
+buildableCells: total 1, deployment 1, main 0
+canAnyInfantryBuild: total 1, deployment 1, main 0
+spawnUnit: total 1, deployment 1, main 0
+applyAgathoiSpawnDefBonus: total 1, deployment 1, main 0
+buildStructure: total 1, deployment 1, main 0

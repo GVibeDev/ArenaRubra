@@ -1,0 +1,16 @@
+JS check: OK
+chooseBotMove: total 1, ai 1, main 0
+chooseAdvancedMove: total 1, ai 1, main 0
+chooseAdvancedAgathoiMove: total 1, ai 1, main 0
+chooseAdvancedFabeotMove: total 1, ai 1, main 0
+chooseAdvancedNexusMove: total 1, ai 1, main 0
+chooseAdvancedExordiumMove: total 1, ai 1, main 0
+chooseAdvancedLibertiMove: total 1, ai 1, main 0
+chooseLibertiMove: total 1, ai 1, main 0
+exordiumFrontTargets: total 1, ai 1, main 0
+chooseExordiumFrontForUnit: total 1, ai 1, main 0
+libertiFlankTarget: total 1, ai 1, main 0
+hashString: total 1, ai 1, main 0
+duplicate function definitions: none
+main.js bytes: 74578
+ai.js bytes: 32229

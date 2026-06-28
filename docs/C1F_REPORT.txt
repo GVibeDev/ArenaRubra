@@ -1,0 +1,24 @@
+Arena Rubra – C1f Base Faction Roster Expansion
+
+Controlli eseguiti:
+
+JS check: OK
+duplicate function definitions: none
+runtime smoke test: OK
+runtime precheck: OK · problemi 0 · warning 0
+blueprints total: 84
+card catalog runtime: 94
+faction counts: {'Nexus': 18, 'Exordium': 18, 'Liberti': 11, 'Agathoi': 21, 'Fabeot': 16}
+type counts: {'Fanteria': 29, 'Veicolo': 26, 'Struttura': 24, 'Comandante': 5}
+vanguard test Mech Leggero acted=false: True
+mine placement test: True
+duplicate blueprint IDs: none
+C1f version in cards_base: True
+C1f mode in cards_base: True
+
+
+Note:
+- Furtivo, Visione e Agguato sono placeholder predisposti.
+- Tattiche in mano ancora bloccate fino a C2.
+- AoE Torretta Lanciafiamme in versione semplificata.
+- Duplicazione tattiche Fabeot rimandata a C2.

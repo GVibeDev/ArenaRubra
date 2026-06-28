@@ -1,0 +1,16 @@
+JS check: OK
+staticLimitLabel: total 1, render 1, main 0
+unitCardHtml: total 1, render 1, main 0
+doctrineSummary: total 1, render 1, main 0
+unitStatusSummary: total 1, render 1, main 0
+statusPillsHtml: total 1, render 1, main 0
+hasAnyInhibition: total 1, render 1, main 0
+adjacentAlliedAuras: total 1, combat 1, main 0
+attackAuraBonus: total 1, combat 1, main 0
+defenseAuraBonus: total 1, combat 1, main 0
+duplicate function definitions: none
+main.js function count: 0
+main.js function names: none
+Avatex retained: True
+Nodo retained as structure att0: True
+duplicate blueprint IDs: none

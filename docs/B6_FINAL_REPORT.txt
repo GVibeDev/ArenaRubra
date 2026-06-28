@@ -1,0 +1,17 @@
+JS check: OK
+currentPace: total 1, board 1, main 0
+pressureStartRound: total 1, board 1, main 0
+paceLabel: total 1, board 1, main 0
+generateMap: total 1, board 1, main 0
+applyAttackBuff: total 1, board 1, main 0
+isOnPS: total 1, board 1, main 0
+isOnOrAdjacentToAnyPS: total 1, board 1, main 0
+adjacentAllyOfOtherAssaultType: total 1, board 1, main 0
+hqSideAt: total 1, board 1, main 0
+hqOccupancyText: total 1, board 1, main 0
+psBonusActive: total 1, board 1, main 0
+psBonusValue: total 1, board 1, main 0
+agathoiStructureAdjacencyDefBonus: total 1, board 1, main 0
+duplicate function definitions: none
+main.js bytes: 102628
+module count src/*.js: 20

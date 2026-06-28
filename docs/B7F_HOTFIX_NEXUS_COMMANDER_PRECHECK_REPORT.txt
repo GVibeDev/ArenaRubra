@@ -1,0 +1,15 @@
+JS check: OK
+Avatex entry found: True
+Avatex type Comandante: True
+Avatex id NXCMD01: True
+Nexus commander count static: 1
+Nodo entry found: True
+Nodo type Struttura: True
+Nodo role command_node: True
+Nodo ATT 0: True
+Nodo canAttack false: True
+Protocollo Ripristino retained: True
+Duplicate blueprint ids static: none
+Precheck accepts Leggero: True
+Precheck accepts enemy incomeDelta: True
+Blueprint count static: 42

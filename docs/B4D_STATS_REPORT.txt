@@ -1,0 +1,13 @@
+JS check: OK
+loadMatchStats: total 1, stats 1, main 0
+saveMatchStats: total 1, stats 1, main 0
+recordMatchResult: total 1, stats 1, main 0
+matchupKey: total 1, stats 1, main 0
+matchupLabel: total 1, stats 1, main 0
+factionWinClass: total 1, stats 1, main 0
+aggregateMatchStats: total 1, stats 1, main 0
+formatWins: total 1, stats 1, main 0
+formatTypes: total 1, stats 1, main 0
+statsToCsv: total 1, stats 1, main 0
+resetMatchStats: total 1, stats 1, main 0
+copyMatchStatsCsv: total 1, stats 1, main 0

@@ -1,0 +1,52 @@
+JS check: OK
+duplicate function definitions: none
+renderAll calls renderCardZonePanel: True
+cardZonePanel in index: True
+card debug CSS present: True
+C1b title present: True
+cardTypeLabel: 1
+cardRoleLabel: 1
+cardLabel: 1
+renderCardInstanceDebug: 1
+renderStarterCardsDebug: 1
+renderPlayerHandDebug: 1
+cardZoneDebugHtml: 1
+renderCardZonePanel: 1
+data/cards_base.js in index: True
+src/cards.js in index: True
+src/deck.js in index: True
+Avatex retained: True
+Nodo retained as structure att0: True
+duplicate blueprint IDs: none
+
+Script order:
+data/maps.js
+src/constants.js
+src/enums.js
+src/hex.js
+src/events.js
+src/board.js
+src/ai.js
+data/factions.js
+data/units_base.js
+data/tactics_base.js
+data/cards_base.js
+src/state.js
+src/cards.js
+src/deck.js
+src/rules.js
+src/economy.js
+src/statuses.js
+src/movement.js
+src/combat.js
+src/abilities.js
+src/tactics.js
+src/deployment.js
+src/stats.js
+src/render.js
+src/main.js
+src/game.js
+src/turns.js
+src/controller.js
+src/precheck.js
+src/ui.js

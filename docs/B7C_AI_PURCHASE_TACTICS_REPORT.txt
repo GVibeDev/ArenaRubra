@@ -1,0 +1,19 @@
+JS check: OK
+maybeUseBotTactic: total 1, ai 1, main 0
+scoreBotTactic: total 1, ai 1, main 0
+maybeUseBotPrePurchaseEconomyAbility: total 1, ai 1, main 0
+botPurchasePhase: total 1, ai 1, main 0
+chooseBotPurchase: total 1, ai 1, main 0
+scoreFactionPurchase: total 1, ai 1, main 0
+scoreLibertiPurchase: total 1, ai 1, main 0
+chooseSpawnCell: total 1, ai 1, main 0
+chooseAdvancedSpawnCell: total 1, ai 1, main 0
+buildCellStrategicScore: total 1, ai 1, main 0
+chooseBuildCell: total 1, ai 1, main 0
+centerPurchaseBonus: total 1, ai 1, main 0
+advancedPurchaseBonus: total 1, ai 1, main 0
+duplicate function definitions: none
+main.js bytes: 46156
+ai.js bytes: 62111
+Avatex retained: True
+Nodo retained as structure att0: True

@@ -1,0 +1,27 @@
+JS check: OK
+handleCellClick: total 1, controller 1, main 0
+toggleAbilityMode: total 1, controller 1, main 0
+passUnit: total 1, controller 1, main 0
+clearSelection: total 1, controller 1, main 0
+isAttackTarget: total 1, controller 1, main 0
+isAbilityTarget: total 1, controller 1, main 0
+duplicate function definitions: none
+main.js function count: 9
+controller.js function count: 6
+controller.js script in index: True
+script order main before controller: True
+script order turns before controller: True
+script order controller before ui: True
+Avatex retained: True
+Nodo retained as structure att0: True
+
+Remaining main.js functions:
+staticLimitLabel
+unitCardHtml
+doctrineSummary
+unitStatusSummary
+statusPillsHtml
+hasAnyInhibition
+adjacentAlliedAuras
+attackAuraBonus
+defenseAuraBonus

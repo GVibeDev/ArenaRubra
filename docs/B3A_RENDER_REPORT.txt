@@ -1,0 +1,24 @@
+renderAll: 1
+renderBoard: 1
+renderPanels: 1
+renderTacticPanel: 1
+renderMarket: 1
+renderRoster: 1
+renderMatchupStats: 1
+tokenTypeClass: 1
+tokenWeightClass: 1
+svgWrap: 1
+infantryIconSvg: 1
+vehicleIconSvg: 1
+structureIconSvg: 1
+commanderIconSvg: 1
+qgIconSvg: 1
+pivotOverlaySvg: 1
+unitIcon: 1
+unitOverlay: 1
+initials: 1
+clearLog: 1
+appendLogLine: 1
+log: 1
+escapeHtml: 1
+JS check: OK

@@ -1,0 +1,13 @@
+JS check: OK
+TACTIC_HANDLERS: total 1, tactics 1, main 0
+tickTacticCooldowns: total 1, tactics 1, main 0
+cleanupTurnTactics: total 1, tactics 1, main 0
+triggerLogisticChoke: total 1, tactics 1, main 0
+tacticsForFaction: total 1, tactics 1, main 0
+tacticById: total 1, tactics 1, main 0
+tacticCooldown: total 1, tactics 1, main 0
+canUseTactic: total 1, tactics 1, main 0
+toggleTacticMode: total 1, tactics 1, main 0
+isTacticTarget: total 1, tactics 1, main 0
+tacticTargets: total 1, tactics 1, main 0
+useTactic: total 1, tactics 1, main 0

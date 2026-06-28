@@ -1,0 +1,7 @@
+JS check: OK
+state declarations in state.js: 1
+state declarations in main.js: 0
+createInitialGameState definitions: 1
+createHq definitions: 1
+createUnitFromBlueprint definitions: 1
+resetInteractionContext definitions: 1

@@ -1,0 +1,13 @@
+JS check: OK
+STATUS_DEFINITIONS: total 1, statuses 1, main 0
+tickStatuses: total 1, statuses 1, main 0
+tickDurationOnly: total 1, statuses 1, main 0
+getStatus: total 1, statuses 1, main 0
+hasStatus: total 1, statuses 1, main 0
+statusBlocks: total 1, statuses 1, main 0
+canAct: total 1, statuses 1, main 0
+canMove: total 1, statuses 1, main 0
+canUseAbility: total 1, statuses 1, main 0
+applyStatus: total 1, statuses 1, main 0
+statusText: total 1, statuses 1, main 0
+tickCooldownsAndBuffs: total 1, statuses 1, main 0

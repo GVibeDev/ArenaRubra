@@ -1,0 +1,19 @@
+JS check: OK
+ABILITY_HANDLERS: total 1, abilities 1, main 0
+isFabeotMarkedBy: total 1, abilities 1, main 0
+conversionCapAllows: total 1, abilities 1, main 0
+canConvertEnemy: total 1, abilities 1, main 0
+canCorruptLightInfantry: total 1, abilities 1, main 0
+performFabeotConversion: total 1, abilities 1, main 0
+convertEnemyUnit: total 1, abilities 1, main 0
+corruptLightInfantryUnit: total 1, abilities 1, main 0
+bestDeceptivePositioningVictim: total 1, abilities 1, main 0
+abilityDamageValue: total 1, abilities 1, main 0
+isAdjacentToAgathoiStructure: total 1, abilities 1, main 0
+isUntargetableTo: total 1, abilities 1, main 0
+targetLabel: total 1, abilities 1, main 0
+abilityLogTarget: total 1, abilities 1, main 0
+useAbility: total 1, abilities 1, main 0
+vehicleHasFollowupAfterAbility: total 1, abilities 1, main 0
+shouldEndAfterAbility: total 1, abilities 1, main 0
+abilityTargets: total 1, abilities 1, main 0

@@ -1,0 +1,169 @@
+JS check: OK
+duplicate function definitions: none
+C1h version/mode: True
+deckPool includes base: True
+deckRole base present: True
+deckSanitySummary present: True
+deck copy rules present: True
+game label C1h: True
+index label C1h: True
+duplicate blueprint IDs: none
+faction counts: Nexus 18, Exordium 18, Liberti 11, Agathoi 21, Fabeot 16
+type counts: Fanteria 29, Veicolo 26, Struttura 24, Comandante 5, QG 0
+deck sanity Nexus: deck 30/30, pool 20, legalCapacity 38, overflow 0, commander 1, copyViolations 0
+deck sanity Exordium: deck 30/30, pool 20, legalCapacity 38, overflow 0, commander 1, copyViolations 0
+deck sanity Liberti: deck 30/30, pool 13, legalCapacity 24, overflow 6, commander 1, copyViolations 6
+deck sanity Agathoi: deck 30/30, pool 23, legalCapacity 43, overflow 0, commander 1, copyViolations 0
+deck sanity Fabeot: deck 30/30, pool 18, legalCapacity 33, overflow 0, commander 1, copyViolations 0
+
+Runtime deckSanitySummary:
+{
+  "catalogSize": 94,
+  "sanity": {
+    "version": "C1h",
+    "mode": "deck_roster_sanity_pass",
+    "byFaction": {
+      "Agathoi": {
+        "faction": "Agathoi",
+        "targetSize": 30,
+        "deckSize": 30,
+        "poolSize": 23,
+        "legalCapacity": 43,
+        "canBuildLegalDeck": true,
+        "debugOverflowCopies": 0,
+        "uniqueCards": 16,
+        "commanderCopies": 1,
+        "pivotCopies": 0,
+        "roleCounts": {
+          "commander": 1,
+          "base": 14,
+          "heavy": 14,
+          "elite": 1
+        },
+        "copyViolations": []
+      },
+      "Exordium": {
+        "faction": "Exordium",
+        "targetSize": 30,
+        "deckSize": 30,
+        "poolSize": 20,
+        "legalCapacity": 38,
+        "canBuildLegalDeck": true,
+        "debugOverflowCopies": 0,
+        "uniqueCards": 16,
+        "commanderCopies": 1,
+        "pivotCopies": 0,
+        "roleCounts": {
+          "commander": 1,
+          "base": 12,
+          "heavy": 12,
+          "elite": 5
+        },
+        "copyViolations": []
+      },
+      "Fabeot": {
+        "faction": "Fabeot",
+        "targetSize": 30,
+        "deckSize": 30,
+        "poolSize": 18,
+        "legalCapacity": 33,
+        "canBuildLegalDeck": true,
+        "debugOverflowCopies": 0,
+        "uniqueCards": 16,
+        "commanderCopies": 1,
+        "pivotCopies": 0,
+        "roleCounts": {
+          "commander": 1,
+          "base": 8,
+          "heavy": 12,
+          "elite": 6,
+          "tactic": 3
+        },
+        "copyViolations": []
+      },
+      "Liberti": {
+        "faction": "Liberti",
+        "targetSize": 30,
+        "deckSize": 30,
+        "poolSize": 13,
+        "legalCapacity": 24,
+        "canBuildLegalDeck": false,
+        "debugOverflowCopies": 6,
+        "uniqueCards": 13,
+        "commanderCopies": 1,
+        "pivotCopies": 1,
+        "roleCounts": {
+          "commander": 1,
+          "base": 18,
+          "heavy": 4,
+          "elite": 2,
+          "tactic": 4,
+          "pivot": 1
+        },
+        "copyViolations": [
+          {
+            "id": "UNIT:LX2B01",
+            "name": "Miliziano Liberto",
+            "count": 3,
+            "limit": 2,
+            "overflow": 1
+          },
+          {
+            "id": "UNIT:LX3B02",
+            "name": "Moto Guerriglia",
+            "count": 3,
+            "limit": 2,
+            "overflow": 1
+          },
+          {
+            "id": "UNIT:LXC1F01",
+            "name": "Avanguardia Liberta",
+            "count": 3,
+            "limit": 2,
+            "overflow": 1
+          },
+          {
+            "id": "UNIT:LXC1F03",
+            "name": "Buggy Demolitore",
+            "count": 3,
+            "limit": 2,
+            "overflow": 1
+          },
+          {
+            "id": "UNIT:LXC1F02",
+            "name": "Predone Sanguis",
+            "count": 3,
+            "limit": 2,
+            "overflow": 1
+          },
+          {
+            "id": "UNIT:LX4B01",
+            "name": "Punto di Raccolta",
+            "count": 3,
+            "limit": 2,
+            "overflow": 1
+          }
+        ]
+      },
+      "Nexus": {
+        "faction": "Nexus",
+        "targetSize": 30,
+        "deckSize": 30,
+        "poolSize": 20,
+        "legalCapacity": 38,
+        "canBuildLegalDeck": true,
+        "debugOverflowCopies": 0,
+        "uniqueCards": 16,
+        "commanderCopies": 1,
+        "pivotCopies": 0,
+        "roleCounts": {
+          "commander": 1,
+          "base": 18,
+          "heavy": 10,
+          "elite": 1
+        },
+        "copyViolations": []
+      }
+    }
+  }
+}

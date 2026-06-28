@@ -1,0 +1,5 @@
+JS check: OK
+runPrecheck definitions: 1
+precheckSummary definitions: 1
+copyPrecheckJson definitions: 1
+runPrecheck call in newGame: 1

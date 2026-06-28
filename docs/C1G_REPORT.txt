@@ -1,0 +1,51 @@
+JS check: OK
+duplicate function definitions: none
+duplicate blueprint IDs: none
+C1g version/mode: True
+game label C1g: True
+chooseBestBotRosterPlay present: True
+chooseBotHandCardPlay present: True
+executeBotRosterPlay present: True
+botPurchasePhase uses chooseBestBotRosterPlay: True
+bot hand play discards cards: True
+bot purchase uses spawnCellsFor(player, bp): True
+bot builders use canBuildStructures: True
+scoreAbility handles placeMine: True
+scoreAbility handles spawnBlueprint: True
+scoreAbility handles flameArea: True
+scoreAbility handles lockEnemyEnergy: True
+blueprints total: 84
+faction counts: Nexus 18, Exordium 18, Liberti 11, Agathoi 21, Fabeot 16
+type counts: Fanteria 29, Veicolo 26, Struttura 24, Comandante 5
+
+Script order:
+data/maps.js
+src/constants.js
+src/enums.js
+src/hex.js
+src/events.js
+src/board.js
+src/ai.js
+data/factions.js
+data/units_base.js
+data/tactics_base.js
+data/cards_base.js
+src/state.js
+src/cards.js
+src/deck.js
+src/rules.js
+src/economy.js
+src/statuses.js
+src/movement.js
+src/combat.js
+src/abilities.js
+src/tactics.js
+src/deployment.js
+src/stats.js
+src/render.js
+src/main.js
+src/game.js
+src/turns.js
+src/controller.js
+src/precheck.js
+src/ui.js

@@ -1,0 +1,20 @@
+JS check: OK
+strategicStatus: total 1, ai 1, main 0
+logEmergencyIfNeeded: total 1, ai 1, main 0
+strategicTargetCoords: total 1, ai 1, main 0
+isStrategicEnemyTarget: total 1, ai 1, main 0
+strategicMoveBonus: total 1, ai 1, main 0
+chooseEmergencyMove: total 1, ai 1, main 0
+centerMoveScore: total 1, ai 1, main 0
+homePsMoveScore: total 1, ai 1, main 0
+chooseHomePsDutyMove: total 1, ai 1, main 0
+contestedPsCells: total 1, ai 1, main 0
+nearestControlledPsNeedingGuard: total 1, ai 1, main 0
+shouldReleasePsGarrison: total 1, ai 1, main 0
+commanderSafetyMove: total 1, ai 1, main 0
+commanderProtectionMoveBonus: total 1, ai 1, main 0
+psProtectionMoveBonus: total 1, ai 1, main 0
+shouldHoldStrategicCell: total 1, ai 1, main 0
+duplicate function definitions: none
+main.js bytes: 89219
+ai.js bytes: 16577

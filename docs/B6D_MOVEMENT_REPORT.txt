@@ -1,0 +1,9 @@
+JS check: OK
+vehicleMoveRange: total 1, movement 1, main 0
+isInfantryActionLike: total 1, movement 1, main 0
+canActAfterMove: total 1, movement 1, main 0
+movementRangeFor: total 1, movement 1, main 0
+toggleMoveMode: total 1, movement 1, main 0
+moveUnit: total 1, movement 1, main 0
+isMoveTarget: total 1, movement 1, main 0
+movableCells: total 1, movement 1, main 0

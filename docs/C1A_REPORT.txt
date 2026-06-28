@@ -1,0 +1,47 @@
+JS check: OK
+duplicate function definitions: none
+data/cards_base.js in index: True
+src/cards.js in index: True
+src/deck.js in index: True
+state.cardCatalog field: True
+state.deck field: True
+state.hand field: True
+state.discard field: True
+state.starterCards field: True
+newGame initializes card zones: True
+precheck card catalog checks: True
+Avatex retained: True
+Nodo retained as structure att0: True
+duplicate blueprint IDs: none
+
+Script order:
+data/maps.js
+src/constants.js
+src/enums.js
+src/hex.js
+src/events.js
+src/board.js
+src/ai.js
+data/factions.js
+data/units_base.js
+data/tactics_base.js
+data/cards_base.js
+src/state.js
+src/cards.js
+src/deck.js
+src/rules.js
+src/economy.js
+src/statuses.js
+src/movement.js
+src/combat.js
+src/abilities.js
+src/tactics.js
+src/deployment.js
+src/stats.js
+src/render.js
+src/main.js
+src/game.js
+src/turns.js
+src/controller.js
+src/precheck.js
+src/ui.js
