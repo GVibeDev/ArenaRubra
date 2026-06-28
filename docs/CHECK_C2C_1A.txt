@@ -1,0 +1,12 @@
+JS check: OK
+missing scripts: none
+duplicate function definitions: none
+duplicate blueprint IDs: none
+duplicate deck tactic IDs: none
+deck tactic total: 59/59
+playable C2c-1 statuses preserved: 5/5
+pivot counts: Nexus 1, Exordium 1, Liberti 1, Agathoi 1, Fabeot 1
+distinct pool counts: Nexus 30, Exordium 30, Liberti 30, Agathoi 30, Fabeot 30
+Tholos data still has dynamicDefAdjacentUnits: True
+combat hotfix comment present: True
+combat still references dynamicDefAdjacentUnits only as disabled/commented guard: True

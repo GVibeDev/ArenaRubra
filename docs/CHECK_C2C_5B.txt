@@ -1,0 +1,42 @@
+C2c-5b – CHECK
+
+Controlli statici eseguiti:
+- node --check su src/*.js e data/*.js: OK
+- scan funzioni duplicate: OK
+- playable tactic IDs: 29 totali
+- tattiche C2c-5b playable: NXTAC05, EXTAC05, LBTAC12
+- ZIP integrity: OK
+
+Test runtime consigliati:
+1. NXTAC05 – Passaggio tattico
+   - Giocare su cella libera entro rete alleata.
+   - Muovere una unità alleata sulla cella.
+   - Atteso: +1 movimento, possibilità di muovere ancora, poi unità agita; cella consumata.
+
+2. EXTAC05 – Manovra d’attacco
+   - Far attaccare una unità alleata.
+   - Giocare Manovra d’attacco su quella unità.
+   - Atteso: unità può muovere ancora, ma dopo il movimento viene considerata agita.
+
+3. LBTAC12 – L’Orda si Muove
+   - Selezionare una unità pronta con almeno una unità pronta connessa/adiacente.
+   - Atteso: gruppo automatico di 2-3 unità, MOV raddoppiato, solo movimento, poi unità agite.
+
+4. Karyon Mobile / Cabina Dislocante
+   - Usare relocateAlly.
+   - Atteso: destinazione automatica libera, non invalicabile, con trigger cella se presente.
+
+5. Persecutore Fabeot
+   - Usare Posizionamento Ingannevole.
+   - Atteso: scambio posizione, furto DEF se presente vittima valida, eventuali trigger cella.
+
+6. Cursor
+   - Non attaccare con Cursor e terminare turno.
+   - Atteso: +1 movimento nel turno successivo.
+
+7. Aratron Camminatore
+   - Inizio turno adiacente a struttura alleata.
+   - Atteso: +1 movimento.
+
+8. Lancia Fabeot
+   - Verificare movimento aumentato anche dopo reset di inizio turno.

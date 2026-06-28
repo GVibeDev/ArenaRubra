@@ -1,0 +1,26 @@
+CHECK C2-FINAL-B3 – LIBERTI BALANCE PASS
+
+1. UI/roster
+- Miliziano, Predone, Buggy Predone, Avanguardia, Buggy Demolitore, Predone cacciacarri, Predone corazzato, Buggy da Sbarco, Ariete: devono mostrare solo Superiorità Numerica.
+- Moto Guerriglia e Predone Sanguis devono mostrare solo Sanguinamento.
+- Titanus, Bestia della Fossa e Capobanda devono mostrare entrambe.
+
+2. Combattimento
+- Unità con sola Superiorità Numerica: +1 danno con supporto valido, nessun sanguinamento automatico.
+- Unità con solo Sanguinamento: applicano Sanguinamento, ma non prendono +1 da Superiorità Numerica.
+- Titanus/Bestia/Capobanda: entrambe le regole.
+
+3. Reazioni
+- Attacchi di reazione Liberti devono rispettare le stesse regole factionRules.
+
+4. Valori
+- Moto Guerriglia ATT 1.
+- Predone Sanguis ATT 2.
+- Buggy Demolitore ATT 3 e anti-struttura invariato.
+- Titanus ATT 4 e Speronata Brutale costo 1.
+- Bestia della Fossa ATT 3.
+
+5. Regressione
+- C2-FINAL-A: income 3, cap mano 10, recupero deck.
+- C2-FINAL-A1: Missile Jam e blocco azioni veicoli.
+- C2-FINAL-B1/B2: Nexus ed Exordium invariati.

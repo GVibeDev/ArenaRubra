@@ -1,0 +1,7 @@
+JS syntax check: OK
+missing scripts: none
+duplicate function definitions: none
+applyDamage no-overflow marker: present
+directHp branch preserved: present
+overflowLost debug field: present
+C2c-2a labels updated: game/render/precheck

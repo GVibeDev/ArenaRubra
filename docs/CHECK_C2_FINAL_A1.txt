@@ -1,0 +1,19 @@
+CHECK C2-FINAL-A1 – Missile Jam / Vehicle Action Audit
+
+1. Missile Jam
+- Giocare Missile Jam su unità nemica con buff positivo o protezione.
+- Verificare che il log mostri rimozione buff e poi danno.
+- Verificare che il danno normale rispetti la regola no-overflow DEF->HP.
+
+2. Veicoli Nexus/Exordium
+- Muovere veicoli pesanti/elite/pivot senza Spinta di Guerra o moveAttack.
+- Verificare che non possano più attaccare o usare abilità nello stesso turno.
+
+3. Eccezioni
+- Spinta di Guerra deve ancora consentire movimento + azione.
+- Un eventuale veicolo con moveAttack deve poter attaccare dopo movimento ma non usare abilità dopo movimento.
+
+4. Regressione
+- Verificare C2-FINAL-A: income 3, cap mano 10, overdraw, recupero deck 5 ENE.
+- Verificare Esproprio di Mano con unità rubate.
+- Verificare almeno una tattica C2c-8c finale.

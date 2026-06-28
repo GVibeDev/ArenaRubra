@@ -1,0 +1,43 @@
+C2c-6c – CHECKLIST TEST
+
+1. Bunker Nexus / Ottimizzazione Logistica
+   - Usa abilità.
+   - Verifica che unità non struttura Nexus costino -1 ENE.
+   - Verifica che lo sconto funzioni anche su carte unità Nexus in mano.
+   - Verifica che le strutture non vengano scontate.
+
+2. Pretore di Aurex / Interdizione Rifornimenti
+   - Usa abilità.
+   - Al prossimo income nemico deve comparire -1 ENE.
+
+3. Ekklesion del Raccolto
+   - Mantienilo in campo.
+   - Ogni 2 turni del proprietario deve generare +1 ENE.
+
+4. Avamposto Fabeot / Sportello di Reclutamento
+   - Usa abilità.
+   - La prossima unità non struttura Fabeot deve costare -1 ENE, min 1.
+   - Lo sconto deve funzionare anche su carta unità pescata/scontata.
+   - Dopo l’uso, lo sconto deve consumarsi.
+
+5. Inseguitore Fabeot / Contratto di Riscossione
+   - Marchia un bersaglio.
+   - Se muore nel turno Fabeot, Fabeot deve ricevere +2 ENE al prossimo income.
+
+6. Agente Espropriatore
+   - Uccidi con attacco base.
+   - Deve dare +1 ENE immediato.
+
+7. Agente Sabotatore
+   - Uccidi con attacco base.
+   - Il nemico deve ricevere -1 income al prossimo income.
+
+8. Spia Silente
+   - Se resta furtiva a inizio turno Fabeot, pesca +1.
+
+9. Matrice Multigenica
+   - Se un nemico muore entro R1, deve creare una carta in mano Fabeot.
+
+10. Anti-regressione
+   - C2c-6a pesca/sconti ancora funzionanti.
+   - C2c-6b tattiche ENE/income ancora funzionanti.

@@ -1,0 +1,8 @@
+C2c-7b test consigliati
+
+1. Dottrina del Tradimento su fanteria nemica isolata entro R2: deve convertirla.
+2. Fanteria nemica adiacente a un alleato dello stesso lato: non deve essere bersaglio valido.
+3. Comandante, pivot, strutture e QG: non devono essere bersagli validi.
+4. Cap Fabeot pieno per quel tipo di fanteria: conversione bloccata.
+5. Dopo conversione: unità inattiva, side Fabeot, controllo PS aggiornato.
+6. Anti-regressione: Congedo Forzato, Taglia, Contratto Capestro, Embargo ancora funzionanti.

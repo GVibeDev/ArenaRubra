@@ -1,0 +1,16 @@
+C2-STABLE-1-APK-M4c – Starter Logic Freeze Candidate
+
+Base: C2e-6a-APK-M4c Starter Map Expansion MAP1
+
+Controlli richiesti:
+- node --check src/*.js
+- node --check data/*.js
+- scan funzioni duplicate src/data
+- zip integrity
+
+Esito atteso:
+- nessun errore sintattico
+- nessuna funzione duplicata introdotta
+- nessuna modifica a gameplay/AI/deck/tattiche/mappa/statistiche numeriche
+- build label aggiornata a C2-STABLE-1-APK-M4c
+- regola danno no-overflow invariata

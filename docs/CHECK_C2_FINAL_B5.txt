@@ -1,0 +1,29 @@
+C2-FINAL-B5 – CHECK RAPIDO
+
+1) Verifica UI/mercato/mano Fabeot:
+- Inseguitore ATT 1.
+- Avamposto costo 3.
+- Spia Silente costo 3.
+- Agente Opportunista ATT 1.
+- Agente Espropriatore costo 3.
+- Architetto Nero ATT 4.
+- Matrice Multigenica costo 4.
+
+2) Verifica abilità:
+- Rimozione Buff costa 1 ENE.
+- Eco Strutturale costa 1 ENE.
+- Agente Porpora invariato.
+
+3) Verifica tattiche:
+- Ipnosi 3.
+- Diploma da Mentalista 4.
+- Congedo Forzato 3.
+- Dottrina del Tradimento 5.
+- Embargo 3.
+- Contratto di Usura 4.
+
+4) Regressione:
+- Nexus B1, Exordium B2, Liberti B3, Agathoi B4.
+- income base 3, cap mano 10, recupero deck.
+- Esproprio di Mano e spawn unità rubate.
+- Missile Jam e blocco veicoli mossi.

@@ -1,0 +1,12 @@
+CHECK C2-FINAL-D1 – Tactical UX / Map Readability
+
+[ ] Avvia nuova partita.
+[ ] Seleziona una tua unità attiva mobile.
+[ ] Verifica che le celle raggiungibili vengano evidenziate subito.
+[ ] Clicca una cella evidenziata: l'unità deve muovere normalmente.
+[ ] Seleziona una unità senza movimento valido: non deve entrare in movimento automatico.
+[ ] Seleziona una unità nemica: deve restare solo selezionata/consultabile.
+[ ] Verifica che l'attacco adiacente resti funzionante.
+[ ] Verifica che il pulsante Annulla movimento funzioni.
+[ ] Verifica che le pedine mostrino HP, DEF e ATT.
+[ ] Regressione: comandanti, cap mano, recupero deck, tattiche C2 bot, Esproprio, Missile Jam.

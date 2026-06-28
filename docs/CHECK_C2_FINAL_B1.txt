@@ -1,0 +1,24 @@
+CHECK C2-FINAL-B1 – Nexus Numerical Balance Pass
+
+1. Avvia partita Nexus.
+2. Verifica precheck pulito.
+3. Controlla unità Nexus:
+   - Barriera Difensiva costo 2.
+   - Mech Leggero DEF 1.
+   - Bunker HP 5 e abilità invariata.
+   - Avatex ATT 4.
+4. Controlla tattiche Nexus:
+   - Artiglieria di precisione costo 3.
+   - Bombardamento aereo costo 4.
+   - Disabilita sistemi costo 3.
+   - Puntatori avanzati costo 4.
+   - Richiesta rifornimenti non porta carte sotto costo 1.
+5. Verifica che C2-FINAL-A resti funzionante:
+   - income base 3 ENE;
+   - cap mano 10;
+   - overdraw negli scarti;
+   - recupero deck 5 ENE / pesca 3.
+6. Verifica C2-FINAL-A1:
+   - Missile Jam rimuove buff poi fa danno normale;
+   - veicoli mossi non agiscono senza eccezioni.
+7. Verifica che non siano cambiate le altre fazioni.

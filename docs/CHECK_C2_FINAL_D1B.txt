@@ -1,0 +1,5 @@
+CHECK C2-FINAL-D1b
+1. Avvia partita.
+2. Verifica che le unità mostrino tre cifre colorate senza virgole.
+3. Verifica leggibilità su Nexus, Exordium, Agathoi.
+4. Verifica che movimento immediato D1 funzioni ancora.

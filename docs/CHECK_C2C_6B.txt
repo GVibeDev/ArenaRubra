@@ -1,0 +1,8 @@
+C2c-6b static check
+
+- node --check src/*.js data/*.js: OK
+- Tattiche totali C2: 59
+- Tattiche giocabili attese: 42
+- Tattiche C2c-6b marcate playable: 5
+- Nuovi stati: agathoi_income_seed, fabeot_sicario_contract
+- Runtime ZIP integrity: OK

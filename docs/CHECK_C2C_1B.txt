@@ -1,0 +1,16 @@
+JS check: OK
+missing scripts: none
+duplicate function definitions: none
+duplicate blueprint IDs: none
+duplicate deck tactic IDs: none
+deck tactic total: 59/59
+deck tactic counts: Nexus 12/12, Exordium 12/12, Liberti 14/14, Agathoi 9/9, Fabeot 12/12
+playable C2c-1 statuses preserved: 5/5
+pivot counts: Nexus 1, Exordium 1, Liberti 1, Agathoi 1, Fabeot 1
+distinct pool counts: Nexus 30, Exordium 30, Liberti 30, Agathoi 30, Fabeot 30
+C2c-1b config version: True
+C2c-1b mode: True
+button text Gioca ora: True
+target count no longer disables canUse: True
+beginHandTacticCardPlay target log present: True
+ally network comment includes structure: True

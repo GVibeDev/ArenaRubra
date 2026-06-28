@@ -1,0 +1,7 @@
+C2c-8c test consigliati:
+
+1. Ultima Corsa: applicare a fanteria alleata non comandante/pivot, attaccare, verificare +1 danno, AoE 2 attorno ad attaccante/bersaglio e autodistruzione.
+2. Cacciatore Sanguis: applicare a fanteria alleata non comandante/pivot, uccidere fanterie nemiche con attacco base e verificare incremento del sanguinamento futuro.
+3. Obliteratore: distruggere fanteria/veicolo nemico non comandante/pivot. Verificare blocco su comandante/pivot/strutture/QG.
+4. Campo statico: abilità nemiche con costo >0 costano +1 ENE; abilità gratuite restano gratuite; effetto scade a fine turno del nemico.
+5. Anti-regressione: C2c-8b-fix Prima Linea, C2d UI, Fabeot avanzati, pesca/ENE, reazioni.

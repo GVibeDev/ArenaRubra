@@ -1,0 +1,8 @@
+C2c-8b – Test consigliati
+
+1. Precheck pulito.
+2. EXTAC12 – Ordine di Varran: applicare a unità alleata, attaccare, verificare ATT x2 e consumo status.
+3. LBTAC08 – Marchio dei Sanguis: applicare a fanteria Liberti, attaccare bersaglio valido, verificare Sanguinamento 2 e consumo status.
+4. LBTAC10 – Campione della Fossa: giocare su fanteria Liberti con 0/1/4/5 unità adiacenti; verificare max +4, permanente e non riapplicabile.
+5. NXTAC12 – Riparazione sul campo: bersaglia solo alleati danneggiati; cura HP fino al massimo, non supera maxHP.
+6. Anti-regressione: C2c-8 reazioni, C2d-1 UI, C2d-1b barra titolo.

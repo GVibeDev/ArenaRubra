@@ -1,0 +1,16 @@
+C2-FINAL-C1 – Commander Choice Foundation – Checklist
+
+1. Aprire Opzioni di gioco.
+2. Verificare che G1 e G2 abbiano un selettore comandante.
+3. Cambiare fazione G1/G2 e verificare che i comandanti disponibili cambino.
+4. Avviare nuova partita scegliendo il secondo comandante di almeno una fazione.
+5. Verificare che la mano iniziale contenga il comandante scelto.
+6. Verificare che il comandante non scelto non compaia nel deck/mano/scarti runtime.
+7. Verificare dal precheck che ogni deck abbia 30 carte e 1 solo comandante.
+8. Provare almeno un comandante nuovo:
+   - Nexus Coordinatore di Campo: +1 ATT temporaneo a un alleato.
+   - Exordium Stratega Corazzato: +1 ATT temporaneo a un veicolo.
+   - Liberti Matriarca Sanguis: Sanguinamento 2 a nemico.
+   - Agathoi Ierofante delle Radici: cura 1 HP a struttura alleata ferita.
+   - Fabeot Archivista Capestro: copia carta casuale dalla mano nemica.
+9. Anti-regressione: income 3, cap mano 10, recupero deck, tattiche C2, Esproprio di Mano, Missile Jam, blocco veicoli mossi.

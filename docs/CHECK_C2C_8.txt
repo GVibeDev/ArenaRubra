@@ -1,0 +1,8 @@
+CHECK C2c-8
+
+1. EXTAC11: applica Dispositivo di Puntamento a una unità alleata, uccidi con attacco base, verifica che possa attaccare ancora una sola volta.
+2. LBTAC09: applica Agguato a fanteria Liberti, muovi un nemico adiacente, verifica attacco opportunità e consumo status.
+3. LBTAC14: bersaglia fanteria nemica con fanterie Liberti adiacenti, verifica attacchi multipli immediati anche da unità già agite.
+4. AGTAC05: applica Natura Vigile, fai attaccare la fanteria da un nemico, se sopravvive deve contrattaccare e consumare status.
+5. Verifica no catene infinite: reazioni non devono generare altre reazioni.
+6. Precheck pulito e 51/59 tattiche giocabili.

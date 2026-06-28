@@ -1,0 +1,37 @@
+C2c-3 – Control / Basic Statuses – static check
+
+Expected:
+- JS syntax check: OK on src/*.js and data/*.js
+- New playable hand tactics: 5
+- Total playable hand tactics C2c: 15
+
+New playable IDs:
+- NXTAC09 phase_shield
+- NXTAC10 stun_disable
+- EXTAC09 inhibit_attack
+- FABTAC01 stun_unit
+- FABTAC10 grant_stealth_vehicle
+
+Manual smoke tests recommended:
+1. NXTAC09 Difesa impenetrabile
+   - Play on allied unit.
+   - Enemy should not be able to target it with attacks/tactics while Scudo Fasico is active.
+   - Status expires at next start turn of the protected unit owner.
+
+2. NXTAC10 Disabilita sistemi / FABTAC01 Ipnosi
+   - Play on enemy unit.
+   - On enemy turn, target cannot move, attack, or use ability.
+   - Status expires at enemy end turn.
+
+3. EXTAC09 Inibitore d'attacco
+   - Play on enemy unit.
+   - On enemy turn, target cannot attack but may move/use ability if otherwise legal.
+
+4. FABTAC10 Dispositivo Stealth
+   - Play on allied vehicle.
+   - Enemy cannot target it unless Visione is in range.
+   - Movement does not break Furtivo.
+   - Attacking or using ability removes Furtivo.
+
+Notes:
+- This patch does not implement AoE, economy, cells, hand theft, conversion or reactions.

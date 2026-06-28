@@ -1,0 +1,17 @@
+C2c-8b-fix – Test consigliati
+
+1) Marchio dei Sanguis + Prima Linea
+- Applica Marchio a una fanteria Liberti.
+- Attacca un bersaglio protetto da una unità con Prima Linea.
+- L'intercettore deve subire l'attacco e ricevere Sanguinamento 2 se ancora vivo e sanguinabile.
+
+2) Ordine di Varran + Prima Linea
+- Applica Ordine di Varran.
+- Attacca un bersaglio protetto.
+- L'intercettore deve subire ATT x2.
+
+3) Diploma da Mentalista / stun-on-hit + Prima Linea
+- Se un attacco base viene intercettato, lo stordimento deve andare all'intercettore sopravvissuto.
+
+4) Regressione C2c-8b
+- NXTAC12, EXTAC12, LBTAC08, LBTAC10 devono restare funzionanti.

@@ -1,0 +1,41 @@
+C2-FINAL-C2 – Commander Names / Abilities / Menu Alignment – Checklist
+
+[ ] Menu Opzioni: righe G1/G2 allineate con Fazione / Comandante / Controllo.
+[ ] Cambiando fazione, il menu comandante si aggiorna.
+[ ] Ogni fazione mostra esattamente 2 comandanti.
+[ ] Nuova partita con comandante A: mano iniziale contiene solo A.
+[ ] Nuova partita con comandante B: mano iniziale contiene solo B.
+
+Nexus
+[ ] Avatex usa Protocollo di Presidio su unità su/adiacente a PS.
+[ ] Unità Comando usa Logistica Avanzata a costo 0.
+[ ] Logistica Avanzata sconta solo prossima unità Nexus dalla mano, minimo 1.
+[ ] Logistica Avanzata non sconta mercato/debug roster.
+
+Exordium
+[ ] Varran usa Ordine di Varran a costo 1, CD2, R1.
+[ ] Varran resta pronto e può agire dopo l’abilità.
+[ ] Nemira cura 1 HP e dà +1 ATT a unità Exordium entro R1.
+
+Liberti
+[ ] Rauk applica Superiorità Numerica Potenziata: +2 invece di +1 al prossimo attacco supportato.
+[ ] Pravus applica Sanguinamento 2 con attacco base.
+[ ] Pravus recupera 1 HP quando distrugge fanteria nemica.
+
+Agathoi
+[ ] Alexandros usa Mandato del Primarca a costo 3, CD3, R0.
+[ ] Alexandros e unità Agathoi adiacenti ricevono +1 DEF senza cap.
+[ ] Dycaios dà Contrattacco a fanteria Agathoi o a sé stesso.
+
+Fabeot
+[ ] Gerarca Fabeot usa Sentenza Porpora invariata.
+[ ] Emissario della Torre fa pescare l’avversario.
+[ ] Se la carta pescata è fanteria/veicolo non comandante/pivot, viene rubata dal Fabeot.
+[ ] Tattiche, strutture, comandanti e pivot pescati restano all’avversario.
+
+Regressione
+[ ] Income base 3.
+[ ] Cap mano 10.
+[ ] Recupero deck 5 ENE + pesca 3.
+[ ] Missile Jam rimuove buff prima del danno.
+[ ] Bilanciamenti B1-B5 presenti.

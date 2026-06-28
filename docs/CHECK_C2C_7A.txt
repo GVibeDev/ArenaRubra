@@ -1,0 +1,27 @@
+CHECK C2c-7a – Fabeot Advanced Hand / Theft Foundation
+
+1. Precheck pulito.
+2. Totale tattiche giocabili atteso: 46/59.
+3. Test Congedo Forzato:
+   - bersaglia fanteria/veicolo alleato o nemico;
+   - non deve funzionare su strutture, comandante o pivot;
+   - l'unità deve uscire dal campo senza attivare morte;
+   - il proprietario riceve una carta base pulita in mano.
+4. Test Taglia sulla Testa:
+   - marchia fanteria/veicolo nemico valido;
+   - se il bersaglio muore nello stesso turno Fabeot, Fabeot riceve copia base pulita in mano;
+   - se non muore entro fine turno, la taglia scade.
+5. Test Contratto Capestro:
+   - entrambi pescano 1;
+   - se Fabeot pesca tattica, ruba la carta appena pescata dall'avversario;
+   - se Fabeot non pesca tattica, nessun furto.
+6. Test Embargo:
+   - richiede almeno 1 PS Fabeot;
+   - blocca 1 carta casuale per PS controllato;
+   - le carte bloccate non devono essere giocabili durante il turno del proprietario;
+   - si sbloccano a fine turno del proprietario.
+7. Regressioni:
+   - C2c-6a pesca/sconti;
+   - C2c-6b ENE/income;
+   - C2c-6c abilità economia;
+   - spawn/movimento/trappole/AoE precedenti.

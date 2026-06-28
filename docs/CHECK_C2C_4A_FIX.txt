@@ -1,0 +1,20 @@
+C2c-4a-fix – Recovered Playability / HP max Fix
+Base: C2c-4a
+
+Static syntax check:
+OK: node --check src/*.js data/*.js
+
+Playable tactic count check:
+Playable tactics: 22/22
+Missing configured playable: none
+FABTAC02: grant_stun_on_basic_attack · playable_c2c4a · playable true
+FABTAC12: next_attack_ignore_defense · playable_c2c4a · playable true
+NXTAC11: ignore_defense_permanent · playable_c2c4a · playable true
+AGTAC04: set_structure_def_to_current_hp · playable_c2c4a · playable true
+AGTAC06: green_fortress_structure_growth · playable_c2c4a · playable true
+stale FABTAC02: playable true · normalized grant_stun_on_basic_attack
+stale FABTAC12: playable true · normalized next_attack_ignore_defense
+
+AGTAC06 isolated function check:
+{"defGain":2,"hpMaxGain":1,"adjacentStructures":1,"adjacentInfantry":1}
+Structure after: currentHp 4, maxHp 5, currentDef 3

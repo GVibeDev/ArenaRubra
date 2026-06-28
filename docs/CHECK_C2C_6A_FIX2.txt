@@ -1,0 +1,12 @@
+C2c-6a-fix2 – Runtime Deck Shuffle / Draw Testability
+
+Static checks:
+- node --check src/*.js data/*.js: OK
+- duplicate function scan: OK
+- ZIP integrity: OK
+
+Manual browser tests required:
+- New game starts without runtime errors.
+- Log shows runtime deck shuffled.
+- Precheck ok.
+- Draw tactics can now be tested with mixed card order.

@@ -1,0 +1,26 @@
+CHECK C2-FINAL-B4 – AGATHOI NUMERICAL BALANCE PASS
+
+1. Verificare in UI/mercato/mano:
+   - Carro Falange ATT 1.
+   - Karyon Mobile: Traslazione Karyon costo 1 ENE.
+   - Tholos Sacro costo 3.
+   - Peribolos Murario costo 3.
+   - Cisterna Radicata costo 4.
+   - Selva Simbiotica costo 6.
+
+2. Verificare tattiche Agathoi:
+   - AGTAC04 Bastione Ligneo costo 4.
+   - AGTAC06 Fortezza Verde costo 5.
+   - AGTAC08 Carovane di Mercanti costo 4.
+
+3. Verificare che Demagos Verde sia invariato.
+
+4. Regressione rapida:
+   - Nexus B1.
+   - Exordium B2.
+   - Liberti B3.
+   - income base 3.
+   - cap mano 10.
+   - recupero deck.
+   - Missile Jam.
+   - veicoli mossi senza azione salvo eccezioni.

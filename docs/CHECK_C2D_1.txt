@@ -1,0 +1,11 @@
+C2d-1 – Test consigliati
+
+1. Avvia nuova partita e verifica precheck pulito.
+2. Controlla che sotto la mappa compaia prima Mano / deck C2.
+3. Verifica che il banner sticky mostri round, deck/mano/scarti, depot ENE e income per G1/G2.
+4. Scorri la mano: il banner deve restare visibile.
+5. Verifica che nell'area scrollabile ci siano starter e carte in mano, senza mercato unità fisso.
+6. Apri Mercato unità / Debug roster: il mercato deve comparire e funzionare.
+7. Compra/spawna una unità dal mercato debug e verifica che il gameplay resti invariato.
+8. Gioca una tattica dalla mano: la carta deve essere compatta ma costo ENE ed effetto devono restare leggibili.
+9. Ritest rapido C2c-8: Dispositivo di Puntamento, Predoni in Agguato, Esca d’Attacco, Natura Vigile.

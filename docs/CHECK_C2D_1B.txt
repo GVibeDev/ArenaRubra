@@ -1,0 +1,9 @@
+C2d-1b – Test consigliati
+
+1. Avvia nuova partita: il pulsante deve essere in alto a sinistra.
+2. Fine turno deve essere in alto a destra e funzionare come prima.
+3. La barra titolo deve mostrare solo: ARENA RUBRA - Starter Game (C2d-1b).
+4. Il pannello Opzioni di gioco deve essere aperto di default e richiudibile.
+5. Nuova partita e Fine turno non devono più comparire dentro Opzioni di gioco.
+6. Precheck pulito.
+7. Gameplay C2d-1 invariato: mano, mercato debug, tattiche C2, reazioni C2c-8.

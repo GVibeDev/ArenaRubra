@@ -1,0 +1,19 @@
+C2c-4a – Recovered Advanced Buff / Structure Hotfix
+
+Controlli statici eseguiti:
+- node --check src/tactics.js: OK
+- node --check src/combat.js: OK
+- node --check src/statuses.js: OK
+- node --check src/precheck.js: OK
+- node --check data/cards_base.js: OK
+- node --check data/tactics_cards_c2.js: OK
+- Duplicate function scan su tactics/combat/statuses: OK
+- Conteggio implementationStatus playable_*: 22
+
+Test runtime consigliati:
+1. FABTAC12 su fanteria alleata: il prossimo attacco deve ignorare DEF, colpire HP, poi consumare lo status.
+2. FABTAC02 su fanteria/veicolo alleato: dopo attacco base il bersaglio vivo deve essere stordito.
+3. NXTAC11 su unità combattente alleata: tutti gli attacchi base successivi devono ignorare DEF.
+4. AGTAC04 su struttura danneggiata nella DEF: la DEF corrente deve salire almeno agli HP correnti.
+5. AGTAC06 su struttura con adiacenze: +2 DEF per struttura adiacente e +1 maxHP per fanteria adiacente; HP correnti invariati.
+6. Verificare che le 5 carte non mostrino più "Tattica data-only" ma "Gioca ora" quando pescate.

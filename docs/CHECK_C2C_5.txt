@@ -1,0 +1,5 @@
+C2c-5 static check
+- JS syntax check atteso: OK
+- Tattiche giocabili aggiunte: 4
+- Totale giocabili atteso: 26
+- Nessun sistema reazioni/furto/conversione aperto.

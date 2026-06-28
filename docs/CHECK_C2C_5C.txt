@@ -1,0 +1,10 @@
+C2c-5c check previsto:
+
+1. LBTAC01: selezionare cella sbarcabile con adiacente libera; devono entrare 2 Miliziani esausti.
+2. LBTAC02: selezionare cella sbarcabile; deve entrare 1 Predone con Avanguardia, quindi non agito.
+3. LBTAC03: selezionare bordo mappa in metà campo alleata; devono entrare Predone + Miliziani fino a 3 unità totali, rispettando celle e cap.
+4. LBTAC04: selezionare comandante alleato; devono spawnare Miliziani sulle celle libere adiacenti, max 6 e dentro cap.
+5. Fabbrica Automatizzata/Caserma/Matrice: abilità spawnBlueprint ancora operative, senza celle invalicabili e dentro cap.
+6. Regressioni: C2c-5b movimento, C2c-5 trappole, C2c-4 AoE e C2c-4a buff devono restare funzionanti.
+
+Static check: node --check src/*.js data/*.js

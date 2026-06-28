@@ -1,0 +1,14 @@
+C2c-4 static check
+
+- Syntax check src/*.js: OK
+- Syntax check data/*.js: OK
+- Duplicate function scan: OK
+- ZIP integrity: OK
+- Playable hand tactics expected: 17
+
+Manual browser tests required:
+1. NXTAC04 Bombardamento aereo selectable on board cells within R3.
+2. NXTAC04 damages units in selected cell + adjacent cells.
+3. FABTAC11 Pacco Bomba selectable on board cells within R1.
+4. FABTAC11 damages units in selected cell + up to 2 adjacent cells.
+5. AoE damage is normal/non-perforating: DEF absorbs first and HP are damaged only when DEF is already 0.

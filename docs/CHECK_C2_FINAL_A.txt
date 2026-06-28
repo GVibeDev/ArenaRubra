@@ -1,0 +1,35 @@
+C2-FINAL-A – Starter Flow / Hand Cap / Deck Recovery
+
+Test consigliati:
+
+1. Income base
+- Avvia partita.
+- Verifica dal banner/log che l'income base sia 3 ENE + PS/modificatori.
+
+2. Cap mano
+- Porta la mano a 10 carte.
+- Pesca una carta da inizio turno o tattica.
+- La carta deve andare direttamente negli scarti.
+- La mano deve restare a 10.
+- Il log deve indicare la carta persa per mano piena.
+
+3. Tattiche di pesca con mano piena
+- Prova Richiesta Rifornimenti, Rifornimenti in arrivo, Tributo dei Clan, Carovane di Mercanti con mano a 10.
+- Le carte pescate oltre cap devono andare negli scarti.
+- Sconti/buff su pescata devono applicarsi solo alle carte entrate davvero in mano.
+
+4. Recupero deck umano
+- Svuota deck e mano lasciando carte negli scarti.
+- Con almeno 5 ENE deve comparire/attivarsi il pulsante “Riorganizza deck · 5 ENE”.
+- Dopo click: -5 ENE, scarti rimescolati nel deck, pesca 3.
+
+5. Recupero deck bloccato
+- Prova con deck non vuoto, mano non vuota, scarti vuoti o ENE insufficiente.
+- Il recupero deve risultare bloccato/non disponibile.
+
+6. Bot
+- In una partita bot, se il bot ha deck vuoto, mano vuota, scarti non vuoti e 5+ ENE, deve recuperare automaticamente il deck.
+
+7. Regressione
+- Verifica che le 59 tattiche C2 restino giocabili.
+- Verifica spawn da mano, Esproprio di Mano e UI C2d-1b.

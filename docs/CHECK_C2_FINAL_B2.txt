@@ -1,0 +1,23 @@
+C2-FINAL-B2 – Exordium Numerical Balance Pass – Checklist
+
+1. Verifica unità Exordium:
+   - Cursor ATT 1.
+   - Legionario Pesante: Colpo Pesante costo 1 ENE.
+   - Legionario d’Assedio: Colpo d’Assedio costo 1 ENE.
+   - Carro Medio Exordium: Sfondamento costo 1 ENE.
+   - Testudo: Frattura della Linea costo 1 ENE.
+   - Artiglieria Exordium: Bombardamento costo 2 ENE.
+   - Avamposto Exordium costo 4.
+   - Orgoglio di Aurex costo 6.
+   - Pretore di Aurex invariato.
+
+2. Verifica tattiche Exordium:
+   - EXTAC04 Obliteratore costo 5.
+   - EXTAC08 Rifornimenti in arrivo costo 4.
+   - EXTAC10 Campo statico costo 3.
+
+3. Regressione generale:
+   - C2-FINAL-A: income base 3, cap mano 10, recupero deck.
+   - C2-FINAL-A1: Missile Jam e blocco centrale veicoli.
+   - C2-FINAL-B1: valori Nexus già applicati.
+   - Tattiche C2 ancora 59/59 giocabili.

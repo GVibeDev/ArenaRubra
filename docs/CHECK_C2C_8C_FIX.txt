@@ -1,0 +1,25 @@
+C2c-8c-fix – Stolen Unit Spawn Hotfix
+
+Test consigliati:
+
+1. Fabeot / Agente Espropriatore
+   - Usa Esproprio di Mano finché copia una carta unità nemica.
+   - Clicca “Gioca ora”.
+   - Clicca una cella valida di sbarco.
+   - L'unità deve entrare in campo e la carta deve uscire dalla mano.
+
+2. Esproprio di Mano su tattica
+   - Le tattiche copiate devono funzionare come già validato.
+
+3. Unità della propria fazione
+   - Le carte unità Fabeot pescate normalmente devono continuare a spawnare.
+
+4. Mercato unità/debug
+   - L'acquisto dal mercato deve continuare a usare il roster della fazione corrente.
+
+5. Strutture copiate/rubate
+   - Se viene copiata una struttura, deve usare il builder valido e poi uscire dalla mano dopo costruzione.
+
+6. Regressione generale
+   - Precheck pulito.
+   - C2c-8c resta a 59/59 tattiche giocabili.

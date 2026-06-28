@@ -1,0 +1,22 @@
+C2c-4b – Unit Ability Compatibility Pass
+
+Static checks:
+- node --check src/*.js data/*.js: OK
+- duplicate function scan: OK (no new duplicate introduced by patch script)
+- non-passive ability kind handler scan: OK
+- removed old placeholder wording from Fante Robot / Visione and Spia Silente / Furtivo.
+
+Runtime test focus:
+1) Fante Robot Nexus with Visione near a Furtive vehicle: enemy Furtivo should become targetable/detectable within R2.
+2) Spia Silente Fabeot: starts with Furtivo; if still Furtiva at start turn, Fabeot draws +1 card total.
+3) Torretta Lanciafiamme / Getto Lanciafiamme: target enemy + up to 2 adjacent enemy units take 2 normal non-perforating damage.
+4) Domos Cosmico / Velo del Domos: target allied structure becomes not targetable by enemy abilities/tactics until next owner turn.
+5) Selva Simbiotica / Manto della Selva: target allied non-structure adjacent to Agathoi structure becomes untargetable by enemy attacks/abilities until next owner turn.
+6) Demagos Verde / Mandato del Demagos: allied unit recovers DEF and gains Spine 1.
+7) Corazzato Assalto / Assetto Impermeabile: gains immunity to enemy effects until next owner turn.
+
+Excluded intentionally:
+- mines / movement / relocation: C2c-5
+- hand theft / conversion / Fabeot advanced: C2c-7
+- ambush / opportunity attacks / counterattack: C2c-8
+Duplicate scan completed.

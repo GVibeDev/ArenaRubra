@@ -1,0 +1,8 @@
+JS check: OK
+duplicate function definitions: none
+duplicate blueprint IDs: none
+duplicate deck tactic IDs: none
+deck tactic total: 59/59
+pivot counts: Nexus 1 (Fortezza Mobile), Exordium 1 (Orgoglio di Aurex), Liberti 1 (Bestia della Fossa), Agathoi 1 (Selva Simbiotica), Fabeot 1 (Architetto Nero)
+distinct pool counts: Nexus 30, Exordium 30, Liberti 30, Agathoi 30, Fabeot 30
+deck template size model: Nexus 30/30, Exordium 30/30, Liberti 30/30, Agathoi 30/30, Fabeot 30/30

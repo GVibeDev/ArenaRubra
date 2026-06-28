@@ -1,0 +1,16 @@
+JS check: OK
+duplicate function definitions: none
+duplicate blueprint IDs: none
+duplicate deck tactic IDs: none
+C2a config version: True
+C2a config mode: True
+DECK_TACTICS file present: True
+DECK_TACTICS script linked: True
+buildCardCatalog uses DECK_TACTICS: True
+old starter TACTICS excluded from card catalog source: True
+unique_pool_first enabled: True
+deck tactic total: 59/59
+deck tactic counts: Nexus 12, Exordium 12, Liberti 14, Agathoi 9, Fabeot 12
+unit counts: Nexus 18, Exordium 18, Liberti 16, Agathoi 21, Fabeot 18
+distinct pool counts: Nexus 30, Exordium 30, Liberti 30, Agathoi 30, Fabeot 30
+auto-deck tactic copies in template: Nexus 12, Exordium 12, Liberti 14, Agathoi 9, Fabeot 12

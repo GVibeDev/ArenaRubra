@@ -1,0 +1,32 @@
+C2c-6a – Draw / Card Economy Foundation
+
+Static checks:
+- node --check src/*.js data/*.js: OK
+- Tattiche C2c-6a marcate playable_c2c6a: NXTAC08, EXTAC08, LBTAC11, AGTAC08
+- Totale tattiche giocabili atteso: 37
+
+Test runtime consigliati:
+1. NXTAC08 – Richiesta rifornimenti
+   - Giocare dalla mano senza selezionare bersaglio.
+   - Deve pescare 1 carta.
+   - Se la prima pescata è tattica, deve pescare una seconda carta.
+   - Le carte pescate devono mostrare costo ridotto di 1 ENE, minimo 0.
+   - Se una carta unità scontata viene giocata, deve pagare il costo scontato.
+
+2. EXTAC08 – Rifornimenti in arrivo
+   - Deve pescare 2 carte.
+   - Se tra le pescate c'è un veicolo, quando viene schierato deve entrare con +1 ATT permanente.
+
+3. LBTAC11 – Tributo dei Clan
+   - Deve pescare 1 carta.
+   - Se la prima carta è fanteria, deve pescare una seconda carta.
+   - La seconda carta non deve attivare ulteriori pescate.
+
+4. AGTAC08 – Carovane di Mercanti
+   - Con 0 strutture alleate vive non deve essere giocabile.
+   - Con N strutture alleate vive deve pescare min(N, 4) carte.
+
+5. Anti-regressione
+   - C2c-5c spawn Liberti ancora funzionante.
+   - C2c-5/5b movimento e celle ancora funzionanti.
+   - C2c-4 AoE e C2c-4a buff/strutture ancora funzionanti.
