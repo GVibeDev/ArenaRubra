@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9P1 AppShell / Storage Import/Export UX Hotfix.
+// Arena Rubra – F9J1 AppShell / Card Pool Screen Foundation.
 // Scopo: mantenere AppShell/SetupScreen stabili e collegare la GameScreen al PanelManager senza toccare la logica Starter congelata.
 
 const ARENA_APP_SCREENS = Object.freeze({
@@ -31,7 +31,6 @@ function setAppScreen(screen) {
 
   const placeholderScreens = [
     ARENA_APP_SCREENS.CARD_EDITOR,
-    ARENA_APP_SCREENS.CARD_POOL,
     ARENA_APP_SCREENS.STATS,
     ARENA_APP_SCREENS.OPTIONS,
     ARENA_APP_SCREENS.ABOUT
@@ -40,6 +39,7 @@ function setAppScreen(screen) {
   const isSetup = next === ARENA_APP_SCREENS.SETUP;
   const isGame = next === ARENA_APP_SCREENS.GAME;
   const isDeckBuilder = next === ARENA_APP_SCREENS.DECK_BUILDER;
+  const isCardPool = next === ARENA_APP_SCREENS.CARD_POOL;
   const isPlaceholder = placeholderScreens.includes(next);
 
   if (!isGame && typeof closeGamePanel === "function") closeGamePanel();
@@ -49,6 +49,7 @@ function setAppScreen(screen) {
   document.body.classList.toggle("app-screen-setup", isSetup);
   document.body.classList.toggle("app-screen-game", isGame);
   document.body.classList.toggle("app-screen-deck-builder", isDeckBuilder);
+  document.body.classList.toggle("app-screen-card-pool", isCardPool);
   document.body.classList.toggle("app-screen-placeholder", isPlaceholder);
 
   const screens = document.querySelectorAll("[data-app-screen-panel]");
@@ -59,6 +60,7 @@ function setAppScreen(screen) {
   });
 
   if (isDeckBuilder && typeof renderDeckBuilderScreen === "function") renderDeckBuilderScreen();
+  if (isCardPool && typeof renderCardPoolScreen === "function") renderCardPoolScreen();
   refreshMainMenuResumeState();
 }
 
@@ -283,15 +285,25 @@ function initializeArenaAppShell() {
   }
 
   if (typeof initializeDeckBuilderScreen === "function") initializeDeckBuilderScreen();
+  if (typeof initializeCardPoolScreen === "function") initializeCardPoolScreen();
 
-  const deckBuilderBtn = document.querySelector("[data-app-open-deck-builder]");
-  if (deckBuilderBtn && deckBuilderBtn.dataset.bound !== "1") {
+  document.querySelectorAll("[data-app-open-deck-builder]").forEach(deckBuilderBtn => {
+    if (deckBuilderBtn.dataset.bound === "1") return;
     deckBuilderBtn.dataset.bound = "1";
     deckBuilderBtn.addEventListener("click", () => {
       if (typeof openDeckBuilderScreen === "function") openDeckBuilderScreen();
       else showAppPlaceholder(ARENA_APP_SCREENS.DECK_BUILDER);
     });
-  }
+  });
+
+  document.querySelectorAll("[data-app-open-card-pool]").forEach(cardPoolBtn => {
+    if (cardPoolBtn.dataset.bound === "1") return;
+    cardPoolBtn.dataset.bound = "1";
+    cardPoolBtn.addEventListener("click", () => {
+      if (typeof openCardPoolScreen === "function") openCardPoolScreen();
+      else showAppPlaceholder(ARENA_APP_SCREENS.CARD_POOL);
+    });
+  });
 
   const newGameBtn = document.getElementById("mainMenuNewGameBtn");
   if (newGameBtn && newGameBtn.dataset.bound !== "1") {

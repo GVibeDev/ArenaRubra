@@ -309,7 +309,7 @@ function deckBuilderReportObject() {
 
   return {
     build: typeof buildInfoExportMeta === "function" ? buildInfoExportMeta() : {},
-    mode: "F9I1 card_renderer_preview",
+    mode: "F9I1c renderer_data_asset_path_microfix",
     faction,
     commanderId,
     commanderName: commander ? commander.name : "",
@@ -328,12 +328,22 @@ function deckBuilderReportObject() {
     templateIds,
     deck: deck.map(card => ({
       id: card.id,
+      sourceId: card.sourceId || "",
       name: card.name,
       faction: card.faction,
       sourceType: card.sourceType,
       deckRole: card.deckRole,
       cardType: card.cardType,
       cost: card.cost,
+      unitType: card.unitType || null,
+      weight: card.weight || null,
+      blueprintId: card.blueprintId || null,
+      tacticId: card.tacticId || null,
+      category: card.category || "",
+      target: card.target || "",
+      effectText: card.effectText || "",
+      condition: card.condition || "",
+      duration: card.duration || "",
       copyNo: card.deckCopyNo || null,
       copyLimit: typeof deckCopyLimitForCard === "function" ? deckCopyLimitForCard(card) : null
     })),
@@ -378,7 +388,7 @@ function deckBuilderSummaryHtml(report) {
       <div class="statTile"><strong>${violations.length}</strong><span>violazioni copie</span></div>
     </div>
     <div class="deckBuilderRuleBox">
-      <strong>F9I1:</strong>
+      <strong>F9I1c:</strong>
       puoi aggiungere/rimuovere carte, validare il draft in tempo reale, salvarlo localmente, importare/esportare JSON, richiamare i deck dalla gallery e ora vedere una preview reale della carta selezionata dal draft/pool. Un deck personalizzato entra in partita solo se valido per fazione e comandante.
       <br /><strong>Regole freeze:</strong> deck ${report.deckRules.deckSize}; comandante/pivot/elite max 1; altre carte/tattiche max ${report.deckRules.defaultMaxCopies}; starter esclusi dal deck.
       <br />Ruoli nel draft: comandante ${roleCounts.commander || 0}, base ${roleCounts.base || 0}, pesanti ${roleCounts.heavy || 0}, elite ${roleCounts.elite || 0}, pivot ${roleCounts.pivot || 0}, tattiche ${roleCounts.tactic || 0}.

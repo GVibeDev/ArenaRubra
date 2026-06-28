@@ -125,9 +125,11 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
       actions.innerHTML = "";
       if (tactics !== actions) tactics.innerHTML = "";
       if (!selected) {
-        panel.innerHTML = `<h4>Nessuna unità selezionata</h4><div class="meta">Clicca una tua unità attiva sulla mappa, oppure compra dal mercato.</div>`;
+        panel.innerHTML = `${selectedUnitPreviewShellHtml()}<h4>Nessuna unità selezionata</h4><div class="meta">Clicca una tua unità attiva sulla mappa, oppure compra dal mercato.</div>`;
+        if (typeof renderSelectedUnitCardPreview === "function") renderSelectedUnitCardPreview(null);
       } else {
-        panel.innerHTML = unitCardHtml(selected, true);
+        panel.innerHTML = `${selectedUnitPreviewShellHtml()}${unitCardHtml(selected, true)}`;
+        if (typeof renderSelectedUnitCardPreview === "function") renderSelectedUnitCardPreview(selected);
         const isHumanTurn = state.modes[state.currentPlayer] === "human";
         const canCommand = isHumanTurn && selected.side === state.currentPlayer && selected.type !== "QG" && !selected.acted && selected.alive && !state.winner;
         const moveBtn = document.createElement("button");
@@ -369,11 +371,12 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
       const disabled = action.canUse ? "" : " disabled";
       const playableClass = action.canUse ? " playable" : "";
       const safeUid = card && card.cardUid ? String(card.cardUid).replace(/'/g, "\\'") : "";
+      const selectedClass = card && typeof gameCardPreviewSelectedHandUid === "function" && gameCardPreviewSelectedHandUid() === card.cardUid ? " previewSelected" : "";
       const button = card
-        ? `<button type="button"${disabled} onclick="beginStarterCardPurchase('${safeUid}')">${escapeHtml(action.actionText)}</button>`
+        ? `<button type="button"${disabled} onclick="event.stopPropagation(); beginStarterCardPurchase('${safeUid}')">${escapeHtml(action.actionText)}</button>`
         : `<button type="button" disabled>Non disponibile</button>`;
       return `
-        <div class="debugStarterSlot${playableClass}">
+        <div class="debugStarterSlot${playableClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'starter')"` : ""}>
           <div class="miniLabel">${escapeHtml(label)}</div>
           ${renderCardInstanceDebug(card)}
           <div class="starterAction">
@@ -404,11 +407,12 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
       const playableClass = action.canUse ? " playable" : "";
       const pendingClass = pendingHandCardUid && card && pendingHandCardUid === card.cardUid ? " pending" : "";
       const safeUid = card && card.cardUid ? String(card.cardUid).replace(/'/g, "\\'") : "";
+      const selectedClass = card && typeof gameCardPreviewSelectedHandUid === "function" && gameCardPreviewSelectedHandUid() === card.cardUid ? " previewSelected" : "";
       const button = card
-        ? `<button type="button"${disabled} onclick="beginHandCardPlay('${safeUid}')">${escapeHtml(action.actionText)}</button>`
+        ? `<button type="button"${disabled} onclick="event.stopPropagation(); beginHandCardPlay('${safeUid}')">${escapeHtml(action.actionText)}</button>`
         : `<button type="button" disabled>Non disponibile</button>`;
       return `
-        <div class="debugHandSlot${playableClass}${pendingClass}">
+        <div class="debugHandSlot${playableClass}${pendingClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'hand')"` : ""}>
           ${renderCardInstanceDebug(card)}
           <div class="handAction">
             ${button}
@@ -519,14 +523,53 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
         return;
       }
 
+      const current = state.currentPlayer || 1;
+      const other = current === 1 ? 2 : 1;
       panel.innerHTML = `
         ${renderHandStatusBanner()}
+        ${handPreviewShellHtml()}
         <div class="cardZoneGrid handScrollContent">
-          ${cardZoneDebugHtml(1)}
-          ${cardZoneDebugHtml(2)}
+          ${cardZoneDebugHtml(current)}
+          ${cardZoneDebugHtml(other)}
+        </div>`;
+      if (typeof gameCardPreviewEnsureDefaultHandCard === "function") gameCardPreviewEnsureDefaultHandCard(current);
+      if (typeof renderInGameHandCardPreview === "function") renderInGameHandCardPreview();
+    }
+
+
+    function selectedUnitPreviewShellHtml() {
+      return `
+        <div class="inGameCardPreviewBox compactPreviewBox">
+          <div class="inGameCardPreviewLayout compactPreviewLayout">
+            <div class="inGameCardPreviewCanvasWrap compactPreviewCanvasWrap">
+              <canvas id="selectedUnitCardPreviewCanvas" aria-label="Anteprima carta unità selezionata"></canvas>
+            </div>
+            <div class="inGameCardPreviewInfo compactPreviewInfo">
+              <div class="meta" id="selectedUnitCardPreviewMeta">Seleziona una unità sulla mappa per vedere la miniatura renderizzata.</div>
+              <div class="deckBuilderPreviewBody compactPreviewBody" id="selectedUnitCardPreviewBody">
+                <div class="deckBuilderPreviewHelp">Anteprima carta in-game F9I2.</div>
+              </div>
+            </div>
+          </div>
         </div>`;
     }
 
+    function handPreviewShellHtml() {
+      return `
+        <div class="inGameCardPreviewBox handPreviewBox">
+          <div class="inGameCardPreviewLayout">
+            <div class="inGameCardPreviewCanvasWrap">
+              <canvas id="gameHandCardPreviewCanvas" aria-label="Anteprima carta dalla mano"></canvas>
+            </div>
+            <div class="inGameCardPreviewInfo">
+              <div class="meta" id="gameHandCardPreviewMeta">Seleziona una carta dalla mano o una starter card per vedere l'anteprima.</div>
+              <div class="deckBuilderPreviewBody" id="gameHandCardPreviewBody">
+                <div class="deckBuilderPreviewHelp">Anteprima renderer in-game F9I2.</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
 
     function factionRulesPillsHtml(unitOrBlueprint) {
       const rules = Array.isArray(unitOrBlueprint && unitOrBlueprint.factionRules) ? unitOrBlueprint.factionRules : [];

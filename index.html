@@ -31,8 +31,8 @@
       <h1><span id="buildAppName">Arena Rubra</span></h1>
       <div class="mainMenuStage" id="buildStage">Starter Game ALPHA</div>
       <div class="mainMenuBuildBox">
-        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9I1-APK-M4c</span></div>
-        <div><strong>Patch</strong> <span id="menuBuildName">Card Renderer Preview Foundation</span></div>
+        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span></div>
+        <div><strong>Patch</strong> <span id="menuBuildName">Card Pool Screen Foundation</span></div>
         <div><strong>Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></div>
         <div><strong>Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></div>
         <div><strong>Data</strong> <span id="menuBuildDate">2026-06-27</span></div>
@@ -42,7 +42,7 @@
         <button class="ghost" id="mainMenuResumeBtn" type="button">Riprendi schermata partita</button>
         <button class="ghost" data-app-open-deck-builder type="button">Costruisci deck</button>
         <button class="ghost" data-app-placeholder-screen="cardEditor" type="button">Crea / modifica carta</button>
-        <button class="ghost" data-app-placeholder-screen="cardPool" type="button">Pool carte</button>
+        <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
         <button class="ghost" data-app-placeholder-screen="stats" type="button">Statistiche / log test</button>
         <button class="ghost" data-app-placeholder-screen="options" type="button">Opzioni / debug</button>
         <button class="ghost" data-app-placeholder-screen="about" type="button">Informazioni versione</button>
@@ -151,7 +151,7 @@
         <button class="ghost" id="setupBackMenuBtn" type="button">Torna al menu</button>
         <button class="primary" id="setupStartGameBtn" type="button">Avvia partita</button>
       </div>
-      <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9I1-APK-M4c</span> · <span id="setupBuildName">Card Renderer Preview Foundation</span></p>
+      <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span> · <span id="setupBuildName">Card Pool Screen Foundation</span></p>
     </div>
   </section>
 
@@ -162,7 +162,7 @@
         <div>
           <div class="mainMenuKicker">Deck Builder</div>
           <h2>Costruisci deck</h2>
-          <p class="deckBuilderIntro">F9I1 mantiene Deck Builder e storage invariati ma aggiunge una vera anteprima carta: selezioni una riga del draft o del pool e vedi il renderer fondato su catalogo, manifest asset e geometrie del Card Composer.</p>
+          <p class="deckBuilderIntro">F9J1 mantiene Deck Builder, preview in-game e storage validati; aggiunge anche la schermata Pool carte read-only con filtri, ricerca, preview renderer e path asset.</p>
         </div>
         <div class="deckBuilderHeaderActions">
           <button class="ghost" id="deckBuilderCopyJsonBtn" type="button">Copia report JSON</button>
@@ -191,27 +191,12 @@
           <label for="deckBuilderCommanderSelect">Comandante</label>
           <select id="deckBuilderCommanderSelect"></select>
         </div>
-        <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9I1-APK-M4c · saved deck gallery</div>
+        <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9J1-APK-M4c · selected unit preview space</div>
       </div>
 
       <section id="deckBuilderSummary" class="deckBuilderSummary" aria-live="polite"></section>
       <div id="deckBuilderFeedback" class="deckBuilderFeedback" aria-live="polite"></div>
 
-      <section class="deckBuilderBox deckBuilderPreviewBox">
-        <div class="deckBuilderBoxTitleRow">
-          <h3>Anteprima renderer carta</h3>
-          <span class="help">Clicca una carta nel draft o nel pool. Il renderer usa frame/placeholder locali e mostra anche i path asset previsti.</span>
-        </div>
-        <div class="deckBuilderPreviewLayout">
-          <div class="deckBuilderPreviewCanvasWrap">
-            <canvas id="deckBuilderCardPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta Arena Rubra"></canvas>
-          </div>
-          <div class="deckBuilderPreviewInfo">
-            <div id="deckBuilderCardPreviewMeta" class="deckBuilderMeta">Anteprima non inizializzata.</div>
-            <div id="deckBuilderCardPreviewBody" class="deckBuilderPreviewBody"></div>
-          </div>
-        </div>
-      </section>
 
       <section class="deckBuilderBox deckBuilderSavedGalleryBox">
         <div class="deckBuilderBoxTitleRow">
@@ -234,6 +219,32 @@
         </div>
       </section>
 
+      <section class="deckBuilderBox deckBuilderPoolBox">
+        <h3>Pool legale della fazione</h3>
+        <div class="deckBuilderTableWrap deckBuilderPoolTableWrap">
+          <table class="deckBuilderTable">
+            <thead><tr><th></th><th>ID</th><th>Carta</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>Nel draft</th><th>Testo / nota</th></tr></thead>
+            <tbody id="deckBuilderPoolBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="deckBuilderBox deckBuilderPreviewBox">
+        <div class="deckBuilderBoxTitleRow">
+          <h3>Anteprima renderer carta</h3>
+          <span class="help">Clicca una carta nel draft o nel pool. Il renderer usa frame/placeholder locali e mostra anche i path asset previsti.</span>
+        </div>
+        <div class="deckBuilderPreviewLayout">
+          <div class="deckBuilderPreviewCanvasWrap">
+            <canvas id="deckBuilderCardPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta Arena Rubra"></canvas>
+          </div>
+          <div class="deckBuilderPreviewInfo">
+            <div id="deckBuilderCardPreviewMeta" class="deckBuilderMeta">Anteprima non inizializzata.</div>
+            <div id="deckBuilderCardPreviewBody" class="deckBuilderPreviewBody"></div>
+          </div>
+        </div>
+      </section>
+
       <div class="deckBuilderColumns">
         <section class="deckBuilderBox">
           <h3>Starter esclusi dal deck</h3>
@@ -250,17 +261,97 @@
         </section>
       </div>
 
-      <section class="deckBuilderBox deckBuilderPoolBox">
-        <h3>Pool legale della fazione</h3>
-        <div class="deckBuilderTableWrap deckBuilderPoolTableWrap">
-          <table class="deckBuilderTable">
-            <thead><tr><th></th><th>ID</th><th>Carta</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>Nel draft</th><th>Testo / nota</th></tr></thead>
-            <tbody id="deckBuilderPoolBody"></tbody>
+
+
+    </div>
+  </section>
+
+
+  <section id="cardPoolScreen" class="appScreen cardPoolScreen" data-app-screen-panel="cardPool" aria-label="Pool carte Arena Rubra">
+    <div class="mainMenuBackdrop"></div>
+    <div class="deckBuilderCard cardPoolCard">
+      <header class="deckBuilderHeader">
+        <div>
+          <div class="mainMenuKicker">Card Pool</div>
+          <h2>Pool carte</h2>
+          <p class="deckBuilderIntro">F9J1 introduce un browser read-only del catalogo carte: filtri per fazione/tipo/ruolo, ricerca, preview renderer e riferimenti asset. Non modifica deck, gameplay o salvataggi.</p>
+        </div>
+        <div class="deckBuilderHeaderActions">
+          <button class="primary" data-app-open-deck-builder type="button">Apri Deck Builder</button>
+          <button class="ghost" id="cardPoolCopySelectedBtn" type="button">Copia carta JSON</button>
+          <button class="ghost" id="cardPoolCopyManifestBtn" type="button">Copia manifest asset</button>
+          <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
+        </div>
+      </header>
+
+      <section class="deckBuilderControls cardPoolControls" aria-label="Filtri pool carte">
+        <label>
+          <span>Fazione</span>
+          <select id="cardPoolFactionSelect"></select>
+        </label>
+        <label>
+          <span>Tipo</span>
+          <select id="cardPoolKindSelect">
+            <option value="all">Tutte</option>
+            <option value="unit">Unità</option>
+            <option value="tactic">Tattiche</option>
+          </select>
+        </label>
+        <label>
+          <span>Ruolo</span>
+          <select id="cardPoolRoleSelect">
+            <option value="all">Tutti</option>
+            <option value="commander">Comandanti</option>
+            <option value="pivot">Pivot</option>
+            <option value="elite">Elite</option>
+            <option value="heavy">Pesanti</option>
+            <option value="base">Base</option>
+            <option value="tactic">Tattiche</option>
+          </select>
+        </label>
+        <label>
+          <span>Cerca</span>
+          <input id="cardPoolSearchInput" type="search" placeholder="nome, id, effetto, fazione..." autocomplete="off" />
+        </label>
+        <button class="ghost" id="cardPoolResetFiltersBtn" type="button">Reset filtri</button>
+      </section>
+
+      <section id="cardPoolSummary" class="deckBuilderSummary" aria-live="polite"></section>
+      <div class="deckBuilderMeta" id="cardPoolMetaLine">Card Pool non inizializzato.</div>
+
+      <section class="deckBuilderBox cardPoolPreviewBox">
+        <div class="deckBuilderBoxTitleRow">
+          <h3>Anteprima renderer</h3>
+          <span class="help">Clicca una carta nella tabella per vedere render, dati e path asset.</span>
+        </div>
+        <div class="cardPoolPreviewLayout">
+          <div class="deckBuilderPreviewCanvasWrap">
+            <canvas id="cardPoolPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta dal pool"></canvas>
+          </div>
+          <div class="deckBuilderPreviewInfo">
+            <div id="cardPoolPreviewMeta" class="deckBuilderMeta">Nessuna carta selezionata.</div>
+            <div id="cardPoolPreviewBody" class="deckBuilderPreviewBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="deckBuilderBox cardPoolTableBox">
+        <div class="deckBuilderBoxTitleRow">
+          <h3>Catalogo carte</h3>
+          <span class="help">Read-only: le modifiche alle carte arriveranno con l'editor/composer.</span>
+        </div>
+        <div class="deckBuilderTableWrap cardPoolTableWrap">
+          <table class="deckBuilderTable cardPoolTable">
+            <thead>
+              <tr><th></th><th>Fazione</th><th>Carta</th><th>Kind</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>File ID</th></tr>
+            </thead>
+            <tbody id="cardPoolTableBody"></tbody>
           </table>
         </div>
       </section>
     </div>
   </section>
+
 
   <section id="appPlaceholderScreen" class="appScreen appPlaceholderScreen" data-app-screen-panel="placeholder" aria-label="Placeholder schermata futura">
     <div class="placeholderCard">
@@ -277,7 +368,7 @@
       <button class="primary topBarBtn" id="newGameBtn" type="button">Nuova partita</button>
     </div>
     <div class="topBarTitle">
-      <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9I1-APK-M4c</span>)</span></h1>
+      <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span>)</span></h1>
     </div>
     <div class="topBarAction topBarRight">
       <button class="danger topBarBtn" id="endTurnBtn" type="button">Fine turno</button>
@@ -293,7 +384,7 @@
     <span class="hudChip" id="gameHudCards">Deck/Mano/Scarti —</span>
     <span class="hudChip hudMode" id="gameHudMode">Pronto</span>
     <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
-    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9I1-APK-M4c</span>
+    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9J1-APK-M4c</span>
   </section>
 
   <main class="app mapFirstGameApp" id="mapFirstGameApp">
@@ -397,7 +488,7 @@
 
         <div class="unitCard" id="turnInfo"></div>
         <div class="help">
-          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9I1-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
+          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
         </div>
 
 
@@ -555,6 +646,7 @@
 <script src="src/card_assets.js"></script>
 <script src="src/card_renderer.js"></script>
 <script src="src/deck_builder.js"></script>
+<script src="src/card_pool.js"></script>
 <script src="src/rules.js"></script>
 <script src="src/economy.js"></script>
 <script src="src/statuses.js"></script>

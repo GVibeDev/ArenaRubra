@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9I1 Card Renderer Preview Foundation metadata.
+// Arena Rubra – F9J1 Card Pool Screen Foundation metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9I1-APK-M4c",
-  buildName: "Card Renderer Preview Foundation",
+  version: "C2-STABLE-1-F9J1-APK-M4c",
+  buildName: "Card Pool Screen Foundation",
   buildDate: "2026-06-28",
   buildChannel: "freeze-candidate",
   logicBaseline: "C2-STABLE-1-APK-M4c",
   map: "Starter MAP1 radius 6",
-  notes: "Fase 9I1: Card Renderer Preview Foundation. Mantiene Deck Builder/Storage stabili e aggiunge anteprima carta nel Deck Builder usando manifest asset, frame leggeri locali e placeholder per illustrazioni mancanti."
+  notes: "Fase 9J1: Card Pool Screen Foundation. Aggiunge una schermata Pool carte read-only con filtri per fazione/tipo/ruolo, ricerca testuale, preview renderer e path asset/manifest; mantiene invariati gameplay, AI, deck rules e storage."
 });
 
 function buildInfoLabel() {

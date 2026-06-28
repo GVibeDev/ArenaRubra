@@ -1,54 +1,54 @@
 # Arena Rubra – Card assets directory
 
-F9P1 prepara il percorso asset per il futuro Card Renderer senza includere immagini pesanti nelle patch di codice.
+F9I1b usa questa directory per frame, retro, placeholder e illustrazioni carta. Le patch ordinarie devono restare leggere: le illustrazioni complete possono essere inserite manualmente seguendo il manifest.
 
 ## Cornici e retro
-Inserire qui i file leggeri condivisi:
+
+I frame/retro leggeri restano nel progetto:
 
 ```text
-assets/cards/frames/nexus_unit_frame.png
-assets/cards/frames/nexus_tactic_frame.png
-assets/cards/frames/nexus_back.png
-assets/cards/frames/exordium_unit_frame.png
-assets/cards/frames/exordium_tactic_frame.png
-assets/cards/frames/exordium_back.png
-assets/cards/frames/liberti_unit_frame.png
-assets/cards/frames/liberti_tactic_frame.png
-assets/cards/frames/liberti_back.png
-assets/cards/frames/agathoi_unit_frame.png
-assets/cards/frames/agathoi_tactic_frame.png
-assets/cards/frames/agathoi_back.png
-assets/cards/frames/fabeot_unit_frame.png
-assets/cards/frames/fabeot_tactic_frame.png
-assets/cards/frames/fabeot_back.png
+assets/cards/frames/<faction>_unit_frame.png
+assets/cards/frames/<faction>_tactic_frame.png
+assets/cards/frames/<faction>_back.png
 ```
 
+Fazioni: `nexus`, `exordium`, `liberti`, `agathoi`, `fabeot`.
+
 ## Illustrazioni
-Le illustrazioni pesanti non devono essere incluse nelle patch ordinarie. Il manifest generato da `copyCardAssetManifestJson()` indica il path atteso per ogni carta.
+
+Naming basato su ID puro, non sul nome della carta:
+
+```text
+assets/cards/art/<faction>/units/<blueprintId>.<webp|jpg|png>
+assets/cards/art/<faction>/tactics/<tacticId>.<webp|jpg|png>
+```
 
 Esempi:
 
 ```text
-assets/cards/art/nexus/units/nx_drone_geniere.png
-assets/cards/art/nexus/tactics/nxtac_protocollo_di_blocco.png
-assets/cards/art/exordium/units/ex_carro_leggero.png
+assets/cards/art/nexus/units/nx2b04.webp
+assets/cards/art/nexus/units/nx2b04.jpg
+assets/cards/art/nexus/units/nx2b04.png
+assets/cards/art/nexus/tactics/nxtac05.webp
 ```
 
-Regole nome file:
+Il renderer prova in ordine: `.webp`, `.jpg`, `.png`. Se non trova nulla, usa il placeholder.
 
-- minuscolo;
-- niente spazi;
-- niente accenti;
-- solo lettere, numeri e underscore;
-- estensione `.png`.
+## Dimensioni consigliate
 
-## Dimensioni consigliate dal Card Composer
+Target leggero nativo:
 
-- Unità / comandanti / strutture: `1664x1700 px`.
-- Tattiche: `1664x1400 px`.
+- Unità / comandanti / strutture: `800x780 px`
+- Tattiche: `800x670 px`
+
+Target opzionale @2x:
+
+- Unità / comandanti / strutture: `1600x1560 px`
+- Tattiche: `1600x1340 px`
+
+Formato consigliato: `WEBP` o `JPG` compresso. Usa `PNG` solo se serve qualità lossless o alpha.
 
 ## Placeholder
-Il futuro renderer dovrà usare placeholder se l'art non è presente:
 
 ```text
 assets/cards/placeholders/missing_art_unit.png

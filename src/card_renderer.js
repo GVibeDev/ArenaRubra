@@ -1,14 +1,21 @@
 
 "use strict";
 
-// Arena Rubra – F9I1 Card Renderer Preview Foundation.
+// Arena Rubra – F9I1e Stat Value Clearance Microfix.
 // Preview canvas non distruttiva: usa i dati del catalogo, il manifest asset carte e le coordinate del Card Composer.
-// Scopo: anteprima leggibile nel Deck Builder senza toccare il gameplay o richiedere ancora tutte le illustrazioni finali.
+// In F9I1c verifica/hydrata i dati carta dal catalogo, così HP/DEF/ATT e descrizione restano coerenti tra pool e draft.
 
 const CARD_RENDERER_STATE = {
   selectedCardId: "",
   selectedSource: "",
   lastContext: "deckBuilder"
+};
+
+const GAME_CARD_PREVIEW_STATE = {
+  handCardUid: "",
+  handSide: 0,
+  handSource: "",
+  selectedUnitUid: ""
 };
 
 const CARD_RENDERER_FACTION_STYLE = Object.freeze({
@@ -47,12 +54,50 @@ function cardRendererSourceTactic(card) {
   return (DECK_TACTICS || []).find(t => t && t.id === card.tacticId) || null;
 }
 
+function cardRendererLocalizedUnitType(card) {
+  if (!card) return "—";
+  const cardType = String(card.cardType || "").toLowerCase();
+  const deckRole = String(card.deckRole || "").toLowerCase();
+  const unitTypeRaw = String(card.unitType || "").trim();
+  const weightRaw = String(card.weight || "").trim();
+  const typeMap = {
+    comandante: "COMANDANTE",
+    fanteria: "FANTERIA",
+    veicolo: "VEICOLO",
+    struttura: "STRUTTURA"
+  };
+  const weightMap = {
+    leggera: "LEGGERA", leggero: "LEGGERO",
+    pesante: "PESANTE",
+    elite: "ELITE",
+    pivot: "PIVOT"
+  };
+  if (cardType === "commander" || deckRole === "commander" || unitTypeRaw.toLowerCase() === "comandante") return "COMANDANTE";
+  const typeKey = unitTypeRaw.toLowerCase();
+  const weightKey = weightRaw.toLowerCase();
+  const localizedType = typeMap[typeKey] || unitTypeRaw.toUpperCase() || "UNITA";
+  const localizedWeight = weightMap[weightKey] || weightRaw.toUpperCase();
+  return [localizedType, localizedWeight].filter(Boolean).join(" ").trim();
+}
+
+function cardRendererLocalizedTacticType(card) {
+  if (!card) return "TATTICA";
+  const category = String(card.category || "").trim();
+  return category ? `TATTICA · ${category.toUpperCase()}` : "TATTICA";
+}
+
+function cardRendererStatPalette() {
+  return {
+    ene: "#f2cf57",
+    hp: "#3ecb63",
+    def: "#f4f4f4",
+    att: "#d4483c"
+  };
+}
 function cardRendererTypeText(card) {
   if (!card) return "—";
-  if (card.sourceType === "tactic") {
-    return ["TATTICA", card.category].filter(Boolean).join(" · ").toUpperCase();
-  }
-  return [card.unitType, card.weight].filter(Boolean).join(" · ").toUpperCase() || String(card.cardType || "CARTA").toUpperCase();
+  if (card.sourceType === "tactic") return cardRendererLocalizedTacticType(card);
+  return cardRendererLocalizedUnitType(card) || String(card.cardType || "CARTA").toUpperCase();
 }
 
 function cardRendererDescriptionText(card) {
@@ -111,6 +156,30 @@ function cardRendererLoadImage(src, onDone) {
   };
   img.src = src;
   return null;
+}
+
+function cardRendererLoadFirstAvailableImage(paths, onDone) {
+  const list = Array.isArray(paths) ? paths.filter(Boolean) : [paths].filter(Boolean);
+  if (!list.length) return null;
+  for (const src of list) {
+    const cached = cardRendererImageCache[src];
+    if (cached && cached.status === "loaded") return cached.img;
+  }
+  for (const src of list) {
+    const cached = cardRendererImageCache[src];
+    if (cached && cached.status === "loading") {
+      if (typeof onDone === "function") cached.listeners.push(onDone);
+      return null;
+    }
+  }
+  const next = list.find(src => !cardRendererImageCache[src] || cardRendererImageCache[src].status !== "error");
+  if (!next) return null;
+  return cardRendererLoadImage(next, onDone);
+}
+
+function cardRendererSetStatFont(ctx, size) {
+  const px = Math.max(10, Math.round(size));
+  ctx.font = `900 ${px}px Consolas, "Liberation Mono", "Courier New", monospace`;
 }
 
 function cardRendererSetFont(ctx, size, weight = "700", family = "Georgia, 'Times New Roman', serif") {
@@ -185,12 +254,12 @@ function cardRendererDrawCardBase(ctx, canvas, card) {
 }
 
 function cardRendererDrawArtArea(ctx, card, layout, redraw) {
-  const artPath = typeof cardAssetArtPathFor === "function" ? cardAssetArtPathFor(card) : "";
+  const artPaths = typeof cardAssetArtCandidatePathsFor === "function" ? cardAssetArtCandidatePathsFor(card) : (typeof cardAssetArtPathFor === "function" ? [cardAssetArtPathFor(card)] : []);
   const placeholderPath = typeof cardAssetEntryFor === "function" ? (cardAssetEntryFor(card).placeholderPath || "") : "";
   const artArea = layout.image;
   const transform = layout.imageTransform || { zoom: 1, offsetX: 0, offsetY: 0 };
-  const artImg = cardRendererLoadImage(artPath, redraw);
-  const placeholderImg = cardRendererLoadImage(placeholderPath, redraw);
+  const artImg = cardRendererLoadFirstAvailableImage(artPaths, redraw);
+  const placeholderImg = cardRendererLoadFirstAvailableImage([placeholderPath], redraw);
   const img = artImg || placeholderImg;
   if (img && img.width && img.height) {
     const zoom = Number.isFinite(transform.zoom) ? transform.zoom : 1;
@@ -224,29 +293,47 @@ function cardRendererDrawFrame(ctx, card, redraw) {
   }
 }
 
+
+function cardRendererDrawStatLabel(ctx, label, statBox, color, style) {
+  if (!statBox) return;
+  const size = statBox.labelSize || 22;
+  cardRendererSetStatFont(ctx, size);
+  cardRendererDrawOutlinedText(ctx, label, statBox.cx, statBox.labelY, {
+    fill: color,
+    stroke: style.stroke,
+    fontSize: size,
+    lineWidth: Math.max(2, Math.round(size * 0.16))
+  });
+}
+
 function cardRendererDrawStats(ctx, card, layout, style) {
   const stat = layout.statText || {};
   const cost = cardRendererStat(card, "cost");
   const hp = cardRendererStat(card, "hp");
   const def = cardRendererStat(card, "def");
   const att = cardRendererStat(card, "att");
+  const palette = cardRendererStatPalette();
   ctx.textAlign = "center";
   if (stat.ene) {
-    cardRendererSetFont(ctx, stat.ene.valueSize || 100, "700");
-    cardRendererDrawOutlinedText(ctx, Number.isFinite(cost) ? cost : "—", stat.ene.cx, stat.ene.valueY, { fill: style.text, stroke: style.stroke, fontSize: stat.ene.valueSize || 100, lineWidth: 7 });
+    cardRendererDrawStatLabel(ctx, "ENE", stat.ene, palette.ene, style);
+    cardRendererSetStatFont(ctx, stat.ene.valueSize || 104);
+    cardRendererDrawOutlinedText(ctx, Number.isFinite(cost) ? cost : "—", stat.ene.cx, stat.ene.valueY, { fill: palette.ene, stroke: style.stroke, fontSize: stat.ene.valueSize || 104, lineWidth: 7 });
   }
   if (card.sourceType !== "tactic") {
     if (stat.hp) {
-      cardRendererSetFont(ctx, stat.hp.valueSize || 100, "700");
-      cardRendererDrawOutlinedText(ctx, Number.isFinite(hp) ? hp : "—", stat.hp.cx, stat.hp.valueY, { fill: style.text, stroke: style.stroke, fontSize: stat.hp.valueSize || 100, lineWidth: 7 });
+      cardRendererDrawStatLabel(ctx, "HP", stat.hp, palette.hp, style);
+      cardRendererSetStatFont(ctx, stat.hp.valueSize || 104);
+      cardRendererDrawOutlinedText(ctx, Number.isFinite(hp) ? hp : "—", stat.hp.cx, stat.hp.valueY, { fill: palette.hp, stroke: style.stroke, fontSize: stat.hp.valueSize || 104, lineWidth: 7 });
     }
     if (stat.def) {
-      cardRendererSetFont(ctx, stat.def.valueSize || 70, "700");
-      cardRendererDrawOutlinedText(ctx, Number.isFinite(def) ? def : "—", stat.def.cx, stat.def.valueY, { fill: style.text, stroke: style.stroke, fontSize: stat.def.valueSize || 70, lineWidth: 5 });
+      cardRendererDrawStatLabel(ctx, "DEF", stat.def, palette.def, style);
+      cardRendererSetStatFont(ctx, stat.def.valueSize || 70);
+      cardRendererDrawOutlinedText(ctx, Number.isFinite(def) ? def : "—", stat.def.cx, stat.def.valueY, { fill: palette.def, stroke: style.stroke, fontSize: stat.def.valueSize || 70, lineWidth: 5 });
     }
     if (stat.att) {
-      cardRendererSetFont(ctx, stat.att.valueSize || 100, "700");
-      cardRendererDrawOutlinedText(ctx, Number.isFinite(att) ? att : "—", stat.att.cx, stat.att.valueY, { fill: style.text, stroke: style.stroke, fontSize: stat.att.valueSize || 100, lineWidth: 7 });
+      cardRendererDrawStatLabel(ctx, "ATT", stat.att, palette.att, style);
+      cardRendererSetStatFont(ctx, stat.att.valueSize || 104);
+      cardRendererDrawOutlinedText(ctx, Number.isFinite(att) ? att : "—", stat.att.cx, stat.att.valueY, { fill: palette.att, stroke: style.stroke, fontSize: stat.att.valueSize || 104, lineWidth: 7 });
     }
   }
   ctx.textAlign = "left";
@@ -287,14 +374,18 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
   const nameArea = layout.textAreas.name;
   const typeArea = layout.textAreas.type;
   const descArea = layout.textAreas.description;
-  const nameFont = cardRendererFitFont(ctx, card.name || "Carta", nameArea.w, nameArea.maxFontSize || 48, nameArea.minFontSize || 28, nameArea.weight || "700");
+  const centeredNameMax = (nameArea.maxFontSize || 48) + 3;
+  const centeredNameMin = (nameArea.minFontSize || 28) + 2;
+  const nameFont = cardRendererFitFont(ctx, card.name || "Carta", nameArea.w, centeredNameMax, centeredNameMin, nameArea.weight || "700");
   cardRendererSetFont(ctx, nameFont, nameArea.weight || "700");
-  ctx.fillText(String(card.name || "Carta"), nameArea.x, nameArea.y + nameFont);
+  ctx.textAlign = "center";
+  ctx.fillText(String(card.name || "Carta"), nameArea.x + (nameArea.w / 2), nameArea.y + nameFont);
 
   const typeText = cardRendererTypeText(card);
   const typeFont = cardRendererFitFont(ctx, typeText, typeArea.w, typeArea.maxFontSize || 28, typeArea.minFontSize || 16, typeArea.weight || "700");
   cardRendererSetFont(ctx, typeFont, typeArea.weight || "700");
-  ctx.fillText(typeText, typeArea.x, typeArea.y + typeFont);
+  ctx.fillText(typeText, typeArea.x + (typeArea.w / 2), typeArea.y + typeFont);
+  ctx.textAlign = "left";
 
   const description = cardRendererDescriptionText(card);
   cardRendererSetFont(ctx, descArea.maxFontSize || 34, descArea.weight || "500");
@@ -304,14 +395,157 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
   return true;
 }
 
+function cardRendererCatalogCardById(cardId) {
+  if (!cardId || typeof buildCardCatalog !== "function") return null;
+  try {
+    return buildCardCatalog().find(card => card && card.id === cardId) || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function cardRendererHydrateCard(card) {
+  if (!card) return null;
+  const full = cardRendererCatalogCardById(card.id);
+  return full ? { ...full, deckCopyNo: card.deckCopyNo || card.copyNo || full.deckCopyNo || null } : card;
+}
+
 function deckBuilderPreviewCardFromReport(report) {
   const sourceCards = [];
-  if (report && Array.isArray(report.deck)) sourceCards.push(...report.deck);
   const pool = report && report.faction ? (typeof deckBuilderPoolFor === "function" ? deckBuilderPoolFor(report.faction, report.commanderId, deckBuilderCatalog()) : []) : [];
   sourceCards.push(...pool);
+  if (report && Array.isArray(report.deck)) sourceCards.push(...report.deck);
   const targetId = cardRendererCurrentCardId();
-  const match = targetId ? sourceCards.find(card => card && card.id === targetId) : null;
-  return match || sourceCards[0] || null;
+  const catalogMatch = targetId ? cardRendererCatalogCardById(targetId) : null;
+  const rowMatch = targetId ? sourceCards.find(card => card && card.id === targetId) : null;
+  const fallback = sourceCards[0] || null;
+  return cardRendererHydrateCard(catalogMatch || rowMatch || fallback);
+}
+
+function gameCardPreviewCardByUid(side, cardUid) {
+  if (!state || !cardUid || !side) return null;
+  const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+  const inHand = hand.find(card => card && card.cardUid === cardUid);
+  if (inHand) return inHand;
+  const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]) : [];
+  return starters.find(card => card && card.cardUid === cardUid) || null;
+}
+
+function gameCardPreviewCardFromUnit(unit) {
+  if (!unit) return null;
+  if (typeof buildUnitCardFromBlueprint === "function") return buildUnitCardFromBlueprint(unit);
+  return {
+    id: `UNIT:${unit.id || unit.name || "preview"}`,
+    sourceId: unit.id || unit.name || "preview",
+    sourceType: "unit",
+    cardType: unit.type === "Comandante" ? "commander" : "unit",
+    deckRole: unit.weight === "Pivot" ? "pivot" : (unit.weight === "Elite" ? "elite" : "base"),
+    starterRole: null,
+    faction: unit.faction,
+    name: unit.name,
+    cost: unit.cost,
+    unitType: unit.type,
+    weight: unit.weight,
+    blueprintId: unit.id || null,
+    tacticId: null
+  };
+}
+
+function syncGameHandPreviewSelectionUi() {
+  if (typeof document === "undefined") return;
+  const uid = String(GAME_CARD_PREVIEW_STATE.handCardUid || "");
+  document.querySelectorAll("[data-preview-card-uid]").forEach(el => {
+    if (!el || !el.classList) return;
+    el.classList.toggle("previewSelected", uid && el.getAttribute("data-preview-card-uid") === uid);
+  });
+}
+
+function gameCardPreviewSelectHandCard(side, cardUid, source = "hand") {
+  GAME_CARD_PREVIEW_STATE.handSide = Number(side || 0) || 0;
+  GAME_CARD_PREVIEW_STATE.handCardUid = String(cardUid || "");
+  GAME_CARD_PREVIEW_STATE.handSource = String(source || "hand");
+  syncGameHandPreviewSelectionUi();
+  renderInGameHandCardPreview();
+  return GAME_CARD_PREVIEW_STATE.handCardUid;
+}
+
+function gameCardPreviewSelectedHandUid() {
+  return String(GAME_CARD_PREVIEW_STATE.handCardUid || "");
+}
+
+function gameCardPreviewEnsureDefaultHandCard(side) {
+  if (!state || !side) return null;
+  const current = gameCardPreviewCardByUid(side, GAME_CARD_PREVIEW_STATE.handCardUid);
+  if (current) return current;
+  const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+  if (hand.length) {
+    GAME_CARD_PREVIEW_STATE.handSide = side;
+    GAME_CARD_PREVIEW_STATE.handCardUid = hand[0].cardUid || "";
+    GAME_CARD_PREVIEW_STATE.handSource = "hand";
+    return hand[0];
+  }
+  const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+  if (starters.length) {
+    GAME_CARD_PREVIEW_STATE.handSide = side;
+    GAME_CARD_PREVIEW_STATE.handCardUid = starters[0].cardUid || "";
+    GAME_CARD_PREVIEW_STATE.handSource = "starter";
+    return starters[0];
+  }
+  GAME_CARD_PREVIEW_STATE.handSide = side;
+  GAME_CARD_PREVIEW_STATE.handCardUid = "";
+  GAME_CARD_PREVIEW_STATE.handSource = "";
+  return null;
+}
+
+function gameCardPreviewBodyHtml(card, context = "hand") {
+  if (!card) return `<div class="deckBuilderPreviewHelp">Nessuna carta selezionata.</div>`;
+  const desc = cardRendererNormalizeDescription(cardRendererDescriptionText(card));
+  const role = typeof deckBuilderRoleLabel === "function" ? deckBuilderRoleLabel(card) : (card.deckRole || "—");
+  const prefix = context === "unit" ? "Unità in campo" : "Carta selezionata";
+  return `
+    <div class="deckBuilderPreviewStats">
+      <span><strong>${prefix}</strong> ${dbEscapeHtml(card.name || "—")}</span>
+      <span><strong>Ruolo</strong> ${dbEscapeHtml(role)}</span>
+      <span><strong>Tipo</strong> ${dbEscapeHtml(cardRendererTypeText(card))}</span>
+      <span><strong>ENE</strong> ${Number.isFinite(cardRendererStat(card, "cost")) ? cardRendererStat(card, "cost") : "—"}</span>
+      ${card.sourceType !== "tactic" ? `<span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
+      <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
+      <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
+    </div>
+    <div class="deckBuilderPreviewDesc">${dbEscapeHtml(desc || "Nessun testo carta disponibile nel catalogo.")}</div>`;
+}
+
+function renderInGameHandCardPreview() {
+  if (typeof document === "undefined" || !state) return null;
+  const canvas = document.getElementById("gameHandCardPreviewCanvas");
+  const meta = document.getElementById("gameHandCardPreviewMeta");
+  const body = document.getElementById("gameHandCardPreviewBody");
+  if (!canvas || !meta || !body) return null;
+  const side = GAME_CARD_PREVIEW_STATE.handSide || state.currentPlayer || 1;
+  const card = gameCardPreviewCardByUid(side, GAME_CARD_PREVIEW_STATE.handCardUid) || gameCardPreviewEnsureDefaultHandCard(side);
+  renderArenaCardPreviewCanvas(canvas, card || null);
+  meta.textContent = card
+    ? `${card.faction || "—"} · ${card.sourceType === "tactic" ? "Tattica" : "Unità"} · ${card.id || ""}`
+    : "Seleziona una carta dalla mano o una starter card per vedere l'anteprima.";
+  body.innerHTML = gameCardPreviewBodyHtml(card, "hand");
+  syncGameHandPreviewSelectionUi();
+  return card;
+}
+
+function renderSelectedUnitCardPreview(unit) {
+  if (typeof document === "undefined") return null;
+  const canvas = document.getElementById("selectedUnitCardPreviewCanvas");
+  const meta = document.getElementById("selectedUnitCardPreviewMeta");
+  const body = document.getElementById("selectedUnitCardPreviewBody");
+  if (!canvas || !meta || !body) return null;
+  const card = unit ? cardRendererHydrateCard(gameCardPreviewCardFromUnit(unit)) : null;
+  GAME_CARD_PREVIEW_STATE.selectedUnitUid = unit && unit.uid ? unit.uid : "";
+  renderArenaCardPreviewCanvas(canvas, card || null);
+  meta.textContent = card
+    ? `${card.faction || "—"} · carta base di ${card.name || "Unità"}`
+    : "Seleziona una unità sulla mappa per vedere la miniatura renderizzata.";
+  body.innerHTML = gameCardPreviewBodyHtml(card, "unit");
+  return card;
 }
 
 function renderDeckBuilderCardPreview(report) {
@@ -319,7 +553,7 @@ function renderDeckBuilderCardPreview(report) {
   const canvas = document.getElementById("deckBuilderCardPreviewCanvas");
   const meta = document.getElementById("deckBuilderCardPreviewMeta");
   const body = document.getElementById("deckBuilderCardPreviewBody");
-  const card = deckBuilderPreviewCardFromReport(report);
+  const card = cardRendererHydrateCard(deckBuilderPreviewCardFromReport(report));
   if (card) cardRendererSelectCard(card.id, "deckBuilder");
   renderArenaCardPreviewCanvas(canvas, card);
   if (meta) {
@@ -336,7 +570,7 @@ function renderDeckBuilderCardPreview(report) {
       body.innerHTML = `
         <div class="deckBuilderPreviewStats">
           <span><strong>Ruolo</strong> ${dbEscapeHtml(typeof deckBuilderRoleLabel === "function" ? deckBuilderRoleLabel(card) : (card.deckRole || "—"))}</span>
-          <span><strong>Tipo</strong> ${dbEscapeHtml(typeof deckBuilderTypeLabel === "function" ? deckBuilderTypeLabel(card) : cardRendererTypeText(card))}</span>
+          <span><strong>Tipo</strong> ${dbEscapeHtml(cardRendererTypeText(card))}</span>
           <span><strong>ENE</strong> ${Number.isFinite(cardRendererStat(card, "cost")) ? cardRendererStat(card, "cost") : "—"}</span>
           ${card.sourceType !== "tactic" ? `<span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
           <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
@@ -345,7 +579,10 @@ function renderDeckBuilderCardPreview(report) {
         <div class="deckBuilderPreviewDesc">${dbEscapeHtml(desc || "Nessun testo carta disponibile nel catalogo.")}</div>
         <div class="deckBuilderPreviewPaths">
           <div><strong>Frame:</strong> <code>${dbEscapeHtml(entry && entry.framePath || "")}</code></div>
-          <div><strong>Art:</strong> <code>${dbEscapeHtml(entry && entry.artPath || "")}</code></div>
+          <div><strong>Art preferita:</strong> <code>${dbEscapeHtml(entry && entry.artPath || "")}</code></div>
+          <div><strong>Fallback art:</strong> <code>${dbEscapeHtml(entry && entry.artCandidatePaths ? entry.artCandidatePaths.join(" | ") : "")}</code></div>
+          <div><strong>File ID:</strong> <code>${dbEscapeHtml(entry && entry.fileId || "")}</code>${entry && entry.rawFileId && entry.rawFileId !== entry.fileId ? ` · raw <code>${dbEscapeHtml(entry.rawFileId)}</code>` : ""}</div>
+          <div><strong>Formato art:</strong> <code>${dbEscapeHtml(entry && entry.recommendedArtSize || "")}</code> · <code>${dbEscapeHtml(entry && entry.recommendedHighResArtSize || "")}</code> · <code>${dbEscapeHtml(entry && entry.recommendedColorDepth || "")}</code></div>
           <div><strong>Placeholder:</strong> <code>${dbEscapeHtml(entry && entry.placeholderPath || "")}</code></div>
         </div>`;
     }

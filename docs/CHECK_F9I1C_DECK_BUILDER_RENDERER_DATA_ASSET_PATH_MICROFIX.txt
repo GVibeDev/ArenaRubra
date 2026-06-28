@@ -1,0 +1,14 @@
+F9I1c check
+
+- node --check src/*.js data/*.js: OK
+- duplicate function scan: OK
+- duplicate HTML id scan: OK
+- VM renderer/catalog hydration: OK
+- manifest generation: OK
+- zip integrity: OK
+
+Manual smoke focus:
+1. Deck Builder > click unit in Pool: HP/DEF/ATT and description must show values.
+2. Click same card in Draft: same values must remain coherent.
+3. Click tactic NXTAC02: preview should look for nxtac02.webp/jpg/png and NXTAC02.webp/jpg/png.
+4. Preview appears below Pool and above Deck draft locale.
