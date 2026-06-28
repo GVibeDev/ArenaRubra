@@ -1,0 +1,17 @@
+Arena Rubra – CHECK F9D1 Panel Separation Microfix
+
+Output atteso: C2-STABLE-1-F9D1-APK-M4c
+
+Controlli rapidi:
+1. Splash -> Menu principale -> Nuova partita -> SetupScreen -> Avvia partita.
+2. Action bar desktop: Fit / Mano / Unità / Azioni / Log / Setup / Stats.
+3. Fit riadatta la mappa; non esiste più pulsante Mappa ridondante.
+4. Azioni apre solo il pannello tattiche.
+5. Log apre solo il registro eventi con Copia log / Esporta log.
+6. Setup apre opzioni partita e riepilogo, non il registro statistiche matchup.
+7. Stats apre statistiche matchup separate.
+8. Click fuori pannello chiude tramite scrim senza selezionare/muovere unità sulla mappa.
+9. Escape chiude il pannello aperto.
+10. Mobile/APK: Azioni, Log, Opz e mano aprono i rispettivi sheet.
+11. Gameplay base: bot compra/muove/attacca; umano seleziona/muove/attacca; tattiche e abilità funzionano.
+12. Export log funziona.

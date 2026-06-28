@@ -1,0 +1,8 @@
+coordKey: 1
+sameCoord: 1
+hexDistance: 1
+areAdjacent: 1
+neighbors: 1
+minDistance: 1
+uniqueCoords: 1
+nearestCoord: 1

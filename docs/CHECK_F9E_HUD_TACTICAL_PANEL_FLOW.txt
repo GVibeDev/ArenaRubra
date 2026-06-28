@@ -1,0 +1,27 @@
+Arena Rubra – CHECK F9E HUD & Tactical Panel Flow
+
+Output atteso: C2-STABLE-1-F9E-APK-M4c
+
+Verifiche manuali consigliate:
+1. Splash -> Menu -> Nuova partita -> Setup -> Avvia partita.
+2. La HUD mostra round, turno, ENE, PS, pressione, carte e build.
+3. Selezionando una unità, la HUD mostra il nome dell'unità.
+4. Entrando in movimento, la HUD mostra una richiesta di cella movimento.
+5. Aprendo Mano da action bar desktop, il pannello si apre lateralmente.
+6. Cliccando Gioca ora su unità giocabile dalla Mano, la Mano si chiude e la mappa resta pronta per lo sbarco/costruzione.
+7. Se Gioca ora non è valido, la Mano resta aperta e il log spiega il motivo.
+8. Aprendo Azioni da action bar desktop, il pannello si apre lateralmente.
+9. Scegliendo una tattica con bersaglio, Azioni si chiude e la mappa resta pronta per il targeting.
+10. Log, Setup e Stats si aprono in basso.
+11. Click sullo scrim chiude il pannello senza attivare input mappa.
+12. APK/mobile conserva bottom sheet per Mano/Azioni/Log/Setup/Stats.
+13. Bot compra, muove e attacca.
+14. Umano seleziona, muove, attacca, usa abilità e tattiche.
+15. Export log e stats restano funzionanti.
+
+Verifiche automatiche eseguite in creazione patch:
+- node --check su src/*.js e data/*.js.
+- scan funzioni duplicate.
+- scan ID HTML duplicati.
+- check presenza gameHudMode, helper chiusura Mano/Azioni, placement side/bottom PanelManager.
+- integrità ZIP.

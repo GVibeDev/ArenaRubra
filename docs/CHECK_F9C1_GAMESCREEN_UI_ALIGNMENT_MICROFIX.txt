@@ -1,0 +1,24 @@
+Arena Rubra – CHECK F9C1 GameScreen UI Alignment Microfix
+
+Base:
+- C2-STABLE-1-F9C-APK-M4c GameScreen Map-First Foundation
+
+Output:
+- C2-STABLE-1-F9C1-APK-M4c GameScreen UI Alignment Microfix
+
+Controlli consigliati:
+1. Avvio app: splash -> menu -> setup -> game.
+2. Selezione unità: selectedUnitFloat appare su boardWrap.
+3. Toggle selectedUnitFloat + / - funziona.
+4. Azioni unità: movimento, abilità, costruzione, passa azione.
+5. Tattiche: visibili nel nuovo tacticPanel e funzionanti.
+6. Log: visibile in logDock; toggle + / - funziona.
+7. Export log: Copia log ed Esporta log .txt funzionano.
+8. Desktop action bar: Mappa, Fit, Mano, Unità, Azioni, Log, Setup, Stats.
+9. Mobile/APK-M4 bar: Fit, Focus, Unità, Azioni, Mano, Log, Opz.
+10. Nessun click involontario sulla mappa dovuto ai nuovi pannelli.
+11. Bot purchase/move/attack ancora funzionanti.
+12. Vittoria e fine turno riconosciute.
+
+Freeze:
+- Nessuna modifica ammessa a logica Starter, AI, regole, deck, tattiche, mappa o bilanciamento.
