@@ -1,0 +1,23 @@
+F9K3 check
+
+Output:
+C2-STABLE-1-F9K3-APK-M4c In-game Hand Rendered Thumbnails
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- static check renderInGameHandThumbnails presente
+- static check handCardThumbCanvas presente
+- static check renderedHandList CSS presente
+- build label C2-STABLE-1-F9K3-APK-M4c
+- zip integrity
+
+Manual test:
+1. Avvia nuova partita.
+2. Apri pannello Mano.
+3. Verifica starter card renderizzate.
+4. Verifica carte in mano renderizzate.
+5. Clicca/tocca una miniatura: preview grande deve aggiornarsi.
+6. Premi Gioca/Acquista: il comportamento deve restare identico a F9K2d.
+7. Su mobile, verifica scorrimento orizzontale della mano.

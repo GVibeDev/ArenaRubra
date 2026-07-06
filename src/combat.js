@@ -511,15 +511,29 @@
 
 function adjacentAlliedAuras(unit, kind) {
       if (!unit || !unit.pos) return [];
-      return combatUnits(unit.side).filter(a => a.uid !== unit.uid && a.ability && a.ability.kind === kind && a.ability.passive && areAdjacent(a.pos, unit.pos));
+      return combatUnits(unit.side).filter(a => {
+        if (!a || a.uid === unit.uid || !areAdjacent(a.pos, unit.pos)) return false;
+        if (a.ability && a.ability.kind === kind && a.ability.passive) return true;
+        if (kind === "auraAtt" && a.attackAura) return true;
+        if (kind === "auraDef" && a.defenseAura) return true;
+        return false;
+      });
+    }
+
+function alliedAuraValue(auraUnit, kind) {
+      if (!auraUnit) return 0;
+      if (auraUnit.ability && auraUnit.ability.kind === kind && auraUnit.ability.passive) return auraUnit.ability.value || 0;
+      if (kind === "auraAtt" && auraUnit.attackAura) return auraUnit.attackAura.value || 0;
+      if (kind === "auraDef" && auraUnit.defenseAura) return auraUnit.defenseAura.value || 0;
+      return 0;
     }
 
 function attackAuraBonus(unit) {
-      return adjacentAlliedAuras(unit, "auraAtt").reduce((sum, a) => sum + (a.ability.value || 0), 0);
+      return adjacentAlliedAuras(unit, "auraAtt").reduce((sum, a) => sum + alliedAuraValue(a, "auraAtt"), 0);
     }
 
 function defenseAuraBonus(unit) {
-      return adjacentAlliedAuras(unit, "auraDef").reduce((sum, a) => sum + (a.ability.value || 0), 0);
+      return adjacentAlliedAuras(unit, "auraDef").reduce((sum, a) => sum + alliedAuraValue(a, "auraDef"), 0);
     }
 
 

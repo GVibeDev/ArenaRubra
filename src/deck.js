@@ -377,16 +377,23 @@ function selectedDeckModeForSide(side) {
 
 function buildRawRuntimeDeckForSide(side, faction, sourceCatalog, selectedCommanderId) {
   const mode = selectedDeckModeForSide(side);
+  const selectedDeck = state && state.selectedDecks ? state.selectedDecks[side] || {} : {};
   if (mode === "custom") {
     if (typeof deckBuilderValidatedSavedDeckForRuntime !== "function") {
       throw new Error(`Deck personalizzato G${side} richiesto ma Deck Builder runtime non disponibile.`);
     }
-    const check = deckBuilderValidatedSavedDeckForRuntime(faction, selectedCommanderId, sourceCatalog);
+    const check = deckBuilderValidatedSavedDeckForRuntime(faction, selectedCommanderId, sourceCatalog, { allowCustom: true, side, savedKey: selectedDeck.savedKey || "" });
     if (!check || !check.ok) {
       const issues = check && Array.isArray(check.issues) ? check.issues.join("; ") : "deck personalizzato assente/non valido";
       throw new Error(`Deck personalizzato G${side} non valido: ${issues}`);
     }
-    return check.cards.map((card, i) => createCardInstance(card, null, "deck", i));
+    return check.cards.map((card, i) => createCardInstance({
+      ...card,
+      customMatchLabRuntime: Boolean(check.containsCustomCards || check.runtimeMode === "custom_lab"),
+      customMatchLabRuntimeMode: check.runtimeMode || "official",
+      customMatchLabSavedKey: check.savedKey || check.key || "",
+      customMatchLabDeckName: check.deckName || (check.payload && (check.payload.deckName || check.payload.name)) || ""
+    }, null, "deck", i));
   }
   return buildDebugDeckForFaction(faction, sourceCatalog, null, { selectedCommanderId });
 }
@@ -442,6 +449,11 @@ function initializeCardZonesForGame() {
     handSize: { 1: state.hand[1].length, 2: state.hand[2].length },
     selectedCommanders: state.selectedCommanders ? { ...state.selectedCommanders } : {},
     selectedDecks: state.selectedDecks ? { 1: { ...(state.selectedDecks[1] || {}) }, 2: { ...(state.selectedDecks[2] || {}) } } : {},
+    customMatchLab: Boolean([1, 2].some(side => [...(state.deck[side] || []), ...(state.hand[side] || [])].some(card => card && card.customMatchLabRuntime))),
+    customRuntimeCards: {
+      1: [...(state.deck[1] || []), ...(state.hand[1] || [])].filter(card => card && card.custom === true).length,
+      2: [...(state.deck[2] || []), ...(state.hand[2] || [])].filter(card => card && card.custom === true).length
+    },
     runtimeDeckShuffled: shouldShuffleRuntimeDeckAfterInitialHand(),
     runtimeDeckShuffleMode: shouldShuffleRuntimeDeckAfterInitialHand() ? "after_initial_hand" : "off",
     starterSlots: {

@@ -107,8 +107,161 @@
     // C1e – Hand unit cards playable foundation
     // =====================================================
 
+    // =====================================================
+    // F9K5 – Custom Match Test Lab unit runtime bridge
+    // =====================================================
+
+    function isCustomRuntimeUnitCard(card) {
+      return Boolean(card && card.custom === true && card.sourceType === "unit");
+    }
+
+    const CUSTOM_RUNTIME_STATUS_OPTIONS = Object.freeze({
+      inhibit_action: { statusKind:"inhibit_action", target:"enemy", valueDefault:0, valueMin:0, valueMax:0, turnsDefault:1, turnsMin:1, turnsMax:1 },
+      inhibit_attack: { statusKind:"inhibit_attack", target:"enemy", valueDefault:0, valueMin:0, valueMax:0, turnsDefault:1, turnsMin:1, turnsMax:2 },
+      inhibit_move: { statusKind:"inhibit_move", target:"enemy", valueDefault:0, valueMin:0, valueMax:0, turnsDefault:1, turnsMin:1, turnsMax:2 },
+      bleed: { statusKind:"bleed", target:"enemy", valueDefault:1, valueMin:1, valueMax:3, turnsDefault:2, turnsMin:1, turnsMax:3 },
+      thorns: { statusKind:"thorns", target:"ally", valueDefault:1, valueMin:1, valueMax:3, turnsDefault:1, turnsMin:1, turnsMax:2 }
+    });
+
+    function customRuntimeStatusOption(active) {
+      const key = String(active && (active.statusKey || active.statusKind) || "inhibit_attack");
+      const byKey = CUSTOM_RUNTIME_STATUS_OPTIONS[key];
+      if (byKey) return byKey;
+      return Object.values(CUSTOM_RUNTIME_STATUS_OPTIONS).find(opt => opt.statusKind === key) || null;
+    }
+
+    function customRuntimeClampInt(value, fallback, min, max) {
+      const n = Number(value);
+      const raw = Number.isFinite(n) ? Math.round(n) : fallback;
+      return Math.max(min, Math.min(max, raw));
+    }
+
+    function customRuntimeStatusEnabled(active) {
+      if (!active || active.kind !== "apply_status") return false;
+      const opt = customRuntimeStatusOption(active);
+      return Boolean(opt && opt.statusKind && (typeof STATUS_DEFINITIONS === "undefined" || STATUS_DEFINITIONS[opt.statusKind]));
+    }
+
+    function customRuntimeAbilityKind(active) {
+      const kind = active && active.kind ? String(active.kind) : "";
+      const map = {
+        damage: "damage",
+        heal: "heal",
+        restore_def: "armor",
+        shred_def: "shred",
+        buff_att: "buffAtt",
+        buff_def: "buffDef",
+        draw_card: "customDrawCard",
+        gain_energy: "customGainEnergy",
+        apply_status: customRuntimeStatusEnabled(active) ? "status" : null
+      };
+      return map[kind] || null;
+    }
+
+    function customRuntimeAbilityTarget(active, runtimeKind) {
+      if (runtimeKind === "customDrawCard" || runtimeKind === "customGainEnergy") return "self";
+      if (runtimeKind === "status" && active && active.kind === "apply_status") {
+        const opt = customRuntimeStatusOption(active);
+        return opt && opt.target ? opt.target : "enemy";
+      }
+      const target = String(active && active.target || "enemy").toLowerCase();
+      if (["ally", "enemy", "self", "any"].includes(target)) return target;
+      return "enemy";
+    }
+
+    function customRuntimeAbilityFilter(active) {
+      const filter = String(active && active.filter || "any").toLowerCase();
+      if (!filter || filter === "any") return "Any";
+      if (filter === "infantry") return "infantry";
+      if (filter === "vehicle") return "vehicle";
+      if (filter === "structure") return "structure";
+      if (filter === "commander_or_pivot") return "commander_or_pivot";
+      return "Any";
+    }
+
+    function customRuntimeAbilityFromCard(card) {
+      if (!card) return null;
+      const schema = card.customAbilitySchema || {};
+      const active = schema.active || null;
+      const passive = schema.passive || null;
+
+      if (active && active.kind && active.kind !== "none") {
+        const runtimeKind = customRuntimeAbilityKind(active);
+        const enabled = Boolean(runtimeKind);
+        const statusOpt = active.kind === "apply_status" ? customRuntimeStatusOption(active) : null;
+        const statusTurns = statusOpt ? customRuntimeClampInt(active.statusTurns || active.turns, statusOpt.turnsDefault || 1, statusOpt.turnsMin || 1, statusOpt.turnsMax || 1) : null;
+        const statusValue = statusOpt ? customRuntimeClampInt(active.value, statusOpt.valueDefault || 0, statusOpt.valueMin || 0, Number.isFinite(statusOpt.valueMax) ? statusOpt.valueMax : 0) : null;
+        return {
+          ...(card.ability || {}),
+          name: (card.ability && card.ability.name) || active.label || "Abilità custom",
+          kind: runtimeKind || active.kind,
+          editorKind: active.kind,
+          value: statusOpt ? statusValue : (active.value || 0),
+          turns: statusOpt ? statusTurns : (active.turns || null),
+          statusKind: statusOpt ? statusOpt.statusKind : (active.statusKind || null),
+          range: active.range || 0,
+          cost: active.cost || 0,
+          cooldown: active.cooldown || 0,
+          target: customRuntimeAbilityTarget(active, runtimeKind),
+          filter: customRuntimeAbilityFilter(active),
+          description: active.description || active.label || (enabled ? "Abilità custom runtime." : "Abilità custom non ancora collegata al runtime."),
+          customDataOnly: !enabled,
+          runtimeEnabled: enabled,
+          customRuntime: true,
+          runtimeNote: enabled
+            ? "F9K6b: abilità custom collegata al motore runtime semplice."
+            : "F9K6b: effetto custom non ancora supportato dal binding runtime."
+        };
+      }
+
+      if (passive && passive.kind === "aura_att") {
+        return { name: passive.label || "Aura ATT custom", kind: "auraAtt", passive: true, value: passive.value || 1, range: passive.range || 1, customRuntime: true, description: passive.description || passive.label || "Aura ATT custom." };
+      }
+      if (passive && passive.kind === "aura_def") {
+        return { name: passive.label || "Aura DEF custom", kind: "auraDef", passive: true, value: passive.value || 1, range: passive.range || 1, customRuntime: true, description: passive.description || passive.label || "Aura DEF custom." };
+      }
+
+      if (card.ability && card.ability.passive) return { ...card.ability, customRuntime: true };
+      return null;
+    }
+
+    function customRuntimeBlueprintFromCard(card, side=null) {
+      if (!isCustomRuntimeUnitCard(card)) return null;
+      const unitType = card.unitType || card.type || "Fanteria";
+      const weight = card.weight || "Leggera";
+      const id = card.blueprintId || card.sourceId || String(card.id || "CUSTOM_UNIT").replace(/^CUSTOM:UNIT:/, "");
+      const factionRules = Array.isArray(card.factionRules) ? [...card.factionRules] : [];
+      if (card.faction === "Liberti") {
+        if (!factionRules.includes("Superiorità Numerica")) factionRules.push("Superiorità Numerica");
+        if (unitType !== "Struttura" && !factionRules.includes("Sanguinamento")) factionRules.push("Sanguinamento");
+      }
+      return {
+        ...card,
+        id,
+        cardId: card.id,
+        sourceId: card.sourceId || id,
+        sourceType: "custom_unit_runtime",
+        blueprintId: id,
+        faction: card.faction || (state && state.factions && side ? state.factions[side] : "Nexus"),
+        name: card.name || "Unità custom",
+        type: unitType,
+        unitType,
+        weight,
+        cost: Number.isFinite(card.cost) ? card.cost : 1,
+        hp: Number.isFinite(card.hp) ? card.hp : 1,
+        att: Number.isFinite(card.att) ? card.att : 0,
+        def: Number.isFinite(card.def) ? card.def : 0,
+        ability: customRuntimeAbilityFromCard(card),
+        factionRules,
+        customRuntime: true,
+        source: card.source || "F9K5 Custom Match Test Lab"
+      };
+    }
+
     function blueprintForHandCard(card, side) {
-      if (!card || !card.blueprintId || !state || !state.factions) return null;
+      if (!card || !state || !state.factions) return null;
+      if (isCustomRuntimeUnitCard(card)) return customRuntimeBlueprintFromCard(card, side);
+      if (!card.blueprintId) return null;
       // C2c-7a: carte copiate/rubate o generate da Taglia/Matrice possono
       // appartenere a una fazione diversa da quella del controllore. Prima
       // tentiamo il roster della fazione del giocatore, poi la fazione originale

@@ -1,0 +1,21 @@
+F9K2b check
+
+Output: C2-STABLE-1-F9K2b-APK-M4c Permanent Card Art Alignment Tool
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- VM smoke test: custom con customArt + customArtTransform inclusa nel Pool, manifest embedded OK, validazione OK
+- zip integrity
+
+Manual test:
+- Menu -> Crea carta custom
+- Importa immagine custom su unità
+- Verifica dimensione consigliata 800x780
+- Modifica zoom / offset X / offset Y
+- Verifica preview live
+- Salva custom
+- Ricarica custom dalla libreria e verifica che immagine/transform restino
+- Copia transform JSON
+- Apri Pool e verifica che la custom usi l'immagine embedded

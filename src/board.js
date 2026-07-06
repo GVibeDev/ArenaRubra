@@ -61,6 +61,10 @@ function psBonusActive(unit, bonus) {
         const cell = getCellAt(unit.pos);
         return Boolean(cell && cell.ps && cell.control === unit.side);
       }
+      if (bonus.condition === "on_ps" || bonus.condition === "on_any_ps") {
+        const cell = getCellAt(unit.pos);
+        return Boolean(cell && cell.ps);
+      }
       if (bonus.condition === "adjacent_controlled_ps") {
         return state.cells.some(c => c.ps && c.control === unit.side && hexDistance(unit.pos, c.coord) <= 1);
       }

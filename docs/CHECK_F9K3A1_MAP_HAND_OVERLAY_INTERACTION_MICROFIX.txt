@@ -1,0 +1,25 @@
+F9K3a1 check
+
+Output:
+C2-STABLE-1-F9K3a1-APK-M4c Map Hand Overlay Interaction Microfix
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- buildInfoLabel() = C2-STABLE-1-F9K3a1-APK-M4c
+- #mapHandSelectionPreview presente
+- mapHandOverlayStarterCardSlot presente
+- mapHandOverlayCancelSelection presente
+- data-hand-thumb-scale="0.21" presente per overlay
+- zip integrity
+
+Manual test:
+1. Avvia nuova partita.
+2. Verifica overlay con carte verticali affiancate orizzontalmente.
+3. Verifica che non compaiano testi extra sotto le miniature, salvo Unità/Tattica/Comandante.
+4. Verifica presenza starter card nell'overlay.
+5. Clicca una starter: overlay nascosto, celle sbarco evidenziate, preview laterale visibile.
+6. Premi Annulla sbarco: overlay visibile di nuovo.
+7. Clicca una carta mano unità/tattica giocabile: overlay nascosto, celle/bersagli evidenziati.
+8. Completa l'azione: overlay visibile di nuovo.

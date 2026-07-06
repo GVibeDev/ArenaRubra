@@ -1,16 +1,21 @@
 "use strict";
 
-// Arena Rubra – F9J1 Card Pool Screen Foundation.
-// Browser carte read-only con preview renderer, filtri e riferimenti asset.
+// Arena Rubra – F9K2 Card Pool / Custom Library integration.
+// Browser carte read-only con filtri, tabella/galleria, navigazione, custom badge e duplicazione sicura in editor.
 // Non modifica gameplay, deck rules, AI o stato partita.
 
 const CARD_POOL_STATE = {
-  faction: "all",
-  kind: "all",
+  faction: "Nexus",
+  kind: "unit",
   role: "all",
+  origin: "all",
   search: "",
-  selectedCardId: ""
+  selectedCardId: "",
+  viewMode: "gallery",
+  focusMode: false
 };
+
+const CARD_POOL_GALLERY_THUMB_SCALE = 0.19;
 
 function cardPoolEscapeHtml(value) {
   return String(value ?? "")
@@ -22,7 +27,8 @@ function cardPoolEscapeHtml(value) {
 }
 
 function cardPoolCatalog() {
-  return typeof buildCardCatalog === "function" ? buildCardCatalog() : [];
+  const official = typeof buildCardCatalog === "function" ? buildCardCatalog() : [];
+  return typeof cardEditorCatalogWithCustom === "function" ? cardEditorCatalogWithCustom(official) : official;
 }
 
 function cardPoolFactionList(catalog = null) {
@@ -82,6 +88,8 @@ function cardPoolFilterCard(card) {
   if (CARD_POOL_STATE.faction !== "all" && card.faction !== CARD_POOL_STATE.faction) return false;
   if (CARD_POOL_STATE.kind !== "all" && cardPoolKind(card) !== CARD_POOL_STATE.kind) return false;
   if (CARD_POOL_STATE.role !== "all" && cardPoolRole(card) !== CARD_POOL_STATE.role) return false;
+  if (CARD_POOL_STATE.origin === "custom" && card.custom !== true) return false;
+  if (CARD_POOL_STATE.origin === "official" && card.custom === true) return false;
   const q = String(CARD_POOL_STATE.search || "").trim().toLowerCase();
   if (!q) return true;
   const haystack = [
@@ -100,6 +108,11 @@ function cardPoolCardById(cardId) {
   const id = String(cardId || "");
   if (!id) return null;
   return cardPoolCatalog().find(card => card && card.id === id) || null;
+}
+
+function cardPoolFilteredIndexByCardId(cardId, cards = null) {
+  const list = Array.isArray(cards) ? cards : cardPoolFilteredCards();
+  return list.findIndex(card => card && card.id === cardId);
 }
 
 function cardPoolSelectCard(cardId, source = "pool") {
@@ -129,6 +142,8 @@ function cardPoolCounts(catalog = null) {
     filtered: filtered.length,
     unit: source.filter(card => cardPoolKind(card) === "unit").length,
     tactic: source.filter(card => cardPoolKind(card) === "tactic").length,
+    custom: source.filter(card => card && card.custom === true).length,
+    official: source.filter(card => card && card.custom !== true).length,
     factions: cardPoolFactionList(source).length
   };
 }
@@ -143,15 +158,43 @@ function cardPoolPopulateFactionSelect() {
   CARD_POOL_STATE.faction = select.value;
 }
 
+function cardPoolSyncControls() {
+  if (typeof document === "undefined") return;
+  const factionSelect = document.getElementById("cardPoolFactionSelect");
+  if (factionSelect) factionSelect.value = CARD_POOL_STATE.faction || "all";
+  const kindSelect = document.getElementById("cardPoolKindSelect");
+  if (kindSelect) kindSelect.value = CARD_POOL_STATE.kind || "all";
+  const roleSelect = document.getElementById("cardPoolRoleSelect");
+  if (roleSelect) roleSelect.value = CARD_POOL_STATE.role || "all";
+  const originSelect = document.getElementById("cardPoolOriginSelect");
+  if (originSelect) originSelect.value = CARD_POOL_STATE.origin || "all";
+  const searchInput = document.getElementById("cardPoolSearchInput");
+  if (searchInput && searchInput.value !== (CARD_POOL_STATE.search || "")) searchInput.value = CARD_POOL_STATE.search || "";
+}
+
+function cardPoolSetViewMode(mode) {
+  CARD_POOL_STATE.viewMode = mode === "table" ? "table" : "gallery";
+  if (typeof document !== "undefined") {
+    const tableWrap = document.getElementById("cardPoolTableWrap");
+    const galleryWrap = document.getElementById("cardPoolGalleryWrap");
+    const tableBtn = document.getElementById("cardPoolViewTableBtn");
+    const galleryBtn = document.getElementById("cardPoolViewGalleryBtn");
+    if (tableWrap) tableWrap.hidden = CARD_POOL_STATE.viewMode !== "table";
+    if (galleryWrap) galleryWrap.hidden = CARD_POOL_STATE.viewMode !== "gallery";
+    if (tableBtn) tableBtn.classList.toggle("active", CARD_POOL_STATE.viewMode === "table");
+    if (galleryBtn) galleryBtn.classList.toggle("active", CARD_POOL_STATE.viewMode === "gallery");
+  }
+}
+
 function cardPoolSummaryHtml(counts) {
   return `
     <div class="deckBuilderStatus good">
-      <strong>Card Pool Foundation</strong>
-      <span>${counts.filtered}/${counts.total} carte visibili · ${counts.unit} unità · ${counts.tactic} tattiche · ${counts.factions} fazioni</span>
+      <strong>Card Pool Gallery</strong>
+      <span>${counts.filtered}/${counts.total} carte visibili · ${counts.unit} unità · ${counts.tactic} tattiche · ${counts.custom} custom · ${counts.factions} fazioni</span>
     </div>
     <div class="deckBuilderRuleBox">
-      <strong>F9J1:</strong> browser read-only del catalogo carte con filtri, ricerca, preview renderer e path asset.
-      Le carte restano dati di catalogo: questa schermata non modifica deck, gameplay, bilanciamento o salvataggi.
+      <strong>F9K2:</strong> browser read-only del catalogo con filtro origine, badge CUSTOM, duplicazione sicura in editor e custom library separata.
+      Apertura ottimizzata su Nexus + Unità per evitare il render iniziale di tutto il catalogo.
     </div>`;
 }
 
@@ -165,13 +208,40 @@ function cardPoolRowsHtml(cards) {
       <td><button class="miniBtn" type="button" data-card-pool-select-btn="${cardPoolEscapeHtml(card.id)}">Vedi</button></td>
       <td>${cardPoolEscapeHtml(card.faction || "—")}</td>
       <td><strong>${cardPoolEscapeHtml(card.name || "Carta")}</strong><span>${cardPoolEscapeHtml(card.id || "")}</span></td>
-      <td>${cardPoolEscapeHtml(cardPoolKind(card) === "tactic" ? "Tattica" : "Unità")}</td>
+      <td>${cardPoolEscapeHtml(cardPoolKind(card) === "tactic" ? "Tattica" : "Unità")}${card.custom ? ` <span class="cardPoolCustomBadge">CUSTOM</span>` : ""}</td>
       <td>${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</td>
       <td>${cardPoolEscapeHtml(cardPoolTypeLabel(card))}</td>
       <td>${Number.isFinite(card.cost) ? card.cost : "—"}</td>
       <td><code>${cardPoolEscapeHtml(artHint)}</code></td>
     </tr>`;
   }).join("");
+}
+
+function cardPoolGalleryHtml(cards) {
+  if (!cards.length) return `<div class="deckBuilderRuleBox">Nessuna carta corrisponde ai filtri impostati.</div>`;
+  return cards.map(card => {
+    const selected = CARD_POOL_STATE.selectedCardId === card.id ? " cardPoolGalleryItemSelected" : "";
+    return `<button class="cardPoolGalleryItem${selected}${card.custom ? " cardPoolGalleryItemCustom" : ""}" type="button" data-card-pool-gallery-select="${cardPoolEscapeHtml(card.id)}" aria-label="Seleziona ${cardPoolEscapeHtml(card.name || card.id || 'carta')}">
+      ${card.custom ? `<span class="cardPoolGalleryCustomCorner">CUSTOM</span>` : ""}
+      <canvas class="cardPoolGalleryCanvas" data-card-pool-gallery-canvas="${cardPoolEscapeHtml(card.id)}"></canvas>
+      <span class="cardPoolGalleryName">${cardPoolEscapeHtml(card.name || "Carta")}</span>
+      <span class="cardPoolGalleryMeta">${cardPoolEscapeHtml(card.id || "")} · ${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</span>
+    </button>`;
+  }).join("");
+}
+
+function cardPoolRenderGalleryCanvases(cards) {
+  if (typeof document === "undefined" || typeof renderArenaCardPreviewCanvas !== "function") return;
+  const list = Array.isArray(cards) ? cards : cardPoolFilteredCards();
+  const canvases = new Map();
+  document.querySelectorAll("[data-card-pool-gallery-canvas]").forEach(canvas => {
+    canvases.set(canvas.getAttribute("data-card-pool-gallery-canvas"), canvas);
+  });
+  list.forEach(card => {
+    const canvas = canvases.get(card.id);
+    if (!canvas) return;
+    renderArenaCardPreviewCanvas(canvas, card, { scale: CARD_POOL_GALLERY_THUMB_SCALE });
+  });
 }
 
 function cardPoolPreviewStatsHtml(card) {
@@ -188,6 +258,50 @@ function cardPoolPreviewStatsHtml(card) {
   </div>`;
 }
 
+function cardPoolUpdateNavButtons(cards = null) {
+  if (typeof document === "undefined") return;
+  const list = Array.isArray(cards) ? cards : cardPoolFilteredCards();
+  const index = cardPoolFilteredIndexByCardId(CARD_POOL_STATE.selectedCardId, list);
+  const prev = document.getElementById("cardPoolPrevBtn");
+  const next = document.getElementById("cardPoolNextBtn");
+  const status = document.getElementById("cardPoolSelectionCounter");
+  if (prev) prev.disabled = !(index > 0);
+  if (next) next.disabled = !(index >= 0 && index < list.length - 1);
+  if (status) status.textContent = list.length ? `${Math.max(0, index) + 1}/${list.length}` : "0/0";
+  const modalStatus = document.getElementById("cardPoolFullscreenCounter");
+  if (modalStatus) modalStatus.textContent = status ? status.textContent : (list.length ? `${Math.max(0, index) + 1}/${list.length}` : "0/0");
+}
+
+function cardPoolSelectRelative(step) {
+  const list = cardPoolFilteredCards();
+  if (!list.length) return false;
+  let index = cardPoolFilteredIndexByCardId(CARD_POOL_STATE.selectedCardId, list);
+  if (index < 0) index = 0;
+  const target = Math.min(list.length - 1, Math.max(0, index + step));
+  return cardPoolSelectCard(list[target].id, "cardPoolNav");
+}
+
+function cardPoolRenderFocusMode(card) {
+  // F9K1b: il focus usa la stessa preview principale. Nessun canvas duplicato.
+  void card;
+}
+
+function cardPoolOpenFullscreen() {
+  if (typeof document === "undefined") return;
+  CARD_POOL_STATE.focusMode = true;
+  document.body.classList.add("cardPoolFocusMode");
+  const selected = cardPoolEnsureSelected();
+  renderCardPoolPreview(selected);
+  cardPoolUpdateNavButtons();
+}
+
+function cardPoolCloseFullscreen() {
+  if (typeof document === "undefined") return;
+  CARD_POOL_STATE.focusMode = false;
+  document.body.classList.remove("cardPoolFocusMode");
+  cardPoolUpdateNavButtons();
+}
+
 function renderCardPoolPreview(card = null) {
   if (typeof document === "undefined") return null;
   const selected = card || cardPoolEnsureSelected();
@@ -200,6 +314,7 @@ function renderCardPoolPreview(card = null) {
   if (!selected) {
     meta.textContent = "Nessuna carta selezionata.";
     body.innerHTML = `<div class="deckBuilderPreviewHelp">Seleziona una carta dal pool.</div>`;
+    cardPoolRenderFocusMode(null);
     return null;
   }
 
@@ -209,6 +324,7 @@ function renderCardPoolPreview(card = null) {
   body.innerHTML = `
     ${cardPoolPreviewStatsHtml(selected)}
     <div class="deckBuilderPreviewDesc">${cardPoolEscapeHtml(desc || "Nessun testo descrittivo disponibile nel catalogo.")}</div>
+    ${typeof cardRendererPassiveBadgesHtml === "function" ? cardRendererPassiveBadgesHtml(selected, cardPoolEscapeHtml) : ""}
     <div class="deckBuilderPreviewPaths">
       <div><strong>Card ID:</strong> <code>${cardPoolEscapeHtml(selected.id || "")}</code></div>
       <div><strong>Source ID:</strong> <code>${cardPoolEscapeHtml(selected.sourceId || selected.blueprintId || selected.tacticId || "")}</code></div>
@@ -217,6 +333,8 @@ function renderCardPoolPreview(card = null) {
       <div><strong>Fallback art:</strong> <code>${cardPoolEscapeHtml(entry && entry.artCandidatePaths ? entry.artCandidatePaths.join(" | ") : "")}</code></div>
       <div><strong>Formato:</strong> <code>${cardPoolEscapeHtml(entry && entry.recommendedArtSize || "")}</code> · <code>${cardPoolEscapeHtml(entry && entry.recommendedColorDepth || "")}</code></div>
     </div>`;
+  cardPoolRenderFocusMode(selected);
+  cardPoolUpdateNavButtons();
   return selected;
 }
 
@@ -226,22 +344,30 @@ function syncCardPoolSelection() {
   document.querySelectorAll("[data-card-pool-select]").forEach(row => {
     row.classList.toggle("cardPoolSelectedRow", row.getAttribute("data-card-pool-select") === selectedId);
   });
+  document.querySelectorAll("[data-card-pool-gallery-select]").forEach(item => {
+    item.classList.toggle("cardPoolGalleryItemSelected", item.getAttribute("data-card-pool-gallery-select") === selectedId);
+  });
 }
 
 function renderCardPoolScreen() {
   if (typeof document === "undefined") return;
   cardPoolPopulateFactionSelect();
+  cardPoolSyncControls();
   const cards = cardPoolFilteredCards();
   const selected = cardPoolEnsureSelected(cards);
   const counts = cardPoolCounts();
   const summary = document.getElementById("cardPoolSummary");
   const body = document.getElementById("cardPoolTableBody");
+  const gallery = document.getElementById("cardPoolGalleryBody");
   const meta = document.getElementById("cardPoolMetaLine");
   if (summary) summary.innerHTML = cardPoolSummaryHtml(counts);
   if (body) body.innerHTML = cardPoolRowsHtml(cards);
+  if (gallery) gallery.innerHTML = cardPoolGalleryHtml(cards);
   if (meta) meta.textContent = `${typeof buildInfoLabel === "function" ? buildInfoLabel() : "build"} · Card Pool · ${counts.filtered}/${counts.total} carte · selezionata: ${selected ? selected.name : "nessuna"}`;
+  cardPoolSetViewMode(CARD_POOL_STATE.viewMode);
   renderCardPoolPreview(selected);
   syncCardPoolSelection();
+  cardPoolRenderGalleryCanvases(cards);
 }
 
 function openCardPoolScreen() {
@@ -253,7 +379,7 @@ function copyCardPoolSelectedJson() {
   const card = cardPoolCardById(CARD_POOL_STATE.selectedCardId);
   const payload = {
     build: typeof buildInfoExportMeta === "function" ? buildInfoExportMeta() : {},
-    mode: "F9J1-card-pool-selected-card",
+    mode: "F9J2-card-pool-selected-card",
     card,
     asset: typeof cardAssetEntryFor === "function" && card ? cardAssetEntryFor(card) : null
   };
@@ -300,6 +426,15 @@ function initializeCardPoolScreen() {
     });
   }
 
+  const originSelect = document.getElementById("cardPoolOriginSelect");
+  if (originSelect && originSelect.dataset.bound !== "1") {
+    originSelect.dataset.bound = "1";
+    originSelect.addEventListener("change", () => {
+      CARD_POOL_STATE.origin = originSelect.value || "all";
+      renderCardPoolScreen();
+    });
+  }
+
   const searchInput = document.getElementById("cardPoolSearchInput");
   if (searchInput && searchInput.dataset.bound !== "1") {
     searchInput.dataset.bound = "1";
@@ -313,9 +448,10 @@ function initializeCardPoolScreen() {
   if (resetBtn && resetBtn.dataset.bound !== "1") {
     resetBtn.dataset.bound = "1";
     resetBtn.addEventListener("click", () => {
-      CARD_POOL_STATE.faction = "all";
-      CARD_POOL_STATE.kind = "all";
+      CARD_POOL_STATE.faction = "Nexus";
+      CARD_POOL_STATE.kind = "unit";
       CARD_POOL_STATE.role = "all";
+      CARD_POOL_STATE.origin = "all";
       CARD_POOL_STATE.search = "";
       const search = document.getElementById("cardPoolSearchInput");
       if (search) search.value = "";
@@ -323,17 +459,21 @@ function initializeCardPoolScreen() {
     });
   }
 
-  const copyBtn = document.getElementById("cardPoolCopySelectedBtn");
-  if (copyBtn && copyBtn.dataset.bound !== "1") {
-    copyBtn.dataset.bound = "1";
-    copyBtn.addEventListener("click", copyCardPoolSelectedJson);
-  }
+  [["cardPoolCopySelectedBtn", copyCardPoolSelectedJson], ["cardPoolDuplicateSelectedBtn", () => { if (typeof cardEditorDuplicateCatalogCard === "function") cardEditorDuplicateCatalogCard(CARD_POOL_STATE.selectedCardId); }], ["cardPoolCopyManifestBtn", copyCardPoolManifestJson], ["cardPoolPrevBtn", () => cardPoolSelectRelative(-1)], ["cardPoolNextBtn", () => cardPoolSelectRelative(1)], ["cardPoolFullscreenOpenBtn", cardPoolOpenFullscreen], ["cardPoolFullscreenCloseBtn", cardPoolCloseFullscreen]].forEach(([id, handler]) => {
+    const el = document.getElementById(id);
+    if (el && el.dataset.bound !== "1") {
+      el.dataset.bound = "1";
+      el.addEventListener("click", handler);
+    }
+  });
 
-  const manifestBtn = document.getElementById("cardPoolCopyManifestBtn");
-  if (manifestBtn && manifestBtn.dataset.bound !== "1") {
-    manifestBtn.dataset.bound = "1";
-    manifestBtn.addEventListener("click", copyCardPoolManifestJson);
-  }
+  [["cardPoolViewTableBtn", "table"], ["cardPoolViewGalleryBtn", "gallery"]].forEach(([id, mode]) => {
+    const el = document.getElementById(id);
+    if (el && el.dataset.bound !== "1") {
+      el.dataset.bound = "1";
+      el.addEventListener("click", () => cardPoolSetViewMode(mode));
+    }
+  });
 
   const screen = document.getElementById("cardPoolScreen");
   if (screen && screen.dataset.delegated !== "1") {
@@ -349,9 +489,24 @@ function initializeCardPoolScreen() {
       if (row) {
         event.preventDefault();
         cardPoolSelectCard(row.getAttribute("data-card-pool-select"), "cardPool");
+        return;
+      }
+      const item = event.target && event.target.closest ? event.target.closest("[data-card-pool-gallery-select]") : null;
+      if (item) {
+        event.preventDefault();
+        cardPoolSelectCard(item.getAttribute("data-card-pool-gallery-select"), "cardPoolGallery");
+        return;
       }
     });
   }
+
+  document.addEventListener("keydown", event => {
+    if (document.body && document.body.classList.contains("app-screen-card-pool")) {
+      if (event.key === "ArrowLeft") cardPoolSelectRelative(-1);
+      if (event.key === "ArrowRight") cardPoolSelectRelative(1);
+      if (event.key === "Escape" && CARD_POOL_STATE.focusMode) cardPoolCloseFullscreen();
+    }
+  });
 
   renderCardPoolScreen();
 }

@@ -76,7 +76,7 @@ const CARD_COMPOSER_TEMPLATE_GEOMETRY = Object.freeze({
   },
   tactic: {
     image: { x: 96, y: 184, w: 832, h: 700 },
-    imageTransform: { zoom: 1.04, offsetX: 0, offsetY: 0 },
+    imageTransform: { zoom: 0.94, offsetX: 0, offsetY: 0 },
     recommendedArtSize: "800x670 px",
     recommendedHighResArtSize: "1600x1340 px @2x opzionale",
     recommendedColorDepth: "WEBP/JPG consigliato; PNG RGB 24-bit o RGBA 32-bit solo se serve",
@@ -180,6 +180,7 @@ function cardAssetBackPathFor(faction) {
 function cardAssetEntryFor(card) {
   const kind = cardAssetKind(card);
   const factionKey = cardAssetFactionKey(card);
+  const embeddedArtPath = card && card.customArt && card.customArt.dataUrl ? card.customArt.dataUrl : "";
   return {
     id: card && card.id || "",
     blueprintId: card && card.blueprintId || "",
@@ -192,13 +193,22 @@ function cardAssetEntryFor(card) {
     backPath: cardAssetBackPathFor(card && card.faction),
     fileId: cardAssetFileId(card),
     rawFileId: cardAssetRawFileId(card),
-    artPath: cardAssetArtPathFor(card),
-    artCandidatePaths: cardAssetArtCandidatePathsFor(card),
+    artPath: embeddedArtPath || cardAssetArtPathFor(card),
+    artCandidatePaths: embeddedArtPath ? [embeddedArtPath] : cardAssetArtCandidatePathsFor(card),
+    artSource: embeddedArtPath ? "embedded-custom" : "asset-path",
+    artEmbedded: Boolean(embeddedArtPath),
+    artTransform: card && card.customArtTransform ? { ...card.customArtTransform } : null,
+    embeddedMeta: embeddedArtPath ? {
+      originalName: card.customArt.originalName || "",
+      width: card.customArt.outputWidth || 0,
+      height: card.customArt.outputHeight || 0,
+      format: card.customArt.format || ""
+    } : null,
     placeholderPath: CARD_ASSET_PLACEHOLDERS[kind] || "",
     recommendedArtSize: CARD_COMPOSER_TEMPLATE_GEOMETRY[kind] ? CARD_COMPOSER_TEMPLATE_GEOMETRY[kind].recommendedArtSize : "",
     recommendedHighResArtSize: CARD_COMPOSER_TEMPLATE_GEOMETRY[kind] ? CARD_COMPOSER_TEMPLATE_GEOMETRY[kind].recommendedHighResArtSize : "",
     recommendedColorDepth: CARD_COMPOSER_TEMPLATE_GEOMETRY[kind] ? CARD_COMPOSER_TEMPLATE_GEOMETRY[kind].recommendedColorDepth : "",
-    status: "expected"
+    status: embeddedArtPath ? "embedded" : "expected"
   };
 }
 
@@ -233,8 +243,11 @@ function buildCardAssetManifest(catalog = null) {
   };
 }
 
-function cardAssetManifestJson() {
-  return JSON.stringify(buildCardAssetManifest(), null, 2);
+function cardAssetManifestJson(catalog = null) {
+  const source = Array.isArray(catalog)
+    ? catalog
+    : (typeof cardEditorCatalogWithCustom === "function" ? cardEditorCatalogWithCustom() : null);
+  return JSON.stringify(buildCardAssetManifest(source), null, 2);
 }
 
 function copyCardAssetManifestJson() {

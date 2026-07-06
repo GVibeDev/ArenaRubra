@@ -1,7 +1,7 @@
 "use strict";
 
-// Arena Rubra – F9J1 AppShell / Card Pool Screen Foundation.
-// Scopo: mantenere AppShell/SetupScreen stabili e collegare la GameScreen al PanelManager senza toccare la logica Starter congelata.
+// Arena Rubra – F9K7 Menu / Lab Navigation Cleanup.
+// Mantiene gameplay/runtime F9K6b validati e migliora menu, setup e selezione deck custom.
 
 const ARENA_APP_SCREENS = Object.freeze({
   MAIN_MENU: "mainMenu",
@@ -30,7 +30,6 @@ function setAppScreen(screen) {
   if (typeof document === "undefined" || !document.body) return;
 
   const placeholderScreens = [
-    ARENA_APP_SCREENS.CARD_EDITOR,
     ARENA_APP_SCREENS.STATS,
     ARENA_APP_SCREENS.OPTIONS,
     ARENA_APP_SCREENS.ABOUT
@@ -39,6 +38,7 @@ function setAppScreen(screen) {
   const isSetup = next === ARENA_APP_SCREENS.SETUP;
   const isGame = next === ARENA_APP_SCREENS.GAME;
   const isDeckBuilder = next === ARENA_APP_SCREENS.DECK_BUILDER;
+  const isCardEditor = next === ARENA_APP_SCREENS.CARD_EDITOR;
   const isCardPool = next === ARENA_APP_SCREENS.CARD_POOL;
   const isPlaceholder = placeholderScreens.includes(next);
 
@@ -49,6 +49,7 @@ function setAppScreen(screen) {
   document.body.classList.toggle("app-screen-setup", isSetup);
   document.body.classList.toggle("app-screen-game", isGame);
   document.body.classList.toggle("app-screen-deck-builder", isDeckBuilder);
+  document.body.classList.toggle("app-screen-card-editor", isCardEditor);
   document.body.classList.toggle("app-screen-card-pool", isCardPool);
   document.body.classList.toggle("app-screen-placeholder", isPlaceholder);
 
@@ -60,6 +61,7 @@ function setAppScreen(screen) {
   });
 
   if (isDeckBuilder && typeof renderDeckBuilderScreen === "function") renderDeckBuilderScreen();
+  if (isCardEditor && typeof renderCardEditorScreen === "function") renderCardEditorScreen();
   if (isCardPool && typeof renderCardPoolScreen === "function") renderCardPoolScreen();
   refreshMainMenuResumeState();
 }
@@ -79,6 +81,45 @@ function writeControlValue(id, value) {
     else el.value = stringValue;
   }
 }
+
+function appEscapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function appShortDateLabel(value) {
+  const text = String(value || "");
+  if (!text) return "";
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : text.slice(0, 10);
+}
+
+function setupDeckOptionLabel(entry) {
+  if (!entry) return "Nessun deck salvato";
+  const payload = entry.payload || {};
+  const deckName = entry.deckName || payload.deckName || payload.name || entry.key || "Deck salvato";
+  const count = Array.isArray(payload.deckIds) ? payload.deckIds.length : null;
+  const mode = entry.containsCustomCards ? "CUSTOM" : "OFFICIAL";
+  const saved = appShortDateLabel(entry.savedAt || payload.savedAt || payload.updatedAt || payload.importedAt || "");
+  const commander = payload.commanderName || entry.commanderId || "Comandante";
+  return `${deckName} · ${count == null ? "?" : count} carte · ${mode} · ${commander}${saved ? ` · ${saved}` : ""}`;
+}
+
+function setupUpdateDeckBadge(side, text, tone = "starter") {
+  const badge = typeof document !== "undefined" ? document.getElementById(`setupP${side}DeckBadge`) : null;
+  if (!badge) return;
+  badge.textContent = text || "Deck Starter";
+  badge.classList.toggle("custom", tone === "custom");
+  badge.classList.toggle("official", tone === "official");
+  badge.classList.toggle("bad", tone === "bad");
+  badge.classList.toggle("starter", tone === "starter");
+}
+
 
 function refreshMainMenuResumeState() {
   const resumeBtn = typeof document !== "undefined" ? document.getElementById("mainMenuResumeBtn") : null;
@@ -113,14 +154,50 @@ function refreshSetupCommanderSelects() {
   populateSetupCommanderSelectForSide(2);
 }
 
+function setupSavedDeckEntriesForSide(side) {
+  const faction = readControlValue(`setupP${side}Faction`, side === 1 ? "Nexus" : "Exordium");
+  const commanderId = readControlValue(`setupP${side}Commander`, "");
+  if (typeof deckBuilderSavedPayloadEntriesFor !== "function") return [];
+  return deckBuilderSavedPayloadEntriesFor(faction, commanderId, { allowCustom: true });
+}
+
+function setupPopulateSavedDeckSelectForSide(side, entries = null) {
+  const select = document.getElementById(`setupP${side}DeckSavedKey`);
+  const legacySelect = document.getElementById(`p${side}DeckSavedKey`);
+  const setupLabel = typeof document !== "undefined" ? document.querySelector(`label[for=\"setupP${side}DeckSavedKey\"]`) : null;
+  const legacyLabel = typeof document !== "undefined" ? document.querySelector(`label[for=\"p${side}DeckSavedKey\"]`) : null;
+  const mode = readControlValue(`setupP${side}DeckMode`, "template");
+  const list = Array.isArray(entries) ? entries : setupSavedDeckEntriesForSide(side);
+  const current = readControlValue(`setupP${side}DeckSavedKey`, "") || readControlValue(`p${side}DeckSavedKey`, "");
+  const optionHtml = list.length
+    ? list.map(entry => {
+        const label = setupDeckOptionLabel(entry);
+        return `<option value="${appEscapeHtml(entry.key)}">${appEscapeHtml(label)}</option>`;
+      }).join("")
+    : `<option value="">Nessun deck salvato</option>`;
+  [select, legacySelect].forEach(el => {
+    if (!el) return;
+    el.innerHTML = optionHtml;
+    const valid = list.some(entry => entry.key === current);
+    el.value = valid ? current : (list[0] ? list[0].key : "");
+    el.disabled = mode !== "custom" || !list.length;
+    el.hidden = mode !== "custom";
+  });
+  [setupLabel, legacyLabel].forEach(label => { if (label) label.hidden = mode !== "custom"; });
+  return { entries: list, selectedKey: (select && select.value) || (legacySelect && legacySelect.value) || "" };
+}
+
 function setupDeckInfoForSide(side) {
   const faction = readControlValue(`setupP${side}Faction`, side === 1 ? "Nexus" : "Exordium");
   const commanderId = readControlValue(`setupP${side}Commander`, "");
   const mode = readControlValue(`setupP${side}DeckMode`, "template");
+  const entries = setupSavedDeckEntriesForSide(side);
+  const selectState = setupPopulateSavedDeckSelectForSide(side, entries);
+  const savedKey = selectState.selectedKey || "";
   const check = typeof deckBuilderSavedStatusForSetup === "function"
-    ? deckBuilderSavedStatusForSetup(faction, commanderId)
+    ? deckBuilderSavedStatusForSetup(faction, commanderId, null, { allowCustom: true, preferCustom: true, savedKey: mode === "custom" ? savedKey : "" })
     : { ok: false, exists: false, issues: ["Deck Builder non inizializzato"] };
-  return { side, faction, commanderId, mode, check };
+  return { side, faction, commanderId, mode, savedKey, savedDeckEntries: entries, check };
 }
 
 function refreshSetupDeckSelectorForSide(side) {
@@ -130,16 +207,27 @@ function refreshSetupDeckSelectorForSide(side) {
   const info = setupDeckInfoForSide(side);
   const customOption = Array.from(modeSelect.options || []).find(opt => opt.value === "custom");
   const savedAt = info.check && info.check.payload ? info.check.payload.savedAt : "";
-  if (customOption) customOption.textContent = info.check && info.check.ok ? "Deck personalizzato salvato" : "Deck personalizzato salvato (non disponibile)";
+  const payload = info.check && info.check.payload ? info.check.payload : null;
+  const deckName = (info.check && info.check.deckName) || (payload && (payload.deckName || payload.name)) || "";
+  const isCustomLab = Boolean(info.check && (info.check.runtimeMode === "custom_lab" || info.check.containsCustomCards));
+  if (customOption) customOption.textContent = info.savedDeckEntries.length
+    ? `Deck salvato / Custom Match Lab (${info.savedDeckEntries.length})`
+    : "Deck salvato non disponibile";
   infoEl.classList.toggle("good", info.mode === "custom" && info.check && info.check.ok);
   infoEl.classList.toggle("bad", info.mode === "custom" && (!info.check || !info.check.ok));
   if (info.mode === "custom") {
-    infoEl.textContent = info.check && info.check.ok
-      ? `Deck personalizzato valido: ${info.faction} · ${info.check.payload.commanderName || info.commanderId} · ${info.check.deckIds.length} carte${savedAt ? ` · ${savedAt}` : ""}.`
-      : `Deck personalizzato non disponibile/valido: ${((info.check && info.check.issues) || ["nessun deck salvato"]).join("; ")}.`;
+    if (info.check && info.check.ok && payload) {
+      const shortSaved = appShortDateLabel(savedAt);
+      setupUpdateDeckBadge(side, isCustomLab ? `CUSTOM · ${payload.customCount || 0}` : "OFFICIAL", isCustomLab ? "custom" : "official");
+      infoEl.textContent = `${isCustomLab ? "Custom Match Test Lab" : "Deck personalizzato ufficiale"}: “${deckName || "deck"}” · ${info.faction} · ${payload.commanderName || info.commanderId} · ${info.check.deckIds.length} carte${shortSaved ? ` · ${shortSaved}` : ""}.`;
+    } else {
+      setupUpdateDeckBadge(side, "Deck non valido", "bad");
+      infoEl.textContent = `Deck personalizzato non disponibile/valido: ${((info.check && info.check.issues) || ["nessun deck salvato selezionato"]).join("; ")}.`;
+    }
   } else {
-    infoEl.textContent = info.check && info.check.ok
-      ? `Deck automatico Starter. Esiste anche un deck personalizzato salvato per questa fazione/comandante.`
+    setupUpdateDeckBadge(side, info.savedDeckEntries.length ? `${info.savedDeckEntries.length} salvati` : "Deck Starter", "starter");
+    infoEl.textContent = info.savedDeckEntries.length
+      ? `Deck automatico Starter. Deck salvati disponibili per questa fazione/comandante: ${info.savedDeckEntries.length}. Se vuoi usarli, cambia Modalità deck.`
       : `Deck automatico Starter.`;
   }
 }
@@ -180,6 +268,8 @@ function syncSetupScreenFromLegacyControls() {
   writeControlValue("setupPacePreset", readControlValue("pacePreset", "standard"));
   writeControlValue("setupP1DeckMode", readControlValue("p1DeckMode", "template"));
   writeControlValue("setupP2DeckMode", readControlValue("p2DeckMode", "template"));
+  writeControlValue("setupP1DeckSavedKey", readControlValue("p1DeckSavedKey", readControlValue("setupP1DeckSavedKey", "")));
+  writeControlValue("setupP2DeckSavedKey", readControlValue("p2DeckSavedKey", readControlValue("setupP2DeckSavedKey", "")));
   refreshSetupDeckSelectors();
   const legacyAuto = document.getElementById("autoResignToggle");
   const setupAuto = document.getElementById("setupAutoResignToggle");
@@ -199,6 +289,8 @@ function syncLegacyControlsFromSetupScreen() {
   writeControlValue("pacePreset", readControlValue("setupPacePreset", "standard"));
   writeControlValue("p1DeckMode", readControlValue("setupP1DeckMode", "template"));
   writeControlValue("p2DeckMode", readControlValue("setupP2DeckMode", "template"));
+  writeControlValue("p1DeckSavedKey", readControlValue("setupP1DeckSavedKey", ""));
+  writeControlValue("p2DeckSavedKey", readControlValue("setupP2DeckSavedKey", ""));
   const legacyAuto = document.getElementById("autoResignToggle");
   const setupAuto = document.getElementById("setupAutoResignToggle");
   if (legacyAuto && setupAuto) legacyAuto.checked = setupAuto.checked;
@@ -285,6 +377,7 @@ function initializeArenaAppShell() {
   }
 
   if (typeof initializeDeckBuilderScreen === "function") initializeDeckBuilderScreen();
+  if (typeof initializeCardEditorScreen === "function") initializeCardEditorScreen();
   if (typeof initializeCardPoolScreen === "function") initializeCardPoolScreen();
 
   document.querySelectorAll("[data-app-open-deck-builder]").forEach(deckBuilderBtn => {
@@ -293,6 +386,15 @@ function initializeArenaAppShell() {
     deckBuilderBtn.addEventListener("click", () => {
       if (typeof openDeckBuilderScreen === "function") openDeckBuilderScreen();
       else showAppPlaceholder(ARENA_APP_SCREENS.DECK_BUILDER);
+    });
+  });
+
+  document.querySelectorAll("[data-app-open-card-editor]").forEach(cardEditorBtn => {
+    if (cardEditorBtn.dataset.bound === "1") return;
+    cardEditorBtn.dataset.bound = "1";
+    cardEditorBtn.addEventListener("click", () => {
+      if (typeof openCardEditorScreen === "function") openCardEditorScreen();
+      else showAppPlaceholder(ARENA_APP_SCREENS.CARD_EDITOR);
     });
   });
 
@@ -361,6 +463,24 @@ function initializeArenaAppShell() {
     if (deckModeSelect && deckModeSelect.dataset.deckBound !== "1") {
       deckModeSelect.dataset.deckBound = "1";
       deckModeSelect.addEventListener("change", () => refreshSetupDeckSelectorForSide(side));
+    }
+
+    const savedDeckSelect = document.getElementById(`setupP${side}DeckSavedKey`);
+    if (savedDeckSelect && savedDeckSelect.dataset.deckBound !== "1") {
+      savedDeckSelect.dataset.deckBound = "1";
+      savedDeckSelect.addEventListener("change", () => refreshSetupDeckSelectorForSide(side));
+    }
+
+    const legacyDeckModeSelect = document.getElementById(`p${side}DeckMode`);
+    if (legacyDeckModeSelect && legacyDeckModeSelect.dataset.savedDeckBound !== "1") {
+      legacyDeckModeSelect.dataset.savedDeckBound = "1";
+      legacyDeckModeSelect.addEventListener("change", () => refreshSetupDeckSelectorForSide(side));
+    }
+
+    const legacySavedDeckSelect = document.getElementById(`p${side}DeckSavedKey`);
+    if (legacySavedDeckSelect && legacySavedDeckSelect.dataset.deckBound !== "1") {
+      legacySavedDeckSelect.dataset.deckBound = "1";
+      legacySavedDeckSelect.addEventListener("change", () => refreshSetupDeckSelectorForSide(side));
     }
   });
 

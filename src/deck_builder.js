@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9P1b Saved Deck Gallery Microfix.
-// Schermata di editing locale con salvataggio persistente controllato.
-// F9P1b aggiunge una gallery dei deck salvati/importati, caricabili nel draft dal Deck Builder.
+// Arena Rubra – F9K5b Card Art Zoom + Custom Badge Alignment.
+// I deck con carte custom restano marcati NON UFFICIALI, ma possono entrare nel runtime
+// quando il Setup seleziona esplicitamente un deck personalizzato salvato.
 
 const deckBuilderState = {
   faction: "Nexus",
@@ -10,7 +10,9 @@ const deckBuilderState = {
   draftsByKey: {},
   feedback: "",
   selectedSavedKey: "",
-  selectedPreviewCardId: ""
+  selectedPreviewCardId: "",
+  includeCustomCards: false,
+  deckName: ""
 };
 
 const DECK_BUILDER_STORAGE_KEY = typeof ARENA_STORAGE_KEYS !== "undefined" ? ARENA_STORAGE_KEYS.customDecks : "arenaRubraF9H3SavedDecksV1";
@@ -54,23 +56,155 @@ function deckBuilderSetFeedback(message, tone = "") {
   el.classList.toggle("bad", tone === "bad");
 }
 
-function deckBuilderSavedPayloadFor(faction, commanderId) {
-  const key = deckBuilderDraftKey(faction, commanderId);
+function deckBuilderNormalizeDeckName(value) {
+  const text = String(value || "").trim().replace(/\s+/g, " ");
+  return text.slice(0, 64);
+}
+
+function deckBuilderSlugPart(value) {
+  const slug = String(value || "deck")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 44);
+  return slug || "deck";
+}
+
+function deckBuilderDefaultDeckName(report = null) {
+  const faction = report && report.faction ? report.faction : deckBuilderResolvedFaction();
+  const commander = report && (report.commanderName || report.commanderId) ? (report.commanderName || report.commanderId) : "Comandante";
+  const mode = report && report.containsCustomCards ? "Custom Lab" : "Ufficiale";
+  return `${faction} · ${commander} · ${mode}`;
+}
+
+function deckBuilderCurrentDeckName(report = null) {
+  const input = typeof document !== "undefined" ? document.getElementById("deckBuilderDeckNameInput") : null;
+  const fromInput = input ? deckBuilderNormalizeDeckName(input.value) : "";
+  const fromState = deckBuilderNormalizeDeckName(deckBuilderState.deckName || "");
+  return fromInput || fromState || deckBuilderDefaultDeckName(report);
+}
+
+function deckBuilderBaseKey(faction, commanderId, includeCustom = false) {
+  const resolvedFaction = faction || deckBuilderResolvedFaction();
+  const resolvedCommander = commanderId || "default";
+  return `${resolvedFaction}::${resolvedCommander}${includeCustom ? "::CUSTOM" : ""}`;
+}
+
+function deckBuilderSavedKeyBaseForPayload(payload, fallbackKey = "") {
+  const faction = payload && payload.faction ? payload.faction : String(fallbackKey || "").split("::")[0] || "";
+  const commanderId = payload && payload.commanderId ? payload.commanderId : String(fallbackKey || "").split("::")[1] || "";
+  const hasCustom = deckBuilderSavedPayloadHasCustom(payload, deckBuilderCatalog({ includeCustom: true }));
+  return deckBuilderBaseKey(faction, commanderId, hasCustom);
+}
+
+function deckBuilderStorageKeyForReport(report, deckName) {
+  const name = deckBuilderNormalizeDeckName(deckName) || deckBuilderDefaultDeckName(report);
+  const slug = deckBuilderSlugPart(name);
+  return `${report.draftKey}::${slug}`;
+}
+
+function deckBuilderSavedPayloadFor(faction, commanderId, options = {}) {
   const store = deckBuilderReadSavedStore();
-  return store[key] || null;
+  const exactKey = options && options.savedKey ? String(options.savedKey) : "";
+  if (exactKey) return store[exactKey] || null;
+
+  const includeCustom = Boolean(options && options.includeCustom);
+  const legacyKey = deckBuilderDraftKey(faction, commanderId, { includeCustom });
+  if (store[legacyKey]) return store[legacyKey];
+
+  const entries = deckBuilderSavedPayloadEntriesFor(faction, commanderId, { includeCustom });
+  return entries.length ? entries[0].payload : null;
 }
 
-function deckBuilderSavedStatusForSetup(faction, commanderId, catalog = null) {
-  const payload = deckBuilderSavedPayloadFor(faction, commanderId);
-  if (!payload) return { ok: false, exists: false, issues: ["nessun deck salvato"], payload: null };
-  return deckBuilderValidateSavedDeckPayload(payload, faction, commanderId, catalog);
+function deckBuilderSavedPayloadEntriesFor(faction, commanderId, options = {}) {
+  const store = deckBuilderReadSavedStore();
+  const includeCustomFilter = options && Object.prototype.hasOwnProperty.call(options, "includeCustom") ? Boolean(options.includeCustom) : null;
+  const allowCustom = options && Object.prototype.hasOwnProperty.call(options, "allowCustom") ? Boolean(options.allowCustom) : true;
+  const expectedFaction = faction || "";
+  const expectedCommander = commanderId || "";
+  const entries = [];
+  Object.entries(store || {}).forEach(([key, payload]) => {
+    if (!payload || typeof payload !== "object") return;
+    const payloadFaction = payload.faction || String(key).split("::")[0] || "";
+    const payloadCommander = payload.commanderId || String(key).split("::")[1] || "";
+    if (expectedFaction && payloadFaction !== expectedFaction) return;
+    if (expectedCommander && payloadCommander !== expectedCommander) return;
+    const hasCustom = deckBuilderSavedPayloadHasCustom(payload, deckBuilderCatalog({ includeCustom: true }));
+    if (hasCustom && !allowCustom) return;
+    if (includeCustomFilter !== null && hasCustom !== includeCustomFilter) return;
+    entries.push({
+      key,
+      payload,
+      faction: payloadFaction,
+      commanderId: payloadCommander,
+      containsCustomCards: hasCustom,
+      savedAt: payload.savedAt || payload.updatedAt || payload.importedAt || "",
+      deckName: deckBuilderNormalizeDeckName(payload.deckName || payload.name || "")
+    });
+  });
+  return entries.sort((a, b) => String(b.savedAt || "").localeCompare(String(a.savedAt || "")) || String(a.deckName || "").localeCompare(String(b.deckName || "")));
 }
 
-function deckBuilderValidateSavedDeckPayload(payload, faction = null, commanderId = null, catalog = null) {
-  const sourceCatalog = catalog || deckBuilderCatalog();
+function deckBuilderSavedStatusForSetup(faction, commanderId, catalog = null, options = {}) {
+  const allowCustom = Boolean(options && options.allowCustom);
+  const preferCustom = Boolean(options && options.preferCustom);
+  const savedKey = options && options.savedKey ? String(options.savedKey) : "";
+  const officialCatalog = catalog || deckBuilderOfficialCatalog();
+  const customCatalog = allowCustom ? deckBuilderCatalog({ includeCustom: true }) : officialCatalog;
+  const candidates = [];
+
+  if (savedKey) {
+    const payload = deckBuilderSavedPayloadFor(faction, commanderId, { savedKey });
+    if (payload) {
+      const payloadHasCustom = deckBuilderSavedPayloadHasCustom(payload, customCatalog);
+      candidates.push({ key:savedKey, payload, includeCustom:payloadHasCustom, runtimeMode:payloadHasCustom ? "custom_lab" : "official" });
+    }
+  } else {
+    const entries = deckBuilderSavedPayloadEntriesFor(faction, commanderId, { allowCustom });
+    const customEntries = entries.filter(e => e.containsCustomCards);
+    const officialEntries = entries.filter(e => !e.containsCustomCards);
+    const ordered = preferCustom ? [...customEntries, ...officialEntries] : [...officialEntries, ...customEntries];
+    ordered.forEach(entry => candidates.push({
+      key: entry.key,
+      payload: entry.payload,
+      includeCustom: entry.containsCustomCards,
+      runtimeMode: entry.containsCustomCards ? "custom_lab" : "official"
+    }));
+  }
+
+  if (!candidates.length) {
+    return {
+      ok: false,
+      exists: false,
+      key: savedKey || "",
+      runtimeMode: allowCustom ? "custom_lab" : "official",
+      issues: [allowCustom ? "nessun deck salvato selezionabile per Setup/Custom Lab" : "nessun deck ufficiale salvato"],
+      payload: null
+    };
+  }
+
+  const checked = candidates.map(entry => {
+    const sourceCatalog = entry.includeCustom ? customCatalog : officialCatalog;
+    const check = deckBuilderValidateSavedDeckPayload(entry.payload, faction, commanderId, sourceCatalog, {
+      allowCustom: entry.includeCustom,
+      setupRuntime: true,
+      savedKey: entry.key
+    });
+    return { ...check, key: entry.key, savedKey: entry.key, runtimeMode: entry.runtimeMode, includeCustomRuntime: entry.includeCustom };
+  });
+
+  return checked.find(check => check.ok) || checked[0];
+}
+
+function deckBuilderValidateSavedDeckPayload(payload, faction = null, commanderId = null, catalog = null, options = {}) {
+  const allowCustom = options && options.allowCustom !== undefined ? Boolean(options.allowCustom) : deckBuilderIncludeCustomCards();
+  const sourceCatalog = catalog || deckBuilderCatalog({ includeCustom: allowCustom });
   const expectedFaction = faction || (payload && payload.faction) || "";
   const expectedCommander = commanderId || (payload && payload.commanderId) || "";
   const ids = payload && Array.isArray(payload.deckIds) ? payload.deckIds : [];
+  const payloadHasCustom = deckBuilderSavedPayloadHasCustom(payload, deckBuilderCatalog({ includeCustom: true }));
   const draftData = deckBuilderDraftCardsFromIds(ids, expectedFaction, expectedCommander, sourceCatalog);
   const sanity = deckBuilderValidateDraft(draftData.cards, {
     faction: expectedFaction,
@@ -83,25 +217,36 @@ function deckBuilderValidateSavedDeckPayload(payload, faction = null, commanderI
   if (!payload || typeof payload !== "object") issues.push("payload assente");
   if (payload && payload.faction !== expectedFaction) issues.push(`fazione salvata ${payload.faction || "—"}, attesa ${expectedFaction}`);
   if (payload && payload.commanderId !== expectedCommander) issues.push(`comandante salvato ${payload.commanderId || "—"}, atteso ${expectedCommander}`);
+  if (payloadHasCustom && !allowCustom) issues.push("deck non ufficiale con carte CUSTOM: non disponibile nel runtime standard");
   if (!sanity.ok) issues.push(...sanity.issues);
+  const saveKey = options && options.savedKey ? String(options.savedKey) : deckBuilderDraftKey(expectedFaction, expectedCommander, { includeCustom: allowCustom && payloadHasCustom });
   return {
     ok: issues.length === 0,
     exists: Boolean(payload),
-    key: deckBuilderDraftKey(expectedFaction, expectedCommander),
+    key: saveKey,
+    savedKey: saveKey,
     payload,
     faction: expectedFaction,
     commanderId: expectedCommander,
+    deckName: deckBuilderNormalizeDeckName(payload && (payload.deckName || payload.name)) || deckBuilderDefaultDeckName({ faction: expectedFaction, commanderId: expectedCommander, containsCustomCards: payloadHasCustom }),
     deckIds: ids,
     cards: draftData.cards,
+    containsCustomCards: payloadHasCustom || deckBuilderCustomCardCount(draftData.cards) > 0,
+    official: !(payloadHasCustom || deckBuilderCustomCardCount(draftData.cards) > 0),
     sanity,
     issues
   };
 }
 
-function deckBuilderValidatedSavedDeckForRuntime(faction, commanderId, catalog = null) {
-  return deckBuilderSavedStatusForSetup(faction, commanderId, catalog);
+function deckBuilderValidatedSavedDeckForRuntime(faction, commanderId, catalog = null, options = {}) {
+  const allowCustom = options && Object.prototype.hasOwnProperty.call(options, "allowCustom") ? Boolean(options.allowCustom) : true;
+  return deckBuilderSavedStatusForSetup(faction, commanderId, catalog || deckBuilderOfficialCatalog(), {
+    allowCustom,
+    preferCustom: allowCustom,
+    savedKey: options && options.savedKey ? String(options.savedKey) : "",
+    runtime: true
+  });
 }
-
 
 function dbEscapeHtml(value) {
   return String(value ?? "").replace(/[&<>'"]/g, c => ({
@@ -115,7 +260,7 @@ function dbEscapeHtml(value) {
 
 function deckBuilderFactionList() {
   if (typeof FACTIONS !== "undefined" && FACTIONS) return Object.keys(FACTIONS);
-  const catalog = typeof buildCardCatalog === "function" ? buildCardCatalog() : [];
+  const catalog = deckBuilderCatalog({ includeCustom: true });
   return [...new Set(catalog.map(card => card && card.faction).filter(Boolean))].sort();
 }
 
@@ -159,8 +304,53 @@ function deckBuilderCardSort(a, b) {
   return String(a && a.name || "").localeCompare(String(b && b.name || ""));
 }
 
-function deckBuilderCatalog() {
+function deckBuilderOfficialCatalog() {
   return typeof buildCardCatalog === "function" ? buildCardCatalog() : [];
+}
+
+function deckBuilderCanReadCustomCards() {
+  return typeof cardEditorCatalogWithCustom === "function" && typeof cardEditorCustomCards === "function";
+}
+
+function deckBuilderIncludeCustomCards() {
+  return Boolean(deckBuilderState.includeCustomCards && deckBuilderCanReadCustomCards());
+}
+
+function deckBuilderCatalogWithMode(includeCustom = null) {
+  const official = deckBuilderOfficialCatalog();
+  const useCustom = includeCustom === null ? deckBuilderIncludeCustomCards() : Boolean(includeCustom && deckBuilderCanReadCustomCards());
+  return useCustom ? cardEditorCatalogWithCustom(official) : official;
+}
+
+function deckBuilderCardIsCustom(card) {
+  return Boolean(card && (card.custom === true || card.official === false || String(card.id || "").startsWith("CUSTOM:")));
+}
+
+function deckBuilderCustomCardCount(cards) {
+  return (cards || []).filter(deckBuilderCardIsCustom).length;
+}
+
+function deckBuilderSourceBadgeHtml(card) {
+  return deckBuilderCardIsCustom(card) ? `<span class="deckBuilderCustomBadge">CUSTOM</span>` : `<span class="deckBuilderOfficialBadge">OFF</span>`;
+}
+
+function deckBuilderModeLabel(includeCustom = null) {
+  const active = includeCustom === null ? deckBuilderIncludeCustomCards() : Boolean(includeCustom);
+  return active ? "Custom Lab" : "Ufficiale";
+}
+
+function deckBuilderSavedPayloadHasCustom(payload, catalog = null) {
+  if (payload && (payload.official === false || payload.containsCustomCards === true || payload.deckMode === "custom_lab")) return true;
+  const sourceCatalog = catalog || deckBuilderCatalogWithMode(true);
+  const ids = payload && Array.isArray(payload.deckIds) ? payload.deckIds : [];
+  const byId = new Map(sourceCatalog.map(card => [card.id, card]));
+  return ids.some(id => deckBuilderCardIsCustom(byId.get(id)));
+}
+
+function deckBuilderCatalog(options = {}) {
+  if (typeof options === "boolean") return deckBuilderCatalogWithMode(options);
+  if (options && Object.prototype.hasOwnProperty.call(options, "includeCustom")) return deckBuilderCatalogWithMode(Boolean(options.includeCustom));
+  return deckBuilderCatalogWithMode(null);
 }
 
 function deckBuilderTargetSize() {
@@ -188,11 +378,14 @@ function deckBuilderResolvedCommanderId(faction = null, catalog = null) {
   return deckBuilderState.commanderId || fallback;
 }
 
-function deckBuilderDraftKey(faction = null, commanderId = null) {
-  const sourceCatalog = deckBuilderCatalog();
+function deckBuilderDraftKey(faction = null, commanderId = null, options = {}) {
+  const includeCustom = options && Object.prototype.hasOwnProperty.call(options, "includeCustom")
+    ? Boolean(options.includeCustom)
+    : deckBuilderIncludeCustomCards();
+  const sourceCatalog = deckBuilderCatalog({ includeCustom });
   const resolvedFaction = faction || deckBuilderResolvedFaction();
   const resolvedCommander = commanderId || deckBuilderResolvedCommanderId(resolvedFaction, sourceCatalog) || "default";
-  return `${resolvedFaction}::${resolvedCommander}`;
+  return `${resolvedFaction}::${resolvedCommander}${includeCustom ? "::CUSTOM" : ""}`;
 }
 
 function deckBuilderPoolFor(faction, commanderId, catalog = null) {
@@ -206,7 +399,9 @@ function deckBuilderPoolMapFor(faction, commanderId, catalog = null) {
 }
 
 function deckBuilderTemplateIdsFor(faction, commanderId, catalog = null) {
-  const sourceCatalog = catalog || deckBuilderCatalog();
+  // F9K5: il template automatico resta ufficiale anche quando il pool custom è attivo.
+  // Le carte CUSTOM entrano nel draft solo per scelta esplicita dal pool.
+  const sourceCatalog = catalog && !deckBuilderIncludeCustomCards() ? catalog : deckBuilderOfficialCatalog();
   const options = { selectedCommanderId: commanderId };
   const deck = typeof buildDebugDeckForFaction === "function" ? buildDebugDeckForFaction(faction, sourceCatalog, null, options) : [];
   return deck.map(card => card && card.id).filter(Boolean);
@@ -290,7 +485,10 @@ function deckBuilderValidateDraft(deck, reportBase = {}) {
 
 function deckBuilderReportObject() {
   const config = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : {};
-  const catalog = deckBuilderCatalog();
+  const includeCustomCards = deckBuilderIncludeCustomCards();
+  const catalog = deckBuilderCatalog({ includeCustom: includeCustomCards });
+  const officialCatalog = deckBuilderOfficialCatalog();
+  const totalCustomCards = includeCustomCards && typeof cardEditorCustomCards === "function" ? cardEditorCustomCards().length : 0;
   const faction = deckBuilderResolvedFaction();
   const commanderId = deckBuilderResolvedCommanderId(faction, catalog);
   const pool = deckBuilderPoolFor(faction, commanderId, catalog);
@@ -298,6 +496,8 @@ function deckBuilderReportObject() {
   const draftIds = [...deckBuilderEnsureDraft(faction, commanderId)];
   const draftData = deckBuilderDraftCardsFromIds(draftIds, faction, commanderId, catalog);
   const deck = draftData.cards;
+  const customCount = deckBuilderCustomCardCount(deck);
+  const poolCustomCount = deckBuilderCustomCardCount(pool);
   const sanity = deckBuilderValidateDraft(deck, { faction, commanderId, catalog, poolSize: pool.length, invalidIds: draftData.invalidIds });
   const starterExcludedIds = typeof deckStarterExclusionIdsForFaction === "function" ? deckStarterExclusionIdsForFaction(faction, catalog) : new Set();
   const starters = typeof starterCardsForFaction === "function" ? starterCardsForFaction(faction, catalog).filter(card => starterExcludedIds.has(card.id)).sort(deckBuilderCardSort) : [];
@@ -306,13 +506,23 @@ function deckBuilderReportObject() {
   const commander = commanders.find(card => card.blueprintId === commanderId) || commanders[0] || null;
   const templateIds = deckBuilderTemplateIdsFor(faction, commanderId, catalog);
   const draftKey = deckBuilderDraftKey(faction, commanderId);
+  const deckName = deckBuilderCurrentDeckName({ faction, commanderId, commanderName: commander ? commander.name : "", containsCustomCards: customCount > 0 });
+  const matchingSavedDecks = deckBuilderSavedPayloadEntriesFor(faction, commanderId, { includeCustom: customCount > 0 });
 
   return {
     build: typeof buildInfoExportMeta === "function" ? buildInfoExportMeta() : {},
-    mode: "F9I1c renderer_data_asset_path_microfix",
+    mode: includeCustomCards ? "F9K5 custom_match_test_lab" : "F9K5 official_deck_builder",
+    includeCustomCards,
+    containsCustomCards: customCount > 0,
+    official: customCount === 0,
+    customCount,
+    poolCustomCount,
+    totalCustomCards,
+    officialCatalogSize: officialCatalog.length,
     faction,
     commanderId,
     commanderName: commander ? commander.name : "",
+    deckName,
     draftKey,
     deckRules: {
       deckSize: config.deckSize || 30,
@@ -345,14 +555,22 @@ function deckBuilderReportObject() {
       condition: card.condition || "",
       duration: card.duration || "",
       copyNo: card.deckCopyNo || null,
-      copyLimit: typeof deckCopyLimitForCard === "function" ? deckCopyLimitForCard(card) : null
+      copyLimit: typeof deckCopyLimitForCard === "function" ? deckCopyLimitForCard(card) : null,
+      custom: deckBuilderCardIsCustom(card),
+      official: !deckBuilderCardIsCustom(card)
     })),
     deckCopyCounts: counts,
     invalidDraftIds: draftData.invalidIds,
     editable: true,
     persistentSave: true,
     gameplayIntegration: "optional_setup_custom_deck",
-    savedDeck: (() => { const payload = deckBuilderSavedPayloadFor(faction, commanderId); return payload ? { key: draftKey, savedAt: payload.savedAt || "", deckSize: Array.isArray(payload.deckIds) ? payload.deckIds.length : 0 } : null; })(),
+    savedDeck: (() => {
+      const preferredKey = deckBuilderState.selectedSavedKey && matchingSavedDecks.some(entry => entry.key === deckBuilderState.selectedSavedKey) ? deckBuilderState.selectedSavedKey : "";
+      const payload = deckBuilderSavedPayloadFor(faction, commanderId, { includeCustom: customCount > 0, savedKey: preferredKey });
+      const entry = preferredKey ? matchingSavedDecks.find(item => item.key === preferredKey) : matchingSavedDecks[0];
+      return payload ? { key: entry ? entry.key : (preferredKey || draftKey), deckName: deckBuilderNormalizeDeckName(payload.deckName || payload.name || ""), savedAt: payload.savedAt || "", deckSize: Array.isArray(payload.deckIds) ? payload.deckIds.length : 0 } : null;
+    })(),
+    savedDeckCount: matchingSavedDecks.length,
     pool: pool.map(card => ({
       id: card.id,
       name: card.name,
@@ -361,7 +579,9 @@ function deckBuilderReportObject() {
       cost: card.cost,
       copyLimit: typeof deckCopyLimitForCard === "function" ? deckCopyLimitForCard(card) : null,
       currentCopies: counts[card.id] || 0,
-      inPool: poolMap.has(card.id)
+      inPool: poolMap.has(card.id),
+      custom: deckBuilderCardIsCustom(card),
+      official: !deckBuilderCardIsCustom(card)
     }))
   };
 }
@@ -374,10 +594,13 @@ function deckBuilderSummaryHtml(report) {
   const roleCounts = sanity.roleCounts || {};
   const violations = Array.isArray(sanity.copyViolations) ? sanity.copyViolations : [];
   const issues = Array.isArray(sanity.issues) ? sanity.issues : [];
+  const customWarning = report.containsCustomCards
+    ? `<div class="deckBuilderIssueBox warn"><strong>NON UFFICIALE:</strong> questo draft contiene ${report.customCount} carta/e CUSTOM. In F9K5b può essere usato solo dal Setup selezionando un deck personalizzato salvato: è Custom Match Test Lab, non bilanciamento ufficiale.</div>`
+    : "";
   return `
-    <div class="deckBuilderStatus ${statusClass}">
-      <strong>${dbEscapeHtml(statusText)}</strong>
-      <span>${dbEscapeHtml(report.faction)} · ${dbEscapeHtml(report.commanderName || report.commanderId || "Comandante")}</span>
+    <div class="deckBuilderStatus ${statusClass} ${report.containsCustomCards ? "custom" : ""}">
+      <strong>${dbEscapeHtml(statusText)} · ${report.containsCustomCards ? "NON UFFICIALE" : "UFFICIALE"}</strong>
+      <span>${dbEscapeHtml(report.deckName || deckBuilderDefaultDeckName(report))} · ${dbEscapeHtml(report.faction)} · ${dbEscapeHtml(report.commanderName || report.commanderId || "Comandante")} · ${dbEscapeHtml(deckBuilderModeLabel(report.includeCustomCards))}</span>
     </div>
     <div class="deckBuilderStatGrid">
       <div class="statTile"><strong>${sanity.deckSize || 0}</strong><span>carte draft</span></div>
@@ -386,13 +609,16 @@ function deckBuilderSummaryHtml(report) {
       <div class="statTile"><strong>${sanity.legalCapacity || 0}</strong><span>capacità legale</span></div>
       <div class="statTile"><strong>${sanity.uniqueCards || Object.keys(report.deckCopyCounts || {}).length}</strong><span>carte uniche</span></div>
       <div class="statTile"><strong>${violations.length}</strong><span>violazioni copie</span></div>
+      <div class="statTile"><strong>${report.customCount || 0}</strong><span>custom nel draft</span></div>
+      <div class="statTile"><strong>${report.poolCustomCount || 0}</strong><span>custom nel pool</span></div>
     </div>
     <div class="deckBuilderRuleBox">
-      <strong>F9I1c:</strong>
-      puoi aggiungere/rimuovere carte, validare il draft in tempo reale, salvarlo localmente, importare/esportare JSON, richiamare i deck dalla gallery e ora vedere una preview reale della carta selezionata dal draft/pool. Un deck personalizzato entra in partita solo se valido per fazione e comandante.
+      <strong>F9K5b:</strong>
+      le carte CUSTOM entrano nel Deck Builder solo con toggle esplicito. I draft che le contengono sono marcati NON UFFICIALI e salvati su chiave separata; non sostituiscono il deck ufficiale del SetupScreen.
       <br /><strong>Regole freeze:</strong> deck ${report.deckRules.deckSize}; comandante/pivot/elite max 1; altre carte/tattiche max ${report.deckRules.defaultMaxCopies}; starter esclusi dal deck.
       <br />Ruoli nel draft: comandante ${roleCounts.commander || 0}, base ${roleCounts.base || 0}, pesanti ${roleCounts.heavy || 0}, elite ${roleCounts.elite || 0}, pivot ${roleCounts.pivot || 0}, tattiche ${roleCounts.tactic || 0}.
     </div>
+    ${customWarning}
     ${issues.length ? `<div class="deckBuilderIssueBox"><strong>Da correggere:</strong> ${issues.map(dbEscapeHtml).join("; ")}</div>` : ""}
     ${violations.length ? `<div class="deckBuilderIssueBox"><strong>Violazioni copie:</strong> ${violations.map(v => `${dbEscapeHtml(v.name || v.id)} ${v.count}/${v.limit}`).join("; ")}</div>` : ""}`;
 }
@@ -442,7 +668,7 @@ function deckBuilderPoolRowsHtml(pool, report) {
     return `<tr class="${cls} ${selected}" data-db-preview-card="${dbEscapeHtml(card.id)}" data-db-preview-source="pool">
       <td><button class="miniBtn deckBuilderAddBtn" type="button" data-db-add-card="${dbEscapeHtml(card.id)}" ${addState.ok ? "" : "disabled"}>+</button></td>
       <td>${dbEscapeHtml(card.id)}</td>
-      <td><strong>${dbEscapeHtml(card.name)}</strong></td>
+      <td class="deckBuilderNameCell"><strong class="deckBuilderCardNameText">${dbEscapeHtml(card.name)}</strong> ${deckBuilderSourceBadgeHtml(card)}</td>
       <td>${dbEscapeHtml(deckBuilderRoleLabel(card))}</td>
       <td>${dbEscapeHtml(deckBuilderTypeLabel(card))}</td>
       <td>${Number.isFinite(card.cost) ? card.cost : "—"}</td>
@@ -468,7 +694,7 @@ function deckBuilderDeckRowsHtml(deck, report) {
     return `<tr class="${violation ? "deckBuilderViolationRow" : ""} ${selected}" data-db-preview-card="${dbEscapeHtml(card.id)}" data-db-preview-source="deck">
       <td><button class="miniBtn deckBuilderRemoveBtn" type="button" data-db-remove-card="${dbEscapeHtml(card.id)}">−</button></td>
       <td>${dbEscapeHtml(card.id)}</td>
-      <td><strong>${dbEscapeHtml(card.name)}</strong></td>
+      <td class="deckBuilderNameCell"><strong class="deckBuilderCardNameText">${dbEscapeHtml(card.name)}</strong> ${deckBuilderSourceBadgeHtml(card)}</td>
       <td>${dbEscapeHtml(deckBuilderRoleLabel(card))}</td>
       <td>${Number.isFinite(card.cost) ? card.cost : "—"}</td>
       <td>${row.count}/${limit}</td>
@@ -494,7 +720,9 @@ function deckBuilderSavedDeckEntries(catalog = null) {
   Object.entries(store || {}).forEach(([key, payload]) => {
     const faction = payload && payload.faction ? payload.faction : String(key).split("::")[0] || "";
     const commanderId = payload && payload.commanderId ? payload.commanderId : String(key).split("::")[1] || "";
-    const check = deckBuilderValidateSavedDeckPayload(payload, faction, commanderId, sourceCatalog);
+    const payloadHasCustom = deckBuilderSavedPayloadHasCustom(payload, deckBuilderCatalog({ includeCustom: true }));
+    const validationCatalog = payloadHasCustom ? deckBuilderCatalog({ includeCustom: true }) : sourceCatalog;
+    const check = deckBuilderValidateSavedDeckPayload(payload, faction, commanderId, validationCatalog, { allowCustom: payloadHasCustom, savedKey: key });
     const commanderCard = sourceCatalog.find(card => card && (card.blueprintId === commanderId || card.id === commanderId));
     const deckIds = payload && Array.isArray(payload.deckIds) ? payload.deckIds : [];
     entries.push({
@@ -503,9 +731,13 @@ function deckBuilderSavedDeckEntries(catalog = null) {
       faction,
       commanderId,
       commanderName: (payload && payload.commanderName) || (commanderCard && commanderCard.name) || commanderId || "Comandante",
+      deckName: deckBuilderNormalizeDeckName((payload && (payload.deckName || payload.name)) || "") || deckBuilderDefaultDeckName({ faction, commanderId, commanderName: (payload && payload.commanderName) || (commanderCard && commanderCard.name) || commanderId, containsCustomCards: payloadHasCustom }),
       savedAt: (payload && (payload.savedAt || payload.importedAt || payload.updatedAt)) || "",
       savedKind: payload && payload.importedAt ? "importato" : "salvato",
       deckSize: deckIds.length,
+      containsCustomCards: Boolean(check.containsCustomCards || payloadHasCustom),
+      customCount: check && Array.isArray(check.cards) ? deckBuilderCustomCardCount(check.cards) : 0,
+      official: !(check.containsCustomCards || payloadHasCustom),
       ok: Boolean(check.ok),
       issues: Array.isArray(check.issues) ? check.issues : [],
       check
@@ -528,18 +760,22 @@ function deckBuilderSavedGalleryHtml(entries, currentKey = "") {
     const statusClass = entry.ok ? "good" : "bad";
     const statusText = entry.ok ? "valido" : "non valido";
     const selected = entry.key === currentKey ? " selected" : "";
-    const issueText = entry.ok ? "Pronto per il SetupScreen." : (entry.issues || []).join("; ") || "Deck non valido.";
-    return `<article class="deckBuilderSavedDeckCard${selected}">
+    const custom = Boolean(entry.containsCustomCards);
+    const issueText = entry.ok
+      ? (custom ? "Deck NON UFFICIALE: pronto per laboratorio custom, non per Setup standard." : "Pronto per il SetupScreen.")
+      : (entry.issues || []).join("; ") || "Deck non valido.";
+    return `<article class="deckBuilderSavedDeckCard${selected}${custom ? " custom" : ""}">
       <div class="deckBuilderSavedDeckTop">
         <div>
-          <strong>${dbEscapeHtml(entry.faction || "—")} · ${dbEscapeHtml(entry.commanderName || entry.commanderId || "Comandante")}</strong>
-          <span>${dbEscapeHtml(entry.key)}</span>
+          <strong>${dbEscapeHtml(entry.deckName || "Deck senza nome")}</strong>
+          <span>${dbEscapeHtml(entry.faction || "—")} · ${dbEscapeHtml(entry.commanderName || entry.commanderId || "Comandante")} · ${dbEscapeHtml(entry.key)}</span>
         </div>
-        <span class="deckBuilderSavedState ${statusClass}">${dbEscapeHtml(statusText)}</span>
+        <span class="deckBuilderSavedState ${statusClass}">${custom ? "NON UFFICIALE" : dbEscapeHtml(statusText)}</span>
       </div>
       <div class="deckBuilderSavedDeckMeta">
         <span>${entry.deckSize}/30 carte</span>
-        <span>${dbEscapeHtml(entry.savedKind || "salvato")}</span>
+        <span>${custom ? "custom lab" : dbEscapeHtml(entry.savedKind || "salvato")}</span>
+        ${custom ? `<span>${entry.customCount || 0} CUSTOM</span>` : ""}
         <span>${dbEscapeHtml(entry.savedAt || "data non disponibile")}</span>
       </div>
       <div class="deckBuilderSavedDeckNote">${dbEscapeHtml(issueText)}</div>
@@ -585,7 +821,15 @@ function renderDeckBuilderScreen() {
 
   populateDeckBuilderFactionSelect();
   populateDeckBuilderCommanderSelect();
+  const customToggle = document.getElementById("deckBuilderIncludeCustomToggle");
+  if (customToggle) {
+    customToggle.checked = deckBuilderIncludeCustomCards();
+    customToggle.disabled = !deckBuilderCanReadCustomCards();
+    customToggle.title = deckBuilderCanReadCustomCards() ? "Mostra anche le carte custom salvate nel Card Editor." : "Card Editor custom non disponibile.";
+  }
   const report = deckBuilderReportObject();
+  const nameInput = document.getElementById("deckBuilderDeckNameInput");
+  if (nameInput && document.activeElement !== nameInput && !deckBuilderNormalizeDeckName(nameInput.value)) nameInput.value = report.deckName || deckBuilderDefaultDeckName(report);
   const pool = deckBuilderPoolFor(report.faction, report.commanderId, deckBuilderCatalog());
   deckBuilderEnsurePreviewCard(report, pool);
 
@@ -599,8 +843,8 @@ function renderDeckBuilderScreen() {
   if (typeof renderDeckBuilderCardPreview === "function") renderDeckBuilderCardPreview(report);
   if (meta) {
     const status = report.sanity && report.sanity.ok ? "draft valido" : "draft da correggere";
-    const saved = report.savedDeck ? ` · salvato ${report.savedDeck.savedAt || "local"}` : " · nessun salvato";
-    meta.textContent = `${report.build.version || "build"} · ${report.mode} · ${status} · ${report.deckIds.length}/${report.deckRules.deckSize} carte${saved}`;
+    const saved = report.savedDeck ? ` · salvato: ${report.savedDeck.deckName || "deck"} · ${report.savedDeck.savedAt || "local"}` : ` · salvati per slot: ${report.savedDeckCount || 0}`;
+    meta.textContent = `${report.build.version || "build"} · ${report.mode} · ${status} · ${report.deckIds.length}/${report.deckRules.deckSize} carte · ${report.deckName || deckBuilderDefaultDeckName(report)}${saved}`;
   }
   deckBuilderSetFeedback(deckBuilderState.feedback || "", deckBuilderState.feedback ? (report.sanity && report.sanity.ok ? "good" : "") : "");
 }
@@ -667,13 +911,20 @@ function deckBuilderDeckJson() {
     build: report.build,
     mode: report.mode,
     faction: report.faction,
+    deckName: report.deckName,
     commanderId: report.commanderId,
     commanderName: report.commanderName,
     deckRules: report.deckRules,
+    official: report.official,
+    containsCustomCards: report.containsCustomCards,
+    customCount: report.customCount,
+    setupRuntimeEligible: true,
     sanity: report.sanity,
     deckIds: report.deckIds,
     deck: report.deck,
-    warning: "F9I1 export: il deck può essere salvato, scaricato/importato, visualizzato nella gallery e usato dal setup solo se valido. La preview carta usa manifest asset + placeholder quando manca l'illustrazione."
+    warning: report.containsCustomCards
+      ? "F9K5b export: deck NON UFFICIALE con carte CUSTOM. Usabile nel Custom Match Test Lab selezionando Deck personalizzato salvato nel Setup."
+      : "F9K5b export: deck ufficiale compatibile con Setup standard se valido."
   }, null, 2);
 }
 
@@ -799,21 +1050,37 @@ function saveCurrentDeckBuilderDraft() {
     renderDeckBuilderScreen();
     return false;
   }
+  const deckName = deckBuilderCurrentDeckName(report);
+  const saveKey = deckBuilderStorageKeyForReport(report, deckName);
   const store = deckBuilderReadSavedStore();
   const payload = {
-    schemaVersion: 1,
+    schemaVersion: 3,
     savedAt: deckBuilderNowIso(),
     build: report.build,
+    key: saveKey,
+    baseKey: report.draftKey,
+    deckName,
+    name: deckName,
     faction: report.faction,
     commanderId: report.commanderId,
     commanderName: report.commanderName,
     deckRules: report.deckRules,
+    deckMode: report.containsCustomCards ? "custom_lab" : "official",
+    runtimeMode: report.containsCustomCards ? "custom_lab" : "official",
+    official: !report.containsCustomCards,
+    containsCustomCards: report.containsCustomCards,
+    customCount: report.customCount || 0,
+    setupRuntimeEligible: true,
+    note: report.containsCustomCards ? "Deck non ufficiale F9K5b: usabile nel Custom Match Test Lab dal Setup." : "Deck ufficiale compatibile Setup standard.",
     deckIds: [...report.deckIds]
   };
-  store[report.draftKey] = payload;
+  store[saveKey] = payload;
   const ok = deckBuilderWriteSavedStore(store);
-  if (ok) deckBuilderState.selectedSavedKey = report.draftKey;
-  deckBuilderSetFeedback(ok ? `Deck salvato localmente per ${report.faction} · ${report.commanderName || report.commanderId}.` : "Salvataggio fallito: localStorage non disponibile.", ok ? "good" : "bad");
+  if (ok) {
+    deckBuilderState.selectedSavedKey = saveKey;
+    deckBuilderState.deckName = deckName;
+  }
+  deckBuilderSetFeedback(ok ? `Deck “${deckName}” ${report.containsCustomCards ? "NON UFFICIALE custom" : "ufficiale"} salvato localmente per ${report.faction} · ${report.commanderName || report.commanderId}.` : "Salvataggio fallito: localStorage non disponibile.", ok ? "good" : "bad");
   if (typeof refreshSetupDeckSelectors === "function") refreshSetupDeckSelectors();
   renderDeckBuilderScreen();
   return ok;
@@ -821,31 +1088,48 @@ function saveCurrentDeckBuilderDraft() {
 
 function loadSavedDeckBuilderDraft() {
   const report = deckBuilderReportObject();
-  const check = deckBuilderSavedStatusForSetup(report.faction, report.commanderId, deckBuilderCatalog());
+  const entries = deckBuilderSavedPayloadEntriesFor(report.faction, report.commanderId, { includeCustom: report.includeCustomCards });
+  const preferred = deckBuilderState.selectedSavedKey && entries.find(entry => entry.key === deckBuilderState.selectedSavedKey)
+    ? entries.find(entry => entry.key === deckBuilderState.selectedSavedKey)
+    : entries[0];
+  const payload = preferred ? preferred.payload : null;
+  if (!payload) {
+    deckBuilderSetFeedback(`Nessun deck ${report.includeCustomCards ? "custom" : "ufficiale"} salvato da caricare per questa fazione/comandante.`, "bad");
+    renderDeckBuilderScreen();
+    return false;
+  }
+  const check = deckBuilderValidateSavedDeckPayload(payload, report.faction, report.commanderId, deckBuilderCatalog({ includeCustom: report.includeCustomCards }), { allowCustom: report.includeCustomCards, savedKey: preferred.key });
   if (!check.ok) {
     deckBuilderSetFeedback(`Nessun deck salvato valido da caricare: ${check.issues.join("; ")}`, "bad");
     renderDeckBuilderScreen();
     return false;
   }
   deckBuilderState.draftsByKey[report.draftKey] = [...check.deckIds];
-  deckBuilderState.selectedSavedKey = report.draftKey;
-  deckBuilderSetFeedback(`Deck salvato caricato nel draft (${check.deckIds.length} carte).`, "good");
+  deckBuilderState.selectedSavedKey = preferred.key;
+  deckBuilderState.deckName = check.deckName || payload.deckName || payload.name || "";
+  const nameInput = typeof document !== "undefined" ? document.getElementById("deckBuilderDeckNameInput") : null;
+  if (nameInput) nameInput.value = deckBuilderState.deckName || deckBuilderDefaultDeckName(report);
+  deckBuilderSetFeedback(`Deck salvato caricato nel draft: “${deckBuilderState.deckName || "deck"}” (${check.deckIds.length} carte${report.includeCustomCards ? ", custom lab" : ""}).`, "good");
   renderDeckBuilderScreen();
   return true;
 }
 
 function deleteSavedDeckBuilderDraft() {
   const report = deckBuilderReportObject();
+  const entries = deckBuilderSavedPayloadEntriesFor(report.faction, report.commanderId, { includeCustom: report.includeCustomCards });
+  const target = deckBuilderState.selectedSavedKey && entries.find(entry => entry.key === deckBuilderState.selectedSavedKey)
+    ? entries.find(entry => entry.key === deckBuilderState.selectedSavedKey)
+    : entries[0];
   const store = deckBuilderReadSavedStore();
-  if (!store[report.draftKey]) {
+  if (!target || !store[target.key]) {
     deckBuilderSetFeedback("Nessun deck salvato da eliminare per questa fazione/comandante.", "bad");
     renderDeckBuilderScreen();
     return false;
   }
-  delete store[report.draftKey];
+  delete store[target.key];
   const ok = deckBuilderWriteSavedStore(store);
-  if (deckBuilderState.selectedSavedKey === report.draftKey) deckBuilderState.selectedSavedKey = "";
-  deckBuilderSetFeedback(ok ? "Deck salvato eliminato." : "Eliminazione fallita.", ok ? "good" : "bad");
+  if (deckBuilderState.selectedSavedKey === target.key) deckBuilderState.selectedSavedKey = "";
+  deckBuilderSetFeedback(ok ? `Deck salvato eliminato: ${target.deckName || target.key}.` : "Eliminazione fallita.", ok ? "good" : "bad");
   if (typeof refreshSetupDeckSelectors === "function") refreshSetupDeckSelectors();
   renderDeckBuilderScreen();
   return ok;
@@ -860,9 +1144,12 @@ function loadSavedDeckBuilderDraftByKey(savedKey) {
     renderDeckBuilderScreen();
     return false;
   }
+  const payloadHasCustom = deckBuilderSavedPayloadHasCustom(payload, deckBuilderCatalog({ includeCustom: true }));
+  deckBuilderState.includeCustomCards = payloadHasCustom;
   const faction = payload.faction || key.split("::")[0] || deckBuilderResolvedFaction();
-  const commanderId = payload.commanderId || key.split("::")[1] || deckBuilderDefaultCommanderId(faction, deckBuilderCatalog());
-  const check = deckBuilderValidateSavedDeckPayload(payload, faction, commanderId, deckBuilderCatalog());
+  const commanderId = payload.commanderId || key.split("::")[1] || deckBuilderDefaultCommanderId(faction, deckBuilderCatalog({ includeCustom: payloadHasCustom }));
+  const validationCatalog = deckBuilderCatalog({ includeCustom: payloadHasCustom });
+  const check = deckBuilderValidateSavedDeckPayload(payload, faction, commanderId, validationCatalog, { allowCustom: payloadHasCustom, savedKey: key });
   if (!check.ok) {
     deckBuilderSetFeedback(`Deck salvato non caricato: ${check.issues.join("; ")}`, "bad");
     renderDeckBuilderScreen();
@@ -871,8 +1158,11 @@ function loadSavedDeckBuilderDraftByKey(savedKey) {
   deckBuilderState.faction = faction;
   deckBuilderState.commanderId = commanderId;
   deckBuilderState.selectedSavedKey = key;
-  deckBuilderState.draftsByKey[deckBuilderDraftKey(faction, commanderId)] = [...check.deckIds];
-  deckBuilderSetFeedback(`Deck gallery caricato nel draft: ${faction} · ${check.payload.commanderName || commanderId} (${check.deckIds.length} carte).`, "good");
+  deckBuilderState.deckName = check.deckName || payload.deckName || payload.name || "";
+  const nameInput = typeof document !== "undefined" ? document.getElementById("deckBuilderDeckNameInput") : null;
+  if (nameInput) nameInput.value = deckBuilderState.deckName || deckBuilderDefaultDeckName({ faction, commanderId, commanderName: check.payload.commanderName || commanderId, containsCustomCards: payloadHasCustom });
+  deckBuilderState.draftsByKey[deckBuilderDraftKey(faction, commanderId, { includeCustom: payloadHasCustom })] = [...check.deckIds];
+  deckBuilderSetFeedback(`Deck gallery caricato nel draft: “${deckBuilderState.deckName || "deck"}” · ${faction} · ${check.payload.commanderName || commanderId} (${check.deckIds.length} carte${payloadHasCustom ? ", custom lab" : ""}).`, "good");
   renderDeckBuilderScreen();
   return true;
 }
@@ -893,8 +1183,9 @@ function copySavedDeckBuilderPayloadByKey(savedKey) {
     key,
     decks: { [key]: payload }
   }, null, 2);
-  deckBuilderSetFeedback(`Deck ${key} copiato negli appunti.`, "good");
-  return copyDeckBuilderText(text, `Deck ${key} copiato negli appunti.`);
+  const deckName = deckBuilderNormalizeDeckName(payload.deckName || payload.name || "") || key;
+  deckBuilderSetFeedback(`Deck “${deckName}” copiato negli appunti.`, "good");
+  return copyDeckBuilderText(text, `Deck “${deckName}” copiato negli appunti.`);
 }
 
 function deleteSavedDeckBuilderDraftByKey(savedKey) {
@@ -938,6 +1229,29 @@ function initializeDeckBuilderScreen() {
     commanderSelect.addEventListener("change", () => {
       deckBuilderState.commanderId = commanderSelect.value;
       deckBuilderState.selectedPreviewCardId = "";
+      renderDeckBuilderScreen();
+    });
+  }
+
+  const deckNameInput = document.getElementById("deckBuilderDeckNameInput");
+  if (deckNameInput && deckNameInput.dataset.bound !== "1") {
+    deckNameInput.dataset.bound = "1";
+    deckNameInput.addEventListener("input", () => {
+      deckBuilderState.deckName = deckBuilderNormalizeDeckName(deckNameInput.value);
+    });
+    deckNameInput.addEventListener("change", () => {
+      deckBuilderState.deckName = deckBuilderNormalizeDeckName(deckNameInput.value);
+      renderDeckBuilderScreen();
+    });
+  }
+
+  const includeCustomToggle = document.getElementById("deckBuilderIncludeCustomToggle");
+  if (includeCustomToggle && includeCustomToggle.dataset.bound !== "1") {
+    includeCustomToggle.dataset.bound = "1";
+    includeCustomToggle.addEventListener("change", () => {
+      deckBuilderState.includeCustomCards = Boolean(includeCustomToggle.checked);
+      deckBuilderState.selectedPreviewCardId = "";
+      deckBuilderSetFeedback(deckBuilderState.includeCustomCards ? "Pool CUSTOM attivo: eventuali deck con custom saranno NON UFFICIALI." : "Pool ufficiale attivo.", deckBuilderState.includeCustomCards ? "good" : "");
       renderDeckBuilderScreen();
     });
   }

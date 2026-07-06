@@ -1,0 +1,477 @@
+{
+  "schema": "arena-rubra-renderer-calibration-commit-F9K2d",
+  "source": "Pasted text.txt / F9K2c calibration exports",
+  "committedAt": "2026-07-01",
+  "build": "C2-STABLE-1-F9K2d-APK-M4c",
+  "overrides": {
+    "unit": {
+      "exordium": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 1073.5,
+            "w": 735,
+            "h": 48,
+            "maxFontSize": 55,
+            "minFontSize": 30
+          },
+          "type": {
+            "x": 312,
+            "y": 1190,
+            "w": 400,
+            "h": 30,
+            "maxFontSize": 25,
+            "minFontSize": 18
+          },
+          "description": {
+            "x": 161,
+            "y": 1230,
+            "w": 724,
+            "h": 218,
+            "maxFontSize": 34,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 111,
+            "valueY": 180,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 155,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "def": {
+            "cx": 322,
+            "labelY": 954,
+            "valueY": 1006,
+            "labelSize": 19,
+            "valueSize": 70
+          },
+          "att": {
+            "cx": 871,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          }
+        }
+      },
+      "agathoi": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 1080.5,
+            "w": 732,
+            "h": 48,
+            "maxFontSize": 55,
+            "minFontSize": 30
+          },
+          "type": {
+            "x": 312,
+            "y": 1190,
+            "w": 400,
+            "h": 30,
+            "maxFontSize": 25,
+            "minFontSize": 18
+          },
+          "description": {
+            "x": 155,
+            "y": 1240,
+            "w": 724,
+            "h": 218,
+            "maxFontSize": 34,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 111,
+            "valueY": 180,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 152,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "def": {
+            "cx": 322,
+            "labelY": 954,
+            "valueY": 1003,
+            "labelSize": 19,
+            "valueSize": 70
+          },
+          "att": {
+            "cx": 861,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          }
+        }
+      },
+      "liberti": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 1090,
+            "w": 732,
+            "h": 48,
+            "maxFontSize": 55,
+            "minFontSize": 30
+          },
+          "type": {
+            "x": 312,
+            "y": 1195,
+            "w": 400,
+            "h": 30,
+            "maxFontSize": 25,
+            "minFontSize": 18
+          },
+          "description": {
+            "x": 155,
+            "y": 1258,
+            "w": 724,
+            "h": 218,
+            "maxFontSize": 34,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 111,
+            "valueY": 180,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 152,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "def": {
+            "cx": 322,
+            "labelY": 954,
+            "valueY": 1003,
+            "labelSize": 19,
+            "valueSize": 70
+          },
+          "att": {
+            "cx": 861,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          }
+        }
+      },
+      "fabeot": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 1085,
+            "w": 732,
+            "h": 48,
+            "maxFontSize": 55,
+            "minFontSize": 30
+          },
+          "type": {
+            "x": 312,
+            "y": 1190,
+            "w": 400,
+            "h": 30,
+            "maxFontSize": 25,
+            "minFontSize": 18
+          },
+          "description": {
+            "x": 155,
+            "y": 1240,
+            "w": 724,
+            "h": 218,
+            "maxFontSize": 34,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 111,
+            "valueY": 180,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 152,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "def": {
+            "cx": 322,
+            "labelY": 954,
+            "valueY": 1003,
+            "labelSize": 19,
+            "valueSize": 70
+          },
+          "att": {
+            "cx": 861,
+            "labelY": 925,
+            "valueY": 997,
+            "labelSize": 25,
+            "valueSize": 104
+          }
+        }
+      }
+    },
+    "tactic": {
+      "exordium": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 880,
+            "w": 740,
+            "h": 60,
+            "maxFontSize": 55,
+            "minFontSize": 28
+          },
+          "type": {
+            "x": 267,
+            "y": 1002,
+            "w": 495,
+            "h": 34,
+            "maxFontSize": 28,
+            "minFontSize": 16
+          },
+          "description": {
+            "x": 150,
+            "y": 1095,
+            "w": 748,
+            "h": 300,
+            "maxFontSize": 38,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 150,
+            "labelY": 110,
+            "valueY": 190,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "def": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "att": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          }
+        }
+      },
+      "agathoi": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 900,
+            "w": 740,
+            "h": 60,
+            "maxFontSize": 55,
+            "minFontSize": 28
+          },
+          "type": {
+            "x": 274,
+            "y": 1010,
+            "w": 495,
+            "h": 34,
+            "maxFontSize": 28,
+            "minFontSize": 16
+          },
+          "description": {
+            "x": 157,
+            "y": 1100,
+            "w": 748,
+            "h": 300,
+            "maxFontSize": 38,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 108,
+            "valueY": 190,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "def": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "att": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          }
+        }
+      },
+      "liberti": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 910,
+            "w": 740,
+            "h": 60,
+            "maxFontSize": 55,
+            "minFontSize": 28
+          },
+          "type": {
+            "x": 274,
+            "y": 1032,
+            "w": 495,
+            "h": 34,
+            "maxFontSize": 28,
+            "minFontSize": 16
+          },
+          "description": {
+            "x": 138,
+            "y": 1120,
+            "w": 748,
+            "h": 300,
+            "maxFontSize": 38,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 111,
+            "valueY": 185,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "def": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "att": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          }
+        }
+      },
+      "fabeot": {
+        "textAreas": {
+          "name": {
+            "x": 146,
+            "y": 885,
+            "w": 740,
+            "h": 60,
+            "maxFontSize": 55,
+            "minFontSize": 28
+          },
+          "type": {
+            "x": 274,
+            "y": 1000,
+            "w": 495,
+            "h": 34,
+            "maxFontSize": 28,
+            "minFontSize": 16
+          },
+          "description": {
+            "x": 142,
+            "y": 1100,
+            "w": 748,
+            "h": 300,
+            "maxFontSize": 38,
+            "minFontSize": 22
+          }
+        },
+        "statText": {
+          "ene": {
+            "cx": 140,
+            "labelY": 111,
+            "valueY": 190,
+            "labelSize": 25,
+            "valueSize": 104
+          },
+          "hp": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "def": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          },
+          "att": {
+            "cx": 0,
+            "labelY": 0,
+            "valueY": 0,
+            "labelSize": 0,
+            "valueSize": 0
+          }
+        }
+      }
+    }
+  },
+  "notes": "Coordinate validate dall'utente e integrate nel renderer come CARD_RENDERER_FIXED_LAYOUT_OVERRIDES. Nexus resta baseline."
+}

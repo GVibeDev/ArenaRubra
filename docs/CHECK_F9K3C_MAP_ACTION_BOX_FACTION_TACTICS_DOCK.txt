@@ -1,0 +1,24 @@
+F9K3c check
+
+Output:
+C2-STABLE-1-F9K3c-APK-M4c Map Action Box / Faction Tactics Dock
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- buildInfoLabel C2-STABLE-1-F9K3c-APK-M4c
+- #mapActionDock presente
+- renderMapActionDock presente
+- mapActionDockToggleTactic presente
+- CSS mapActionDock presente
+- zip integrity
+
+Manual test:
+1. Avvia nuova partita.
+2. Controlla che il box Azioni compaia basso-sinistra sulla mappa.
+3. Verifica che mostri le tattiche della fazione del giocatore corrente.
+4. Clicca una tattica con bersaglio: le celle/unità valide devono evidenziarsi come nel pannello legacy.
+5. Clicca di nuovo/Annulla: la modalità targeting deve annullarsi.
+6. Usa una tattica senza bersaglio se disponibile: deve comportarsi come nel pannello legacy.
+7. Cambia turno: il dock deve aggiornarsi alla fazione del giocatore corrente.

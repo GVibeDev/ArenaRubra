@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Arena Rubra</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/renderer_calibration_lab.css">
 </head>
 <body>
 
@@ -31,21 +32,33 @@
       <h1><span id="buildAppName">Arena Rubra</span></h1>
       <div class="mainMenuStage" id="buildStage">Starter Game ALPHA</div>
       <div class="mainMenuBuildBox">
-        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span></div>
-        <div><strong>Patch</strong> <span id="menuBuildName">Card Pool Screen Foundation</span></div>
+        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span></div>
+        <div><strong>Patch</strong> <span id="menuBuildName">Menu / Lab Navigation Cleanup</span></div>
         <div><strong>Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></div>
         <div><strong>Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></div>
         <div><strong>Data</strong> <span id="menuBuildDate">2026-06-27</span></div>
       </div>
-      <div class="mainMenuActions">
-        <button class="primary" id="mainMenuNewGameBtn" type="button">Nuova partita</button>
-        <button class="ghost" id="mainMenuResumeBtn" type="button">Riprendi schermata partita</button>
-        <button class="ghost" data-app-open-deck-builder type="button">Costruisci deck</button>
-        <button class="ghost" data-app-placeholder-screen="cardEditor" type="button">Crea / modifica carta</button>
-        <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
-        <button class="ghost" data-app-placeholder-screen="stats" type="button">Statistiche / log test</button>
-        <button class="ghost" data-app-placeholder-screen="options" type="button">Opzioni / debug</button>
-        <button class="ghost" data-app-placeholder-screen="about" type="button">Informazioni versione</button>
+      <div class="mainMenuActions mainMenuActionsF9K7" aria-label="Azioni principali Arena Rubra">
+        <section class="mainMenuActionGroup mainMenuActionGroupPlay" aria-label="Gioca">
+          <h2>Gioca</h2>
+          <p>Avvio partita, ripresa sessione e Custom Match Lab.</p>
+          <button class="primary" id="mainMenuNewGameBtn" type="button">Nuova partita / Custom Match</button>
+          <button class="ghost" id="mainMenuResumeBtn" type="button">Riprendi schermata partita</button>
+        </section>
+        <section class="mainMenuActionGroup mainMenuActionGroupLab" aria-label="Laboratorio carte e deck">
+          <h2>Laboratorio</h2>
+          <p>Crea carte, costruisci deck e controlla il pool completo.</p>
+          <button class="ghost" data-app-open-card-editor type="button">Crea carta custom</button>
+          <button class="ghost" data-app-open-deck-builder type="button">Costruisci deck</button>
+          <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
+        </section>
+        <section class="mainMenuActionGroup mainMenuActionGroupDebug" aria-label="Debug export e informazioni">
+          <h2>Debug / Export</h2>
+          <p>Strumenti diagnostici e informazioni build.</p>
+          <button class="ghost" data-app-placeholder-screen="stats" type="button">Statistiche / log test</button>
+          <button class="ghost" data-app-placeholder-screen="options" type="button">Opzioni / debug</button>
+          <button class="ghost" data-app-placeholder-screen="about" type="button">Informazioni versione</button>
+        </section>
       </div>
       <p class="mainMenuNotes" id="menuBuildNotes">Fase 9D: PanelManager foundation, pannelli richiamabili con scrim senza modifiche alla logica Starter.</p>
     </div>
@@ -56,57 +69,83 @@
     <div class="setupScreenCard">
       <div class="mainMenuKicker">Nuova partita</div>
       <h2>Setup Starter MAP1</h2>
-      <p class="setupIntro">Scegli fazioni, comandanti, controllo giocatori e ritmo. La logica Starter resta congelata: questa schermata prepara solo i dati di avvio della partita.</p>
+      <p class="setupIntro">F9K7 separa identità giocatore, deck runtime e regole partita. I deck custom restano nel Custom Match Lab: nessuna modifica a gameplay, AI o bilanciamento.</p>
 
       <div class="setupScreenGrid">
-        <section class="setupSideBox faction-nexus-box">
-          <h3>Giocatore 1</h3>
-          <label for="setupP1Faction">Fazione</label>
-          <select id="setupP1Faction">
-            <option value="Nexus">Nexus</option>
-            <option value="Exordium">Exordium</option>
-            <option value="Liberti">Liberti</option>
-            <option value="Agathoi">Agathoi</option>
-            <option value="Fabeot">Fabeot</option>
-          </select>
-          <label for="setupP1Commander">Comandante</label>
-          <select id="setupP1Commander"></select>
-          <label for="setupP1Mode">Controllo</label>
-          <select id="setupP1Mode">
-            <option value="human">Umano</option>
-            <option value="bot">Bot</option>
-          </select>
-          <label for="setupP1DeckMode">Deck</label>
-          <select id="setupP1DeckMode">
-            <option value="template" selected>Deck automatico Starter</option>
-            <option value="custom">Deck personalizzato salvato</option>
-          </select>
-          <div class="setupDeckInfo" id="setupP1DeckInfo">Deck automatico Starter.</div>
+        <section class="setupSideBox faction-nexus-box setupPlayerBox">
+          <div class="setupSideHeader">
+            <h3>Giocatore 1</h3>
+            <span class="setupDeckBadge" id="setupP1DeckBadge">Deck Starter</span>
+          </div>
+          <div class="setupPlayerSubsection">
+            <h4>Identità</h4>
+            <div class="setupFieldGrid">
+              <label for="setupP1Faction">Fazione</label>
+              <select id="setupP1Faction">
+                <option value="Nexus">Nexus</option>
+                <option value="Exordium">Exordium</option>
+                <option value="Liberti">Liberti</option>
+                <option value="Agathoi">Agathoi</option>
+                <option value="Fabeot">Fabeot</option>
+              </select>
+              <label for="setupP1Commander">Comandante</label>
+              <select id="setupP1Commander"></select>
+              <label for="setupP1Mode">Controllo</label>
+              <select id="setupP1Mode">
+                <option value="human">Umano</option>
+                <option value="bot">Bot</option>
+              </select>
+            </div>
+          </div>
+          <div class="setupPlayerSubsection setupDeckRuntimeBox">
+            <h4>Deck runtime</h4>
+            <label for="setupP1DeckMode">Modalità deck</label>
+            <select id="setupP1DeckMode">
+              <option value="template" selected>Deck automatico Starter</option>
+              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+            </select>
+            <label for="setupP1DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <select id="setupP1DeckSavedKey" class="setupDeckSavedSelect"></select>
+            <div class="setupDeckInfo" id="setupP1DeckInfo">Deck automatico Starter.</div>
+          </div>
         </section>
 
-        <section class="setupSideBox faction-exordium-box">
-          <h3>Giocatore 2</h3>
-          <label for="setupP2Faction">Fazione</label>
-          <select id="setupP2Faction">
-            <option value="Exordium">Exordium</option>
-            <option value="Nexus">Nexus</option>
-            <option value="Liberti">Liberti</option>
-            <option value="Agathoi">Agathoi</option>
-            <option value="Fabeot">Fabeot</option>
-          </select>
-          <label for="setupP2Commander">Comandante</label>
-          <select id="setupP2Commander"></select>
-          <label for="setupP2Mode">Controllo</label>
-          <select id="setupP2Mode">
-            <option value="bot">Bot</option>
-            <option value="human">Umano</option>
-          </select>
-          <label for="setupP2DeckMode">Deck</label>
-          <select id="setupP2DeckMode">
-            <option value="template" selected>Deck automatico Starter</option>
-            <option value="custom">Deck personalizzato salvato</option>
-          </select>
-          <div class="setupDeckInfo" id="setupP2DeckInfo">Deck automatico Starter.</div>
+        <section class="setupSideBox faction-exordium-box setupPlayerBox">
+          <div class="setupSideHeader">
+            <h3>Giocatore 2</h3>
+            <span class="setupDeckBadge" id="setupP2DeckBadge">Deck Starter</span>
+          </div>
+          <div class="setupPlayerSubsection">
+            <h4>Identità</h4>
+            <div class="setupFieldGrid">
+              <label for="setupP2Faction">Fazione</label>
+              <select id="setupP2Faction">
+                <option value="Exordium">Exordium</option>
+                <option value="Nexus">Nexus</option>
+                <option value="Liberti">Liberti</option>
+                <option value="Agathoi">Agathoi</option>
+                <option value="Fabeot">Fabeot</option>
+              </select>
+              <label for="setupP2Commander">Comandante</label>
+              <select id="setupP2Commander"></select>
+              <label for="setupP2Mode">Controllo</label>
+              <select id="setupP2Mode">
+                <option value="bot">Bot</option>
+                <option value="human">Umano</option>
+              </select>
+            </div>
+          </div>
+          <div class="setupPlayerSubsection setupDeckRuntimeBox">
+            <h4>Deck runtime</h4>
+            <label for="setupP2DeckMode">Modalità deck</label>
+            <select id="setupP2DeckMode">
+              <option value="template" selected>Deck automatico Starter</option>
+              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+            </select>
+            <label for="setupP2DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <select id="setupP2DeckSavedKey" class="setupDeckSavedSelect"></select>
+            <div class="setupDeckInfo" id="setupP2DeckInfo">Deck automatico Starter.</div>
+          </div>
         </section>
       </div>
 
@@ -151,7 +190,7 @@
         <button class="ghost" id="setupBackMenuBtn" type="button">Torna al menu</button>
         <button class="primary" id="setupStartGameBtn" type="button">Avvia partita</button>
       </div>
-      <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span> · <span id="setupBuildName">Card Pool Screen Foundation</span></p>
+      <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span> · <span id="setupBuildName">Menu / Lab Navigation Cleanup</span></p>
     </div>
   </section>
 
@@ -162,7 +201,7 @@
         <div>
           <div class="mainMenuKicker">Deck Builder</div>
           <h2>Costruisci deck</h2>
-          <p class="deckBuilderIntro">F9J1 mantiene Deck Builder, preview in-game e storage validati; aggiunge anche la schermata Pool carte read-only con filtri, ricerca, preview renderer e path asset.</p>
+          <p class="deckBuilderIntro">F9K7 mantiene il runtime F9K6b validato e riorganizza navigazione, setup e libreria deck senza toccare gameplay.</p>
         </div>
         <div class="deckBuilderHeaderActions">
           <button class="ghost" id="deckBuilderCopyJsonBtn" type="button">Copia report JSON</button>
@@ -176,6 +215,8 @@
           <button class="ghost" id="deckBuilderPasteImportBtn" type="button">Incolla JSON</button>
           <input id="deckBuilderImportDecksFile" type="file" accept="application/json,.json" hidden>
           <button class="ghost" id="deckBuilderAssetManifestBtn" type="button">Copia manifest asset carte</button>
+          <button class="ghost" data-app-open-card-editor type="button">Crea carta custom</button>
+          <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
           <button class="ghost" id="deckBuilderResetTemplateBtn" type="button">Ripristina template</button>
           <button class="ghost" id="deckBuilderClearBtn" type="button">Svuota draft</button>
           <button class="primary" data-app-back-menu type="button">Torna al menu</button>
@@ -191,7 +232,15 @@
           <label for="deckBuilderCommanderSelect">Comandante</label>
           <select id="deckBuilderCommanderSelect"></select>
         </div>
-        <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9J1-APK-M4c · selected unit preview space</div>
+        <div>
+          <label for="deckBuilderDeckNameInput">Nome deck</label>
+          <input id="deckBuilderDeckNameInput" type="text" maxlength="64" placeholder="es. Nexus controllo PS" autocomplete="off">
+        </div>
+        <label class="checkline deckBuilderCustomToggle">
+          <input id="deckBuilderIncludeCustomToggle" type="checkbox">
+          Includi carte CUSTOM nel pool
+        </label>
+        <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9K7-APK-M4c · menu / lab navigation cleanup</div>
       </div>
 
       <section id="deckBuilderSummary" class="deckBuilderSummary" aria-live="polite"></section>
@@ -220,7 +269,7 @@
       </section>
 
       <section class="deckBuilderBox deckBuilderPoolBox">
-        <h3>Pool legale della fazione</h3>
+        <h3>Pool legale della fazione</h3><p class="deckBuilderCustomHelp">Il toggle CUSTOM aggiunge al pool le carte salvate nel Card Editor. I deck con custom sono salvati come NON UFFICIALI.</p>
         <div class="deckBuilderTableWrap deckBuilderPoolTableWrap">
           <table class="deckBuilderTable">
             <thead><tr><th></th><th>ID</th><th>Carta</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>Nel draft</th><th>Testo / nota</th></tr></thead>
@@ -267,6 +316,349 @@
   </section>
 
 
+
+  <section id="cardEditorScreen" class="appScreen cardEditorScreen" data-app-screen-panel="cardEditor" aria-label="Card Editor custom Arena Rubra">
+    <div class="mainMenuBackdrop"></div>
+    <div class="deckBuilderCard cardEditorCard">
+      <header class="deckBuilderHeader">
+        <div>
+          <div class="mainMenuKicker">Card Editor</div>
+          <h2>Card Editor custom</h2>
+          <p class="deckBuilderIntro">F9K7 collega il laboratorio: Card Editor, Deck Builder e Pool restano raggiungibili tra loro senza passare sempre dal menu.</p>
+        </div>
+        <div class="deckBuilderHeaderActions">
+          <button class="primary" id="cardEditorSaveBtn" type="button">Salva custom</button>
+          <button class="ghost" id="cardEditorCopyJsonBtn" type="button">Copia JSON carta</button>
+          <button class="ghost" id="cardEditorCopyAllBtn" type="button">Copia libreria</button>
+          <button class="ghost" id="cardEditorNewBtn" type="button">Nuova custom</button>
+          <button class="ghost" data-app-open-deck-builder type="button">Apri Deck Builder</button>
+          <button class="ghost" data-app-open-card-pool type="button">Apri Pool</button>
+          <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
+        </div>
+      </header>
+
+      <section class="deckBuilderSummary cardEditorPolicyBox">
+        <div class="deckBuilderStatus good">
+          <strong>Regola F9K3c</strong>
+          <span>Ufficiali read-only · Custom separate · max 7 ENE · nessuna integrazione automatica nel gameplay.</span>
+        </div>
+        <div class="deckBuilderRuleBox">
+          Budget unità custom: 1 ENE max 4 HP+DEF+ATT + passiva; 2 ENE max 7 + passiva o attiva; 3 ENE max 10 + passiva o attiva; 4 ENE max 14 + passiva e/o attiva; 5 ENE max 18; 6 ENE max 22; 7 ENE max 27.
+        </div>
+      </section>
+
+      <div class="cardEditorLayout">
+        <section class="deckBuilderBox cardEditorFormBox">
+          <div class="deckBuilderBoxTitleRow">
+            <h3>Dati carta</h3>
+            <span class="help" id="cardEditorBudgetLine">Budget non calcolato.</span>
+          </div>
+
+          <div class="cardEditorFormGrid">
+            <label>
+              <span>Tipo carta</span>
+              <select id="cardEditorKind">
+                <option value="unit">Unità</option>
+                <option value="tactic">Tattica</option>
+              </select>
+            </label>
+            <label>
+              <span>Fazione</span>
+              <select id="cardEditorFaction"></select>
+            </label>
+            <label>
+              <span>ENE</span>
+              <select id="cardEditorCost">
+                <option value="1">1 ENE</option>
+                <option value="2">2 ENE</option>
+                <option value="3">3 ENE</option>
+                <option value="4">4 ENE</option>
+                <option value="5">5 ENE</option>
+                <option value="6">6 ENE</option>
+                <option value="7">7 ENE</option>
+              </select>
+            </label>
+            <label class="wide">
+              <span>Nome</span>
+              <input id="cardEditorName" type="text" maxlength="64" />
+            </label>
+            <label class="wide">
+              <span>Source ID custom</span>
+              <div class="inlineInputButton">
+                <input id="cardEditorSourceId" type="text" maxlength="72" />
+                <button class="ghost" id="cardEditorRegenerateIdBtn" type="button">Rigenera</button>
+              </div>
+            </label>
+          </div>
+
+          <div class="cardEditorFormGrid" data-card-editor-unit-only>
+            <label>
+              <span>Tipo unità</span>
+              <select id="cardEditorUnitType">
+                <option value="Fanteria">Fanteria</option>
+                <option value="Veicolo">Veicolo</option>
+                <option value="Struttura">Struttura</option>
+                <option value="Comandante">Comandante</option>
+              </select>
+            </label>
+            <label>
+              <span>Peso / ruolo</span>
+              <select id="cardEditorWeight">
+                <option value="Leggera">Leggera</option>
+                <option value="Pesante">Pesante</option>
+                <option value="Elite">Elite</option>
+                <option value="Pivot">Pivot</option>
+              </select>
+            </label>
+            <label>
+              <span>HP</span>
+              <input id="cardEditorHp" type="number" min="1" max="27" step="1" />
+            </label>
+            <label>
+              <span>DEF</span>
+              <input id="cardEditorDef" type="number" min="0" max="27" step="1" />
+            </label>
+            <label>
+              <span>ATT</span>
+              <input id="cardEditorAtt" type="number" min="0" max="27" step="1" />
+            </label>
+          </div>
+
+          <div class="cardEditorFormGrid" data-card-editor-tactic-only hidden>
+            <label>
+              <span>Categoria tattica</span>
+              <select id="cardEditorTacticCategory">
+                <option value="Operazione">Operazione</option>
+                <option value="Assalto">Assalto</option>
+                <option value="Difesa">Difesa</option>
+                <option value="Economia">Economia</option>
+                <option value="Controllo">Controllo</option>
+                <option value="Reazione">Reazione</option>
+              </select>
+            </label>
+            <label>
+              <span>Bersaglio tattica</span>
+              <select id="cardEditorTacticTarget">
+                <option value="enemy">Nemico</option>
+                <option value="ally">Alleato</option>
+                <option value="self">Sé</option>
+                <option value="any">Qualsiasi</option>
+                <option value="none">Nessuno</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="cardEditorFullLabel">
+            <span>Descrizione</span>
+            <textarea id="cardEditorDescription" rows="4"></textarea>
+          </label>
+
+          <section class="cardEditorArtBox" id="cardEditorArtBox">
+            <div class="deckBuilderBoxTitleRow">
+              <h3>Illustrazione custom</h3>
+              <span class="help" id="cardEditorArtResolutionHint">Unità: 800×780px · Tattiche: 800×670px</span>
+            </div>
+            <div class="cardEditorArtLayout">
+              <div class="cardEditorArtControls">
+                <div class="cardEditorFormGrid compact">
+                  <label>
+                    <span>Preset output</span>
+                    <select id="cardEditorArtPreset">
+                      <option value="recommended">Consigliata</option>
+                      <option value="high">Alta 2×</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Formato</span>
+                    <select id="cardEditorArtFormat">
+                      <option value="webp">WebP</option>
+                      <option value="jpeg">JPEG</option>
+                      <option value="png">PNG</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Compressione</span>
+                    <select id="cardEditorArtQuality">
+                      <option value="0.72">Leggera</option>
+                      <option value="0.82" selected>Standard</option>
+                      <option value="0.9">Alta qualità</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="cardEditorArtActions">
+                  <input id="cardEditorArtFile" type="file" accept="image/*" hidden>
+                  <button class="ghost" id="cardEditorArtPickBtn" type="button">Importa immagine</button>
+                  <button class="ghost" id="cardEditorArtReprocessBtn" type="button">Riapplica preset</button>
+                  <button class="danger" id="cardEditorArtClearBtn" type="button">Rimuovi immagine</button>
+                </div>
+                <div class="cardEditorArtTransformBox">
+                  <h4>Allineamento immagine permanente</h4>
+                  <div class="cardEditorFormGrid compact">
+                    <label>
+                      <span>Zoom</span>
+                      <input id="cardEditorArtZoom" type="number" min="0.2" max="3" step="0.05" value="1">
+                    </label>
+                    <label>
+                      <span>Offset X</span>
+                      <input id="cardEditorArtOffsetX" type="number" min="-600" max="600" step="1" value="0">
+                    </label>
+                    <label>
+                      <span>Offset Y</span>
+                      <input id="cardEditorArtOffsetY" type="number" min="-600" max="600" step="1" value="0">
+                    </label>
+                  </div>
+                  <div class="cardEditorArtActions">
+                    <button class="ghost" id="cardEditorArtResetTransformBtn" type="button">Reset allineamento</button>
+                    <button class="ghost" id="cardEditorArtCopyTransformBtn" type="button">Copia transform JSON</button>
+                  </div>
+                </div>
+                <div class="cardEditorArtStatus" id="cardEditorArtStatus">Nessuna immagine custom allegata.</div>
+              </div>
+              <div class="cardEditorArtPreviewBox">
+                <img id="cardEditorArtPreviewImg" alt="Preview immagine custom" hidden>
+                <div id="cardEditorArtMeta" class="cardEditorArtMeta">Nessuna immagine caricata.</div>
+              </div>
+            </div>
+          </section>
+
+          <div class="cardEditorAbilityGrid">
+            <section class="cardEditorAbilityBox">
+              <h4>Abilità attiva custom</h4>
+              <div class="cardEditorFormGrid compact">
+                <label>
+                  <span>Effetto</span>
+                  <select id="cardEditorActiveKind"></select>
+                </label>
+                <label>
+                  <span id="cardEditorActiveValueLabel">Valore</span>
+                  <input id="cardEditorActiveValue" type="number" min="0" max="20" step="1" />
+                </label>
+                <label>
+                  <span>Raggio</span>
+                  <input id="cardEditorActiveRange" type="number" min="0" max="8" step="1" />
+                </label>
+                <label>
+                  <span>Costo ENE</span>
+                  <input id="cardEditorActiveCost" type="number" min="0" max="7" step="1" />
+                </label>
+                <label>
+                  <span>Cooldown</span>
+                  <input id="cardEditorActiveCooldown" type="number" min="0" max="9" step="1" />
+                </label>
+                <label>
+                  <span>Bersaglio</span>
+                  <select id="cardEditorActiveTarget">
+                    <option value="enemy">Nemico</option>
+                    <option value="ally">Alleato</option>
+                    <option value="self">Sé</option>
+                    <option value="any">Qualsiasi</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Filtro</span>
+                  <select id="cardEditorActiveFilter">
+                    <option value="any">Qualsiasi</option>
+                    <option value="infantry">Fanteria</option>
+                    <option value="vehicle">Veicolo</option>
+                    <option value="structure">Struttura</option>
+                    <option value="commander_or_pivot">Comandante/Pivot</option>
+                  </select>
+                </label>
+                <label data-card-editor-status-only hidden>
+                  <span>Stato applicato</span>
+                  <select id="cardEditorActiveStatusKind"></select>
+                </label>
+                <label data-card-editor-status-only hidden>
+                  <span>Durata status</span>
+                  <input id="cardEditorActiveStatusTurns" type="number" min="1" max="3" step="1" />
+                </label>
+              </div>
+              <div id="cardEditorStatusHint" class="help" data-card-editor-status-only hidden></div>
+              <label class="cardEditorFullLabel">
+                <span>Testo attiva</span>
+                <textarea id="cardEditorActiveDescription" rows="2"></textarea>
+              </label>
+            </section>
+
+            <section class="cardEditorAbilityBox">
+              <h4>Passiva data-only</h4>
+              <div class="cardEditorFormGrid compact">
+                <label>
+                  <span>Effetto</span>
+                  <select id="cardEditorPassiveKind"></select>
+                </label>
+                <label>
+                  <span>Valore</span>
+                  <input id="cardEditorPassiveValue" type="number" min="0" max="20" step="1" />
+                </label>
+                <label>
+                  <span>Raggio</span>
+                  <input id="cardEditorPassiveRange" type="number" min="0" max="8" step="1" />
+                </label>
+              </div>
+              <label class="cardEditorFullLabel">
+                <span>Testo passiva</span>
+                <textarea id="cardEditorPassiveDescription" rows="2"></textarea>
+              </label>
+            </section>
+          </div>
+
+          <div id="cardEditorValidation" class="cardEditorValidation"></div>
+          <div class="cardEditorActions">
+            <button class="ghost" id="cardEditorDuplicateBtn" type="button">Duplica custom selezionata</button>
+            <button class="danger" id="cardEditorDeleteBtn" type="button">Elimina custom selezionata</button>
+          </div>
+        </section>
+
+        <section class="deckBuilderBox cardEditorPreviewBox">
+          <div class="deckBuilderBoxTitleRow">
+            <h3>Preview renderer live</h3>
+            <span class="help">La preview usa lo stesso renderer del Pool e del GameScreen.</span>
+          </div>
+          <div class="cardEditorPreviewLayout">
+            <div class="deckBuilderPreviewCanvasWrap">
+              <canvas id="cardEditorPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta custom"></canvas>
+            </div>
+            <div class="deckBuilderPreviewInfo">
+              <div id="cardEditorPreviewMeta" class="deckBuilderMeta">Nessuna carta.</div>
+              <div id="cardEditorPreviewBody" class="deckBuilderPreviewBody"></div>
+            </div>
+          </div>
+
+          <div class="deckBuilderBoxTitleRow cardEditorSavedTitle">
+            <h3>Libreria custom</h3>
+            <span class="help" id="cardEditorLibraryCount">0/0 custom</span>
+          </div>
+          <div class="cardEditorLibraryControls">
+            <input id="cardEditorLibrarySearch" type="search" placeholder="cerca custom..." autocomplete="off" />
+            <select id="cardEditorLibraryKind">
+              <option value="all">Tutte</option>
+              <option value="unit">Unità</option>
+              <option value="tactic">Tattiche</option>
+            </select>
+            <select id="cardEditorLibraryFaction"></select>
+          </div>
+          <div id="cardEditorSavedList" class="cardEditorSavedList"></div>
+
+          <div class="deckBuilderBoxTitleRow cardEditorSavedTitle">
+            <h3>Import / export libreria</h3>
+            <span class="help">Importa JSON custom F9K1/F9K2/F9K2b/F9K2c validi. Le carte ufficiali restano read-only.</span>
+          </div>
+          <div class="cardEditorImportBox">
+            <textarea id="cardEditorImportText" rows="7" placeholder="Incolla qui il JSON di una carta custom, una lista di custom o una libreria esportata..."></textarea>
+            <div class="cardEditorImportActions">
+              <button class="ghost" id="cardEditorWriteExportBtn" type="button">Scrivi export qui</button>
+              <button class="primary" id="cardEditorImportBtn" type="button">Importa JSON</button>
+              <button class="danger" id="cardEditorResetLibraryBtn" type="button">Svuota custom</button>
+            </div>
+            <div id="cardEditorImportStatus" class="cardEditorImportStatus"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+
   <section id="cardPoolScreen" class="appScreen cardPoolScreen" data-app-screen-panel="cardPool" aria-label="Pool carte Arena Rubra">
     <div class="mainMenuBackdrop"></div>
     <div class="deckBuilderCard cardPoolCard">
@@ -274,11 +666,13 @@
         <div>
           <div class="mainMenuKicker">Card Pool</div>
           <h2>Pool carte</h2>
-          <p class="deckBuilderIntro">F9J1 introduce un browser read-only del catalogo carte: filtri per fazione/tipo/ruolo, ricerca, preview renderer e riferimenti asset. Non modifica deck, gameplay o salvataggi.</p>
+          <p class="deckBuilderIntro">F9K7 rende il laboratorio più navigabile: Pool, Card Editor e Deck Builder condividono accessi rapidi e setup deck più leggibile.</p>
         </div>
         <div class="deckBuilderHeaderActions">
           <button class="primary" data-app-open-deck-builder type="button">Apri Deck Builder</button>
+          <button class="ghost" data-app-open-card-editor type="button">Apri Card Editor</button>
           <button class="ghost" id="cardPoolCopySelectedBtn" type="button">Copia carta JSON</button>
+          <button class="ghost" id="cardPoolDuplicateSelectedBtn" type="button">Duplica in Editor</button>
           <button class="ghost" id="cardPoolCopyManifestBtn" type="button">Copia manifest asset</button>
           <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
         </div>
@@ -293,7 +687,7 @@
           <span>Tipo</span>
           <select id="cardPoolKindSelect">
             <option value="all">Tutte</option>
-            <option value="unit">Unità</option>
+            <option value="unit" selected>Unità</option>
             <option value="tactic">Tattiche</option>
           </select>
         </label>
@@ -310,6 +704,14 @@
           </select>
         </label>
         <label>
+          <span>Origine</span>
+          <select id="cardPoolOriginSelect">
+            <option value="all">Tutte</option>
+            <option value="official">Ufficiali</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+        <label>
           <span>Cerca</span>
           <input id="cardPoolSearchInput" type="search" placeholder="nome, id, effetto, fazione..." autocomplete="off" />
         </label>
@@ -322,10 +724,23 @@
       <section class="deckBuilderBox cardPoolPreviewBox">
         <div class="deckBuilderBoxTitleRow">
           <h3>Anteprima renderer</h3>
-          <span class="help">Clicca una carta nella tabella per vedere render, dati e path asset.</span>
+          <span class="help">Preview più ampia, scorrimento con frecce e fullscreen utile soprattutto su mobile.</span>
+        </div>
+        <div class="cardPoolPreviewToolbar">
+          <div class="cardPoolViewModeGroup" role="group" aria-label="Modalità vista pool carte">
+            <button class="ghost active" id="cardPoolViewGalleryBtn" type="button">Galleria</button>
+            <button class="ghost" id="cardPoolViewTableBtn" type="button">Tabella</button>
+          </div>
+          <div class="cardPoolNavGroup" role="group" aria-label="Navigazione carte filtrate">
+            <button class="ghost" id="cardPoolPrevBtn" type="button">← Prec.</button>
+            <span class="deckBuilderMeta compactMeta" id="cardPoolSelectionCounter">0/0</span>
+            <button class="ghost" id="cardPoolNextBtn" type="button">Succ. →</button>
+            <button class="primary" id="cardPoolFullscreenOpenBtn" type="button">Fullscreen</button>
+            <button class="ghost cardPoolFocusCloseBtn" id="cardPoolFullscreenCloseBtn" type="button">Chiudi fullscreen</button>
+          </div>
         </div>
         <div class="cardPoolPreviewLayout">
-          <div class="deckBuilderPreviewCanvasWrap">
+          <div class="deckBuilderPreviewCanvasWrap cardPoolPreviewCanvasWrap">
             <canvas id="cardPoolPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta dal pool"></canvas>
           </div>
           <div class="deckBuilderPreviewInfo">
@@ -335,10 +750,18 @@
         </div>
       </section>
 
-      <section class="deckBuilderBox cardPoolTableBox">
+      <section class="deckBuilderBox cardPoolGalleryBox" id="cardPoolGalleryWrap">
+        <div class="deckBuilderBoxTitleRow">
+          <h3>Galleria renderizzata</h3>
+          <span class="help">Miniature renderer leggere: scorri, tocca o clicca per selezionare.</span>
+        </div>
+        <div id="cardPoolGalleryBody" class="cardPoolGalleryBody"></div>
+      </section>
+
+      <section class="deckBuilderBox cardPoolTableBox" id="cardPoolTableWrap" hidden>
         <div class="deckBuilderBoxTitleRow">
           <h3>Catalogo carte</h3>
-          <span class="help">Read-only: le modifiche alle carte arriveranno con l'editor/composer.</span>
+          <span class="help">Read-only: tabella dettagliata come vista alternativa alla galleria.</span>
         </div>
         <div class="deckBuilderTableWrap cardPoolTableWrap">
           <table class="deckBuilderTable cardPoolTable">
@@ -349,6 +772,7 @@
           </table>
         </div>
       </section>
+
     </div>
   </section>
 
@@ -368,7 +792,7 @@
       <button class="primary topBarBtn" id="newGameBtn" type="button">Nuova partita</button>
     </div>
     <div class="topBarTitle">
-      <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span>)</span></h1>
+      <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span>)</span></h1>
     </div>
     <div class="topBarAction topBarRight">
       <button class="danger topBarBtn" id="endTurnBtn" type="button">Fine turno</button>
@@ -384,7 +808,7 @@
     <span class="hudChip" id="gameHudCards">Deck/Mano/Scarti —</span>
     <span class="hudChip hudMode" id="gameHudMode">Pronto</span>
     <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
-    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9J1-APK-M4c</span>
+    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9K7-APK-M4c</span>
   </section>
 
   <main class="app mapFirstGameApp" id="mapFirstGameApp">
@@ -417,8 +841,10 @@
             <label for="p1DeckMode">Giocatore 1 · Deck</label>
             <select id="p1DeckMode">
               <option value="template" selected>Automatico Starter</option>
-              <option value="custom">Personalizzato salvato</option>
+              <option value="custom">Personalizzato / Custom Lab</option>
             </select>
+            <label for="p1DeckSavedKey">Giocatore 1 · Deck salvato</label>
+            <select id="p1DeckSavedKey" class="setupDeckSavedSelect"></select>
           </div>
         </div>
         <div class="row playerSetupRow">
@@ -445,8 +871,10 @@
             <label for="p2DeckMode">Giocatore 2 · Deck</label>
             <select id="p2DeckMode">
               <option value="template" selected>Automatico Starter</option>
-              <option value="custom">Personalizzato salvato</option>
+              <option value="custom">Personalizzato / Custom Lab</option>
             </select>
+            <label for="p2DeckSavedKey">Giocatore 2 · Deck salvato</label>
+            <select id="p2DeckSavedKey" class="setupDeckSavedSelect"></select>
           </div>
         </div>
         <div>
@@ -488,7 +916,7 @@
 
         <div class="unitCard" id="turnInfo"></div>
         <div class="help">
-          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9J1-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
+          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
         </div>
 
 
@@ -555,6 +983,13 @@
           </div>
         </div>
         <div id="board" aria-label="Mappa esagonale Arena Rubra"></div>
+        <div id="mapHandOverlay" class="mapHandOverlay" aria-label="Mano rapida sulla mappa">
+          <div class="mapHandOverlayEmpty">Avvia una partita per vedere la mano sulla mappa.</div>
+        </div>
+        <aside id="mapHandSelectionPreview" class="mapHandSelectionPreview" aria-label="Anteprima carta selezionata dalla mano rapida" hidden></aside>
+        <aside id="mapActionDock" class="mapActionDock" aria-label="Azioni rapide di fazione sulla mappa">
+          <div class="mapActionDockEmpty">Avvia una partita per vedere le azioni.</div>
+        </aside>
         <aside id="selectedUnitFloat" class="selectedUnitFloat isCollapsed" aria-label="Unità selezionata e azioni disponibili">
           <div class="selectedUnitFloatHeader">
             <strong>Unità selezionata</strong>
@@ -645,7 +1080,9 @@
 <script src="src/deck.js"></script>
 <script src="src/card_assets.js"></script>
 <script src="src/card_renderer.js"></script>
+<script src="src/renderer_calibration_lab.js"></script>
 <script src="src/deck_builder.js"></script>
+<script src="src/card_editor.js"></script>
 <script src="src/card_pool.js"></script>
 <script src="src/rules.js"></script>
 <script src="src/economy.js"></script>

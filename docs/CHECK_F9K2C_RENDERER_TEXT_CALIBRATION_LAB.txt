@@ -1,0 +1,23 @@
+F9K2c check
+
+Output:
+C2-STABLE-1-F9K2c-APK-M4c Temporary Renderer Text Calibration Lab
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- build_info label C2-STABLE-1-F9K2c-APK-M4c
+- index include css/renderer_calibration_lab.css
+- index include src/renderer_calibration_lab.js
+- zip integrity
+
+Manual test:
+1. Apri Pool carte.
+2. Seleziona Agathoi / Tattica.
+3. Premi Calibra renderer.
+4. Modifica name/type/description Y.
+5. Verifica preview live.
+6. Copia JSON calibrazione.
+7. Reset target.
+8. Verifica ritorno alla resa base.

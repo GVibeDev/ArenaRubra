@@ -1,0 +1,32 @@
+F9K4 check
+
+Output:
+C2-STABLE-1-F9K4-APK-M4c Deck Builder Custom Integration
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- build label F9K4
+- Deck Builder toggle deckBuilderIncludeCustomToggle presente
+- toggle OFF: catalogo Deck Builder ufficiale, custom non visibili
+- toggle ON: catalogo Deck Builder ufficiale + custom
+- custom aggiunta al draft: report containsCustomCards true
+- deck custom salvato con official false
+- deck custom salvato con containsCustomCards true
+- deck custom salvato su chiave ::CUSTOM
+- Setup standard non accetta deck custom
+- deck ufficiale salva su chiave standard e resta Setup-valid
+- loadSavedDeckBuilderDraftByKey riattiva toggle custom se carica chiave custom
+- zip integrity
+
+Manual test:
+1. Crea/salva almeno una carta custom nel Card Editor.
+2. Apri Deck Builder.
+3. Con toggle OFF verifica che la custom non sia nel pool.
+4. Attiva `Includi carte CUSTOM nel pool`.
+5. Aggiungi una custom al draft.
+6. Verifica badge CUSTOM e stato NON UFFICIALE.
+7. Salva il deck.
+8. Verifica che il deck ufficiale standard non venga sovrascritto.
+9. Carica il deck custom dalla gallery: il toggle custom deve riattivarsi.

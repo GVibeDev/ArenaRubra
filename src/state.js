@@ -25,9 +25,12 @@ function createMatchId() {
 
 function readDeckSetupForSide(side) {
   const modeEl = $(`p${side}DeckMode`) || $(`setupP${side}DeckMode`);
+  const savedKeyEl = $(`p${side}DeckSavedKey`) || $(`setupP${side}DeckSavedKey`);
   const mode = modeEl ? modeEl.value : "template";
+  const savedKey = savedKeyEl ? String(savedKeyEl.value || "") : "";
   return {
-    mode: mode === "custom" ? "custom" : "template"
+    mode: mode === "custom" ? "custom" : "template",
+    savedKey
   };
 }
 

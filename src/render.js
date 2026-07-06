@@ -5,6 +5,18 @@
 // Questo file contiene funzioni di rendering/UI/log DOM estratte da src/main.js.
 // Non introduce nuove meccaniche e non modifica il gameplay.
 
+const MAP_HAND_OVERLAY_STATE = {
+      selectedCardUid: "",
+      selectedSource: "",
+      selectedSide: 0,
+      hiddenForTarget: false,
+      hiddenForMovement: false,
+      lastSide: 0,
+      hoverCardUid: "",
+      hoverSource: "",
+      hoverSide: 0
+    };
+
 // Nota architetturale:
 // Le funzioni qui presenti usano ancora lo stato globale e varie funzioni del motore.
 // È una separazione fisica controllata, non ancora un renderer puro/headless.
@@ -16,6 +28,9 @@
       renderMarket();
       renderRoster();
       renderCardZonePanel();
+      if (typeof renderMapHandOverlay === "function") renderMapHandOverlay();
+      if (typeof renderMapHandSelectionPreview === "function") renderMapHandSelectionPreview();
+      if (typeof renderMapActionDock === "function") renderMapActionDock();
       renderMatchupStats();
       if (typeof renderCurrentMatchStatsPanel === "function") renderCurrentMatchStatsPanel();
       if (typeof renderPersistentMatchHistoryPanel === "function") renderPersistentMatchHistoryPanel();
@@ -205,6 +220,84 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
       container.appendChild(wrap);
     }
 
+    function mapActionDockTacticReason(player, tactic, targets = null) {
+      if (!state || !tactic) return "n/d";
+      if (mode === "tactic" && pendingTacticId === tactic.id) return "Bersaglio in scelta";
+      const cd = typeof tacticCooldown === "function" ? tacticCooldown(player, tactic) : 0;
+      const targetList = Array.isArray(targets) ? targets : (tactic.target === "none" ? [] : tacticTargets(player, tactic));
+      if (state.tacticUsedThisTurn && state.tacticUsedThisTurn[player]) return "già usata";
+      if (cd > 0) return `CD ${cd}`;
+      if (state.energy && Number.isFinite(state.energy[player]) && state.energy[player] < tactic.cost) return "ENE insuff.";
+      if (tactic.target !== "none" && targetList.length === 0) return "no bersagli";
+      return tactic.target === "none" ? "pronta" : `${targetList.length} bers.`;
+    }
+
+    function mapActionDockToggleTactic(tacticId) {
+      if (!state || !tacticId || typeof tacticById !== "function") return false;
+      const tactic = tacticById(tacticId);
+      if (!tactic) return false;
+      const wasActive = mode === "tactic" && pendingTacticId === tactic.id;
+      MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
+      MAP_HAND_OVERLAY_STATE.hiddenForMovement = !wasActive && tactic.target !== "none";
+      MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
+      MAP_HAND_OVERLAY_STATE.selectedSource = "";
+      MAP_HAND_OVERLAY_STATE.selectedSide = 0;
+      if (typeof toggleTacticMode === "function") toggleTacticMode(tactic);
+      if (wasActive || tactic.target === "none") MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      if (typeof renderMapActionDock === "function") renderMapActionDock();
+      return true;
+    }
+
+    function renderMapActionDock() {
+      const dock = $("mapActionDock");
+      if (!dock) return;
+      if (!state || !state.factions || typeof tacticsForFaction !== "function") {
+        dock.innerHTML = `<div class="mapActionDockEmpty">Avvia una partita per vedere le azioni.</div>`;
+        dock.classList.add("isEmpty");
+        return;
+      }
+      const player = state.currentPlayer || 1;
+      const faction = state.factions[player] || "—";
+      const isHuman = state.modes && state.modes[player] === "human";
+      const tactics = tacticsForFaction(faction) || [];
+      const disabledGlobal = Boolean(state.winner) || !isHuman || botRunning;
+      if (!tactics.length) {
+        dock.innerHTML = `<div class="mapActionDockEmpty">Nessuna tattica fazione.</div>`;
+        dock.classList.add("isEmpty");
+        return;
+      }
+      dock.classList.remove("isEmpty");
+      const rows = tactics.map(tactic => {
+        const targets = tactic.target === "none" ? [] : tacticTargets(player, tactic);
+        const active = mode === "tactic" && pendingTacticId === tactic.id;
+        const blocked = !active && !canUseTactic(player, tactic);
+        const disabled = disabledGlobal || blocked;
+        const safeId = String(tactic.id || "").replace(/'/g, "\'");
+        const reason = mapActionDockTacticReason(player, tactic, targets);
+        const title = escapeHtml(`${tactic.name || "Tattica"}
+${tactic.description || ""}
+${reason}`);
+        const stateClass = active ? " active" : (blocked ? " unavailable" : " ready");
+        const buttonText = active ? "Annulla" : (tactic.target === "none" ? "Usa" : "Mira");
+        return `
+          <button class="mapActionDockItem${stateClass}" type="button" title="${title}" onclick="mapActionDockToggleTactic('${safeId}')"${disabled ? " disabled" : ""}>
+            <span class="mapActionDockName">${escapeHtml(tactic.name || tactic.id || "Tattica")}</span>
+            <span class="mapActionDockMeta"><strong>${tactic.cost} ENE</strong> · CD ${tactic.cooldown} · ${escapeHtml(reason)}</span>
+            <span class="mapActionDockCmd">${buttonText}</span>
+          </button>`;
+      }).join("");
+      dock.innerHTML = `
+        <div class="mapActionDockInner">
+          <div class="mapActionDockHeader">
+            <strong>Azioni</strong>
+            <span>G${player} · ${escapeHtml(faction)}</span>
+          </div>
+          <div class="mapActionDockList">
+            ${rows}
+          </div>
+        </div>`;
+    }
+
 
 
 
@@ -364,6 +457,31 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
         </div>`;
     }
 
+    function renderCardThumbnailShell(card, safeUid, source, label = "") {
+      if (!card) return `<div class="handRenderedCard empty"><div class="handThumbEmpty">Slot vuoto</div></div>`;
+      const title = escapeHtml(`${card.name || "Carta"} · ${cardTypeLabel(card)} · ${cardCostLabel(card)}`);
+      const badge = card.sourceType === "tactic" ? "TATTICA" : (card.deckRole === "commander" ? "COM." : "UNITÀ");
+      return `
+        <div class="handRenderedCard" title="${title}">
+          ${label ? `<div class="miniLabel">${escapeHtml(label)}</div>` : ""}
+          <div class="handCardThumbFrame">
+            <canvas class="handCardThumbCanvas" width="194" height="292"
+              data-hand-thumb-card-uid="${safeUid}"
+              data-hand-thumb-source="${escapeHtml(source)}"
+              aria-label="Miniatura carta ${title}"></canvas>
+            <div class="handCardThumbFallback">
+              <strong>${escapeHtml(card.name || "Carta")}</strong>
+              <span>${escapeHtml(cardTypeLabel(card))}</span>
+            </div>
+          </div>
+          <div class="handCardThumbMeta">
+            <span class="pill enePill">${cardCostLabel(card)}</span>
+            <span class="pill">${badge}</span>
+            ${card.custom ? `<span class="pill customCardPill">CUSTOM</span>` : ""}
+          </div>
+        </div>`;
+    }
+
     function renderStarterCardSlotDebug(side, key, label, card) {
       const action = typeof starterCardActionState === "function"
         ? starterCardActionState(side, card)
@@ -376,9 +494,8 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
         ? `<button type="button"${disabled} onclick="event.stopPropagation(); beginStarterCardPurchase('${safeUid}')">${escapeHtml(action.actionText)}</button>`
         : `<button type="button" disabled>Non disponibile</button>`;
       return `
-        <div class="debugStarterSlot${playableClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'starter')"` : ""}>
-          <div class="miniLabel">${escapeHtml(label)}</div>
-          ${renderCardInstanceDebug(card)}
+        <div class="debugStarterSlot renderedStarterSlot${playableClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'starter')"` : ""}>
+          ${renderCardThumbnailShell(card, safeUid, "starter", label)}
           <div class="starterAction">
             ${button}
             <div class="meta">${escapeHtml(action.reason)}</div>
@@ -394,7 +511,7 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
         ["starter_structure", "Struttura"]
       ];
       return `
-        <div class="debugStarterGrid">
+        <div class="debugStarterGrid renderedStarterGrid">
           ${order.map(([key, label]) => renderStarterCardSlotDebug(side, key, label, starters[key])).join("")}
         </div>`;
     }
@@ -412,8 +529,8 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
         ? `<button type="button"${disabled} onclick="event.stopPropagation(); beginHandCardPlay('${safeUid}')">${escapeHtml(action.actionText)}</button>`
         : `<button type="button" disabled>Non disponibile</button>`;
       return `
-        <div class="debugHandSlot${playableClass}${pendingClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'hand')"` : ""}>
-          ${renderCardInstanceDebug(card)}
+        <div class="debugHandSlot renderedHandSlot${playableClass}${pendingClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'hand')"` : ""}>
+          ${renderCardThumbnailShell(card, safeUid, "hand")}
           <div class="handAction">
             ${button}
             <div class="meta">${escapeHtml(action.reason)}</div>
@@ -424,7 +541,329 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
     function renderPlayerHandDebug(side) {
       const hand = state && state.hand ? state.hand[side] || [] : [];
       if (!hand.length) return `<div class="meta">Mano vuota.</div>`;
-      return `<div class="debugHandList">${hand.map(card => renderHandCardSlotDebug(side, card)).join("")}</div>`;
+      return `<div class="debugHandList renderedHandList">${hand.map(card => renderHandCardSlotDebug(side, card)).join("")}</div>`;
+    }
+
+    function renderInGameHandThumbnails() {
+      if (typeof document === "undefined" || typeof renderArenaCardPreviewCanvas !== "function" || !state) return;
+      document.querySelectorAll("[data-hand-thumb-card-uid]").forEach(canvas => {
+        const uid = canvas.getAttribute("data-hand-thumb-card-uid");
+        const source = canvas.getAttribute("data-hand-thumb-source") || "hand";
+        const sideBox = canvas.closest("[data-hand-zone-side]");
+        const side = sideBox ? Number(sideBox.getAttribute("data-hand-zone-side")) : (state.currentPlayer || 1);
+        let card = null;
+        if (source === "starter") {
+          const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+          card = starters.find(c => c && c.cardUid === uid) || null;
+        } else {
+          const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+          card = hand.find(c => c && c.cardUid === uid) || null;
+        }
+        if (!card) return;
+        const thumbScale = Number(canvas.getAttribute("data-hand-thumb-scale") || 0.19);
+        renderArenaCardPreviewCanvas(canvas, card, { scale: Number.isFinite(thumbScale) && thumbScale > 0 ? thumbScale : 0.19 });
+        const wrap = canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard");
+        if (wrap) wrap.classList.add("thumbRendered");
+      });
+    }
+
+    function mapHandOverlayCardLabel(card) {
+      if (!card) return "Carta";
+      if (card.cardType === "commander" || card.deckRole === "commander") return "Comandante";
+      if (card.sourceType === "tactic" || card.cardType === "tactic") return "Tattica";
+      return "Unità";
+    }
+
+    function mapHandOverlayCardByUid(side, cardUid, source = "hand") {
+      if (!state || !side || !cardUid) return null;
+      if (source === "starter") {
+        const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+        return starters.find(card => card && card.cardUid === cardUid) || null;
+      }
+      const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+      return hand.find(card => card && card.cardUid === cardUid) || null;
+    }
+
+    function mapHandOverlayHoverEnabled() {
+      if (typeof document === "undefined" || !document.body) return false;
+      if (document.body.classList.contains("mobile-apk-m4")) return false;
+      if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+        const fineHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+        if (fineHover && fineHover.matches === false) return false;
+      }
+      return true;
+    }
+
+    function mapHandOverlayMoveHoverPreview(event) {
+      // F9K5c: l'hover desktop non segue più il puntatore.
+      // Usa la preview laterale #mapHandSelectionPreview, quindi il mousemove resta no-op compatibile.
+      return Boolean(event || MAP_HAND_OVERLAY_STATE.hoverCardUid);
+    }
+
+    function mapHandOverlayClearHoverState() {
+      MAP_HAND_OVERLAY_STATE.hoverCardUid = "";
+      MAP_HAND_OVERLAY_STATE.hoverSource = "";
+      MAP_HAND_OVERLAY_STATE.hoverSide = 0;
+    }
+
+    function mapHandOverlayHideHoverPreview() {
+      mapHandOverlayClearHoverState();
+      if (typeof renderMapHandSelectionPreview === "function") renderMapHandSelectionPreview();
+      return true;
+    }
+
+    function mapHandOverlayHoverPreview(side, cardUid, source = "hand", event = null) {
+      if (!mapHandOverlayHoverEnabled()) return false;
+      if (!state || !state.cardDebug || !state.cardDebug.initialized) return false;
+      const card = mapHandOverlayCardByUid(side, cardUid, source);
+      if (!card) return false;
+      MAP_HAND_OVERLAY_STATE.hoverCardUid = String(cardUid || "");
+      MAP_HAND_OVERLAY_STATE.hoverSource = String(source || "hand");
+      MAP_HAND_OVERLAY_STATE.hoverSide = Number(side || 0) || 0;
+      if (typeof renderMapHandSelectionPreview === "function") renderMapHandSelectionPreview();
+      return true;
+    }
+
+    function mapHandOverlaySelectedCard() {
+      const side = MAP_HAND_OVERLAY_STATE.selectedSide || (state ? state.currentPlayer : 1) || 1;
+      const source = MAP_HAND_OVERLAY_STATE.selectedSource || "hand";
+      const uid = MAP_HAND_OVERLAY_STATE.selectedCardUid || pendingHandCardUid || "";
+      return mapHandOverlayCardByUid(side, uid, source);
+    }
+
+    function mapHandOverlayHoverCard() {
+      if (!mapHandOverlayHoverEnabled()) return null;
+      const side = MAP_HAND_OVERLAY_STATE.hoverSide || (state ? state.currentPlayer : 1) || 1;
+      const source = MAP_HAND_OVERLAY_STATE.hoverSource || "hand";
+      const uid = MAP_HAND_OVERLAY_STATE.hoverCardUid || "";
+      return uid ? mapHandOverlayCardByUid(side, uid, source) : null;
+    }
+
+    function mapHandOverlayCancelLabel() {
+      if (mode === "tactic") return "Annulla tattica";
+      if (mode === "build") return "Annulla costruzione";
+      if (mode === "spawn") return "Annulla sbarco";
+      return "Annulla";
+    }
+
+    function mapHandOverlayTargetModeActive() {
+      if (!state) return false;
+      if (!MAP_HAND_OVERLAY_STATE.hiddenForTarget) return false;
+      if (mode === "tactic" && (pendingHandCardUid || MAP_HAND_OVERLAY_STATE.selectedCardUid)) return true;
+      if ((mode === "spawn" || mode === "build") && (pendingPurchaseBlueprintId || pendingBuildBlueprintId || MAP_HAND_OVERLAY_STATE.selectedCardUid)) return true;
+      return false;
+    }
+
+    function mapHandOverlayThumbnailShell(card, safeUid, source) {
+      if (!card) return `<div class="mapHandVisualCard empty"><div class="handThumbEmpty">Slot vuoto</div></div>`;
+      const label = mapHandOverlayCardLabel(card);
+      const title = escapeHtml(`${card.name || "Carta"} · ${label}`);
+      return `
+        <div class="mapHandVisualCard" title="${title}">
+          <div class="mapHandThumbFrame">
+            <canvas class="handCardThumbCanvas mapHandThumbCanvas" width="215" height="323"
+              data-hand-thumb-card-uid="${safeUid}"
+              data-hand-thumb-source="${escapeHtml(source)}"
+              data-hand-thumb-scale="0.21"
+              aria-label="Miniatura ${title}"></canvas>
+            <div class="handCardThumbFallback">
+              <strong>${escapeHtml(card.name || "Carta")}</strong>
+              <span>${escapeHtml(label)}</span>
+            </div>
+          </div>
+          <span class="mapHandKindPill">${escapeHtml(label)}</span>
+        </div>`;
+    }
+
+    function mapHandOverlayStarterCardSlot(side, card) {
+      if (!card) return "";
+      const action = typeof starterCardActionState === "function"
+        ? starterCardActionState(side, card)
+        : { canUse: false, reason: "Starter controller non disponibile", actionText: "Sbarca" };
+      const playableClass = action.canUse ? " playable" : " unavailable";
+      const pendingClass = MAP_HAND_OVERLAY_STATE.selectedSource === "starter" && MAP_HAND_OVERLAY_STATE.selectedCardUid === card.cardUid ? " pending" : "";
+      const safeUid = card && card.cardUid ? String(card.cardUid).replace(/'/g, "\\'") : "";
+      const selectedClass = card && typeof gameCardPreviewSelectedHandUid === "function" && gameCardPreviewSelectedHandUid() === card.cardUid ? " previewSelected" : "";
+      const title = escapeHtml(`${card.name || "Starter"} · ${action.reason || ""}`);
+      return `
+        <button class="mapHandCardSlot starter${playableClass}${pendingClass}${selectedClass}" type="button" title="${title}" data-preview-card-uid="${safeUid}" onmouseenter="mapHandOverlayHoverPreview(${side}, '${safeUid}', 'starter', event)" onmousemove="mapHandOverlayMoveHoverPreview(event)" onmouseleave="mapHandOverlayHideHoverPreview()" onclick="mapHandOverlaySelectCard(${side}, '${safeUid}', 'starter')">
+          ${mapHandOverlayThumbnailShell(card, safeUid, "starter")}
+        </button>`;
+    }
+
+    function mapHandOverlayCardSlot(side, card) {
+      if (!card) return "";
+      const action = typeof handCardActionState === "function"
+        ? handCardActionState(side, card)
+        : { canUse: false, reason: "Hand card controller non disponibile", actionText: "Gioca" };
+      const playableClass = action.canUse ? " playable" : " unavailable";
+      const pendingClass = pendingHandCardUid && card && pendingHandCardUid === card.cardUid ? " pending" : "";
+      const safeUid = card && card.cardUid ? String(card.cardUid).replace(/'/g, "\\'") : "";
+      const selectedClass = card && typeof gameCardPreviewSelectedHandUid === "function" && gameCardPreviewSelectedHandUid() === card.cardUid ? " previewSelected" : "";
+      const title = escapeHtml(`${card.name || "Carta"} · ${action.reason || ""}`);
+      return `
+        <button class="mapHandCardSlot hand${playableClass}${pendingClass}${selectedClass}" type="button" title="${title}" data-preview-card-uid="${safeUid}" onmouseenter="mapHandOverlayHoverPreview(${side}, '${safeUid}', 'hand', event)" onmousemove="mapHandOverlayMoveHoverPreview(event)" onmouseleave="mapHandOverlayHideHoverPreview()" onclick="mapHandOverlaySelectCard(${side}, '${safeUid}', 'hand')">
+          ${mapHandOverlayThumbnailShell(card, safeUid, "hand")}
+        </button>`;
+    }
+
+    function mapHandOverlayEndTurn() {
+      if (!state || state.winner || botRunning || state.modes[state.currentPlayer] === "bot") return false;
+      MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
+      MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
+      MAP_HAND_OVERLAY_STATE.selectedSource = "";
+      if (typeof endTurn === "function") {
+        endTurn();
+        return true;
+      }
+      const legacy = $("endTurnBtn");
+      if (legacy && !legacy.disabled) legacy.click();
+      return true;
+    }
+
+    function mapHandOverlayMoveUnits() {
+      if (!state || state.winner || botRunning || state.modes[state.currentPlayer] === "bot") return false;
+      MAP_HAND_OVERLAY_STATE.hiddenForMovement = true;
+      MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
+      MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
+      MAP_HAND_OVERLAY_STATE.selectedSource = "";
+      MAP_HAND_OVERLAY_STATE.selectedSide = 0;
+      mapHandOverlayClearHoverState();
+      if (typeof clearSelection === "function") clearSelection();
+      if (typeof renderAll === "function") renderAll();
+      else renderMapHandOverlay();
+      return true;
+    }
+
+    function mapHandOverlayShowHand() {
+      MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      if (typeof renderAll === "function") renderAll();
+      else renderMapHandOverlay();
+      return true;
+    }
+
+    function mapHandOverlaySelectCard(side, cardUid, source = "hand") {
+      if (!state || !cardUid) return false;
+      const card = mapHandOverlayCardByUid(side, cardUid, source);
+      if (!card) return false;
+      MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      MAP_HAND_OVERLAY_STATE.selectedCardUid = cardUid;
+      MAP_HAND_OVERLAY_STATE.selectedSource = source;
+      MAP_HAND_OVERLAY_STATE.selectedSide = side;
+      mapHandOverlayClearHoverState();
+      if (typeof gameCardPreviewSelectHandCard === "function") gameCardPreviewSelectHandCard(side, cardUid, source === "starter" ? "starter" : "mapOverlay");
+      let accepted = false;
+      if (source === "starter" && typeof beginStarterCardPurchase === "function") accepted = Boolean(beginStarterCardPurchase(cardUid));
+      else if (typeof beginHandCardPlay === "function") accepted = Boolean(beginHandCardPlay(cardUid));
+      MAP_HAND_OVERLAY_STATE.hiddenForTarget = Boolean(accepted && (mode === "spawn" || mode === "build" || mode === "tactic"));
+      renderMapHandOverlay();
+      renderMapHandSelectionPreview();
+      return accepted;
+    }
+
+    function mapHandOverlayCancelSelection() {
+      MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
+      MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
+      MAP_HAND_OVERLAY_STATE.selectedSource = "";
+      MAP_HAND_OVERLAY_STATE.selectedSide = 0;
+      if (typeof clearSelection === "function") clearSelection();
+      if (typeof renderAll === "function") renderAll();
+      return true;
+    }
+
+    function renderMapHandOverlay() {
+      const overlay = $("mapHandOverlay");
+      if (!overlay) return;
+      if (!state || !state.cardDebug || !state.cardDebug.initialized) {
+        if (typeof mapHandOverlayHideHoverPreview === "function") mapHandOverlayHideHoverPreview();
+        overlay.innerHTML = `<div class="mapHandOverlayEmpty">Avvia una partita per vedere la mano sulla mappa.</div>`;
+        overlay.classList.add("isEmpty");
+        overlay.classList.remove("isTargeting");
+        overlay.classList.remove("isMovementHidden");
+        renderMapHandSelectionPreview();
+        return;
+      }
+      const targeting = mapHandOverlayTargetModeActive();
+      if (!targeting && (mode === "idle" || !pendingHandCardUid)) MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
+      overlay.classList.toggle("isTargeting", Boolean(targeting));
+      overlay.classList.remove("isEmpty");
+      const side = state.currentPlayer || 1;
+      if (MAP_HAND_OVERLAY_STATE.lastSide !== side) {
+        MAP_HAND_OVERLAY_STATE.lastSide = side;
+        MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      }
+      const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+      const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+      const isHuman = state.modes && state.modes[side] === "human";
+      const disabled = Boolean(state.winner) || !isHuman || botRunning;
+      const counts = typeof cardZoneCountsForSide === "function" ? cardZoneCountsForSide(side) : { deck: 0, hand: hand.length, discard: 0 };
+      const faction = state.factions ? state.factions[side] : "—";
+      if (targeting && typeof mapHandOverlayHideHoverPreview === "function") mapHandOverlayHideHoverPreview();
+      if (MAP_HAND_OVERLAY_STATE.hiddenForMovement && !targeting) {
+        overlay.classList.add("isMovementHidden");
+        overlay.innerHTML = `
+          <div class="mapHandOverlayCompact" data-hand-zone-side="${side}">
+            <button class="ghost mapHandShowBtn" type="button" onclick="mapHandOverlayShowHand()">Mostra mano</button>
+            <button class="danger mapHandEndTurnBtn compact" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
+          </div>`;
+        renderMapHandSelectionPreview();
+        return;
+      }
+      overlay.classList.remove("isMovementHidden");
+      const startersHtml = starters.length ? starters.map(card => mapHandOverlayStarterCardSlot(side, card)).join("") : "";
+      const handHtml = hand.length ? hand.map(card => mapHandOverlayCardSlot(side, card)).join("") : "";
+      const cardsHtml = (startersHtml || handHtml)
+        ? `${startersHtml}${handHtml}`
+        : `<div class="mapHandOverlayEmpty">Mano vuota.</div>`;
+      overlay.innerHTML = `
+        <div class="mapHandOverlayInner" data-hand-zone-side="${side}">
+          <div class="mapHandOverlayHeader">
+            <strong>G${side} · ${escapeHtml(faction)}</strong>
+            <span>ENE ${state.energy && Number.isFinite(state.energy[side]) ? state.energy[side] : "—"} · Deck ${counts.deck} · Mano ${counts.hand} · Starter ${starters.length}</span>
+          </div>
+          <div class="mapHandOverlayCards" aria-label="Carte rapide del giocatore corrente">
+            ${cardsHtml}
+          </div>
+          <div class="mapHandOverlayActions">
+            <button class="danger mapHandEndTurnBtn" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
+            <button class="ghost mapHandMoveUnitsBtn" type="button" onclick="mapHandOverlayMoveUnits()"${disabled ? " disabled" : ""}>Muovi unità</button>
+          </div>
+        </div>`;
+      if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails();
+      if (typeof syncGameHandPreviewSelectionUi === "function") syncGameHandPreviewSelectionUi();
+      renderMapHandSelectionPreview();
+    }
+
+    function renderMapHandSelectionPreview() {
+      const box = $("mapHandSelectionPreview");
+      if (!box) return;
+      const targeting = Boolean(state && state.cardDebug && state.cardDebug.initialized && mapHandOverlayTargetModeActive());
+      const hoverCard = !targeting && state && state.cardDebug && state.cardDebug.initialized ? mapHandOverlayHoverCard() : null;
+      const card = targeting ? mapHandOverlaySelectedCard() : hoverCard;
+      if (!card) {
+        box.hidden = true;
+        box.classList.remove("isVisible", "hoverPreview", "targetPreview");
+        box.innerHTML = "";
+        return;
+      }
+      const label = mapHandOverlayCardLabel(card);
+      const footerHint = targeting ? "Bersaglio richiesto" : "Anteprima hover";
+      box.hidden = false;
+      box.classList.add("isVisible");
+      box.classList.toggle("hoverPreview", !targeting);
+      box.classList.toggle("targetPreview", targeting);
+      box.innerHTML = `
+        <div class="mapHandSelectionPreviewInner">
+          <canvas id="mapHandSelectionPreviewCanvas" width="368" height="552" aria-label="Anteprima carta ${targeting ? "selezionata" : "in hover"}"></canvas>
+          <div class="mapHandSelectionPreviewFooter">
+            <span>${escapeHtml(footerHint)} · ${escapeHtml(label)} · ${escapeHtml(cardCostLabel(card))}</span>
+            ${targeting ? `<button class="ghost" type="button" onclick="mapHandOverlayCancelSelection()">${escapeHtml(mapHandOverlayCancelLabel())}</button>` : ""}
+          </div>
+        </div>`;
+      const canvas = $("mapHandSelectionPreviewCanvas");
+      if (canvas && typeof renderArenaCardPreviewCanvas === "function") renderArenaCardPreviewCanvas(canvas, card, { scale: 0.36 });
     }
 
     function cardZoneCountsForSide(side) {
@@ -501,7 +940,7 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
 
     function cardZoneDebugHtml(side) {
       return `
-        <div class="cardZonePlayer">
+        <div class="cardZonePlayer" data-hand-zone-side="${side}">
           <h4>${escapeHtml(playerName(side))}<span>${escapeHtml(state.factions[side])}</span></h4>
           <div class="miniSectionTitle">Starter fuori deck</div>
           ${renderStarterCardsDebug(side)}
@@ -533,6 +972,7 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
           ${cardZoneDebugHtml(other)}
         </div>`;
       if (typeof gameCardPreviewEnsureDefaultHandCard === "function") gameCardPreviewEnsureDefaultHandCard(current);
+      if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails();
       if (typeof renderInGameHandCardPreview === "function") renderInGameHandCardPreview();
     }
 

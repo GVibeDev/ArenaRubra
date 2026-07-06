@@ -1,9 +1,9 @@
 
 "use strict";
 
-// Arena Rubra – F9I1e Stat Value Clearance Microfix.
+// Arena Rubra – F9K2d Renderer Calibration Commit / Coordinate Freeze.
 // Preview canvas non distruttiva: usa i dati del catalogo, il manifest asset carte e le coordinate del Card Composer.
-// In F9I1c verifica/hydrata i dati carta dal catalogo, così HP/DEF/ATT e descrizione restano coerenti tra pool e draft.
+// In F9K2d integra nel renderer le coordinate validate dal Calibration Lab per Exordium, Agathoi, Liberti e Fabeot, separate tra unità e tattiche.
 
 const CARD_RENDERER_STATE = {
   selectedCardId: "",
@@ -26,6 +26,560 @@ const CARD_RENDERER_FACTION_STYLE = Object.freeze({
   fabeot: { text: "#d5d5df", textShadow: "rgba(0,0,0,.88)", stroke: "rgba(0,0,0,.82)", base: "#231d37", accent: "#55428a" },
   neutral: { text: "#ececec", textShadow: "rgba(0,0,0,.88)", stroke: "rgba(0,0,0,.82)", base: "#24262f", accent: "#525866" }
 });
+
+const CARD_RENDERER_TEXT_AREA_OFFSETS = Object.freeze({
+  unit: {
+    nexus: { nameY: 0, typeY: 0, descriptionY: 0 },
+    exordium: { nameY: 8, typeY: 7, descriptionY: 9 },
+    liberti: { nameY: 8, typeY: 7, descriptionY: 9 },
+    fabeot: { nameY: 8, typeY: 7, descriptionY: 9 },
+    agathoi: { nameY: 20, typeY: 15, descriptionY: 22 }
+  },
+  tactic: {
+    nexus: { nameY: 0, typeY: 0, descriptionY: 0 },
+    exordium: { nameY: 7, typeY: 6, descriptionY: 9 },
+    liberti: { nameY: 7, typeY: 6, descriptionY: 9 },
+    fabeot: { nameY: 7, typeY: 6, descriptionY: 9 },
+    agathoi: { nameY: 4, typeY: 8, descriptionY: 6 }
+  }
+});
+
+const CARD_RENDERER_FIXED_LAYOUT_OVERRIDES = Object.freeze({
+  "unit": {
+    "exordium": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 1073.5,
+          "w": 735,
+          "h": 48,
+          "maxFontSize": 55,
+          "minFontSize": 30
+        },
+        "type": {
+          "x": 312,
+          "y": 1190,
+          "w": 400,
+          "h": 30,
+          "maxFontSize": 25,
+          "minFontSize": 18
+        },
+        "description": {
+          "x": 161,
+          "y": 1230,
+          "w": 724,
+          "h": 218,
+          "maxFontSize": 34,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 111,
+          "valueY": 180,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 155,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "def": {
+          "cx": 322,
+          "labelY": 954,
+          "valueY": 1006,
+          "labelSize": 19,
+          "valueSize": 70
+        },
+        "att": {
+          "cx": 871,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        }
+      }
+    },
+    "agathoi": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 1080.5,
+          "w": 732,
+          "h": 48,
+          "maxFontSize": 55,
+          "minFontSize": 30
+        },
+        "type": {
+          "x": 312,
+          "y": 1190,
+          "w": 400,
+          "h": 30,
+          "maxFontSize": 25,
+          "minFontSize": 18
+        },
+        "description": {
+          "x": 155,
+          "y": 1240,
+          "w": 724,
+          "h": 218,
+          "maxFontSize": 34,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 111,
+          "valueY": 180,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 152,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "def": {
+          "cx": 322,
+          "labelY": 954,
+          "valueY": 1003,
+          "labelSize": 19,
+          "valueSize": 70
+        },
+        "att": {
+          "cx": 861,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        }
+      }
+    },
+    "liberti": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 1090,
+          "w": 732,
+          "h": 48,
+          "maxFontSize": 55,
+          "minFontSize": 30
+        },
+        "type": {
+          "x": 312,
+          "y": 1195,
+          "w": 400,
+          "h": 30,
+          "maxFontSize": 25,
+          "minFontSize": 18
+        },
+        "description": {
+          "x": 155,
+          "y": 1258,
+          "w": 724,
+          "h": 218,
+          "maxFontSize": 34,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 111,
+          "valueY": 180,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 152,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "def": {
+          "cx": 322,
+          "labelY": 954,
+          "valueY": 1003,
+          "labelSize": 19,
+          "valueSize": 70
+        },
+        "att": {
+          "cx": 861,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        }
+      }
+    },
+    "fabeot": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 1085,
+          "w": 732,
+          "h": 48,
+          "maxFontSize": 55,
+          "minFontSize": 30
+        },
+        "type": {
+          "x": 312,
+          "y": 1190,
+          "w": 400,
+          "h": 30,
+          "maxFontSize": 25,
+          "minFontSize": 18
+        },
+        "description": {
+          "x": 155,
+          "y": 1240,
+          "w": 724,
+          "h": 218,
+          "maxFontSize": 34,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 111,
+          "valueY": 180,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 152,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "def": {
+          "cx": 322,
+          "labelY": 954,
+          "valueY": 1003,
+          "labelSize": 19,
+          "valueSize": 70
+        },
+        "att": {
+          "cx": 861,
+          "labelY": 925,
+          "valueY": 997,
+          "labelSize": 25,
+          "valueSize": 104
+        }
+      }
+    }
+  },
+  "tactic": {
+    "exordium": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 880,
+          "w": 740,
+          "h": 60,
+          "maxFontSize": 55,
+          "minFontSize": 28
+        },
+        "type": {
+          "x": 267,
+          "y": 1002,
+          "w": 495,
+          "h": 34,
+          "maxFontSize": 28,
+          "minFontSize": 16
+        },
+        "description": {
+          "x": 150,
+          "y": 1095,
+          "w": 748,
+          "h": 300,
+          "maxFontSize": 38,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 150,
+          "labelY": 110,
+          "valueY": 190,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "def": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "att": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        }
+      }
+    },
+    "agathoi": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 900,
+          "w": 740,
+          "h": 60,
+          "maxFontSize": 55,
+          "minFontSize": 28
+        },
+        "type": {
+          "x": 274,
+          "y": 1010,
+          "w": 495,
+          "h": 34,
+          "maxFontSize": 28,
+          "minFontSize": 16
+        },
+        "description": {
+          "x": 157,
+          "y": 1100,
+          "w": 748,
+          "h": 300,
+          "maxFontSize": 38,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 108,
+          "valueY": 190,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "def": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "att": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        }
+      }
+    },
+    "liberti": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 910,
+          "w": 740,
+          "h": 60,
+          "maxFontSize": 55,
+          "minFontSize": 28
+        },
+        "type": {
+          "x": 274,
+          "y": 1032,
+          "w": 495,
+          "h": 34,
+          "maxFontSize": 28,
+          "minFontSize": 16
+        },
+        "description": {
+          "x": 138,
+          "y": 1120,
+          "w": 748,
+          "h": 300,
+          "maxFontSize": 38,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 111,
+          "valueY": 185,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "def": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "att": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        }
+      }
+    },
+    "fabeot": {
+      "textAreas": {
+        "name": {
+          "x": 146,
+          "y": 885,
+          "w": 740,
+          "h": 60,
+          "maxFontSize": 55,
+          "minFontSize": 28
+        },
+        "type": {
+          "x": 274,
+          "y": 1000,
+          "w": 495,
+          "h": 34,
+          "maxFontSize": 28,
+          "minFontSize": 16
+        },
+        "description": {
+          "x": 142,
+          "y": 1100,
+          "w": 748,
+          "h": 300,
+          "maxFontSize": 38,
+          "minFontSize": 22
+        }
+      },
+      "statText": {
+        "ene": {
+          "cx": 140,
+          "labelY": 111,
+          "valueY": 190,
+          "labelSize": 25,
+          "valueSize": 104
+        },
+        "hp": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "def": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        },
+        "att": {
+          "cx": 0,
+          "labelY": 0,
+          "valueY": 0,
+          "labelSize": 0,
+          "valueSize": 0
+        }
+      }
+    }
+  }
+});
+
+function cardRendererFixedLayoutOverride(card, kind) {
+  const factionKey = typeof cardAssetFactionKey === "function" ? cardAssetFactionKey(card) : String(card && card.faction || "").toLowerCase();
+  const byKind = CARD_RENDERER_FIXED_LAYOUT_OVERRIDES[kind] || null;
+  return byKind && factionKey ? byKind[factionKey] || null : null;
+}
+
+function cardRendererMergeArea(base, override) {
+  return override && typeof override === "object" ? { ...(base || {}), ...override } : { ...(base || {}) };
+}
+
+function cardRendererApplyFixedLayoutOverride(layout, card, kind) {
+  const override = cardRendererFixedLayoutOverride(card, kind);
+  if (!override) return layout;
+  const next = {
+    ...layout,
+    image: { ...(layout.image || {}) },
+    imageTransform: { ...(layout.imageTransform || {}) },
+    textAreas: { ...(layout.textAreas || {}) },
+    statText: { ...(layout.statText || {}) }
+  };
+  if (override.textAreas) {
+    Object.keys(override.textAreas).forEach(key => {
+      next.textAreas[key] = cardRendererMergeArea(next.textAreas[key], override.textAreas[key]);
+    });
+  }
+  if (override.statText) {
+    Object.keys(override.statText).forEach(key => {
+      next.statText[key] = cardRendererMergeArea(next.statText[key], override.statText[key]);
+    });
+  }
+  return next;
+}
+
+function cardRendererTextAreaOffset(card, kind, areaName) {
+  const fallback = { nameY: 0, typeY: 0, descriptionY: 0 };
+  const factionKey = typeof cardAssetFactionKey === "function" ? cardAssetFactionKey(card) : String(card && card.faction || "").toLowerCase();
+  const table = CARD_RENDERER_TEXT_AREA_OFFSETS[kind] || CARD_RENDERER_TEXT_AREA_OFFSETS.unit || {};
+  const row = table[factionKey] || fallback;
+  const key = `${areaName}Y`;
+  return Number.isFinite(row[key]) ? row[key] : 0;
+}
+
+function cardRendererOffsetTextArea(area, yOffset) {
+  return { ...(area || {}), y: (area && Number.isFinite(area.y) ? area.y : 0) + (Number.isFinite(yOffset) ? yOffset : 0) };
+}
+
+function cardRendererLayoutFor(card, kind) {
+  const base = (typeof CARD_COMPOSER_TEMPLATE_GEOMETRY !== "undefined" && CARD_COMPOSER_TEMPLATE_GEOMETRY[kind])
+    ? CARD_COMPOSER_TEMPLATE_GEOMETRY[kind]
+    : CARD_COMPOSER_TEMPLATE_GEOMETRY.unit;
+  const textAreas = base.textAreas || {};
+  const layout = {
+    ...base,
+    image: { ...(base.image || {}) },
+    imageTransform: { ...(base.imageTransform || {}) },
+    statText: { ...(base.statText || {}) },
+    textAreas: {
+      ...textAreas,
+      name: cardRendererOffsetTextArea(textAreas.name, cardRendererTextAreaOffset(card, kind, "name")),
+      type: cardRendererOffsetTextArea(textAreas.type, cardRendererTextAreaOffset(card, kind, "type")),
+      description: cardRendererOffsetTextArea(textAreas.description, cardRendererTextAreaOffset(card, kind, "description"))
+    }
+  };
+  return cardRendererApplyFixedLayoutOverride(layout, card, kind);
+}
 
 const cardRendererImageCache = Object.create(null);
 
@@ -52,6 +606,60 @@ function cardRendererSourceBlueprint(card) {
 function cardRendererSourceTactic(card) {
   if (!card || card.sourceType !== "tactic" || typeof DECK_TACTICS === "undefined") return null;
   return (DECK_TACTICS || []).find(t => t && t.id === card.tacticId) || null;
+}
+
+function cardRendererEscapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function cardRendererPassiveEntries(card) {
+  if (!card || card.sourceType === "tactic") return [];
+  const bp = cardRendererSourceBlueprint(card) || (card.custom ? card : null);
+  if (!bp) return [];
+  const entries = [];
+  const add = (name, description) => {
+    if (!name) return;
+    if (entries.some(e => e.name === name)) return;
+    entries.push({ name, description: description || name });
+  };
+  const rules = Array.isArray(bp.factionRules) ? bp.factionRules : [];
+
+  if (bp.vanguard) add("Avanguardia", "Può agire nel turno in cui entra in gioco.");
+  if (bp.frontLine) add("Prima Linea", "Intercetta attacchi base diretti a unità alleate adiacenti, quando la regola è applicabile.");
+  if (Number.isFinite(bp.passiveThorns) && bp.passiveThorns > 0) add("Spine", `Chi attacca questa unità subisce ${bp.passiveThorns} danno diretto.`);
+  if (bp.guardThornsOnIdle) add("Spine", "Se termina il turno senza attaccare/usare abilità/costruire, ottiene Spine 1 fino al prossimo turno.");
+  if (rules.includes("Superiorità Numerica")) add("Superiorità Numerica", "Bonus d'attacco Liberti quando il bersaglio è pressato da più unità valide.");
+  if (rules.includes("Sanguinamento") || (Number.isFinite(bp.bleedValue) && bp.bleedValue > 0)) add("Sanguinamento", `Gli attacchi possono applicare Sanguinamento${Number.isFinite(bp.bleedValue) && bp.bleedValue > 0 ? ` ${bp.bleedValue}` : ""}, infliggendo pressione nel tempo.`);
+  if (bp.bleedImmune) add("Immunità Sanguinamento", "Non subisce gli effetti di Sanguinamento.");
+  if (Number.isFinite(bp.antiStructureAtt) && bp.antiStructureAtt > 0) add("Anti-Struttura", `+${bp.antiStructureAtt} ATT quando attacca strutture.`);
+  if (Number.isFinite(bp.attacksPerTurn) && bp.attacksPerTurn > 1) add("Attacchi Multipli", `Può effettuare ${bp.attacksPerTurn} attacchi base per turno, se le condizioni lo permettono.`);
+  if (bp.psBonus && bp.psBonus.description) add("Bonus PS", bp.psBonus.description);
+  if (bp.costAdjacencyVehicle && Number.isFinite(bp.costAdjacencyVehicle.value)) add("Coordinamento", `Riduce il costo di ${Math.abs(bp.costAdjacencyVehicle.value)} ENE vicino a veicoli alleati, fino al minimo previsto.`);
+  if (Number.isFinite(bp.onKillHealInfantry) && bp.onKillHealInfantry > 0) add("Predazione", `Quando distrugge una fanteria nemica recupera ${bp.onKillHealInfantry} HP.`);
+  if (bp.ability && bp.ability.passive) add(bp.ability.name || "Passiva", bp.ability.description || "Abilità passiva.");
+  if (bp.customAbilitySchema && bp.customAbilitySchema.passive) {
+    const passive = bp.customAbilitySchema.passive;
+    add(passive.label || passive.kind || "Passiva custom", passive.description || passive.label || "Passiva custom data-only.");
+  }
+  return entries;
+}
+
+function cardRendererPassiveText(card) {
+  return cardRendererPassiveEntries(card)
+    .map(entry => `${entry.name}: ${entry.description}`)
+    .join(" ");
+}
+
+function cardRendererPassiveBadgesHtml(card, escapeFn = cardRendererEscapeHtml) {
+  const entries = cardRendererPassiveEntries(card);
+  if (!entries.length) return "";
+  const esc = typeof escapeFn === "function" ? escapeFn : cardRendererEscapeHtml;
+  return `<div class="cardRendererPassiveBadges" aria-label="Tratti passivi">${entries.map(entry => `<span class="cardRendererPassiveBadge" tabindex="0" title="${esc(entry.description)}"><strong>${esc(entry.name)}</strong></span>`).join("")}</div>`;
 }
 
 function cardRendererLocalizedUnitType(card) {
@@ -102,19 +710,28 @@ function cardRendererTypeText(card) {
 
 function cardRendererDescriptionText(card) {
   if (!card) return "";
+  if (card.custom && (card.description || card.abilityText || card.effectText || card.notes)) {
+    const passiveText = cardRendererPassiveText(card);
+    return [card.description, card.abilityText, passiveText, card.effectText, card.notes].filter(Boolean).join(" ").trim();
+  }
   if (card.sourceType === "tactic") {
     const tactic = cardRendererSourceTactic(card);
     return [card.effectText, tactic && tactic.notes, tactic && tactic.target ? `Bersaglio: ${tactic.target}.` : ""].filter(Boolean).join(" ").trim();
   }
   const bp = cardRendererSourceBlueprint(card);
   const parts = [];
-  if (bp && bp.ability && bp.ability.description) {
+  if (card.description) parts.push(card.description);
+  if (card.abilityText) parts.push(card.abilityText);
+  if (bp && bp.description) parts.push(bp.description);
+  if (bp && bp.ability && bp.ability.description && !bp.ability.passive) {
     const abilityLabel = bp.ability.name ? `${bp.ability.name}: ` : "";
     parts.push(`${abilityLabel}${bp.ability.description}`);
   }
-  if (bp && bp.psBonus && bp.psBonus.description) parts.push(bp.psBonus.description);
-  if (!parts.length) parts.push("Anteprima dati base: in questa fase il renderer usa catalogo + manifest asset. Testo regole/abilità completo integrabile nelle prossime sottofasi.");
-  return parts.join(" ");
+  const passiveText = cardRendererPassiveText(card);
+  if (passiveText) parts.push(passiveText);
+  if (bp && bp.psBonus && bp.psBonus.description && !parts.join(" ").includes(bp.psBonus.description)) parts.push(bp.psBonus.description);
+  if (!parts.length) parts.push("Nessuna abilità.");
+  return [...new Set(parts)].join(" ");
 }
 
 function cardRendererStat(card, key) {
@@ -233,6 +850,28 @@ function cardRendererDrawTextBlock(ctx, text, area, options = {}) {
   });
 }
 
+function cardRendererDrawDescription(ctx, card, text, area, style) {
+  const normalized = cardRendererNormalizeDescription(text);
+  if (!normalized) return;
+  if (normalized === "Nessuna abilità.") {
+    const fontSize = Math.min(area.maxFontSize || 34, 32);
+    cardRendererSetFont(ctx, fontSize, area.weight || "500");
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    cardRendererDrawOutlinedText(ctx, normalized, area.x + (area.w / 2), area.y + (area.h / 2), {
+      fill: (style && style.text) || "#f5f5f5",
+      stroke: (style && style.stroke) || "rgba(0,0,0,.82)",
+      fontSize,
+      lineWidth: Math.max(2, Math.round(fontSize * 0.08))
+    });
+    ctx.restore();
+    ctx.textBaseline = "alphabetic";
+    return;
+  }
+  cardRendererDrawTextBlock(ctx, normalized, area, { weight: area.weight || "500" });
+}
+
 function cardRendererDrawOutlinedText(ctx, text, x, y, opts = {}) {
   const fill = opts.fill || "#f5f5f5";
   const stroke = opts.stroke || "rgba(0,0,0,.82)";
@@ -254,10 +893,15 @@ function cardRendererDrawCardBase(ctx, canvas, card) {
 }
 
 function cardRendererDrawArtArea(ctx, card, layout, redraw) {
-  const artPaths = typeof cardAssetArtCandidatePathsFor === "function" ? cardAssetArtCandidatePathsFor(card) : (typeof cardAssetArtPathFor === "function" ? [cardAssetArtPathFor(card)] : []);
+  const embeddedArtPath = card && card.customArt && card.customArt.dataUrl ? card.customArt.dataUrl : "";
+  const artPaths = embeddedArtPath
+    ? [embeddedArtPath]
+    : (typeof cardAssetArtCandidatePathsFor === "function" ? cardAssetArtCandidatePathsFor(card) : (typeof cardAssetArtPathFor === "function" ? [cardAssetArtPathFor(card)] : []));
   const placeholderPath = typeof cardAssetEntryFor === "function" ? (cardAssetEntryFor(card).placeholderPath || "") : "";
   const artArea = layout.image;
-  const transform = layout.imageTransform || { zoom: 1, offsetX: 0, offsetY: 0 };
+  const baseTransform = layout.imageTransform || { zoom: 1, offsetX: 0, offsetY: 0 };
+  const customTransform = embeddedArtPath ? (card.customArtTransform || card.customArt.transform || {}) : {};
+  const transform = { ...baseTransform, ...customTransform };
   const artImg = cardRendererLoadFirstAvailableImage(artPaths, redraw);
   const placeholderImg = cardRendererLoadFirstAvailableImage([placeholderPath], redraw);
   const img = artImg || placeholderImg;
@@ -285,11 +929,13 @@ function cardRendererDrawArtArea(ctx, card, layout, redraw) {
   }
 }
 
-function cardRendererDrawFrame(ctx, card, redraw) {
+function cardRendererDrawFrame(ctx, card, redraw, renderSize = null) {
   const framePath = typeof cardAssetFramePathFor === "function" ? cardAssetFramePathFor(card) : "";
   const frameImg = cardRendererLoadImage(framePath, redraw);
   if (frameImg && frameImg.width && frameImg.height) {
-    ctx.drawImage(frameImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    const targetW = renderSize && Number.isFinite(renderSize.w) ? renderSize.w : ctx.canvas.width;
+    const targetH = renderSize && Number.isFinite(renderSize.h) ? renderSize.h : ctx.canvas.height;
+    ctx.drawImage(frameImg, 0, 0, targetW, targetH);
   }
 }
 
@@ -346,25 +992,35 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
   };
   const ctx = canvas.getContext("2d");
   const kind = typeof cardAssetKind === "function" ? cardAssetKind(card) : (card && card.sourceType === "tactic" ? "tactic" : "unit");
-  const layout = CARD_COMPOSER_TEMPLATE_GEOMETRY[kind] || CARD_COMPOSER_TEMPLATE_GEOMETRY.unit;
+  const layout = cardRendererLayoutFor(card, kind);
   const style = cardRendererFactionStyle(card);
-  canvas.width = CARD_COMPOSER_TEMPLATE_GEOMETRY.canvas.w;
-  canvas.height = CARD_COMPOSER_TEMPLATE_GEOMETRY.canvas.h;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  cardRendererDrawCardBase(ctx, canvas, card);
+  const virtualW = CARD_COMPOSER_TEMPLATE_GEOMETRY.canvas.w;
+  const virtualH = CARD_COMPOSER_TEMPLATE_GEOMETRY.canvas.h;
+  const scale = Number.isFinite(options.scale) && options.scale > 0 ? options.scale : 1;
+  const renderW = Math.max(1, Math.round(virtualW * scale));
+  const renderH = Math.max(1, Math.round(virtualH * scale));
+  canvas.width = renderW;
+  canvas.height = renderH;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, renderW, renderH);
+  ctx.save();
+  if (scale !== 1) ctx.scale(scale, scale);
+  const virtualCanvas = { width: virtualW, height: virtualH };
+  cardRendererDrawCardBase(ctx, virtualCanvas, card);
 
   if (!card) {
     ctx.fillStyle = "rgba(255,255,255,.8)";
     ctx.textAlign = "center";
     cardRendererSetFont(ctx, 42, "700");
-    ctx.fillText("Seleziona una carta", canvas.width / 2, canvas.height / 2 - 20);
+    ctx.fillText("Seleziona una carta", virtualW / 2, virtualH / 2 - 20);
     cardRendererSetFont(ctx, 24, "400", "system-ui, sans-serif");
-    ctx.fillText("Deck Builder · anteprima renderer F9I1", canvas.width / 2, canvas.height / 2 + 26);
+    ctx.fillText("Deck Builder · anteprima renderer F9I1", virtualW / 2, virtualH / 2 + 26);
+    ctx.restore();
     return true;
   }
 
   cardRendererDrawArtArea(ctx, card, layout, redraw);
-  cardRendererDrawFrame(ctx, card, redraw);
+  cardRendererDrawFrame(ctx, card, redraw, { w: virtualW, h: virtualH });
 
   ctx.fillStyle = style.text;
   ctx.strokeStyle = style.stroke;
@@ -389,9 +1045,10 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
 
   const description = cardRendererDescriptionText(card);
   cardRendererSetFont(ctx, descArea.maxFontSize || 34, descArea.weight || "500");
-  cardRendererDrawTextBlock(ctx, description, descArea, { weight: descArea.weight || "500" });
+  cardRendererDrawDescription(ctx, card, description, descArea, style);
 
   cardRendererDrawStats(ctx, card, layout, style);
+  ctx.restore();
   return true;
 }
 
@@ -512,7 +1169,8 @@ function gameCardPreviewBodyHtml(card, context = "hand") {
       <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
       <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
     </div>
-    <div class="deckBuilderPreviewDesc">${dbEscapeHtml(desc || "Nessun testo carta disponibile nel catalogo.")}</div>`;
+    <div class="deckBuilderPreviewDesc">${dbEscapeHtml(desc || "Nessun testo carta disponibile nel catalogo.")}</div>
+    ${cardRendererPassiveBadgesHtml(card, dbEscapeHtml)}`;
 }
 
 function renderInGameHandCardPreview() {
@@ -577,6 +1235,7 @@ function renderDeckBuilderCardPreview(report) {
           <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
         </div>
         <div class="deckBuilderPreviewDesc">${dbEscapeHtml(desc || "Nessun testo carta disponibile nel catalogo.")}</div>
+        ${cardRendererPassiveBadgesHtml(card, dbEscapeHtml)}
         <div class="deckBuilderPreviewPaths">
           <div><strong>Frame:</strong> <code>${dbEscapeHtml(entry && entry.framePath || "")}</code></div>
           <div><strong>Art preferita:</strong> <code>${dbEscapeHtml(entry && entry.artPath || "")}</code></div>

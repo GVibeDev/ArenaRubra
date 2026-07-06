@@ -398,6 +398,7 @@ const STATUS_DEFINITIONS = Object.freeze({
       if (!canAct(unit) || unit.abilityUsedThisTurn || statusBlocks(unit, "ability")) return false;
       if (!ab) return true;
       if (ab.passive || unit.cooldownLeft > 0) return false;
+      if (ab.customDataOnly && !ab.runtimeEnabled) return false;
       const abilityCost = typeof effectiveAbilityCost === "function" ? effectiveAbilityCost(unit.side, ab) : (ab.cost || 0);
       if (typeof playerEnergyLocked === "function" && playerEnergyLocked(unit.side) && abilityCost > 0) return false;
       if (abilityCost > state.energy[unit.side]) return false;

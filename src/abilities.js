@@ -138,6 +138,31 @@ const ABILITY_HANDLERS = Object.freeze({
         });
       },
 
+      // F9K6 – Custom Ability Runtime Binding: handler semplici e sicuri
+      // per le abilità attive create dal Card Editor. Restano volutamente
+      // atomici: niente conversioni, spawn o stati ambigui senza UI dedicata.
+      customDrawCard(user, target, ab) {
+        const amount = Math.max(1, Math.min(3, Math.round(ab.value || 1)));
+        if (typeof drawCards !== "function") {
+          log(`${ab.name}: pesca non disponibile nel runtime corrente.`);
+          return;
+        }
+        const drawn = drawCards(user.side, amount, { source:ab.name });
+        const count = Array.isArray(drawn) ? drawn.length : 0;
+        log(`${user.name} pesca ${count} carta/e da ${ab.name}.`);
+      },
+      customGainEnergy(user, target, ab) {
+        const amount = Math.max(1, Math.min(7, Math.round(ab.value || 1)));
+        state.energy[user.side] += amount;
+        log(`${user.name} genera +${amount} ENE da ${ab.name}.`, EventTypes.ECONOMY_CHANGED, {
+          player: user.side,
+          faction: state.factions && state.factions[user.side],
+          gain: amount,
+          source: ab.name,
+          customRuntime: true
+        });
+      },
+
       nexusPsPresidium(user, target, ab) {
         if (!target || target.side !== user.side || target.faction !== "Nexus") {
           log(`${ab.name} fallisce: serve una unità Nexus alleata valida.`);
@@ -664,6 +689,21 @@ const ABILITY_HANDLERS = Object.freeze({
 
 
 
+    function abilityFilterMatchesTarget(filter, target) {
+      if (!target) return false;
+      const f = String(filter || "Any").toLowerCase();
+      if (!f || f === "any" || f === "all") return true;
+      if (f === "fanteria" || f === "infantry") return target.type === "Fanteria";
+      if (f === "veicolo" || f === "vehicle") return target.type === "Veicolo";
+      if (f === "struttura" || f === "structure") return target.type === "Struttura";
+      if (f === "commander_or_pivot" || f === "comandante_pivot") {
+        return target.type === "Comandante" || target.weight === "Pivot" || target.role === "commander" || target.deckRole === "pivot";
+      }
+      return target.type === filter;
+    }
+
+
+
     function abilityTargets(unit, ab) {
       if (!ab || !canUseAbility(unit, ab)) return [];
       if (ab.target === "cell_ps" || ab.kind === "psLock") {
@@ -675,7 +715,11 @@ const ABILITY_HANDLERS = Object.freeze({
           .map(c => ({ ...c, pos:c.coord, type:"Cella", name:`Cella libera [${c.coord.join(",")}]` }));
       }
       if (ab.target === "self") return [unit];
-      const candidates = ab.target === "ally" ? combatUnits(unit.side) : combatUnits(enemyOf(unit.side));
+      const candidates = ab.target === "ally"
+        ? combatUnits(unit.side)
+        : (ab.target === "any"
+          ? [...combatUnits(unit.side), ...combatUnits(enemyOf(unit.side))]
+          : combatUnits(enemyOf(unit.side)));
       return candidates.filter(t => {
         if (t.type === "QG") return false;
         if (ab.kind === "nexusPsPresidium") return t.side === unit.side && t.faction === "Nexus" && hexDistance(unit.pos, t.pos) <= (ab.range || 0) && state.cells.some(c => c.ps && t.pos && hexDistance(t.pos, c.coord) <= 1);
@@ -685,7 +729,7 @@ const ABILITY_HANDLERS = Object.freeze({
         if (t.uid === unit.uid && ab.target !== "ally") return false;
         if (ab.kind === "agathoiShroud") return t.side === unit.side && t.type !== "Struttura" && isAdjacentToAgathoiStructure(t);
         if (hexDistance(unit.pos, t.pos) > ab.range) return false;
-        if (ab.filter && ab.filter !== "Any" && t.type !== ab.filter) return false;
+        if (!abilityFilterMatchesTarget(ab.filter, t)) return false;
         if (ab.kind === "heal" && t.currentHp >= t.maxHp) return false;
         if (ab.kind === "armor" && t.currentDef >= t.maxDef) return false;
         if (ab.kind === "armorThorns" && t.currentDef >= t.maxDef && hasStatus(t, "thorns")) return false;

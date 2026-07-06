@@ -1,0 +1,113 @@
+
+/* F9K2c – Temporary Renderer Text Calibration Lab */
+.rendererCalibrationLab {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  top: max(12px, env(safe-area-inset-top));
+  z-index: 80;
+  width: min(760px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 18px;
+  background: rgba(12,14,20,.97);
+  color: var(--text, #f3f3f3);
+  box-shadow: 0 24px 80px rgba(0,0,0,.55);
+  padding: 14px;
+}
+.rendererCalibrationHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.rendererCalibrationHeader h3 {
+  margin: 0;
+}
+.rendererCalibrationTarget {
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  padding: 9px 10px;
+  color: var(--muted, #bac0cc);
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.rendererCalibrationControlsTop,
+.rendererCalibrationExportActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.rendererCalibrationSelectorGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.rendererCalibrationSelectorGrid label,
+.rendererCalibrationGrid label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted, #bac0cc);
+  font-size: 11px;
+}
+.rendererCalibrationSelectorGrid select,
+.rendererCalibrationGrid input,
+#rendererCalibrationExportText {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 9px;
+  background: rgba(0,0,0,.3);
+  color: var(--text, #f3f3f3);
+  padding: 6px 8px;
+}
+.rendererCalibrationScroll {
+  display: grid;
+  gap: 10px;
+}
+.rendererCalibrationScroll h4 {
+  margin: 8px 0 7px;
+  font-size: 13px;
+}
+.rendererCalibrationGrid {
+  display: grid;
+  gap: 7px;
+  align-items: end;
+  overflow-x: auto;
+}
+.rendererCalibrationRowLabel {
+  font-weight: 800;
+  color: var(--text, #f3f3f3);
+  font-size: 12px;
+  padding-bottom: 7px;
+}
+#rendererCalibrationExportText {
+  min-height: 150px;
+  resize: vertical;
+  font-family: Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.rendererCalibrationNote {
+  color: var(--muted, #bac0cc);
+  font-size: 11px;
+  line-height: 1.35;
+  margin: 8px 0 0;
+}
+.rendererCalibrationOpenBtn {
+  border-color: rgba(227,189,103,.42) !important;
+}
+@media (max-width: 760px) {
+  .rendererCalibrationLab {
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
+  .rendererCalibrationSelectorGrid {
+    grid-template-columns: 1fr;
+  }
+}

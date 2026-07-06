@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9J1 Card Pool Screen Foundation metadata.
+// Arena Rubra – F9K7 Menu / Lab Navigation Cleanup metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9J1-APK-M4c",
-  buildName: "Card Pool Screen Foundation",
-  buildDate: "2026-06-28",
-  buildChannel: "freeze-candidate",
+  version: "C2-STABLE-1-F9K7-APK-M4c",
+  buildName: "Menu / Lab Navigation Cleanup",
+  buildDate: "2026-07-05",
+  buildChannel: "ui-lab",
   logicBaseline: "C2-STABLE-1-APK-M4c",
   map: "Starter MAP1 radius 6",
-  notes: "Fase 9J1: Card Pool Screen Foundation. Aggiunge una schermata Pool carte read-only con filtri per fazione/tipo/ruolo, ricerca testuale, preview renderer e path asset/manifest; mantiene invariati gameplay, AI, deck rules e storage."
+  notes: "Fase 9K7: Menu / Lab Navigation Cleanup. Riorganizza menu principale in Gioca, Laboratorio e Debug/Export; rende il Setup più leggibile con blocchi identità/deck runtime; migliora la selezione dei deck salvati mostrando nome, numero carte, OFFICIAL/CUSTOM e data breve; aggiunge navigazione rapida tra Card Editor, Deck Builder e Pool. Nessuna modifica a gameplay, AI, regole Starter, mappa o bilanciamento."
 });
 
 function buildInfoLabel() {

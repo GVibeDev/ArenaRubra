@@ -1,0 +1,20 @@
+F9K2 check
+
+Output: C2-STABLE-1-F9K2-APK-M4c Custom Card Library Foundation
+
+Validazioni:
+- node --check src/*.js data/*.js
+- duplicate function scan
+- duplicate HTML id scan
+- VM smoke test: custom in Pool, export/import payload, clone custom, duplicate official as custom
+- zip integrity
+
+Manual test:
+- Menu -> Crea carta custom
+- Salva una custom valida
+- Filtra libreria custom per nome/tipo/fazione
+- Duplica custom selezionata
+- Copia libreria / Scrivi export qui / Importa JSON
+- Svuota custom
+- Pool carte -> seleziona ufficiale -> Duplica in Editor
+- Pool carte -> filtro Origine: Custom
