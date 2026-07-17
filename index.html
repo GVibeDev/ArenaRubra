@@ -32,8 +32,8 @@
       <h1><span id="buildAppName">Arena Rubra</span></h1>
       <div class="mainMenuStage" id="buildStage">Starter Game ALPHA</div>
       <div class="mainMenuBuildBox">
-        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span></div>
-        <div><strong>Patch</strong> <span id="menuBuildName">Menu / Lab Navigation Cleanup</span></div>
+        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9M2f-APK-M4c</span></div>
+        <div><strong>Patch</strong> <span id="menuBuildName">Token Asset Cache / Flicker Fix</span></div>
         <div><strong>Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></div>
         <div><strong>Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></div>
         <div><strong>Data</strong> <span id="menuBuildDate">2026-06-27</span></div>
@@ -56,6 +56,7 @@
           <h2>Debug / Export</h2>
           <p>Strumenti diagnostici e informazioni build.</p>
           <button class="ghost" data-app-placeholder-screen="stats" type="button">Statistiche / log test</button>
+          <button class="ghost" data-app-open-layout-lab type="button">Layout calibration lab</button>
           <button class="ghost" data-app-placeholder-screen="options" type="button">Opzioni / debug</button>
           <button class="ghost" data-app-placeholder-screen="about" type="button">Informazioni versione</button>
         </section>
@@ -190,7 +191,7 @@
         <button class="ghost" id="setupBackMenuBtn" type="button">Torna al menu</button>
         <button class="primary" id="setupStartGameBtn" type="button">Avvia partita</button>
       </div>
-      <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span> · <span id="setupBuildName">Menu / Lab Navigation Cleanup</span></p>
+      <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9M2f-APK-M4c</span> · <span id="setupBuildName">Token Asset Cache / Flicker Fix</span></p>
     </div>
   </section>
 
@@ -240,7 +241,7 @@
           <input id="deckBuilderIncludeCustomToggle" type="checkbox">
           Includi carte CUSTOM nel pool
         </label>
-        <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9K7-APK-M4c · menu / lab navigation cleanup</div>
+        <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9M2f-APK-M4c · Token Asset Cache / Flicker Fix</div>
       </div>
 
       <section id="deckBuilderSummary" class="deckBuilderSummary" aria-live="polite"></section>
@@ -792,7 +793,7 @@
       <button class="primary topBarBtn" id="newGameBtn" type="button">Nuova partita</button>
     </div>
     <div class="topBarTitle">
-      <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span>)</span></h1>
+      <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9M2f-APK-M4c</span>)</span></h1>
     </div>
     <div class="topBarAction topBarRight">
       <button class="danger topBarBtn" id="endTurnBtn" type="button">Fine turno</button>
@@ -808,7 +809,7 @@
     <span class="hudChip" id="gameHudCards">Deck/Mano/Scarti —</span>
     <span class="hudChip hudMode" id="gameHudMode">Pronto</span>
     <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
-    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9K7-APK-M4c</span>
+    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9M2f-APK-M4c</span>
   </section>
 
   <main class="app mapFirstGameApp" id="mapFirstGameApp">
@@ -916,7 +917,7 @@
 
         <div class="unitCard" id="turnInfo"></div>
         <div class="help">
-          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9K7-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
+          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9M2f-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
         </div>
 
 
@@ -982,7 +983,12 @@
             <button class="ghost" id="openSetupDrawerBtn" type="button">Opz</button>
           </div>
         </div>
-        <div id="board" aria-label="Mappa esagonale Arena Rubra"></div>
+        <div id="boardVisualStack" class="boardVisualStack" aria-label="Strati visuali mappa Arena Rubra">
+          <div id="mapBgLayer" class="mapLayer mapBgLayer" aria-hidden="true"></div>
+          <div id="board" aria-label="Mappa esagonale Arena Rubra"></div>
+          <div id="mapEffectsLayer" class="mapLayer mapEffectsLayer" aria-hidden="true"></div>
+          <div id="mapOverlayLayer" class="mapLayer mapOverlayLayer" aria-hidden="true"></div>
+        </div>
         <div id="mapHandOverlay" class="mapHandOverlay" aria-label="Mano rapida sulla mappa">
           <div class="mapHandOverlayEmpty">Avvia una partita per vedere la mano sulla mappa.</div>
         </div>
@@ -1065,6 +1071,8 @@
 <script src="src/build_info.js"></script>
 <script src="src/constants.js"></script>
 <script src="src/storage.js"></script>
+<script src="src/map_skins.js"></script>
+<script src="src/visual_assets.js"></script>
 <script src="src/enums.js"></script>
 <script src="src/hex.js"></script>
 <script src="src/events.js"></script>
@@ -1081,6 +1089,7 @@
 <script src="src/card_assets.js"></script>
 <script src="src/card_renderer.js"></script>
 <script src="src/renderer_calibration_lab.js"></script>
+<script src="src/menu_layout_calibration_lab.js"></script>
 <script src="src/deck_builder.js"></script>
 <script src="src/card_editor.js"></script>
 <script src="src/card_pool.js"></script>

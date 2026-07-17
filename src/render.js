@@ -22,6 +22,26 @@ const MAP_HAND_OVERLAY_STATE = {
 // È una separazione fisica controllata, non ancora un renderer puro/headless.
 
 
+    function syncBoardCssMetrics() {
+      if (typeof document === "undefined" || !document.documentElement) return;
+      const root = document.documentElement;
+      if (typeof CENTER_X !== "undefined") root.style.setProperty("--hex-center-x", `${CENTER_X}px`);
+      if (typeof CENTER_Y !== "undefined") root.style.setProperty("--hex-center-y", `${CENTER_Y}px`);
+      if (typeof HEX_SIZE !== "undefined") root.style.setProperty("--hex-size", `${HEX_SIZE}px`);
+      root.style.setProperty("--board-native-width", "920px");
+      root.style.setProperty("--board-native-height", "780px");
+    }
+
+    function syncMapVisualLayerState() {
+      const stack = typeof document !== "undefined" ? document.getElementById("boardVisualStack") : null;
+      if (!stack || typeof state === "undefined" || !state) return;
+      stack.dataset.mapRadius = String(typeof RADIUS !== "undefined" ? RADIUS : "");
+      stack.dataset.mapVisualMode = "skin-slot";
+      stack.dataset.mapCells = Array.isArray(state.cells) ? String(state.cells.length) : "0";
+      if (typeof mapSkinLoadKey === "function") stack.dataset.mapSkin = mapSkinLoadKey();
+    }
+
+
     function renderAll() {
       renderBoard();
       renderPanels();
@@ -41,8 +61,12 @@ const MAP_HAND_OVERLAY_STATE = {
 
 
     function renderBoard() {
+      if (typeof syncBoardCssMetrics === "function") syncBoardCssMetrics();
+      if (typeof syncMapVisualLayerState === "function") syncMapVisualLayerState();
       const board = $("board");
       board.innerHTML = "";
+      board.dataset.interactionMode = mode || "idle";
+      board.classList.toggle("has-tactical-mode", Boolean(mode && mode !== "idle"));
       for (const cell of state.cells) {
         const [x, y, z] = cell.coord;
         const q = x;
@@ -53,20 +77,32 @@ const MAP_HAND_OVERLAY_STATE = {
         const hqSide = hqSideAt(cell.coord);
         const div = document.createElement("button");
         div.className = "hex";
-        if (cell.ps) div.classList.add("ps");
+        const moveTarget = isMoveTarget(cell.coord);
+        const attackTarget = isAttackTarget(cell.coord);
+        const abilityTarget = isAbilityTarget(cell.coord) || isTacticTarget(cell.coord);
+        const buildTarget = isBuildTarget(cell.coord);
+        const spawnTarget = isSpawnTarget(cell.coord);
+        const tacticalTarget = moveTarget || attackTarget || abilityTarget || buildTarget || spawnTarget;
+
+        if (cell.ps) div.classList.add("ps", "cellObjective");
         if (cell.ps && isPsLocked(cell.coord)) div.classList.add("psLocked");
         if (typeof isCellBlockedByEffect === "function" && isCellBlockedByEffect(cell.coord)) div.classList.add("cellBlocked");
         if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "cell_movement_trap")) div.classList.add("cellTrapNexus");
         if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "cell_movement_boost")) div.classList.add("cellPassageNexus");
         if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "vegetal_anathema_trap")) div.classList.add("cellTrapAgathoi");
         if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "bramble_path_trap")) div.classList.add("cellBramble");
-        if (hqSide) div.classList.add("hq", `hq${hqSide}`);
+        if (hqSide) div.classList.add("hq", `hq${hqSide}`, "cellObjective");
+        if (cell.control) {
+          div.classList.add("controlledCell", `controlledSide${cell.control}`);
+          div.style.setProperty("--cell-control-color", factionMetaBySide(cell.control).color);
+        }
         if (selectedId && unit && unit.uid === selectedId) div.classList.add("selected");
-        if (isMoveTarget(cell.coord)) div.classList.add("moveTarget");
-        if (isAttackTarget(cell.coord)) div.classList.add("attackTarget");
-        if (isAbilityTarget(cell.coord) || isTacticTarget(cell.coord)) div.classList.add("abilityTarget");
-        if (isBuildTarget(cell.coord)) div.classList.add("buildTarget");
-        if (isSpawnTarget(cell.coord)) div.classList.add("spawnTarget");
+        if (tacticalTarget) div.classList.add("tacticalTarget");
+        if (moveTarget) div.classList.add("moveTarget");
+        if (attackTarget) div.classList.add("attackTarget");
+        if (abilityTarget) div.classList.add("abilityTarget");
+        if (buildTarget) div.classList.add("buildTarget");
+        if (spawnTarget) div.classList.add("spawnTarget");
         div.style.left = left + "px";
         div.style.top = top + "px";
         if (cell.control) div.style.boxShadow = `inset 0 0 0 3px ${factionMetaBySide(cell.control).color}cc`;
@@ -79,13 +115,50 @@ const MAP_HAND_OVERLAY_STATE = {
 
         if (unit) {
           const token = document.createElement("div");
-          token.className = `unitToken faction-${factionMeta(unit.faction).key} ${tokenTypeClass(unit)} ${tokenWeightClass(unit)}`;
+          const tokenClasses = ["unitToken", `faction-${factionMeta(unit.faction).key}`, tokenTypeClass(unit), tokenWeightClass(unit)].filter(Boolean);
+          if (unit.customRuntime === true) tokenClasses.push("is-custom");
+          if (selectedId && unit.uid === selectedId) tokenClasses.push("is-selected");
+          token.className = tokenClasses.join(" ");
           if (unit.acted && unit.type !== "QG") token.classList.add("acted");
           if (hasStatus(unit, "bleed")) token.classList.add("bleeding");
           if (hasAnyInhibition(unit)) token.classList.add("inhibited");
           if (effectiveThorns(unit)) token.classList.add("thorns");
           div.classList.add("occupied");
-          token.innerHTML = `<span class="symbol">${unitIcon(unit)}</span>${unitOverlay(unit)}<span class="mini statMini"><span class="statNum statHp">${unit.currentHp}</span><span class="statNum statDef">${unit.currentDef}</span><span class="statNum statAtt">${effectiveAtt(unit)}</span></span>`;
+          const occupiedTypeClass = tokenTypeClass(unit);
+          const occupiedWeightClass = tokenWeightClass(unit);
+          if (occupiedTypeClass) div.classList.add(`occupied-${occupiedTypeClass}`);
+          if (occupiedWeightClass) div.classList.add(`occupied-${occupiedWeightClass}`);
+          if (unit.customRuntime === true) div.classList.add("occupied-custom");
+          const customBadge = unit.customRuntime === true ? `<span class="tokenCustomBadge" title="Custom runtime">C</span>` : "";
+          token.innerHTML = `<span class="symbol">${unitIcon(unit)}</span>${unitOverlay(unit)}${customBadge}<span class="mini statMini"><span class="statNum statHp">${unit.currentHp}</span><span class="statNum statDef">${unit.currentDef}</span><span class="statNum statAtt">${effectiveAtt(unit)}</span></span>`;
+          if (typeof visualAssetTokenGraphicsEnabled === "function" && visualAssetTokenGraphicsEnabled() && typeof visualAssetTokenArtForUnit === "function") {
+            const tokenArtPath = visualAssetTokenArtForUnit(unit);
+            if (tokenArtPath) {
+              token.classList.add("has-token-art");
+              token.dataset.tokenArt = tokenArtPath;
+              const art = document.createElement("span");
+              art.className = "tokenArt";
+              art.setAttribute("aria-hidden", "true");
+              art.style.backgroundImage = `url("${String(tokenArtPath).replace(/\"/g, "%22")}")`;
+              const status = typeof visualAssetTokenAssetStatus === "function" ? visualAssetTokenAssetStatus(tokenArtPath) : "unknown";
+              if (status === "loaded") {
+                token.classList.add("token-art-loaded");
+              } else if (status === "missing") {
+                token.classList.add("token-art-missing");
+              } else {
+                token.classList.add("token-art-loading");
+                if (typeof visualAssetPreloadTokenArt === "function") {
+                  visualAssetPreloadTokenArt(tokenArtPath, nextStatus => {
+                    if (!token || !token.isConnected || token.dataset.tokenArt !== tokenArtPath) return;
+                    token.classList.remove("token-art-loading");
+                    token.classList.toggle("token-art-loaded", nextStatus === "loaded");
+                    token.classList.toggle("token-art-missing", nextStatus === "missing");
+                  });
+                }
+              }
+              token.prepend(art);
+            }
+          }
           token.title = `${unit.name}
 HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveAtt(unit)}${unitStatusSummary(unit) ? "\nStati: " + unitStatusSummary(unit) : ""}`;
           div.appendChild(token);
@@ -1180,7 +1253,7 @@ ${reason}`);
 
 
     function pivotOverlaySvg() {
-      return `<span class="pivotOverlay" style="position:absolute;top:-7px;right:-5px;color:#ffd75e;font-size:13px;text-shadow:0 0 8px rgba(255,215,94,.8)">✦</span>`;
+      return `<span class="pivotOverlay" aria-hidden="true">✦</span>`;
     }
 
 

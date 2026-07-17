@@ -1,6 +1,248 @@
-# Arena Rubra – C2-STABLE-1-F9K7-APK-M4c
+# Arena Rubra – C2-STABLE-1-F9M2f-APK-M4c
 
-Menu / Lab Navigation Cleanup su F9K6b validata.
+Token Asset Cache / Flicker Fix su F9M2e.
+
+## F9M2f – Token Asset Cache / Flicker Fix
+
+Patch visuale sopra F9M2e. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Interventi:
+
+- aggiunge cache/preload visual-only per gli asset token `.webp`;
+- evita che durante i render rapidi del bot i token grafici tornino per una frazione di secondo al fallback CSS/SVG;
+- renderizza `tokenArt` come `span` con `background-image`, invece di ricreare ogni volta un `<img>` asincrono;
+- applica subito `token-art-loaded` se l'asset è già in cache;
+- mantiene fallback CSS/SVG se un asset manca;
+- mantiene i default F9M2e per skin, opacità e token graphics ON.
+
+# Arena Rubra – C2-STABLE-1-F9M2e-APK-M4c
+
+Visual Asset Population Pass su F9M2d.
+
+## F9M2e – Visual Asset Population Pass
+
+Patch visuale sopra F9M2d. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Interventi principali:
+- fissa come default il profilo di calibrazione validato: `red_dust`, token grafici `ON`, fondo `0.96`, griglia `0.25`, celle `0.35`, glow PS/QG `1`;
+- migra i vecchi default F9M2c/F9M2d se non erano stati modificati manualmente;
+- corregge la visibilità delle stat su Fanteria/Veicolo/Comandante quando la modalità token grafici è ON;
+- mantiene fallback CSS/SVG se un token grafico manca o fallisce il caricamento;
+- conserva il loader sfondi DOM F9M2b/F9M2d e la diagnostica asset.
+
+Nota asset: i token grafici devono essere leggibili a dimensione mappa. Se risultano confusi, ottimizzare l'immagine sorgente con silhouette centrale, meno dettaglio fine e contrasto controllato.
+
+---
+
+## F9M2d – Map Opacity Calibration Binding Fix
+
+Patch visuale sopra F9M2b. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Correzioni principali:
+- opacità base delle celle esagonali ridotta da `0.42` a `0.20`, così gli sfondi reali restano visibili sotto la griglia;
+- slider `Mappa · opacità celle` nel Layout Calibration Lab abbassato fino a `0.04`;
+- migrazione prudente del vecchio default localStorage `0.42` al nuovo default `0.20`, se era stato salvato dalla build precedente;
+- pulizia di `--map-bg-size` in `src/map_skins.js`: ora usa `cover, cover` invece dei vecchi valori multipli non più usati dal layer reale;
+- loader immagine DOM F9M2b preservato.
+
+Nota test: se hai calibrato manualmente un valore alto per `Mappa · opacità celle`, puoi ridurlo dal Layout Calibration Lab o usare Reset default.
+
+---
+
+## F9M2b – Map Background Asset Loader Fix
+
+Patch visuale sopra F9M2a. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Correzione principale:
+- il fondale reale viene caricato anche come `<img id="mapBgAssetImage">` dentro `#mapBgLayer`;
+- `--map-bg-image` resta disponibile per preview/export, ma non è più l’unico modo per vedere il fondale;
+- loader asset con fallback di percorso: `assets/maps/backgrounds/`, `./assets/maps/backgrounds/`, `../assets/maps/backgrounds/`;
+- diagnostica `checking / loaded / missing` conservata;
+- fallback CSS/procedurale sempre attivo se il file manca.
+
+Percorso consigliato: mettere gli sfondi nella cartella `assets/maps/backgrounds/` accanto a `index.html`. Se la build è dentro una sottocartella, la cartella `assets` deve stare nella stessa sottocartella dell’`index.html` eseguito.
+
+File previsti:
+
+```text
+assets/maps/backgrounds/arena_rubra_default.webp
+assets/maps/backgrounds/basalt_night.webp
+assets/maps/backgrounds/red_dust.webp
+assets/maps/backgrounds/overgrowth_ruins.webp
+assets/maps/backgrounds/tactical_blueprint.webp
+```
+
+---
+
+## F9M2a – Visual Asset Slots Hardening
+
+Patch visuale sopra F9M2. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Interventi principali:
+
+- separa lo slot immagine reale (`--map-bg-image`) dal fallback procedurale (`--map-bg-art`);
+- aggiunge probe diagnostico degli asset mappa: `data-map-bg-asset-status=checking|loaded|missing`;
+- aggiorna il Calibration Lab mostrando lo stato dell'asset;
+- rende più visibili gli sfondi reali aumentando opacità fondo e riducendo l'opacità celle di default;
+- mantiene fallback CSS/procedurale se i file `.webp` mancano o non caricano;
+- nessun terrain per singola cella e nessuna modifica al motore.
+
+Nota test: se dopo la patch l'immagine non appare, aprire Layout Calibration Lab e verificare `Asset status`. Se è `MISSING`, il problema è path/nome/formato; se è `LOADED` ma si vede poco, ridurre `Mappa · opacità celle` e aumentare `Mappa · opacità fondo`.
+
+## F9M2 – Visual Asset Slots Foundation
+
+Patch visuale sopra F9M1 validata. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Interventi principali:
+
+- aggiunti path ufficiali per gli sfondi mappa in `assets/maps/backgrounds/`;
+- ogni skin mappa ora ha `asset.backgroundImage` e fallback CSS/procedurale: se il file `.webp` manca, l'app resta funzionante;
+- aggiunte variabili UI per skin collegate alla skin mappa (`--skin-panel-bg`, `--skin-panel-border`, `--skin-button-bg`, `--skin-accent`, `--skin-hand-bg`);
+- il Layout Calibration Lab permette di scegliere skin mappa e modalità token grafici;
+- aggiunto `src/visual_assets.js` come registry dei token grafici per fazione/tipo;
+- modalità token grafici OFF/ON: OFF mantiene token CSS/SVG validati; ON prova a usare asset `.webp`, con fallback automatico se il file manca;
+- aggiunte cartelle/README per `assets/maps/backgrounds/` e `assets/tokens/`;
+- nessun terrain per singola cella e nessun upload libero in questa fase.
+
+### File sfondo mappa previsti
+
+Inserire gli asset in:
+
+```text
+assets/maps/backgrounds/arena_rubra_default.webp
+assets/maps/backgrounds/basalt_night.webp
+assets/maps/backgrounds/red_dust.webp
+assets/maps/backgrounds/overgrowth_ruins.webp
+assets/maps/backgrounds/tactical_blueprint.webp
+```
+
+### File token grafici previsti
+
+Modalità OFF di default. Se attivi ON dal Layout Calibration Lab, il renderer cerca questi file e torna al token CSS/SVG se mancano.
+
+Per ogni fazione ufficiale:
+
+```text
+assets/tokens/nexus/infantry.webp
+assets/tokens/nexus/vehicle.webp
+assets/tokens/nexus/structure.webp
+assets/tokens/nexus/commander.webp
+assets/tokens/nexus/pivot.webp
+assets/tokens/nexus/qg.webp
+
+assets/tokens/exordium/infantry.webp
+assets/tokens/exordium/vehicle.webp
+assets/tokens/exordium/structure.webp
+assets/tokens/exordium/commander.webp
+assets/tokens/exordium/pivot.webp
+assets/tokens/exordium/qg.webp
+
+assets/tokens/liberti/infantry.webp
+assets/tokens/liberti/vehicle.webp
+assets/tokens/liberti/structure.webp
+assets/tokens/liberti/commander.webp
+assets/tokens/liberti/pivot.webp
+assets/tokens/liberti/qg.webp
+
+assets/tokens/agathoi/infantry.webp
+assets/tokens/agathoi/vehicle.webp
+assets/tokens/agathoi/structure.webp
+assets/tokens/agathoi/commander.webp
+assets/tokens/agathoi/pivot.webp
+assets/tokens/agathoi/qg.webp
+
+assets/tokens/fabeot/infantry.webp
+assets/tokens/fabeot/vehicle.webp
+assets/tokens/fabeot/structure.webp
+assets/tokens/fabeot/commander.webp
+assets/tokens/fabeot/pivot.webp
+assets/tokens/fabeot/qg.webp
+```
+
+Token custom opzionali:
+
+```text
+assets/tokens/custom/infantry.webp
+assets/tokens/custom/vehicle.webp
+assets/tokens/custom/structure.webp
+assets/tokens/custom/commander.webp
+assets/tokens/custom/pivot.webp
+```
+
+
+## F9M1 – Map Background / Skin Slot
+
+Patch visuale sopra F9L5 validata. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom, coordinate mappa o terrain.
+
+Interventi principali:
+
+- aggiunta `src/map_skins.js` come registry visuale di skin/sfondi mappa CSS/procedurali;
+- aggiunte skin iniziali: Default, Basalto notturno, Polvere rossa, Rovine vegetali e Blueprint tattico;
+- `#mapBgLayer` ora usa variabili skin `--map-bg-art`, `--map-bg-grid`, `--map-bg-tint`, `--map-bg-position`, `--map-bg-size`;
+- il Layout Calibration Lab permette di scegliere la skin mappa, applicarla live, salvarla in localStorage ed esportarla in JSON/CSS;
+- `render.js` marca lo stack visuale con `data-map-skin` per debug/diagnostica;
+- nessun asset esterno obbligatorio e nessun terrain per singola cella.
+
+
+## F9L5 – Map Visual Polish / PS-QG Pass
+
+Patch visuale sopra F9L4 validata. Non modifica gameplay, AI, combat, targeting, economia, deck, carte ufficiali, runtime custom o coordinate mappa.
+
+Interventi principali:
+
+- aggiunte classi visuali di cella occupata da tipo/peso unità (`occupied-type-*`, `occupied-weight-*`) prodotte da `renderBoard()`;
+- corretto il problema delle statistiche dei token Struttura/QG coperte dalle celle adiacenti tramite stacking dedicato della cella proprietaria;
+- stat badge di Struttura/QG agganciato dentro il token invece che sotto il bordo esagonale;
+- marker PS/QG rifiniti senza cambiare logica obiettivi;
+- compatibilità mobile/APK-M4 mantenuta.
+
+## F9L4 – Tactical Highlight Pass
+- F9L3 validata come baseline: token unità in mappa e layer mappa restano invariati a livello funzionale.
+- Migliora la leggibilità delle celle tattiche già prodotte dal renderer: movimento, attacco, abilità/tattiche, costruzione e sbarco.
+- Aggiunge marker visuali leggeri a `renderBoard()` (`tacticalTarget`, `controlledCell`, `controlledSideN`, `cellObjective`) senza cambiare target, click, coordinate o regole.
+- Rafforza selezione cella/unità e rende gli highlight più visibili anche su celle controllate che usano `boxShadow` inline.
+- Raffina PS, QG, PS lock e cell effects con CSS statico, senza animazioni complesse.
+- Mantiene APK-M4 compatibile con override mobile dedicati.
+- Nessuna modifica a gameplay, AI, carte ufficiali, custom runtime, deck rules, economia, targeting, movimento, regole Starter o bilanciamento.
+
+## F9L3 – Unit Token Visual System
+- F9L2a validata come baseline: layer mappa, metriche CSS, camera hardening e calibratore restano invariati.
+- Migliora i token unità in mappa senza toccare gameplay: dimensioni diverse per Fanteria, Veicolo, Struttura, Comandante e QG.
+- Aggiunge classe `is-custom` e micro-badge `C` per unità custom runtime.
+- Aggiunge classe `is-selected` al token selezionato per separare il glow del token dal glow della cella.
+- Sposta `pivotOverlay` da stile inline a CSS puro.
+- Rafforza la distinzione visiva tra leggere, pesanti, elite e pivot con bordo/anello dedicato.
+- Riposiziona `statMini` su Strutture/QG per ridurre sovrapposizioni con il bordo.
+- Nessuna modifica a gameplay, AI, carte ufficiali, custom card runtime, deck rules, economia, regole Starter o bilanciamento.
+
+
+## F9L2a – Map Layer Hardening
+- F9L2 validata come baseline: layer mappa, metriche CSS e calibratore visuale restano invariati.
+- Aggiunge commenti tecnici nel CSS sugli override `#board`: lo stack visuale gestisce sfondo/bordo/overflow/camera, il board resta layer celle cliccabili.
+- Rende la transizione camera desktop esplicita: `.boardVisualStack` non anima i render normali; la classe `.mapCameraAnimating` viene applicata solo su fit/focus/play/pan/zoom espliciti.
+- Mantiene APK-M4 senza transizione camera nello stack, come da camera mobile validata.
+- Documenta `--map-bg-art` come slot futuro per texture/skin mappa F9M1.
+- Nessuna modifica a gameplay, AI, carte ufficiali, custom card runtime, deck rules, economia, regole Starter o bilanciamento.
+
+## F9L2 – Map Visual Layer Foundation
+- F9L1 validata come baseline: il calibratore resta disponibile e viene esteso.
+- Introduce `#boardVisualStack` come wrapper visuale della mappa dentro `#boardWrap`.
+- Aggiunge i layer `#mapBgLayer`, `#mapEffectsLayer` e `#mapOverlayLayer` attorno al `#board` esistente.
+- Mantiene `#board` e `renderBoard()` come fonte delle celle esagonali: nessuna modifica a coordinate, click, movimento, bersagli o gameplay.
+- Sincronizza le metriche mappa correnti come CSS custom properties: `--hex-center-x`, `--hex-center-y`, `--hex-size`, `--board-native-width`, `--board-native-height`.
+- Sposta la camera visuale sullo stack mappa, così background/layer/celle restano allineati anche con fit/focus/manual e APK-M4.
+- Aggiunge fondo mappa CSS calibrabile e opacità regolabili per background, griglia, celle, glow PS e glow QG.
+- Estende il Layout Calibration Lab con controlli visuali mappa.
+- Nessuna modifica a gameplay, AI, carte ufficiali, custom card runtime, deck rules, economia, regole Starter o bilanciamento.
+
+## F9L1 – Menu/Map Layout Calibration Tool
+- F9K7 validata come baseline: menu/laboratorio/setup restano invariati a livello funzionale.
+- Aggiunge nel menu Debug/Export il pulsante `Layout calibration lab`.
+- Introduce una schermata dev temporanea per calibrare variabili CSS locali di menu, setup, Deck Builder, Card Editor e Pool carte.
+- Controlli disponibili: padding schermo, larghezza menu, larghezza setup, larghezza lab, larghezza lab ampia, padding card, radius, gap sezioni, altezza pulsanti, opacità sfondo e scala testo.
+- Gli override sono applicati live, possono essere salvati in localStorage, resettati, copiati come JSON o copiati come blocco CSS.
+- Aggiunge scorciatoie dal tool verso menu, setup e Deck Builder per verificare subito gli effetti.
+- Nessuna modifica a gameplay, AI, carte ufficiali, custom card runtime, deck rules, mappa, economia, regole Starter o bilanciamento.
 
 ## F9K7 – Menu / Lab Navigation Cleanup
 - F9K6b validata come baseline: deck custom, unità custom, abilità runtime e `apply_status` restano invariati.
@@ -9,7 +251,7 @@ Menu / Lab Navigation Cleanup su F9K6b validata.
 - Aggiunge badge stato deck nel Setup: Starter, OFFICIAL, CUSTOM o Deck non valido.
 - Migliora le opzioni dei deck salvati: nome deck, numero carte, OFFICIAL/CUSTOM, comandante e data breve.
 - Aggiunge navigazione rapida tra Card Editor, Deck Builder e Pool Carte.
-- Prepara classi e contenitori UI più ordinati per F9L1 Temporary Menu Layout Calibration Tool.
+- Prepara classi e contenitori UI più ordinati per F9L1 Menu/Map Layout Calibration Tool.
 - Nessuna modifica a gameplay, AI, carte ufficiali, mappa, economia, regole Starter o bilanciamento.
 
 ## F9K6b – Custom Apply Status Binding

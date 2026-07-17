@@ -1,7 +1,7 @@
 "use strict";
 
-// Arena Rubra – F9K7 Menu / Lab Navigation Cleanup.
-// Mantiene gameplay/runtime F9K6b validati e migliora menu, setup e selezione deck custom.
+// Arena Rubra – F9L2 app shell.
+// Mantiene gameplay/runtime F9K6b validati, F9K7 menu cleanup, F9L1 calibratore e F9L2 layer visuali mappa.
 
 const ARENA_APP_SCREENS = Object.freeze({
   MAIN_MENU: "mainMenu",
@@ -10,6 +10,7 @@ const ARENA_APP_SCREENS = Object.freeze({
   DECK_BUILDER: "deckBuilder",
   CARD_EDITOR: "cardEditor",
   CARD_POOL: "cardPool",
+  LAYOUT_LAB: "layoutLab",
   STATS: "stats",
   OPTIONS: "options",
   ABOUT: "about"
@@ -40,6 +41,7 @@ function setAppScreen(screen) {
   const isDeckBuilder = next === ARENA_APP_SCREENS.DECK_BUILDER;
   const isCardEditor = next === ARENA_APP_SCREENS.CARD_EDITOR;
   const isCardPool = next === ARENA_APP_SCREENS.CARD_POOL;
+  const isLayoutLab = next === ARENA_APP_SCREENS.LAYOUT_LAB;
   const isPlaceholder = placeholderScreens.includes(next);
 
   if (!isGame && typeof closeGamePanel === "function") closeGamePanel();
@@ -51,6 +53,7 @@ function setAppScreen(screen) {
   document.body.classList.toggle("app-screen-deck-builder", isDeckBuilder);
   document.body.classList.toggle("app-screen-card-editor", isCardEditor);
   document.body.classList.toggle("app-screen-card-pool", isCardPool);
+  document.body.classList.toggle("app-screen-layout-lab", isLayoutLab);
   document.body.classList.toggle("app-screen-placeholder", isPlaceholder);
 
   const screens = document.querySelectorAll("[data-app-screen-panel]");
@@ -63,6 +66,7 @@ function setAppScreen(screen) {
   if (isDeckBuilder && typeof renderDeckBuilderScreen === "function") renderDeckBuilderScreen();
   if (isCardEditor && typeof renderCardEditorScreen === "function") renderCardEditorScreen();
   if (isCardPool && typeof renderCardPoolScreen === "function") renderCardPoolScreen();
+  if (isLayoutLab && typeof renderMenuLayoutCalibrationLab === "function") renderMenuLayoutCalibrationLab();
   refreshMainMenuResumeState();
 }
 
@@ -379,6 +383,7 @@ function initializeArenaAppShell() {
   if (typeof initializeDeckBuilderScreen === "function") initializeDeckBuilderScreen();
   if (typeof initializeCardEditorScreen === "function") initializeCardEditorScreen();
   if (typeof initializeCardPoolScreen === "function") initializeCardPoolScreen();
+  if (typeof initializeMenuLayoutCalibrationLab === "function") initializeMenuLayoutCalibrationLab();
 
   document.querySelectorAll("[data-app-open-deck-builder]").forEach(deckBuilderBtn => {
     if (deckBuilderBtn.dataset.bound === "1") return;
@@ -404,6 +409,15 @@ function initializeArenaAppShell() {
     cardPoolBtn.addEventListener("click", () => {
       if (typeof openCardPoolScreen === "function") openCardPoolScreen();
       else showAppPlaceholder(ARENA_APP_SCREENS.CARD_POOL);
+    });
+  });
+
+  document.querySelectorAll("[data-app-open-layout-lab]").forEach(layoutLabBtn => {
+    if (layoutLabBtn.dataset.bound === "1") return;
+    layoutLabBtn.dataset.bound = "1";
+    layoutLabBtn.addEventListener("click", () => {
+      if (typeof openMenuLayoutCalibrationLabScreen === "function") openMenuLayoutCalibrationLabScreen();
+      else showAppPlaceholder(ARENA_APP_SCREENS.OPTIONS);
     });
   });
 

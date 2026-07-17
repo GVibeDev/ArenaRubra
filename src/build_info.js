@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9K7 Menu / Lab Navigation Cleanup metadata.
+// Arena Rubra – F9M2f Token Asset Cache / Flicker Fix metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9K7-APK-M4c",
-  buildName: "Menu / Lab Navigation Cleanup",
-  buildDate: "2026-07-05",
-  buildChannel: "ui-lab",
-  logicBaseline: "C2-STABLE-1-APK-M4c",
-  map: "Starter MAP1 radius 6",
-  notes: "Fase 9K7: Menu / Lab Navigation Cleanup. Riorganizza menu principale in Gioca, Laboratorio e Debug/Export; rende il Setup più leggibile con blocchi identità/deck runtime; migliora la selezione dei deck salvati mostrando nome, numero carte, OFFICIAL/CUSTOM e data breve; aggiunge navigazione rapida tra Card Editor, Deck Builder e Pool. Nessuna modifica a gameplay, AI, regole Starter, mappa o bilanciamento."
+  version: "C2-STABLE-1-F9M2f-APK-M4c",
+  buildName: "Token Asset Cache / Flicker Fix",
+  buildDate: "2026-07-08",
+  buildChannel: "token-asset-cache-flicker-fix",
+  logicBaseline: "C2-STABLE-1-F9M2e",
+  map: "MAP1 radius 6 · visual layer/token/highlight foundation · F9M2f token asset cache",
+  notes: "Fase F9M2f: Token Asset Cache / Flicker Fix. Mantiene F9M2e validata, precarica/cachea gli asset token e renderizza i token grafici come background-image già pronti quando disponibili, evitando il flash temporaneo ai token CSS/SVG durante i render rapidi del bot. Nessun terrain per cella, nessuna modifica a gameplay, AI, targeting, regole Starter, deck, carte ufficiali o bilanciamento."
 });
 
 function buildInfoLabel() {
@@ -25,7 +25,7 @@ function buildInfoLabel() {
 function buildInfoFullLabel() {
   if (typeof BUILD_INFO === "undefined" || !BUILD_INFO) return "Arena Rubra";
   const parts = [BUILD_INFO.appName, BUILD_INFO.stage, BUILD_INFO.version, BUILD_INFO.buildName].filter(Boolean);
-  return parts.join(" – ");
+  return parts.join(" · ");
 }
 
 function buildInfoShortStageLabel() {
@@ -49,8 +49,9 @@ function buildInfoExportMeta() {
 }
 
 function setTextIfPresent(id, value) {
-  const el = typeof document !== "undefined" ? document.getElementById(id) : null;
-  if (el) el.textContent = value;
+  if (typeof document === "undefined") return;
+  const el = document.getElementById(id);
+  if (el) el.textContent = value == null ? "" : String(value);
 }
 
 function applyBuildInfoToDom() {
@@ -70,10 +71,6 @@ function applyBuildInfoToDom() {
   setTextIfPresent("setupBuildVersion", BUILD_INFO.version || "unknown");
   setTextIfPresent("setupBuildName", BUILD_INFO.buildName || "");
   setTextIfPresent("freezeRulesBuildVersion", BUILD_INFO.version || "unknown");
-  setTextIfPresent("splashEnterBtn", "Entra in Arena Rubra");
-}
-
-if (typeof document !== "undefined") {
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyBuildInfoToDom);
-  else applyBuildInfoToDom();
+  setTextIfPresent("gameHudBuild", BUILD_INFO.version || "unknown");
+  setTextIfPresent("deckBuilderMetaLine", `${BUILD_INFO.version || "unknown"} · ${BUILD_INFO.buildName || ""}`.trim());
 }

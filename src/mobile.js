@@ -191,7 +191,7 @@ function clampApkM4Camera() {
 }
 
 function applyApkM4Camera() {
-  const board = document.getElementById("board");
+  const board = document.getElementById("boardVisualStack") || document.getElementById("board");
   const wrap = document.getElementById("boardWrap");
   if (!board || !wrap) return;
   if (!apkM4Camera.mobile) {

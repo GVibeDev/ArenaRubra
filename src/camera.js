@@ -18,6 +18,8 @@ const boardCamera = {
   lastFocusKey: ""
 };
 
+let boardCameraAnimationTimer = null;
+
 function isApkM4CameraActive() {
   return typeof document !== "undefined"
     && document.body
@@ -25,7 +27,8 @@ function isApkM4CameraActive() {
 }
 
 function boardCameraBoardEl() {
-  return typeof document !== "undefined" ? document.getElementById("board") : null;
+  if (typeof document === "undefined") return null;
+  return document.getElementById("boardVisualStack") || document.getElementById("board");
 }
 
 function boardCameraWrapEl() {
@@ -37,6 +40,27 @@ function boardCameraTotalScale() {
   return Math.max(0.25, Math.min(2.2, scale));
 }
 
+function setBoardCameraAnimating(enabled) {
+  const board = boardCameraBoardEl();
+  if (!board || board.id !== "boardVisualStack") return;
+
+  if (boardCameraAnimationTimer) {
+    clearTimeout(boardCameraAnimationTimer);
+    boardCameraAnimationTimer = null;
+  }
+
+  if (!enabled) {
+    board.classList.remove("mapCameraAnimating");
+    return;
+  }
+
+  board.classList.add("mapCameraAnimating");
+  boardCameraAnimationTimer = setTimeout(() => {
+    board.classList.remove("mapCameraAnimating");
+    boardCameraAnimationTimer = null;
+  }, 180);
+}
+
 function updateBoardCameraHud() {
   const chip = typeof document !== "undefined" ? document.getElementById("gameHudCamera") : null;
   if (!chip) return;
@@ -46,7 +70,7 @@ function updateBoardCameraHud() {
   chip.dataset.cameraMode = boardCamera.mode || "fit";
 }
 
-function applyBoardCamera() {
+function applyBoardCamera(options = {}) {
   const board = boardCameraBoardEl();
   const wrap = boardCameraWrapEl();
   if (!board || !wrap) return;
@@ -56,6 +80,8 @@ function applyBoardCamera() {
     updateBoardCameraHud();
     return;
   }
+
+  setBoardCameraAnimating(Boolean(options.animate));
 
   const totalScale = boardCameraTotalScale();
   board.style.setProperty("--board-fit-scale", String(totalScale.toFixed(4)));
@@ -154,7 +180,7 @@ function centerBoardCameraOn(coord, options = {}) {
   const scale = boardCameraTotalScale();
   boardCamera.x = (BOARD_CAMERA_W / 2 - p.x) * scale;
   boardCamera.y = (BOARD_CAMERA_H / 2 - p.y) * scale;
-  applyBoardCamera();
+  applyBoardCamera({ animate: options.animate !== false });
 }
 
 function fitToBoard(options = {}) {
@@ -168,7 +194,7 @@ function fitToBoard(options = {}) {
   boardCamera.zoom = BOARD_CAMERA_ZOOMS.fit;
   boardCamera.x = 0;
   boardCamera.y = 0;
-  applyBoardCamera();
+  applyBoardCamera({ animate: options.animate !== false });
 }
 
 function resetCamera() {
@@ -205,7 +231,7 @@ function setBoardCameraMode(mode) {
     boardCamera.zoom = BOARD_CAMERA_ZOOMS.play;
     boardCamera.x = 0;
     boardCamera.y = 0;
-    applyBoardCamera();
+    applyBoardCamera({ animate:true });
     return;
   }
   return fitToBoard();
@@ -216,7 +242,7 @@ function panBy(dx, dy) {
   boardCamera.mode = "manual";
   boardCamera.x += Number(dx) || 0;
   boardCamera.y += Number(dy) || 0;
-  applyBoardCamera();
+  applyBoardCamera({ animate:true });
 }
 
 function zoomAt(point, delta) {
@@ -225,7 +251,7 @@ function zoomAt(point, delta) {
   const current = Number.isFinite(boardCamera.zoom) ? boardCamera.zoom : 1;
   const step = delta > 0 ? 1.1 : 0.9;
   boardCamera.zoom = Math.max(0.72, Math.min(1.8, current * step));
-  applyBoardCamera();
+  applyBoardCamera({ animate:true });
 }
 
 function screenToBoardCoord(point) {
@@ -246,7 +272,7 @@ function syncBoardCameraAfterRender() {
   }
   if (!boardCamera.initialized) {
     boardCamera.initialized = true;
-    fitToBoard();
+    fitToBoard({ animate:false });
     return;
   }
   boardCamera.fitScale = computeBoardFitScale();
@@ -254,14 +280,14 @@ function syncBoardCameraAfterRender() {
     const coord = boardCameraFocusCoord();
     const key = Array.isArray(coord) ? coord.join(",") : "center";
     boardCamera.lastFocusKey = key;
-    centerBoardCameraOn(coord, { keepZoom:true });
+    centerBoardCameraOn(coord, { keepZoom:true, animate:false });
   } else if (boardCamera.mode === "fit") {
     boardCamera.zoom = BOARD_CAMERA_ZOOMS.fit;
     boardCamera.x = 0;
     boardCamera.y = 0;
-    applyBoardCamera();
+    applyBoardCamera({ animate:false });
   } else {
-    applyBoardCamera();
+    applyBoardCamera({ animate:false });
   }
 }
 
@@ -272,7 +298,7 @@ function initializeBoardCamera() {
     return;
   }
   boardCamera.initialized = true;
-  fitToBoard();
+  fitToBoard({ animate:false });
 
   window.addEventListener("resize", () => syncBoardCameraAfterRender(), { passive:true });
   window.addEventListener("orientationchange", () => setTimeout(() => syncBoardCameraAfterRender(), 160), { passive:true });

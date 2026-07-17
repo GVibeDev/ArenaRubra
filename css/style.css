@@ -4638,3 +4638,1207 @@ body.mobile-apk-m4 .mapHandHoverPreview { display: none !important; }
     flex-direction: column;
   }
 }
+
+/* =====================================================
+   F9L1/F9L2 – Menu & Map Layout Calibration Tool
+   ===================================================== */
+:root {
+  --f9l1-screen-padding: 18px;
+  --f9l1-menu-card-width: 620px;
+  --f9l1-setup-card-width: 880px;
+  --f9l1-lab-card-width: 1180px;
+  --f9l1-wide-lab-card-width: 1380px;
+  --f9l1-card-padding: 28px;
+  --f9l1-card-radius: 24px;
+  --f9l1-group-gap: 12px;
+  --f9l1-button-min-height: 44px;
+  --f9l1-backdrop-opacity: .5;
+  --f9l1-font-scale: 1;
+}
+body.app-screen-layout-lab .gameScreen { display: none !important; }
+body.app-screen-layout-lab .menuLayoutLabScreen { display: grid; }
+body.app-screen-layout-lab .mainMenuScreen,
+body.app-screen-layout-lab .setupScreen,
+body.app-screen-layout-lab .deckBuilderScreen,
+body.app-screen-layout-lab .cardEditorScreen,
+body.app-screen-layout-lab .cardPoolScreen,
+body.app-screen-layout-lab .appPlaceholderScreen { display: none !important; }
+.mainMenuScreen,
+.setupScreen,
+.deckBuilderScreen,
+.cardEditorScreen,
+.cardPoolScreen,
+.appPlaceholderScreen,
+.menuLayoutLabScreen {
+  padding: max(var(--f9l1-screen-padding), env(safe-area-inset-top)) max(var(--f9l1-screen-padding), env(safe-area-inset-right)) max(var(--f9l1-screen-padding), env(safe-area-inset-bottom)) max(var(--f9l1-screen-padding), env(safe-area-inset-left));
+}
+.mainMenuBackdrop { opacity: var(--f9l1-backdrop-opacity); }
+.mainMenuCard {
+  width: min(var(--f9l1-menu-card-width), calc(100vw - 32px));
+  padding: var(--f9l1-card-padding);
+  border-radius: var(--f9l1-card-radius);
+  font-size: calc(1rem * var(--f9l1-font-scale));
+}
+.setupScreenCard {
+  width: min(var(--f9l1-setup-card-width), calc(100vw - 32px));
+  padding: var(--f9l1-card-padding);
+  border-radius: var(--f9l1-card-radius);
+  font-size: calc(1rem * var(--f9l1-font-scale));
+}
+.deckBuilderCard {
+  width: min(var(--f9l1-lab-card-width), calc(100vw - 32px));
+  padding: var(--f9l1-card-padding);
+  border-radius: var(--f9l1-card-radius);
+  font-size: calc(1rem * var(--f9l1-font-scale));
+}
+.cardEditorCard,
+.cardPoolCard {
+  width: min(var(--f9l1-wide-lab-card-width), calc(100vw - 28px));
+  padding: var(--f9l1-card-padding);
+  border-radius: var(--f9l1-card-radius);
+  font-size: calc(1rem * var(--f9l1-font-scale));
+}
+.mainMenuActionsF9K7,
+.setupScreenGrid,
+.setupMatchGrid,
+.cardEditorLayout,
+.cardPoolPreviewLayout,
+.deckBuilderLayout,
+.deckBuilderHeader,
+.menuLayoutLabGrid {
+  gap: var(--f9l1-group-gap);
+}
+.mainMenuActionGroup,
+.setupSideBox,
+.setupMatchBox,
+.setupPlayerSubsection,
+.deckBuilderBox {
+  border-radius: max(12px, calc(var(--f9l1-card-radius) - 6px));
+}
+.mainMenuActionGroup button,
+.setupScreenActions button,
+.deckBuilderHeaderActions button,
+.menuLayoutLabActions button {
+  min-height: var(--f9l1-button-min-height);
+}
+.menuLayoutLabScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: auto;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.78)),
+    radial-gradient(circle at 50% 20%, rgba(150, 27, 24, .24), rgba(7, 8, 13, .96) 62%);
+}
+.menuLayoutLabCard {
+  position: relative;
+  width: min(1180px, calc(100vw - 32px));
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: var(--f9l1-card-radius);
+  padding: var(--f9l1-card-padding);
+  background: linear-gradient(180deg, rgba(22,24,33,.88), rgba(12,14,20,.94));
+  box-shadow: 0 28px 90px rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+}
+.menuLayoutLabHeaderActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.menuLayoutLabControlsBox,
+.menuLayoutLabExportBox {
+  margin-top: 12px;
+}
+.menuLayoutLabEnabledLine {
+  margin: 8px 0 12px;
+}
+.menuLayoutLabGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  align-items: end;
+}
+.menuLayoutLabField {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  background: rgba(255,255,255,.026);
+  color: var(--muted);
+  font-size: 12px;
+}
+.menuLayoutLabField span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.menuLayoutLabField strong {
+  color: #f1d37b;
+  white-space: nowrap;
+}
+.menuLayoutLabField input[type="range"] {
+  width: 100%;
+  accent-color: #f1d37b;
+}
+.menuLayoutLabActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+#menuLayoutExportText {
+  width: 100%;
+  min-height: 230px;
+  resize: vertical;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 12px;
+  background: rgba(0,0,0,.35);
+  color: var(--text);
+  padding: 10px;
+  font-family: Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.35;
+}
+#menuLayoutStatusLine.good { color: #bff3b8; }
+#menuLayoutStatusLine.bad { color: #ffd1cc; }
+@media (max-width: 840px) {
+  .menuLayoutLabGrid {
+    grid-template-columns: 1fr;
+  }
+  .menuLayoutLabHeaderActions {
+    justify-content: stretch;
+  }
+  .menuLayoutLabHeaderActions button {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   F9L2 – Map Visual Layer Foundation
+   ===================================================== */
+:root {
+  --hex-center-x: 460px;
+  --hex-center-y: 390px;
+  --hex-size: 31px;
+  --board-native-width: 920px;
+  --board-native-height: 780px;
+  --map-bg-opacity: .96;
+  --map-grid-opacity: .11;
+  --map-cell-fill-opacity: .20;
+  --map-ps-glow-opacity: .78;
+  --map-qg-glow-opacity: .82;
+  /* F9M2c:
+     --map-bg-image è lo slot asset reale; --map-bg-art resta fallback procedurale.
+     Se l'immagine manca o non carica, il fallback rimane visibile e il gioco non si rompe.
+     Le celle base sono volutamente molto trasparenti: il fondale deve restare leggibile sotto la griglia. */
+  --map-bg-image: none;
+  --map-bg-veil: linear-gradient(180deg, rgba(5,7,12,.14), rgba(5,7,12,.30));
+  --map-bg-art: radial-gradient(circle at 50% 46%, rgba(194, 76, 46, .20), rgba(214, 179, 90, .08) 22%, rgba(21, 27, 38, .44) 53%, rgba(5, 7, 12, .92) 100%);
+  --map-bg-grid: linear-gradient(30deg, rgba(255,255,255,.035) 0 1px, transparent 1px 42px), linear-gradient(150deg, rgba(255,255,255,.026) 0 1px, transparent 1px 42px);
+  --map-bg-tint: linear-gradient(180deg, #171d29, #090b11);
+  --map-bg-position: center center;
+  --map-bg-size: cover, cover;
+  --map-bg-asset-opacity: .98;
+}
+#boardWrap {
+  isolation: isolate;
+}
+.boardVisualStack {
+  position: relative;
+  width: var(--board-native-width);
+  height: var(--board-native-height);
+  max-width: none;
+  flex: 0 0 auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.075);
+  overflow: hidden;
+  background: #111722;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025), 0 18px 40px rgba(0,0,0,.22);
+  transform: translate(var(--board-camera-x, 0px), var(--board-camera-y, 0px)) scale(var(--board-fit-scale, 1));
+  transform-origin: center center;
+  transition: none;
+  will-change: transform;
+  z-index: 1;
+}
+.boardVisualStack.mapCameraAnimating {
+  transition: transform .12s ease;
+}
+.mapLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mapBgLayer {
+  z-index: 0;
+  opacity: var(--map-bg-opacity);
+  background: var(--map-bg-art), var(--map-bg-tint);
+  background-position: var(--map-bg-position);
+  background-size: cover, cover;
+}
+.mapBgAssetImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: var(--map-bg-asset-opacity);
+  pointer-events: none;
+  user-select: none;
+  transform: translateZ(0);
+}
+.mapBgAssetImage[hidden] {
+  display: none !important;
+}
+.mapBgAssetImage.loaded {
+  display: block;
+}
+.mapBgLayer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--map-bg-grid), var(--map-bg-veil);
+  background-position: var(--map-bg-position);
+  background-size: auto, auto, cover;
+}
+.mapBgLayer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--hex-center-x) var(--hex-center-y), rgba(241,211,123,.12), transparent 34%), linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.20));
+  mix-blend-mode: screen;
+  opacity: .72;
+}
+
+html[data-map-bg-asset-status="loaded"] .mapBgLayer {
+  opacity: var(--map-bg-opacity);
+}
+html[data-map-bg-asset-status="missing"] .mapBgLayer {
+  box-shadow: inset 0 0 0 1px rgba(255, 210, 110, .10);
+}
+/* F9L2a hardening:
+   #board ora vive dentro #boardVisualStack.
+   Lo stack gestisce background, overflow, bordo e transform camera.
+   #board resta solo il layer delle celle esagonali cliccabili.
+   Questi override impediscono alle vecchie regole board di duplicare sfondo/bordi/camera. */
+#board {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
+  z-index: 2;
+}
+.mapEffectsLayer {
+  z-index: 5;
+  opacity: .95;
+}
+.mapOverlayLayer {
+  z-index: 6;
+}
+.hex {
+  background: rgba(34, 41, 55, var(--map-cell-fill-opacity));
+  outline: 1px solid rgba(255,255,255,var(--map-grid-opacity));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.14);
+  backdrop-filter: blur(.5px);
+}
+.hex:hover:not(:disabled) {
+  background: rgba(47, 57, 76, .82);
+}
+.hex.ps {
+  background: linear-gradient(180deg, rgba(83,70,38,.72), rgba(41,43,52,.66));
+  box-shadow: inset 0 0 0 2px rgba(214,179,90,var(--map-ps-glow-opacity)), 0 0 18px rgba(214,179,90,.18);
+}
+.hex.ps::after {
+  opacity: var(--map-ps-glow-opacity);
+}
+.hex.hq {
+  background: linear-gradient(180deg, rgba(74,61,37,.74), rgba(31,36,48,.68));
+  box-shadow: inset 0 0 0 3px rgba(241,211,123,var(--map-qg-glow-opacity)), 0 0 22px rgba(241,211,123,.20);
+}
+.hex.hq::before {
+  opacity: var(--map-qg-glow-opacity);
+}
+body.app-screen-game:not(.mobile-apk-m4) #boardVisualStack {
+  width: 920px;
+  height: 780px;
+  max-width: none;
+}
+body.mobile-apk-m4 #boardVisualStack {
+  width: 920px !important;
+  height: 780px !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  transform: translate(var(--board-camera-x, 0px), var(--board-camera-y, 0px)) scale(var(--board-fit-scale, 1)) !important;
+  transform-origin: center center !important;
+  /* APK-M4 usa la camera mobile validata: niente transizioni sullo stack. */
+  transition: none !important;
+  will-change: auto !important;
+  cursor: default !important;
+  touch-action: manipulation !important;
+}
+body.mobile-apk-m4 #board {
+  transform: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+/* =====================================================
+   F9L3 – Unit Token Visual System
+   =====================================================
+   Visual-only pass: the map unit token keeps the existing SVG symbol + statMini
+   renderer, but gains clearer size/type/weight/custom/selection styling.
+   No gameplay, targeting, combat, AI, deck or map-coordinate logic is changed.
+*/
+:root {
+  --token-infantry-w: 40px;
+  --token-infantry-h: 40px;
+  --token-vehicle-w: 44px;
+  --token-vehicle-h: 40px;
+  --token-structure-w: 46px;
+  --token-structure-h: 46px;
+  --token-commander-w: 43px;
+  --token-commander-h: 43px;
+  --token-qg-w: 46px;
+  --token-qg-h: 46px;
+  --token-core-shadow: 0 5px 10px rgba(0,0,0,.38), inset 0 -7px 13px rgba(0,0,0,.24), inset 0 4px 8px rgba(255,255,255,.12);
+}
+
+.unitToken {
+  box-sizing: border-box;
+  width: 42px;
+  height: 42px;
+  --token-ring-shadow: 0 0 0 0 rgba(255,255,255,0);
+  box-shadow: var(--token-ring-shadow), var(--token-core-shadow) !important;
+}
+
+.unitToken.type-fanteria {
+  width: var(--token-infantry-w);
+  height: var(--token-infantry-h);
+  border-radius: 50%;
+}
+
+.unitToken.type-veicolo {
+  width: var(--token-vehicle-w);
+  height: var(--token-vehicle-h);
+  border-radius: 13px 9px 13px 9px;
+}
+
+.unitToken.type-struttura {
+  width: var(--token-structure-w);
+  height: var(--token-structure-h);
+  border-radius: 10px;
+  outline: 2px solid rgba(255,255,255,.18);
+  --token-ring-shadow: 0 0 0 2px rgba(0,0,0,.22);
+}
+
+.unitToken.type-comandante {
+  width: var(--token-commander-w);
+  height: var(--token-commander-h);
+  border-radius: 50%;
+  border-color: rgba(228,84,84,.96);
+  border-width: 3px;
+  --token-ring-shadow: 0 0 0 3px rgba(228,84,84,.26), 0 0 16px rgba(228,84,84,.20);
+}
+
+.unitToken.type-qg {
+  width: var(--token-qg-w);
+  height: var(--token-qg-h);
+  border-radius: 12px;
+  border-color: rgba(241,211,123,.96);
+  border-width: 3px;
+  --token-ring-shadow: 0 0 0 3px rgba(241,211,123,.34), 0 0 18px rgba(241,211,123,.20);
+}
+
+.unitToken .symbol {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.unitToken .symbol svg {
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+}
+
+.unitToken.type-fanteria .symbol svg { width: 22px; height: 22px; }
+.unitToken.type-veicolo .symbol svg { width: 25px; height: 23px; }
+.unitToken.type-struttura .symbol svg { width: 27px; height: 27px; }
+.unitToken.type-comandante .symbol svg { width: 23px; height: 23px; }
+.unitToken.type-qg .symbol svg { width: 27px; height: 27px; }
+
+.unitToken.weight-pesante {
+  border-color: rgba(241,200,75,.96);
+  border-width: 3px;
+  --token-ring-shadow: 0 0 0 2px rgba(241,200,75,.16), inset 0 0 0 2px rgba(255,255,255,.10);
+}
+
+.unitToken.weight-elite {
+  border-color: rgba(255,214,94,.98);
+  border-width: 3px;
+  --token-ring-shadow: 0 0 0 2px rgba(255,214,94,.28), 0 0 16px rgba(255,214,94,.18), inset 0 0 0 2px rgba(255,255,255,.11);
+}
+
+.unitToken.weight-pivot {
+  border-color: rgba(228,84,84,.98);
+  border-width: 3px;
+  --token-ring-shadow: 0 0 0 3px rgba(228,84,84,.30), 0 0 18px rgba(228,84,84,.20), inset 0 0 0 2px rgba(255,255,255,.10);
+}
+
+.unitToken.weight-leggera {
+  border-color: rgba(255,255,255,.82);
+  border-width: 2px;
+}
+
+.unitToken .pivotOverlay {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  z-index: 11;
+  color: #ffd75e;
+  font-size: 14px;
+  line-height: 1;
+  text-shadow: 0 0 9px rgba(255,215,94,.88), 0 1px 2px rgba(0,0,0,.95);
+  pointer-events: none;
+}
+
+.unitToken.is-custom {
+  outline: 1px dashed rgba(255,255,255,.34);
+  outline-offset: 2px;
+}
+
+.unitToken .tokenCustomBadge {
+  position: absolute;
+  right: -4px;
+  bottom: 1px;
+  z-index: 12;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(5,8,14,.92);
+  border: 1px solid rgba(255,255,255,.58);
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.02em;
+  box-shadow: 0 1px 4px rgba(0,0,0,.65);
+  pointer-events: none;
+}
+
+.unitToken .statMini {
+  bottom: -11px;
+  min-width: 27px;
+  justify-content: center;
+  font-size: 8.8px;
+  padding: 1px 4px 2px;
+}
+
+.unitToken.type-struttura .statMini,
+.unitToken.type-qg .statMini {
+  bottom: -14px;
+  font-size: 8.6px;
+  padding: 1px 4px 2px;
+  border-color: rgba(241,211,123,.30);
+}
+
+.unitToken.type-veicolo .statMini {
+  bottom: -12px;
+}
+
+.unitToken.is-selected {
+  --token-ring-shadow: 0 0 0 3px rgba(255,255,255,.86), 0 0 18px rgba(132,185,255,.55), 0 0 30px rgba(255,255,255,.18);
+  z-index: 9;
+}
+
+.unitToken.thorns {
+  --token-ring-shadow: 0 0 0 3px rgba(143,224,154,.44), 0 0 16px rgba(143,224,154,.22);
+}
+
+.unitToken.is-selected.thorns {
+  --token-ring-shadow: 0 0 0 3px rgba(255,255,255,.86), 0 0 0 6px rgba(143,224,154,.26), 0 0 20px rgba(132,185,255,.50);
+}
+
+.unitToken.bleeding::after {
+  z-index: 13;
+}
+
+.unitToken.weight-pivot.bleeding::after {
+  right: 8px;
+}
+
+.unitToken.inhibited::before {
+  z-index: 13;
+}
+
+/* Keep APK-M4 token sizing deterministic despite earlier mobile !important rules. */
+body.mobile-apk-m4 .unitToken.type-fanteria { width: 40px !important; height: 40px !important; }
+body.mobile-apk-m4 .unitToken.type-veicolo { width: 44px !important; height: 40px !important; }
+body.mobile-apk-m4 .unitToken.type-struttura,
+body.mobile-apk-m4 .unitToken.type-qg { width: 46px !important; height: 46px !important; }
+body.mobile-apk-m4 .unitToken.type-comandante { width: 43px !important; height: 43px !important; }
+body.mobile-apk-m4 .unitToken.type-struttura .statMini,
+body.mobile-apk-m4 .unitToken.type-qg .statMini { bottom: -13px !important; }
+
+/* =====================================================
+   F9L4 – Tactical Highlight Pass
+   =====================================================
+   Visual-only pass: uses existing target classes already produced by renderBoard()
+   and adds only lightweight marker classes for controlled/tactical cells.
+   Gameplay, movement, attack, targeting, AI and board coordinates remain untouched.
+*/
+:root {
+  --target-move: 139, 209, 124;
+  --target-attack: 239, 119, 119;
+  --target-ability: 227, 189, 103;
+  --target-build: 132, 185, 255;
+  --target-spawn: 126, 222, 202;
+  --target-selected: 255, 255, 255;
+  --target-shadow-core: 0 8px 16px rgba(0,0,0,.26);
+  --objective-ps: 214, 179, 90;
+  --objective-qg: 241, 211, 123;
+}
+
+#board.has-tactical-mode .hex:not(.tacticalTarget):not(.selected) {
+  filter: saturate(.78) brightness(.88);
+}
+
+.hex {
+  transition: background-color .08s ease, box-shadow .08s ease, filter .08s ease, outline-color .08s ease;
+}
+
+.hex.controlledCell:not(.tacticalTarget):not(.selected) {
+  box-shadow: inset 0 0 0 3px var(--cell-control-color, rgba(255,255,255,.82)), inset 0 0 18px rgba(0,0,0,.18) !important;
+}
+
+.hex.tacticalTarget {
+  z-index: 6;
+  cursor: pointer;
+  filter: brightness(1.08) saturate(1.18);
+}
+
+.hex.tacticalTarget.occupied {
+  z-index: 8;
+}
+
+.hex.moveTarget {
+  background: radial-gradient(circle at 50% 44%, rgba(var(--target-move), .32), rgba(21,38,31,.58) 72%) !important;
+  outline-color: rgba(var(--target-move), .70) !important;
+  box-shadow:
+    inset 0 0 0 3px rgba(var(--target-move), .88),
+    inset 0 0 18px rgba(var(--target-move), .24),
+    0 0 16px rgba(var(--target-move), .28),
+    var(--target-shadow-core) !important;
+}
+
+.hex.attackTarget {
+  background: radial-gradient(circle at 50% 44%, rgba(var(--target-attack), .34), rgba(62,24,29,.62) 74%) !important;
+  outline-color: rgba(var(--target-attack), .74) !important;
+  box-shadow:
+    inset 0 0 0 3px rgba(var(--target-attack), .94),
+    inset 0 0 19px rgba(var(--target-attack), .26),
+    0 0 18px rgba(var(--target-attack), .32),
+    var(--target-shadow-core) !important;
+}
+
+.hex.abilityTarget {
+  background: radial-gradient(circle at 50% 44%, rgba(var(--target-ability), .34), rgba(56,44,21,.64) 74%) !important;
+  outline-color: rgba(var(--target-ability), .74) !important;
+  box-shadow:
+    inset 0 0 0 3px rgba(var(--target-ability), .92),
+    inset 0 0 19px rgba(var(--target-ability), .25),
+    0 0 18px rgba(var(--target-ability), .28),
+    var(--target-shadow-core) !important;
+}
+
+.hex.buildTarget {
+  background: radial-gradient(circle at 50% 44%, rgba(var(--target-build), .34), rgba(24,42,61,.64) 74%) !important;
+  outline-color: rgba(var(--target-build), .74) !important;
+  box-shadow:
+    inset 0 0 0 3px rgba(var(--target-build), .92),
+    inset 0 0 18px rgba(var(--target-build), .25),
+    0 0 17px rgba(var(--target-build), .27),
+    var(--target-shadow-core) !important;
+}
+
+.hex.spawnTarget {
+  background: radial-gradient(circle at 50% 44%, rgba(var(--target-spawn), .30), rgba(22,48,45,.62) 74%) !important;
+  outline-color: rgba(var(--target-spawn), .72) !important;
+  box-shadow:
+    inset 0 0 0 3px rgba(var(--target-spawn), .88),
+    inset 0 0 18px rgba(var(--target-spawn), .24),
+    0 0 16px rgba(var(--target-spawn), .24),
+    var(--target-shadow-core) !important;
+}
+
+.hex.selected {
+  z-index: 10;
+  filter: brightness(1.14) saturate(1.12) !important;
+  outline-color: rgba(var(--target-selected), .84) !important;
+  box-shadow:
+    inset 0 0 0 3px rgba(var(--target-selected), .96),
+    inset 0 0 18px rgba(var(--target-selected), .20),
+    0 0 22px rgba(132,185,255,.36),
+    var(--target-shadow-core) !important;
+}
+
+.hex.tacticalTarget .unitToken {
+  z-index: 10;
+}
+
+.hex.attackTarget .unitToken {
+  --token-ring-shadow: 0 0 0 3px rgba(var(--target-attack), .82), 0 0 18px rgba(var(--target-attack), .42);
+}
+
+.hex.abilityTarget .unitToken {
+  --token-ring-shadow: 0 0 0 3px rgba(var(--target-ability), .78), 0 0 16px rgba(var(--target-ability), .35);
+}
+
+.hex.moveTarget .unitToken,
+.hex.spawnTarget .unitToken,
+.hex.buildTarget .unitToken {
+  --token-ring-shadow: 0 0 0 3px rgba(var(--target-build), .50), 0 0 14px rgba(var(--target-build), .28);
+}
+
+.hex.ps {
+  position: absolute;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(var(--objective-ps), .28), transparent 50%),
+    linear-gradient(180deg, rgba(83,70,38,.76), rgba(41,43,52,.66)) !important;
+}
+
+.hex.ps::after {
+  top: 2px;
+  right: 6px;
+  min-width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(5,8,14,.58);
+  border: 1px solid rgba(var(--objective-ps), .34);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.hex.hq {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(var(--objective-qg), .30), transparent 52%),
+    linear-gradient(180deg, rgba(74,61,37,.80), rgba(31,36,48,.68)) !important;
+}
+
+.hex.hq::before {
+  top: 2px;
+  left: 6px;
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: rgba(5,8,14,.58);
+  border: 1px solid rgba(var(--objective-qg), .36);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.hex.ps.tacticalTarget::after,
+.hex.hq.tacticalTarget::before {
+  background: rgba(5,8,14,.78);
+  border-color: rgba(255,255,255,.48);
+}
+
+.hex.psLocked {
+  box-shadow:
+    inset 0 0 0 3px rgba(187,112,226,.88),
+    inset 0 0 18px rgba(187,112,226,.24),
+    0 0 16px rgba(187,112,226,.22) !important;
+}
+
+.hex.cellBlocked,
+.hex.cellTrapNexus,
+.hex.cellPassageNexus,
+.hex.cellTrapAgathoi,
+.hex.cellBramble {
+  filter: saturate(1.10) brightness(1.04);
+}
+
+.hex.cellBlocked:not(.tacticalTarget) {
+  box-shadow:
+    inset 0 0 0 3px rgba(143,224,154,.82),
+    inset 0 0 18px rgba(143,224,154,.18) !important;
+}
+
+.hex.cellTrapNexus:not(.tacticalTarget) {
+  box-shadow:
+    inset 0 0 0 3px rgba(132,185,255,.72),
+    inset 0 0 18px rgba(132,185,255,.18) !important;
+}
+
+.hex.cellPassageNexus:not(.tacticalTarget) {
+  box-shadow:
+    inset 0 0 0 3px rgba(132,185,255,.82),
+    inset 0 0 18px rgba(132,185,255,.22) !important;
+}
+
+.hex.cellTrapAgathoi:not(.tacticalTarget),
+.hex.cellBramble:not(.tacticalTarget) {
+  box-shadow:
+    inset 0 0 0 3px rgba(143,224,154,.78),
+    inset 0 0 18px rgba(143,224,154,.20) !important;
+}
+
+.hex.tacticalTarget .coord,
+.hex.selected .coord {
+  opacity: .78;
+  background: rgba(5,8,14,.62);
+  border-radius: 999px;
+  padding: 0 3px;
+}
+
+body.mobile-apk-m4 #board.has-tactical-mode .hex:not(.tacticalTarget):not(.selected) {
+  filter: saturate(.82) brightness(.92);
+}
+body.mobile-apk-m4 .hex.tacticalTarget {
+  filter: brightness(1.10) saturate(1.14);
+}
+body.mobile-apk-m4 .hex.moveTarget,
+body.mobile-apk-m4 .hex.attackTarget,
+body.mobile-apk-m4 .hex.abilityTarget,
+body.mobile-apk-m4 .hex.buildTarget,
+body.mobile-apk-m4 .hex.spawnTarget,
+body.mobile-apk-m4 .hex.selected {
+  box-shadow: inherit;
+}
+
+/* =====================================================
+   F9L5 – Map Visual Polish / PS-QG Pass
+   =====================================================
+   Visual-only consolidation pass after F9L4.
+   Fixes structure/QG stat badges being visually covered by adjacent hex cells
+   and adds a small polish pass to objective labels. No gameplay, targeting,
+   movement, combat, AI, deck or coordinate logic is changed.
+*/
+:root {
+  --objective-label-bg: rgba(5, 8, 14, .72);
+  --objective-label-border: rgba(255,255,255,.32);
+  --structure-cell-z: 7;
+  --selected-cell-z: 12;
+}
+
+/* F9L5: structure/QG tokens are larger and their stat strip can cross the
+   visual edge of the hex. Raise the owning cell above adjacent normal cells
+   so neighbouring hex backgrounds cannot cover the stat label. */
+.hex.occupied-type-struttura,
+.hex.occupied-type-qg {
+  z-index: var(--structure-cell-z);
+}
+
+.hex.occupied-type-comandante,
+.hex.occupied-weight-pivot {
+  z-index: 8;
+}
+
+.hex.occupied-type-struttura.tacticalTarget,
+.hex.occupied-type-qg.tacticalTarget,
+.hex.occupied-type-comandante.tacticalTarget,
+.hex.occupied-weight-pivot.tacticalTarget {
+  z-index: 11;
+}
+
+.hex.selected {
+  z-index: var(--selected-cell-z) !important;
+}
+
+.hex.selected .unitToken,
+.hex.tacticalTarget .unitToken {
+  z-index: 14;
+}
+
+/* Keep the stat badge for large static tokens docked inside the token, not
+   hanging under the hex. This avoids clipping/covering on dense maps while
+   keeping infantry/vehicle labels unchanged. */
+.unitToken.type-struttura .symbol,
+.unitToken.type-qg .symbol {
+  transform: translateY(-4px);
+}
+
+.unitToken.type-struttura .statMini,
+.unitToken.type-qg .statMini {
+  bottom: 1px;
+  min-width: 31px;
+  padding: 1px 4px 2px;
+  border-color: rgba(241,211,123,.38);
+  background: rgba(3,5,10,.88);
+  box-shadow: 0 1px 5px rgba(0,0,0,.60), inset 0 0 0 1px rgba(255,255,255,.05);
+}
+
+.unitToken.type-struttura.weight-pesante .statMini,
+.unitToken.type-struttura.weight-elite .statMini,
+.unitToken.type-qg .statMini {
+  border-color: rgba(255,214,94,.42);
+}
+
+.unitToken.type-struttura.is-selected .statMini,
+.unitToken.type-qg.is-selected .statMini {
+  border-color: rgba(255,255,255,.62);
+}
+
+/* Objective markers: same information as F9L4, slightly clearer and less
+   dependent on the underlying cell glow. */
+.hex.ps::after,
+.hex.hq::before {
+  background: var(--objective-label-bg);
+  border-color: var(--objective-label-border);
+  box-shadow: 0 1px 5px rgba(0,0,0,.45), 0 0 10px rgba(241,211,123,.10);
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.hex.ps:not(.psLocked)::after {
+  content: "✦";
+}
+
+.hex.ps.psLocked::after {
+  content: "⊘";
+}
+
+.hex.hq::before {
+  content: "⌂";
+}
+
+.hex.cellObjective:not(.tacticalTarget):not(.selected) {
+  filter: saturate(1.06) brightness(1.02);
+}
+
+.hex.ps.controlledCell:not(.tacticalTarget):not(.selected) {
+  box-shadow:
+    inset 0 0 0 3px var(--cell-control-color, rgba(255,255,255,.82)),
+    inset 0 0 18px rgba(var(--objective-ps), .18),
+    0 0 16px rgba(var(--objective-ps), .12) !important;
+}
+
+.hex.hq.controlledCell:not(.tacticalTarget):not(.selected) {
+  box-shadow:
+    inset 0 0 0 3px var(--cell-control-color, rgba(255,255,255,.82)),
+    inset 0 0 18px rgba(var(--objective-qg), .18),
+    0 0 16px rgba(var(--objective-qg), .14) !important;
+}
+
+body.mobile-apk-m4 .unitToken.type-struttura .statMini,
+body.mobile-apk-m4 .unitToken.type-qg .statMini {
+  bottom: 1px !important;
+  min-width: 31px !important;
+}
+
+body.mobile-apk-m4 .unitToken.type-struttura .symbol,
+body.mobile-apk-m4 .unitToken.type-qg .symbol {
+  transform: translateY(-4px) !important;
+}
+
+
+/* =====================================================
+   F9M1 – Map Background / Skin Slot
+   =====================================================
+   Visual-only skin slot: selezione background procedurale/CSS per lo stack mappa.
+   Non introduce terrain per cella, collisioni, regole o asset obbligatori.
+*/
+.mapSkinSlotRow {
+  display: grid;
+  grid-template-columns: minmax(220px, .7fr) 1fr;
+  gap: 12px;
+  align-items: stretch;
+  margin: 10px 0 14px;
+}
+.mapSkinSelectBox {
+  display: grid;
+  gap: 8px;
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 16px;
+  padding: 12px;
+}
+.mapSkinSelectBox label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: .86rem;
+}
+.mapSkinSelectBox select {
+  min-height: 38px;
+}
+.mapSkinPreviewCard {
+  position: relative;
+  min-height: 86px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.09);
+  overflow: hidden;
+  background: var(--map-bg-grid), var(--map-bg-veil), var(--map-bg-image), var(--map-bg-art), var(--map-bg-tint);
+  background-position: var(--map-bg-position);
+  background-size: var(--map-bg-size);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), 0 12px 28px rgba(0,0,0,.18);
+}
+.mapSkinPreviewCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 46%, rgba(241,211,123,.12), transparent 36%), linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.24));
+  pointer-events: none;
+}
+.mapSkinPreviewText {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+  align-content: end;
+  min-height: 86px;
+  padding: 12px;
+  background: linear-gradient(90deg, rgba(0,0,0,.58), rgba(0,0,0,.18), transparent);
+}
+.mapSkinPreviewText strong {
+  color: #fff5cc;
+  letter-spacing: .03em;
+}
+.mapSkinPreviewText span {
+  color: rgba(246,239,218,.78);
+  font-size: .82rem;
+}
+.mapSkinSlotMeta {
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.35;
+}
+@media (max-width: 820px) {
+  .mapSkinSlotRow { grid-template-columns: 1fr; }
+}
+
+/* =====================================================
+   F9M2/F9M2a – Visual Asset Slots Foundation
+   =====================================================
+   Visual-only pass: official map background asset slots, linked UI skin vars,
+   and optional token graphics mode with safe CSS/SVG fallback.
+   No terrain-per-cell, gameplay, AI, targeting, deck or combat logic is changed.
+*/
+:root {
+  --skin-accent: var(--ps);
+  --skin-panel-bg: var(--panel);
+  --skin-panel-border: var(--line);
+  --skin-button-bg: var(--panel-2);
+  --skin-hand-bg: rgba(0,0,0,.24);
+  --token-art-opacity: .96;
+  --token-art-symbol-opacity: .10;
+}
+
+html[data-map-skin] body {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(214,179,90,.08), transparent 44%),
+    radial-gradient(circle at top, #222838 0, var(--bg) 55%);
+}
+
+html[data-map-skin] header.topTitleBar,
+html[data-map-skin] .panel,
+html[data-map-skin] .mainMenuCard,
+html[data-map-skin] .setupScreenCard,
+html[data-map-skin] .deckBuilderCard,
+html[data-map-skin] .cardEditorCard,
+html[data-map-skin] .cardPoolCard,
+html[data-map-skin] .menuLayoutLabCard,
+html[data-map-skin] .deckBuilderBox,
+html[data-map-skin] .mainMenuActionGroup,
+html[data-map-skin] .setupSideBox,
+html[data-map-skin] .setupMatchBox,
+html[data-map-skin] .setupPlayerSubsection {
+  border-color: var(--skin-panel-border);
+}
+
+html[data-map-skin] .panel,
+html[data-map-skin] .mainMenuCard,
+html[data-map-skin] .setupScreenCard,
+html[data-map-skin] .deckBuilderCard,
+html[data-map-skin] .cardEditorCard,
+html[data-map-skin] .cardPoolCard,
+html[data-map-skin] .menuLayoutLabCard {
+  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)), var(--skin-panel-bg);
+}
+
+html[data-map-skin] .handPrimaryDock .body,
+html[data-map-skin] #cardZonePanel,
+html[data-map-skin] .gameActionBar,
+html[data-map-skin] .tacticDock .body,
+html[data-map-skin] .logDock .body {
+  background: var(--skin-hand-bg);
+}
+
+html[data-map-skin] button:not(.primary):not(.danger),
+html[data-map-skin] select {
+  background: var(--skin-button-bg);
+  border-color: var(--skin-panel-border);
+}
+
+html[data-map-skin] button:hover:not(:disabled):not(.primary):not(.danger) {
+  border-color: var(--skin-accent);
+}
+
+html[data-map-skin] .mainMenuKicker,
+html[data-map-skin] .deckBuilderBox h3,
+html[data-map-skin] .deckBuilderTable th,
+html[data-map-skin] .mapSkinPreviewText strong {
+  color: var(--skin-accent);
+}
+
+.mapSkinAssetPath {
+  display: block;
+  font-family: Consolas, "Liberation Mono", monospace;
+  font-size: .72rem !important;
+  color: rgba(246,239,218,.62) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-token-graphics-mode="on"] .unitToken.has-token-art {
+  /* F9M2e: keep overflow visible so infantry/vehicle stat badges outside the
+     token are not clipped when image tokens are active. The image itself is
+     clipped by its own border-radius/inset. */
+  overflow: visible;
+  isolation: isolate;
+}
+
+.unitToken .tokenArt {
+  position: absolute;
+  inset: 3px;
+  z-index: 0;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 9px;
+  opacity: 0;
+  pointer-events: none;
+  filter: saturate(1.04) contrast(1.05);
+  transition: none;
+}
+
+.unitToken.type-fanteria .tokenArt,
+.unitToken.type-comandante .tokenArt { border-radius: 999px; }
+.unitToken.type-veicolo .tokenArt { border-radius: 10px 7px 10px 7px; }
+.unitToken.type-struttura .tokenArt,
+.unitToken.type-qg .tokenArt { border-radius: 8px; }
+
+/* F9M2f: tokenArt è uno span con background-image, non più un <img>.
+   La classe token-art-loaded viene applicata subito se l'asset è già nella cache
+   visuale; niente fade ad ogni renderBot/renderAll, niente flash sul fallback. */
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded .tokenArt {
+  opacity: var(--token-art-opacity);
+}
+
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded .symbol {
+  opacity: var(--token-art-symbol-opacity);
+  z-index: 2;
+  mix-blend-mode: screen;
+}
+
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded .pivotOverlay,
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded .tokenCustomBadge,
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded .statMini {
+  z-index: 32 !important;
+}
+
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded .statMini {
+  display: inline-flex !important;
+  opacity: 1 !important;
+  background: rgba(3,5,10,.92) !important;
+  border-color: rgba(255,255,255,.30) !important;
+  box-shadow: 0 2px 7px rgba(0,0,0,.72), inset 0 0 0 1px rgba(255,255,255,.06) !important;
+}
+
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded.type-fanteria .statMini,
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded.type-veicolo .statMini,
+html[data-token-graphics-mode="on"] .unitToken.token-art-loaded.type-comandante .statMini {
+  bottom: -10px;
+}
+
+html[data-token-graphics-mode="on"] .unitToken.token-art-missing .tokenArt {
+  display: none;
+}
+
+html[data-token-graphics-mode="on"] .unitToken.token-art-missing::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  border: 1px dashed rgba(255,255,255,.18);
+  pointer-events: none;
+  opacity: .55;
+}
+
+body.mobile-apk-m4 .unitToken .tokenArt {
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+}
+
+
+/* =====================================================
+   F9M2d – Map Opacity Calibration Binding Fix
+   =====================================================
+   The Calibration Lab sliders must affect the visible board, not only the
+   earliest base .hex rule. F9L4/F9L5 added later objective/target/polish
+   backgrounds, so this final visual-only binding re-applies the map opacity
+   variables at the end of the cascade. Gameplay, targeting and coordinates
+   are untouched.
+*/
+.hex:not(.tacticalTarget):not(.selected):not(.cellBlocked):not(.cellPassageNexus):not(.cellBramble) {
+  outline: 1px solid rgba(255,255,255,var(--map-grid-opacity)) !important;
+}
+
+.hex:not(.ps):not(.hq):not(.tacticalTarget):not(.selected):not(.cellBlocked):not(.cellTrapNexus):not(.cellPassageNexus):not(.cellTrapAgathoi):not(.cellBramble) {
+  background: rgba(34, 41, 55, var(--map-cell-fill-opacity)) !important;
+}
+
+.hex.ps:not(.tacticalTarget):not(.selected) {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(var(--objective-ps), var(--map-cell-fill-opacity)), transparent 50%),
+    linear-gradient(180deg, rgba(83,70,38,var(--map-cell-fill-opacity)), rgba(41,43,52,var(--map-cell-fill-opacity))) !important;
+}
+
+.hex.hq:not(.tacticalTarget):not(.selected) {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(var(--objective-qg), var(--map-cell-fill-opacity)), transparent 52%),
+    linear-gradient(180deg, rgba(74,61,37,var(--map-cell-fill-opacity)), rgba(31,36,48,var(--map-cell-fill-opacity))) !important;
+}
+
+.hex.cellTrapNexus:not(.tacticalTarget):not(.selected),
+.hex.cellTrapAgathoi:not(.tacticalTarget):not(.selected) {
+  background: rgba(34, 41, 55, var(--map-cell-fill-opacity)) !important;
+}
+
+body.mobile-apk-m4 .hex:not(.tacticalTarget):not(.selected):not(.cellBlocked):not(.cellPassageNexus):not(.cellBramble) {
+  outline-color: rgba(255,255,255,var(--map-grid-opacity)) !important;
+}
