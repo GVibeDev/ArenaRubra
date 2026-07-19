@@ -43,17 +43,19 @@ function setAppScreen(screen) {
   const isCardPool = next === ARENA_APP_SCREENS.CARD_POOL;
   const isLayoutLab = next === ARENA_APP_SCREENS.LAYOUT_LAB;
   const isPlaceholder = placeholderScreens.includes(next);
+  const isGameLayoutLab = isLayoutLab && typeof menuLayoutCalibrationIsGameContext === "function" && menuLayoutCalibrationIsGameContext();
 
   if (!isGame && typeof closeGamePanel === "function") closeGamePanel();
 
   document.body.dataset.appScreen = next;
   document.body.classList.toggle("app-screen-menu", isMainMenu);
   document.body.classList.toggle("app-screen-setup", isSetup);
-  document.body.classList.toggle("app-screen-game", isGame);
+  document.body.classList.toggle("app-screen-game", isGame || isGameLayoutLab);
   document.body.classList.toggle("app-screen-deck-builder", isDeckBuilder);
   document.body.classList.toggle("app-screen-card-editor", isCardEditor);
   document.body.classList.toggle("app-screen-card-pool", isCardPool);
   document.body.classList.toggle("app-screen-layout-lab", isLayoutLab);
+  document.body.classList.toggle("app-layout-lab-game-context", isGameLayoutLab);
   document.body.classList.toggle("app-screen-placeholder", isPlaceholder);
 
   const screens = document.querySelectorAll("[data-app-screen-panel]");
@@ -67,6 +69,9 @@ function setAppScreen(screen) {
   if (isCardEditor && typeof renderCardEditorScreen === "function") renderCardEditorScreen();
   if (isCardPool && typeof renderCardPoolScreen === "function") renderCardPoolScreen();
   if (isLayoutLab && typeof renderMenuLayoutCalibrationLab === "function") renderMenuLayoutCalibrationLab();
+  if (!isGame && !isGameLayoutLab && typeof arenaPresentationResetForMenu === "function") {
+    arenaPresentationResetForMenu({ music: true, restoreMap: true, fade: true });
+  }
   refreshMainMenuResumeState();
 }
 
@@ -108,10 +113,11 @@ function setupDeckOptionLabel(entry) {
   const payload = entry.payload || {};
   const deckName = entry.deckName || payload.deckName || payload.name || entry.key || "Deck salvato";
   const count = Array.isArray(payload.deckIds) ? payload.deckIds.length : null;
-  const mode = entry.containsCustomCards ? "CUSTOM" : "OFFICIAL";
-  const saved = appShortDateLabel(entry.savedAt || payload.savedAt || payload.updatedAt || payload.importedAt || "");
+  const countLabel = payload.supplementalMissionId ? `${count == null ? "?" : count} + Missione` : `${count == null ? "?" : count} carte`;
+  const mode = entry.containsCustomCards ? "CUSTOM" : (entry.builtIn || payload.builtIn ? "BUILT-IN" : "OFFICIAL");
+  const saved = entry.builtIn || payload.builtIn ? "" : appShortDateLabel(entry.savedAt || payload.savedAt || payload.updatedAt || payload.importedAt || "");
   const commander = payload.commanderName || entry.commanderId || "Comandante";
-  return `${deckName} · ${count == null ? "?" : count} carte · ${mode} · ${commander}${saved ? ` · ${saved}` : ""}`;
+  return `${deckName} · ${countLabel} · ${mode} · ${commander}${saved ? ` · ${saved}` : ""}`;
 }
 
 function setupUpdateDeckBadge(side, text, tone = "starter") {
@@ -215,15 +221,17 @@ function refreshSetupDeckSelectorForSide(side) {
   const deckName = (info.check && info.check.deckName) || (payload && (payload.deckName || payload.name)) || "";
   const isCustomLab = Boolean(info.check && (info.check.runtimeMode === "custom_lab" || info.check.containsCustomCards));
   if (customOption) customOption.textContent = info.savedDeckEntries.length
-    ? `Deck salvato / Custom Match Lab (${info.savedDeckEntries.length})`
-    : "Deck salvato non disponibile";
+    ? `Deck integrato / salvato / Custom Lab (${info.savedDeckEntries.length})`
+    : "Deck integrato/salvato non disponibile";
   infoEl.classList.toggle("good", info.mode === "custom" && info.check && info.check.ok);
   infoEl.classList.toggle("bad", info.mode === "custom" && (!info.check || !info.check.ok));
   if (info.mode === "custom") {
     if (info.check && info.check.ok && payload) {
       const shortSaved = appShortDateLabel(savedAt);
-      setupUpdateDeckBadge(side, isCustomLab ? `CUSTOM · ${payload.customCount || 0}` : "OFFICIAL", isCustomLab ? "custom" : "official");
-      infoEl.textContent = `${isCustomLab ? "Custom Match Test Lab" : "Deck personalizzato ufficiale"}: “${deckName || "deck"}” · ${info.faction} · ${payload.commanderName || info.commanderId} · ${info.check.deckIds.length} carte${shortSaved ? ` · ${shortSaved}` : ""}.`;
+      const builtin = Boolean(info.check.builtIn || payload.builtIn);
+      setupUpdateDeckBadge(side, isCustomLab ? `CUSTOM · ${payload.customCount || 0}` : (builtin ? "BUILT-IN" : "OFFICIAL"), isCustomLab ? "custom" : "official");
+      const countLabel = info.check.supplementalMissionId ? `${info.check.countedDeckSize}/30 + Missione supplementare` : `${info.check.deckIds.length} carte`;
+      infoEl.textContent = `${isCustomLab ? "Custom Match Test Lab" : (builtin ? "Deck integrato" : "Deck personalizzato ufficiale")}: “${deckName || "deck"}” · ${info.faction} · ${payload.commanderName || info.commanderId} · ${countLabel}${shortSaved && !builtin ? ` · ${shortSaved}` : ""}.`;
     } else {
       setupUpdateDeckBadge(side, "Deck non valido", "bad");
       infoEl.textContent = `Deck personalizzato non disponibile/valido: ${((info.check && info.check.issues) || ["nessun deck salvato selezionato"]).join("; ")}.`;
@@ -270,6 +278,7 @@ function syncSetupScreenFromLegacyControls() {
   writeControlValue("setupInitiativeMode", readControlValue("initiativeMode", "random"));
   writeControlValue("setupBotAiMode", readControlValue("botAiMode", "advanced"));
   writeControlValue("setupPacePreset", readControlValue("pacePreset", "standard"));
+  writeControlValue("setupGameScaleMode", readControlValue("gameScaleMode", "large_scale"));
   writeControlValue("setupP1DeckMode", readControlValue("p1DeckMode", "template"));
   writeControlValue("setupP2DeckMode", readControlValue("p2DeckMode", "template"));
   writeControlValue("setupP1DeckSavedKey", readControlValue("p1DeckSavedKey", readControlValue("setupP1DeckSavedKey", "")));
@@ -291,6 +300,7 @@ function syncLegacyControlsFromSetupScreen() {
   writeControlValue("initiativeMode", readControlValue("setupInitiativeMode", "random"));
   writeControlValue("botAiMode", readControlValue("setupBotAiMode", "advanced"));
   writeControlValue("pacePreset", readControlValue("setupPacePreset", "standard"));
+  writeControlValue("gameScaleMode", readControlValue("setupGameScaleMode", "large_scale"));
   writeControlValue("p1DeckMode", readControlValue("setupP1DeckMode", "template"));
   writeControlValue("p2DeckMode", readControlValue("setupP2DeckMode", "template"));
   writeControlValue("p1DeckSavedKey", readControlValue("setupP1DeckSavedKey", ""));
@@ -311,10 +321,13 @@ function startGameFromSetupScreen() {
   const deckCheck = validateSetupDeckSelectionsBeforeStart();
   if (!deckCheck.ok) return;
   syncLegacyControlsFromSetupScreen();
+  const setupOverrides = {
+    gameScaleMode: readControlValue("setupGameScaleMode", "large_scale") === "tactical" ? "tactical" : "large_scale"
+  };
   setAppScreen(ARENA_APP_SCREENS.GAME);
   if (typeof newGame === "function") {
     try {
-      newGame();
+      newGame(setupOverrides);
     } catch (err) {
       console.error("Avvio partita fallito", err);
       setAppScreen(ARENA_APP_SCREENS.SETUP);
@@ -359,6 +372,8 @@ function resumeGameFromAppMenu() {
     return;
   }
   setAppScreen(ARENA_APP_SCREENS.GAME);
+  if (typeof arenaPresentationApplyForGame === "function") arenaPresentationApplyForGame({ music: false, preserveOverride: true });
+  if (typeof arenaAudioResumeForState === "function") arenaAudioResumeForState();
   if (typeof renderAll === "function") renderAll();
   if (typeof maybeRunBot === "function") maybeRunBot();
 }
@@ -416,7 +431,7 @@ function initializeArenaAppShell() {
     if (layoutLabBtn.dataset.bound === "1") return;
     layoutLabBtn.dataset.bound = "1";
     layoutLabBtn.addEventListener("click", () => {
-      if (typeof openMenuLayoutCalibrationLabScreen === "function") openMenuLayoutCalibrationLabScreen();
+      if (typeof openMenuLayoutCalibrationLabScreen === "function") openMenuLayoutCalibrationLabScreen({ sourceScreen: currentAppScreen() });
       else showAppPlaceholder(ARENA_APP_SCREENS.OPTIONS);
     });
   });

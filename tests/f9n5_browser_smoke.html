@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="utf-8"><title>F9N5_SMOKE_PENDING</title></head>
+<body>
+  <iframe id="app" src="../index.html" style="width:1280px;height:900px"></iframe>
+  <pre id="result">PENDING</pre>
+  <script>
+    document.getElementById("app").addEventListener("load", () => {
+      window.setTimeout(() => {
+        const output = document.getElementById("result");
+        try {
+          const w = document.getElementById("app").contentWindow;
+          const catalog = w.buildCardCatalog();
+          const missions = catalog.filter(card => card.sourceType === "mission");
+          const sample = missions.find(card => card.id === "MISSION:NXMSN01");
+          const commander = catalog.find(card => card.faction === "Nexus" && card.deckRole === "commander");
+          const base = catalog.find(card => card.faction === "Nexus" && card.deckRole === "base");
+          const fillers = Array.from({ length:28 }, (_, index) => ({ ...base, id:`FILLER:${index}`, sourceId:`FILLER:${index}`, cardUid:`o${index}` }));
+          const splitWithMission = w.createInitialHandFromDeck([...fillers.slice(0, 7), commander, ...fillers.slice(7), sample]);
+          const splitWithoutMission = w.createInitialHandFromDeck([commander, ...fillers, { ...base, id:"FILLER:29", cardUid:"o29" }]);
+          const canvas = w.document.createElement("canvas");
+          const rendered = w.renderArenaCardPreviewCanvas(canvas, sample);
+          const precheck = w.runPrecheck({ quiet:true, source:"f9n5_browser_smoke" });
+          const report = w.deckBuilderReportObject();
+
+          const missionInstance = { ...sample, cardUid:"mission-private", zone:"hand" };
+          const commanderInstance = { ...commander, cardUid:"commander-private", zone:"hand" };
+          const ordinaryInstance = { ...base, cardUid:"ordinary", zone:"hand" };
+          w.eval(`state = ${JSON.stringify({ currentPlayer:1, modes:{1:"human",2:"bot"}, factions:{1:"Nexus",2:"Nexus"}, winner:null, energy:{1:5,2:5}, deck:{1:[],2:[]}, hand:{1:[missionInstance,commanderInstance,ordinaryInstance],2:[missionInstance]}, discard:{1:[],2:[]}, cardDebug:null })}`);
+          const privacy = {
+            ownerVisible:!w.missionCardHiddenFromViewer(1, missionInstance),
+            botHidden:w.missionCardHiddenFromViewer(2, missionInstance),
+            revealedVisible:!w.missionCardHiddenFromViewer(2, { ...missionInstance, missionRevealed:true })
+          };
+          const protection = {
+            mission:w.isProtectedHandCard(missionInstance),
+            commander:w.isProtectedHandCard(commanderInstance),
+            ordinary:w.isProtectedHandCard(ordinaryInstance),
+            discardMissionBlocked:w.discardCard(1, "mission-private") === null,
+            stealCommanderBlocked:w.moveHandCardBetweenPlayers(1, 2, "commander-private") === null
+          };
+
+          const result = {
+            build:w.buildInfoLabel(), missionDefinitions:w.eval("MISSION_DEFINITIONS.length"), missionCards:missions.length,
+            sampleType:w.cardRendererTypeText(sample), sampleKind:w.cardAssetKind(sample), rendered,
+            canvas:{ width:canvas.width, height:canvas.height }, precheck:{ ok:precheck.ok, problems:precheck.problems },
+            poolMissionCount:report.pool.filter(card => card.sourceType === "mission").length,
+            openingWithMission:{ mission:splitWithMission.hand.filter(card => card.deckRole === "mission").length, commander:splitWithMission.hand.filter(card => card.deckRole === "commander").length, ordinary:splitWithMission.hand.filter(card => !["mission","commander"].includes(card.deckRole)).length },
+            openingWithoutMission:{ mission:splitWithoutMission.hand.filter(card => card.deckRole === "mission").length, commander:splitWithoutMission.hand.filter(card => card.deckRole === "commander").length, ordinary:splitWithoutMission.hand.filter(card => !["mission","commander"].includes(card.deckRole)).length },
+            privacy, protection
+          };
+          const ok = result.build === "C2-STABLE-1-F9N5-APK-M4c" && result.missionDefinitions === 15 && result.missionCards === 15
+            && result.sampleType === "MISSIONE" && result.sampleKind === "tactic" && result.rendered && result.canvas.width > 0
+            && result.precheck.ok && result.poolMissionCount === 3
+            && result.openingWithMission.mission === 1 && result.openingWithMission.commander === 1 && result.openingWithMission.ordinary === 3
+            && result.openingWithoutMission.mission === 0 && result.openingWithoutMission.commander === 1 && result.openingWithoutMission.ordinary === 4
+            && privacy.ownerVisible && privacy.botHidden && privacy.revealedVisible
+            && protection.mission && protection.commander && !protection.ordinary && protection.discardMissionBlocked && protection.stealCommanderBlocked;
+          document.title = ok ? "F9N5_SMOKE_OK" : "F9N5_SMOKE_FAIL";
+          output.textContent = `${document.title} ${JSON.stringify(result)}`;
+        } catch (error) {
+          document.title = "F9N5_SMOKE_FAIL";
+          output.textContent = `${document.title} ${error && error.stack ? error.stack : error}`;
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>

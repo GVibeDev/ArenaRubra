@@ -1,0 +1,48 @@
+"use strict";
+
+const fs = require("fs");
+const assert = require("assert");
+const read = file => fs.readFileSync(file, "utf8");
+const index = read("index.html");
+const build = read("src/build_info.js");
+const config = read("data/cards_base.js");
+const deck = read("src/deck.js");
+const missions = read("src/missions.js");
+const missionAi = read("src/mission_ai.js");
+const ai = read("src/ai.js");
+const builder = read("src/deck_builder.js");
+const precheck = read("src/precheck.js");
+let n = 0;
+const ok = (value,message) => { assert.ok(value,message); n += 1; };
+
+ok(build.includes("C2-STABLE-1-F9O2a-APK-M4c") || build.includes("C2-STABLE-1-F9O2-APK-M4c") || build.includes("C2-STABLE-1-F9O1b-APK-M4c") || build.includes("C2-STABLE-1-F9O1a-APK-M4c") || build.includes("C2-STABLE-1-F9O1-APK-M4c") || build.includes("C2-STABLE-1-F9N10-APK-M4c"), "build successiva a F9N10");
+ok(build.includes("logicBaseline: \"C2-STABLE-1-F9O2-APK-M4c\"") || build.includes("logicBaseline: \"C2-STABLE-1-F9O1b-APK-M4c\"") || build.includes("logicBaseline: \"C2-STABLE-1-F9O1a-APK-M4c\"") || build.includes("logicBaseline: \"C2-STABLE-1-F9O1-APK-M4c\"") || build.includes("logicBaseline: \"C2-STABLE-1-F9N10-APK-M4c\"") || build.includes("mission-cycle-ai-builtins"), "baseline/canale successivo a F9N10");
+ok(index.includes('data/builtin_decks.js'), "script deck built-in");
+ok(index.includes('src/mission_ai.js'), "script IA Missioni");
+ok(config.includes("missionCycleRecoveryF9N10: true"), "flag recupero");
+ok(config.includes("missionAiRuntimeF9N10: true"), "flag IA");
+ok(config.includes("builtInDeckLibraryF9N10: true"), "flag built-in");
+ok(config.includes("supplementalMissionDeckContract: true"), "flag Missione supplementare");
+ok(config.includes("deckRecoveryMissionOrdinaryDraw: 4"), "pesca Missione +4");
+ok(deck.includes("missionResetCycle(side, { source:\"deck_recovery\", lockUntilNextOwnerTurn:true })"), "reset ciclo al recupero");
+ok(deck.includes("detachMissionCardForRecovery"), "Missione separata dagli scarti");
+ok(deck.includes("missionRecovered:Boolean(detachedMission)"), "evento recupero strutturato");
+ok(missions.includes("missionLockUntilNextOwnerTurn"), "blocco fino al prossimo turno");
+ok(missions.includes("missionUnlockAtOwnerTurnStart"), "sblocco turno personale");
+ok(missions.includes("secondOrLaterPlays"), "telemetria seconda giocata");
+ok(builder.includes("deckBuilderBuiltinDeckStore"), "store built-in");
+ok(builder.includes("supplementalDeckCard:true"), "carta supplementare runtime");
+ok(builder.includes("countedInDeck:false"), "deroga solo contatore");
+ok(missionAi.includes("botTryPlayMission"), "IA gioca Missione");
+ok(missionAi.includes("botMissionPurchaseBonus"), "bias acquisti");
+ok(missionAi.includes("botMissionMoveBonus"), "bias movimento");
+ok(missionAi.includes("botMissionAttackBonus"), "bias attacchi");
+ok(missionAi.includes("botMissionAbilityBonus"), "bias abilità");
+ok(missionAi.includes("botMissionTacticBonus"), "bias tattiche");
+ok(ai.includes('botTryPlayMission(player, "turn_start")'), "hook inizio turno bot");
+ok(ai.includes('botTryPlayMission(player, "post_purchase")'), "hook post acquisti bot");
+ok(ai.includes('botTryPlayMission(player, "dynamic")'), "hook dinamico bot");
+ok(precheck.includes("Deck built-in F9N10"), "precheck deck integrati");
+ok(precheck.includes("Runtime IA Missioni F9N10"), "precheck IA");
+
+console.log(`F9N10 runtime integration smoke: ${n}/${n} OK`);

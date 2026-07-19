@@ -109,6 +109,30 @@ function buildTacticCardFromTactic(tactic) {
   };
 }
 
+function buildMissionCardFromDefinition(mission) {
+  return {
+    id:`MISSION:${mission.id}`,
+    sourceId:mission.id,
+    sourceType:"mission",
+    cardType:"mission",
+    deckRole:"mission",
+    starterRole:null,
+    faction:mission.faction,
+    name:mission.name,
+    cost:Number.isFinite(mission.cost) ? mission.cost : 0,
+    missionId:mission.id,
+    missionClass:mission.missionClass === "desperate" ? "desperate" : "ordinary",
+    quality:mission.missionClass === "desperate" ? "Missione disperata" : "Missione ordinaria",
+    category:"Missione",
+    objectives:(mission.objectives || []).map(item => ({...item})),
+    conditions:(mission.conditions || []).map(item => ({...item})),
+    reward:mission.reward ? {...mission.reward} : null,
+    effectText:typeof missionCardRulesText === "function" ? missionCardRulesText(mission) : "",
+    implementationStatus:"data_only",
+    passiveOnly:true
+  };
+}
+
 function buildCardCatalog() {
   const unitCards = (typeof BLUEPRINTS !== "undefined" ? BLUEPRINTS : [])
     .filter(bp => bp && bp.type !== "QG")
@@ -120,7 +144,11 @@ function buildCardCatalog() {
     .filter(t => t && t.id)
     .map(buildTacticCardFromTactic);
 
-  return [...unitCards, ...tacticCards].sort((a, b) => {
+  const missionCards = (typeof MISSION_DEFINITIONS !== "undefined" ? MISSION_DEFINITIONS : [])
+    .filter(m => m && m.id)
+    .map(buildMissionCardFromDefinition);
+
+  return [...unitCards, ...tacticCards, ...missionCards].sort((a, b) => {
     const fa = String(a.faction || "").localeCompare(String(b.faction || ""));
     if (fa) return fa;
     const ta = String(a.cardType || "").localeCompare(String(b.cardType || ""));
@@ -141,6 +169,10 @@ function cardsForFaction(faction, catalog = null) {
 
 function starterCardsForFaction(faction, catalog = null) {
   return cardsForFaction(faction, catalog).filter(card => Boolean(card.starterRole));
+}
+
+function missionCardsForFaction(faction, catalog = null) {
+  return cardsForFaction(faction, catalog).filter(card => card && card.sourceType === "mission");
 }
 
 function commanderCardsForFaction(faction, catalog = null) {
@@ -207,6 +239,7 @@ function deckPoolCardsForFaction(faction, catalog = null, options = {}) {
   return cardsForFaction(faction, catalog).filter(card => {
     if (!card) return false;
     if (card.sourceType === "tactic") return includes.tactic !== false;
+    if (card.sourceType === "mission") return includes.mission !== false;
     if (!card.deckRole) return false;
     if (card.sourceType === "unit" && excludedStarterIds.has(card.id)) return false;
     if (card.cardType === "commander" || card.deckRole === "commander") {
@@ -220,11 +253,12 @@ function cardDebugSummary(catalog = null) {
   const list = catalog || buildCardCatalog();
   const byFaction = {};
   for (const card of list) {
-    byFaction[card.faction] = byFaction[card.faction] || { total: 0, deckPool: 0, starters: 0, tactics: 0 };
+    byFaction[card.faction] = byFaction[card.faction] || { total: 0, deckPool: 0, starters: 0, tactics: 0, missions:0 };
     byFaction[card.faction].total += 1;
     if (card.deckRole) byFaction[card.faction].deckPool += 1;
     if (card.starterRole) byFaction[card.faction].starters += 1;
     if (card.sourceType === "tactic") byFaction[card.faction].tactics += 1;
+    if (card.sourceType === "mission") byFaction[card.faction].missions += 1;
   }
   return {
     version: typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG.version : "unknown",

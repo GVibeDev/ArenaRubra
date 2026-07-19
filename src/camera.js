@@ -64,10 +64,15 @@ function setBoardCameraAnimating(enabled) {
 function updateBoardCameraHud() {
   const chip = typeof document !== "undefined" ? document.getElementById("gameHudCamera") : null;
   if (!chip) return;
-  const modeLabel = boardCamera.mode === "focus" ? "Focus" : boardCamera.mode === "play" ? "Play" : boardCamera.mode === "manual" ? "Manuale" : "Fit";
-  const pct = Math.round(boardCameraTotalScale() * 100);
+  const active = isApkM4CameraActive() && typeof apkM4Camera !== "undefined" && apkM4Camera ? apkM4Camera : boardCamera;
+  const mode = active && active.mode ? active.mode : "fit";
+  const modeLabel = mode === "focus" ? "Focus" : mode === "play" ? "Play" : mode === "manual" ? "Manuale" : "Fit";
+  const totalScale = active && Number.isFinite(active.fitScale) && Number.isFinite(active.zoom)
+    ? active.fitScale * active.zoom
+    : boardCameraTotalScale();
+  const pct = Math.round(totalScale * 100);
   chip.textContent = `Camera: ${modeLabel} ${pct}%`;
-  chip.dataset.cameraMode = boardCamera.mode || "fit";
+  chip.dataset.cameraMode = mode;
 }
 
 function applyBoardCamera(options = {}) {

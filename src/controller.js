@@ -7,7 +7,7 @@
 // Non contiene AI, turn flow, economia, combat rules o rendering.
 
 function handleCellClick(coord) {
-      if (!state || state.winner || botRunning) return;
+      if (!state || state.winner || botRunning || (typeof missionInteractionBlocked === "function" && missionInteractionBlocked())) return;
       const unit = getUnitAt(coord);
       const humanTurn = state.modes[state.currentPlayer] === "human";
       if (!humanTurn) return;
@@ -16,7 +16,8 @@ function handleCellClick(coord) {
         const bp = pendingPurchaseBlueprintId ? pendingBlueprintForHandOrMarket(state.currentPlayer, pendingPurchaseBlueprintId) : null;
         if (bp && spawnCellsFor(state.currentPlayer, bp).some(c => sameCoord(c, coord))) {
           const playedHandCardUid = pendingHandCardUid;
-          const spawned = spawnUnit(bp, state.currentPlayer, coord);
+          const deployOptions = pendingDeploymentContext && pendingDeploymentContext.side === state.currentPlayer ? { ...pendingDeploymentContext, spawnSource:pendingDeploymentContext.source } : {};
+          const spawned = spawnUnit(bp, state.currentPlayer, coord, deployOptions);
           if (spawned) {
             if (playedHandCardUid && typeof completeHandCardUnitPlay === "function") completeHandCardUnitPlay(state.currentPlayer, playedHandCardUid, bp);
             clearSelection();
@@ -123,12 +124,16 @@ function handleCellClick(coord) {
       if (mode === "build") {
         const selected = getSelectedUnit();
         const bp = pendingBuildBlueprintId ? pendingBlueprintForHandOrMarket(state.currentPlayer, pendingBuildBlueprintId) : null;
-        if (selected && bp && buildableCells(selected).some(c => sameCoord(c, coord))) {
+        const hqBuild = Boolean(pendingBuildSource && pendingBuildSource.type === "own_hq");
+        const validUnitCell = Boolean(selected && buildableCells(selected).some(c => sameCoord(c, coord)));
+        const validHqCell = Boolean(hqBuild && typeof ownHqBuildCell === "function" && ownHqBuildCell(state.currentPlayer) && sameCoord(ownHqBuildCell(state.currentPlayer), coord));
+        if (bp && (validUnitCell || validHqCell)) {
           const playedHandCardUid = pendingHandCardUid;
-          const built = buildStructure(selected, bp, coord);
+          const deployOptions = pendingDeploymentContext && pendingDeploymentContext.side === state.currentPlayer ? { ...pendingDeploymentContext, spawnSource:pendingDeploymentContext.source } : {};
+          const built = buildStructure(hqBuild ? null : selected, bp, coord, hqBuild ? { ...deployOptions, buildSource:"own_hq", side:state.currentPlayer } : { ...deployOptions, buildSource:"unit" });
           if (built) {
             if (playedHandCardUid && typeof completeHandCardUnitPlay === "function") completeHandCardUnitPlay(state.currentPlayer, playedHandCardUid, bp);
-            endUnitAction(selected);
+            if (!hqBuild && selected) endUnitAction(selected);
             clearSelection();
             postActionChecks();
           } else {
@@ -194,6 +199,7 @@ function selectUnitAndPrimeMovement(unit) {
     }
 
 function toggleAbilityMode(unit) {
+      if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
       if (!unit.ability) return;
       if (unit.ability.target === "self") {
         useAbility(unit, unit, unit.ability);
@@ -218,6 +224,7 @@ function toggleAbilityMode(unit) {
     }
 
 function passUnit(unit) {
+      if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
       log(`${unit.name} passa l'azione.`);
       endUnitAction(unit);
       clearSelection();
@@ -232,6 +239,9 @@ function clearSelection() {
       pendingPurchaseBlueprintId = null;
       pendingTacticId = null;
       pendingHandCardUid = null;
+      pendingStarterCardUid = null;
+      pendingDeploymentContext = null;
+      pendingBuildSource = null;
     }
 
 function isAttackTarget(coord) {

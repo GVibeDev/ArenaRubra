@@ -37,11 +37,13 @@ function cardPoolFactionList(catalog = null) {
 }
 
 function cardPoolKind(card) {
+  if (card && card.sourceType === "mission") return "mission";
   return card && card.sourceType === "tactic" ? "tactic" : "unit";
 }
 
 function cardPoolRole(card) {
   if (!card) return "unknown";
+  if (card.sourceType === "mission") return "mission";
   if (card.sourceType === "tactic") return "tactic";
   return card.deckRole || card.cardType || "unit";
 }
@@ -56,6 +58,7 @@ function cardPoolRoleLabel(cardOrRole) {
     heavy: "Pesanti",
     base: "Base",
     tactic: "Tattiche",
+    mission: "Missioni",
     unit_structure: "Strutture",
     unit_infantry: "Fanterie",
     unit_vehicle: "Veicoli",
@@ -67,6 +70,7 @@ function cardPoolRoleLabel(cardOrRole) {
 function cardPoolTypeLabel(card) {
   if (!card) return "—";
   if (typeof cardRendererTypeText === "function") return cardRendererTypeText(card);
+  if (card.sourceType === "mission") return card.missionClass === "desperate" ? "MISSIONE DISPERATA" : "MISSIONE";
   if (card.sourceType === "tactic") return card.category ? `TATTICA · ${card.category}` : "TATTICA";
   return [card.unitType, card.weight].filter(Boolean).join(" ").toUpperCase() || "UNITÀ";
 }
@@ -125,6 +129,12 @@ function cardPoolSelectCard(cardId, source = "pool") {
   return true;
 }
 
+function cardPoolDuplicateSelectedInEditor() {
+  const card = cardPoolCardById(CARD_POOL_STATE.selectedCardId);
+  if (!card || card.sourceType === "mission") return false;
+  return typeof cardEditorDuplicateCatalogCard === "function" ? cardEditorDuplicateCatalogCard(card.id) : false;
+}
+
 function cardPoolEnsureSelected(cards = null) {
   const list = Array.isArray(cards) ? cards : cardPoolFilteredCards();
   const selected = cardPoolCardById(CARD_POOL_STATE.selectedCardId);
@@ -142,6 +152,7 @@ function cardPoolCounts(catalog = null) {
     filtered: filtered.length,
     unit: source.filter(card => cardPoolKind(card) === "unit").length,
     tactic: source.filter(card => cardPoolKind(card) === "tactic").length,
+    mission: source.filter(card => cardPoolKind(card) === "mission").length,
     custom: source.filter(card => card && card.custom === true).length,
     official: source.filter(card => card && card.custom !== true).length,
     factions: cardPoolFactionList(source).length
@@ -190,7 +201,7 @@ function cardPoolSummaryHtml(counts) {
   return `
     <div class="deckBuilderStatus good">
       <strong>Card Pool Gallery</strong>
-      <span>${counts.filtered}/${counts.total} carte visibili · ${counts.unit} unità · ${counts.tactic} tattiche · ${counts.custom} custom · ${counts.factions} fazioni</span>
+      <span>${counts.filtered}/${counts.total} carte visibili · ${counts.unit} unità · ${counts.tactic} tattiche · ${counts.mission} Missioni · ${counts.custom} custom · ${counts.factions} fazioni</span>
     </div>
     <div class="deckBuilderRuleBox">
       <strong>F9K2:</strong> browser read-only del catalogo con filtro origine, badge CUSTOM, duplicazione sicura in editor e custom library separata.
@@ -208,7 +219,7 @@ function cardPoolRowsHtml(cards) {
       <td><button class="miniBtn" type="button" data-card-pool-select-btn="${cardPoolEscapeHtml(card.id)}">Vedi</button></td>
       <td>${cardPoolEscapeHtml(card.faction || "—")}</td>
       <td><strong>${cardPoolEscapeHtml(card.name || "Carta")}</strong><span>${cardPoolEscapeHtml(card.id || "")}</span></td>
-      <td>${cardPoolEscapeHtml(cardPoolKind(card) === "tactic" ? "Tattica" : "Unità")}${card.custom ? ` <span class="cardPoolCustomBadge">CUSTOM</span>` : ""}</td>
+      <td>${cardPoolEscapeHtml(cardPoolKind(card) === "mission" ? "Missione" : (cardPoolKind(card) === "tactic" ? "Tattica" : "Unità"))}${card.custom ? ` <span class="cardPoolCustomBadge">CUSTOM</span>` : ""}</td>
       <td>${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</td>
       <td>${cardPoolEscapeHtml(cardPoolTypeLabel(card))}</td>
       <td>${Number.isFinite(card.cost) ? card.cost : "—"}</td>
@@ -251,7 +262,7 @@ function cardPoolPreviewStatsHtml(card) {
     <span><strong>Tipo</strong> ${cardPoolEscapeHtml(cardPoolTypeLabel(card))}</span>
     <span><strong>Ruolo</strong> ${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</span>
     <span><strong>ENE</strong> ${Number.isFinite(typeof cardRendererStat === "function" ? cardRendererStat(card, "cost") : card.cost) ? (typeof cardRendererStat === "function" ? cardRendererStat(card, "cost") : card.cost) : "—"}</span>
-    ${card.sourceType !== "tactic" && typeof cardRendererStat === "function" ? `
+    ${card.sourceType !== "tactic" && card.sourceType !== "mission" && typeof cardRendererStat === "function" ? `
       <span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
       <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
       <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
@@ -319,8 +330,13 @@ function renderCardPoolPreview(card = null) {
   }
 
   const entry = typeof cardAssetEntryFor === "function" ? cardAssetEntryFor(selected) : null;
+  const duplicateButton = document.getElementById("cardPoolDuplicateSelectedBtn");
+  if (duplicateButton) {
+    duplicateButton.disabled = selected.sourceType === "mission";
+    duplicateButton.title = selected.sourceType === "mission" ? "Le Missioni ufficiali non sono duplicabili nel Card Editor in F9N4." : "";
+  }
   const desc = typeof cardRendererDescriptionText === "function" ? cardRendererNormalizeDescription(cardRendererDescriptionText(selected)) : (selected.effectText || "");
-  meta.textContent = `${selected.faction || "—"} · ${selected.sourceType === "tactic" ? "Tattica" : "Unità"} · ${selected.id || ""}`;
+  meta.textContent = `${selected.faction || "—"} · ${selected.sourceType === "mission" ? "Missione" : (selected.sourceType === "tactic" ? "Tattica" : "Unità")} · ${selected.id || ""}`;
   body.innerHTML = `
     ${cardPoolPreviewStatsHtml(selected)}
     <div class="deckBuilderPreviewDesc">${cardPoolEscapeHtml(desc || "Nessun testo descrittivo disponibile nel catalogo.")}</div>
@@ -459,7 +475,7 @@ function initializeCardPoolScreen() {
     });
   }
 
-  [["cardPoolCopySelectedBtn", copyCardPoolSelectedJson], ["cardPoolDuplicateSelectedBtn", () => { if (typeof cardEditorDuplicateCatalogCard === "function") cardEditorDuplicateCatalogCard(CARD_POOL_STATE.selectedCardId); }], ["cardPoolCopyManifestBtn", copyCardPoolManifestJson], ["cardPoolPrevBtn", () => cardPoolSelectRelative(-1)], ["cardPoolNextBtn", () => cardPoolSelectRelative(1)], ["cardPoolFullscreenOpenBtn", cardPoolOpenFullscreen], ["cardPoolFullscreenCloseBtn", cardPoolCloseFullscreen]].forEach(([id, handler]) => {
+  [["cardPoolCopySelectedBtn", copyCardPoolSelectedJson], ["cardPoolDuplicateSelectedBtn", cardPoolDuplicateSelectedInEditor], ["cardPoolCopyManifestBtn", copyCardPoolManifestJson], ["cardPoolPrevBtn", () => cardPoolSelectRelative(-1)], ["cardPoolNextBtn", () => cardPoolSelectRelative(1)], ["cardPoolFullscreenOpenBtn", cardPoolOpenFullscreen], ["cardPoolFullscreenCloseBtn", cardPoolCloseFullscreen]].forEach(([id, handler]) => {
     const el = document.getElementById(id);
     if (el && el.dataset.bound !== "1") {
       el.dataset.bound = "1";

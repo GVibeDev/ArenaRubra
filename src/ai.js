@@ -97,9 +97,11 @@ function commanderThreatLevel(commander) {
 // C2e-3 – Strategic layer / threat map / deck-cycle helpers
 // =====================================================
 function botCardCounts(player) {
+      const handCards = state && state.hand && state.hand[player] ? state.hand[player] : [];
       return {
         deck: state && state.deck && state.deck[player] ? state.deck[player].length : 0,
-        hand: state && state.hand && state.hand[player] ? state.hand[player].length : 0,
+        hand: handCards.length,
+        recoveryHand: handCards.filter(card => card && !(typeof isMissionHandCard === "function" && isMissionHandCard(card))).length,
         discard: state && state.discard && state.discard[player] ? state.discard[player].length : 0
       };
     }
@@ -127,8 +129,8 @@ function evaluateBotStrategicState(player) {
       const center = centerPsCell();
       const centerControl = center ? center.control : null;
       const centerMissing = Boolean(center && center.control !== player);
-      const deckCyclePressure = ownCards.deck <= 2 && ownCards.hand <= 3 && ownCards.discard >= 3;
-      const recoveryReadySoon = ownCards.deck <= 0 && ownCards.hand <= 2 && ownCards.discard >= 3;
+      const deckCyclePressure = ownCards.deck <= 2 && ownCards.recoveryHand <= 3 && ownCards.discard >= 3;
+      const recoveryReadySoon = ownCards.deck <= 0 && ownCards.recoveryHand <= 2 && ownCards.discard >= 3;
       const psDelta = ownPs - enemyPs;
       const incomeDelta = ownIncome - enemyIncome;
       const handDelta = ownCards.hand - enemyCards.hand;
@@ -236,7 +238,7 @@ function botChoiceDefendsImmediateVictory(player, choice) {
 
 function botLastHandCycleActive(player) {
       if (!advancedAiEnabled() || !state || !state.hand || !state.deck || !state.discard) return false;
-      const hand = (state.hand[player] || []).filter(card => card && !(typeof handCardBlocked === "function" && handCardBlocked(card)));
+      const hand = (state.hand[player] || []).filter(card => card && !(typeof isMissionHandCard === "function" && isMissionHandCard(card)) && !(typeof handCardBlocked === "function" && handCardBlocked(card)));
       const ownCards = botCardCounts(player);
       return ownCards.deck <= 0 && hand.length === 1 && hand[0] && hand[0].sourceType === "unit" && ownCards.discard >= 3;
     }
@@ -2613,7 +2615,7 @@ function chooseAdvancedMove(unit, options) {
       else if (faction === "Agathoi") proposed = chooseAdvancedAgathoiMove(unit, options);
       else if (faction === "Fabeot") proposed = chooseAdvancedFabeotMove(unit, options);
       else proposed = chooseLibertiMove(unit, options);
-      const doctrineBest = options.map(coord => ({ coord, score: botGeneralDoctrineMoveBonus(unit, coord, status) }))
+      const doctrineBest = options.map(coord => ({ coord, score: botGeneralDoctrineMoveBonus(unit, coord, status) + (typeof botMissionMoveBonus === "function" ? botMissionMoveBonus(unit, coord) : 0) }))
         .sort((a,b) => b.score - a.score)[0];
       if (doctrineBest && doctrineBest.score >= 18) proposed = doctrineBest.coord;
       const safeProposed = c2e3SaferStrategicMove(unit, options, proposed);
@@ -2621,7 +2623,7 @@ function chooseAdvancedMove(unit, options) {
       if (gatePenalty >= 24 && !status.allIn) {
         const supported = options.map(coord => ({
           coord,
-          score: botGeneralDoctrineMoveBonus(unit, coord, status) + c2e3MoveScore(unit, coord) - botPsSupportGatePenalty(unit, coord, status)
+          score: botGeneralDoctrineMoveBonus(unit, coord, status) + c2e3MoveScore(unit, coord) + (typeof botMissionMoveBonus === "function" ? botMissionMoveBonus(unit, coord) : 0) - botPsSupportGatePenalty(unit, coord, status)
         })).sort((a,b) => b.score - a.score)[0];
         if (supported && supported.score > -10) return supported.coord;
       }
@@ -3050,6 +3052,8 @@ async function runBotTurn() {
             recoverDeckForPlayer(player, { skipRender:true, skipBot:true });
           }
         }
+        if (typeof botTryPlayMission === "function") botTryPlayMission(player, "turn_start");
+        if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
         // C2e-3: il bot valuta tattiche C2, riserva ENE leggera e layer strategico prima del mercato.
         // Così non spende tutta l'ENE ignorando combo, PS centrale, threat map e ciclo deck.
         maybeUseBotHandTactic(player, "prePurchase");
@@ -3058,6 +3062,8 @@ async function runBotTurn() {
         // Secondo tentativo dopo gli acquisti: utile se una nuova unità appena piazzata rende valida una tattica.
         maybeUseBotHandTactic(player, "postPurchase");
         maybeUseBotTactic(player);
+        if (typeof botTryPlayMission === "function") botTryPlayMission(player, "post_purchase");
+        if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
         renderAll();
         await sleep(260);
         let guard = 0;
@@ -3071,6 +3077,8 @@ async function runBotTurn() {
           // Terzo tentativo dinamico: dopo movimento/combattimento alcune tattiche diventano finalmente sensate.
           maybeUseBotHandTactic(player, "dynamic");
           maybeUseBotTactic(player);
+          if (typeof botTryPlayMission === "function") botTryPlayMission(player, "dynamic");
+          if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
           renderAll();
           await sleep(220);
         }
@@ -3197,7 +3205,9 @@ function botCanUseMoreHandTactics(player) {
 
 function botHandTacticCards(player) {
       if (!state || !state.hand || !state.hand[player]) return [];
-      return state.hand[player].filter(card => card && card.sourceType === "tactic" && !(typeof handCardBlocked === "function" && handCardBlocked(card)));
+      // F9N1: le tattiche custom sono giocabili dal runtime umano, ma l'AI le ignora
+      // finché non esiste uno scoring dedicato e verificabile per gli effetti custom.
+      return state.hand[player].filter(card => card && card.sourceType === "tactic" && card.custom !== true && !(typeof handCardBlocked === "function" && handCardBlocked(card)));
     }
 
 function maybeUseBotHandTactic(player, phase="dynamic") {
@@ -3581,7 +3591,7 @@ function scoreBotAdvancedHandTactic(player, rawCard, target, phase="dynamic") {
         if (status.pressureDanger || status.hqDanger) score += 2;
       }
 
-      return score + botFactionTacticProfileBonus(player, card, target, phase);
+      return score + botFactionTacticProfileBonus(player, card, target, phase) + (typeof botMissionTacticBonus === "function" ? botMissionTacticBonus(player, card, target) : 0);
     }
 
 function botFactionTacticProfileBonus(player, card, target, phase="dynamic") {
@@ -3705,22 +3715,26 @@ function executeBotRosterPlay(player, choice) {
       if (!choice || !choice.bp) return false;
       let ok = false;
       const previousPendingHandCardUid = pendingHandCardUid;
+      const previousPendingStarterCardUid = pendingStarterCardUid;
       if (choice.cardUid) pendingHandCardUid = choice.cardUid;
+      if (choice.starterCardUid) pendingStarterCardUid = choice.starterCardUid;
       try {
         if (choice.bp.type === "Struttura") {
-          if (!choice.builder || !choice.coord) return false;
-          ok = buildStructure(choice.builder, choice.bp, choice.coord);
+          if ((!choice.builder && !choice.hqBuild) || !choice.coord) return false;
+          const originOptions = choice.starterRole ? { spawnSource:"starter", starterRole:choice.starterRole } : {};
+          ok = buildStructure(choice.hqBuild ? null : choice.builder, choice.bp, choice.coord, choice.hqBuild ? { ...originOptions, buildSource:"own_hq", side:player } : { ...originOptions, buildSource:"unit" });
           if (ok) {
             if (choice.cardUid && typeof completeHandCardUnitPlay === "function") completeHandCardUnitPlay(player, choice.cardUid, choice.bp);
-            endUnitAction(choice.builder);
+            if (!choice.hqBuild && choice.builder) endUnitAction(choice.builder);
           }
         } else {
           if (!choice.coord) return false;
-          ok = spawnUnit(choice.bp, player, choice.coord);
+          ok = spawnUnit(choice.bp, player, choice.coord, choice.starterRole ? { spawnSource:"starter", starterRole:choice.starterRole } : {});
           if (ok && choice.cardUid && typeof completeHandCardUnitPlay === "function") completeHandCardUnitPlay(player, choice.cardUid, choice.bp);
         }
       } finally {
         pendingHandCardUid = previousPendingHandCardUid;
+        pendingStarterCardUid = previousPendingStarterCardUid;
       }
       if (ok && choice.source === "hand") {
         log(`${playerName(player)} gioca dalla mano ${choice.cardName || choice.bp.name}.`, EventTypes.LOG_MESSAGE, {
@@ -3772,6 +3786,11 @@ function chooseBotHandCardPlay(player) {
             }
             scored.push(choice);
           }
+          const hqCoord = typeof ownHqBuildCell === "function" ? ownHqBuildCell(player) : null;
+          if (hqCoord) {
+            let score = botCardPlayScore(player, bp, card, field, enemyField, enemyNearHq) + 2 + botHandCardCycleScore(player, bp, card);
+            scored.push({ source:"hand", bp, cardUid:card.cardUid, cardName:card.name, builder:null, hqBuild:true, coord:hqCoord, cost:baseCost, score });
+          }
         } else {
           const cells = spawnCellsFor(player, bp).filter(c => state.energy[player] >= (typeof effectiveHandUnitCardCost === "function" ? effectiveHandUnitCardCost(player, card, bp, c) : effectiveBlueprintCost(player, bp, c)));
           if (!cells.length) continue;
@@ -3800,6 +3819,7 @@ function botCardPlayScore(player, bp, card, field, enemyField, enemyNearHq) {
       if (card.deckRole === "heavy" || String(bp.weight || "").toLowerCase().startsWith("pesant")) score += 2.5;
       if (bp.ability && !bp.ability.passive) score += 1.5;
       if (bp.vanguard) score += 2;
+      if (typeof botMissionPurchaseBonus === "function") score += botMissionPurchaseBonus(player, bp);
       return score;
     }
 
@@ -3813,6 +3833,9 @@ function chooseBotPurchase(player) {
       const enemyField = combatUnits(enemyOf(player));
       const scored = [];
       for (const bp of available) {
+        const starterRole = typeof starterRoleForBlueprint === "function" ? starterRoleForBlueprint(player, bp) : null;
+        const starterCard = starterRole && state.starterCards && state.starterCards[player] ? Object.values(state.starterCards[player]).find(c => c && c.starterRole === starterRole) : null;
+        if (starterRole && typeof tacticalStarterCapState === "function" && tacticalStarterCapState(player, starterRole).blocked) continue;
         if (bp.type === "Struttura") {
           const builders = activeCombatUnits(player).filter(b => canBuildStructures(b) && buildableCells(b).length > 0);
           for (const builder of builders) {
@@ -3830,8 +3853,14 @@ function chooseBotPurchase(player) {
             if (advancedAiEnabled() && faction === "Fabeot") score += countControlledPS(player) >= 1 ? 3 : 0;
             if (advancedAiEnabled() && faction === "Liberti") score -= field.length < 6 ? 4 : 0;
             else if (faction === "Liberti") score -= field.length < 5 ? 3 : 0;
+            if (typeof botMissionPurchaseBonus === "function") score += botMissionPurchaseBonus(player, bp);
             const cost = effectiveBlueprintCost(player, bp, coord);
-            scored.push({ bp, builder, coord, cost, score });
+            scored.push({ bp, builder, coord, cost, score, starterRole, starterCardUid:starterCard ? starterCard.cardUid : null });
+          }
+          const hqCoord = typeof ownHqBuildCell === "function" ? ownHqBuildCell(player) : null;
+          if (hqCoord) {
+            const cost = effectiveBlueprintCost(player, bp, hqCoord);
+            if (state.energy[player] >= cost) scored.push({ bp, builder:null, hqBuild:true, coord:hqCoord, cost, score:2 + bp.cost + (enemyNearHq ? 4 : 0) + (typeof botMissionPurchaseBonus === "function" ? botMissionPurchaseBonus(player, bp) : 0), starterRole, starterCardUid:starterCard ? starterCard.cardUid : null });
           }
         } else {
           const cells = spawnCellsFor(player, bp).filter(c => state.energy[player] >= effectiveBlueprintCost(player, bp, c));
@@ -3843,8 +3872,9 @@ function chooseBotPurchase(player) {
               score = scoreLibertiPurchase(bp, field, enemyField, enemyNearHq);
               if (advancedAiEnabled()) score += botGeneralDoctrineCoordBonus(player, bp, coord, strategicStatus(player)) * 0.10;
             }
+            if (typeof botMissionPurchaseBonus === "function") score += botMissionPurchaseBonus(player, bp);
             const cost = effectiveBlueprintCost(player, bp, coord);
-            scored.push({ bp, coord, cost, score });
+            scored.push({ bp, coord, cost, score, starterRole, starterCardUid:starterCard ? starterCard.cardUid : null });
           }
         }
       }
@@ -4181,7 +4211,7 @@ function botTryStationaryAction(unit) {
       let didSomething = false;
       const ab = unit.ability;
       if (ab && !ab.passive && canUseAbility(unit, ab)) {
-        const scored = abilityTargets(unit, ab).map(t => ({ target:t, score: scoreAbility(unit, t, ab) })).sort((a,b) => b.score - a.score);
+        const scored = abilityTargets(unit, ab).map(t => ({ target:t, score: scoreAbilityWithMission(unit, t, ab) })).sort((a,b) => b.score - a.score);
         if (scored.length && scored[0].score > 0) {
           useAbility(unit, scored[0].target, ab);
           didSomething = true;
@@ -4206,7 +4236,7 @@ function botTryStationaryAction(unit) {
       }
       if (!isFieldUnit(unit)) return didSomething;
       if (unit.type === "Veicolo" && ab && !ab.passive && canUseAbility(unit, ab)) {
-        const scored = abilityTargets(unit, ab).map(t => ({ target:t, score: scoreAbility(unit, t, ab) })).sort((a,b) => b.score - a.score);
+        const scored = abilityTargets(unit, ab).map(t => ({ target:t, score: scoreAbilityWithMission(unit, t, ab) })).sort((a,b) => b.score - a.score);
         if (scored.length && scored[0].score > 0) {
           useAbility(unit, scored[0].target, ab);
           didSomething = true;
@@ -4306,7 +4336,14 @@ function scoreAttackTarget(attacker, defender) {
         score += numericalSuperiorityBonus(attacker, defender) ? 5 : 0;
         if (canBleed(defender) && !hasStatus(defender, "bleed")) score += 2;
       }
+      if (typeof botMissionAttackBonus === "function") score += botMissionAttackBonus(attacker, defender);
       return score;
+    }
+
+function scoreAbilityWithMission(unit, target, ab) {
+      const base = scoreAbility(unit, target, ab);
+      if (base <= -90) return base;
+      return base + (typeof botMissionAbilityBonus === "function" ? botMissionAbilityBonus(unit, target, ab) : 0);
     }
 
 function scoreAbility(unit, target, ab) {
@@ -4553,7 +4590,7 @@ function scoreAbility(unit, target, ab) {
       }
       if (ab.kind === "copyRandomEnemyHandCard") {
         const enemy = enemyOf(unit.side);
-        const count = state.hand && state.hand[enemy] ? state.hand[enemy].length : 0;
+        const count = typeof stealableHandCards === "function" ? stealableHandCards(enemy).length : (state.hand && state.hand[enemy] ? state.hand[enemy].length : 0);
         return count ? 5 + Math.min(count, 4) : 0;
       }
       if (ab.kind === "lockEnemyEnergy") {

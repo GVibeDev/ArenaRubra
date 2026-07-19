@@ -16,6 +16,7 @@
 
 
     function handleUnitDestroyed(unit) {
+      if (typeof noteStarterDestroyed === "function") noteStarterDestroyed(unit);
       if (!unit || unit._destroyHandled) return;
       unit._destroyHandled = true;
       const raid = getStatus(unit, "raid_mark");
@@ -209,7 +210,7 @@
       }
       const dmg = lastRunStatus.aoeDamage || 2;
       for (const u of targets) {
-        applyDamage(u, dmg, "Ultima Corsa", { tactic:true, directHp:false, skipC2c8Reactions:true });
+        applyDamage(u, dmg, "Ultima Corsa", { tactic:true, directHp:false, skipC2c8Reactions:true, sourceSide:attacker.side });
       }
       if (attacker.alive) {
         log(`${attacker.name} completa l'Ultima Corsa e viene distrutto dal sacrificio.`, EventTypes.UNIT_DESTROYED, {
@@ -217,6 +218,10 @@
           unitName: attacker.name,
           side: attacker.side,
           faction: attacker.faction,
+          unitType: attacker.type,
+          unitWeight: attacker.weight,
+          unitRole: attacker.role || attacker.deckRole || null,
+          destroyedBySide: null,
           source:"C2c-8c-last-run-sacrifice"
         });
         if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(attacker, null, "Ultima Corsa", { tactic:true, sacrifice:true });
@@ -283,6 +288,8 @@
         defenderId: defender.uid,
         defenderName: defender.name,
         defenderSide: defender.side,
+        attackerPos: Array.isArray(attacker.pos) ? [...attacker.pos] : null,
+        defenderPos: Array.isArray(defender.pos) ? [...defender.pos] : null,
         amount,
         rawAmount,
         multiplier,
@@ -322,19 +329,20 @@
       let specialBleedApplied = false;
       if (bleedTwo) {
         if (defender.alive && typeof canBleed === "function" && canBleed(defender)) {
-          applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis");
+          applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis", attacker.side);
           specialBleedApplied = true;
         }
         removeStatusKind(attacker, "next_attack_bleed_two", "attacco base consumato");
       }
-      if (attacker.faction === "Liberti" && hasBleedingAttackRule(attacker) && defender.alive && canBleed(defender) && !specialBleedApplied) applyBleed(defender, (attacker.bleedValue || 1) + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name);
+      if (attacker.faction === "Liberti" && hasBleedingAttackRule(attacker) && defender.alive && canBleed(defender) && !specialBleedApplied) applyBleed(defender, (attacker.bleedValue || 1) + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name, attacker.side);
       if (lastRunStatus) c2c8cResolveLastRunAfterAttack(attacker, defender, lastRunStatus);
       if (thorns && attacker.alive && attacker.type !== "QG") {
         const thornDamage = Math.max(1, thorns.value || 1);
         log(`${attacker.name} viene ferito dalle Spine di ${defender.name}.`);
-        applyDamage(attacker, thornDamage, "Spine", { directHp:true });
+        applyDamage(attacker, thornDamage, "Spine", { directHp:true, sourceSide:defender.side, damageKind:"thorns" });
       }
       if (!defenderDiedFromAttack && defender.alive && attacker.alive) c2c8MaybeCounterattack(defender, attacker);
+      if (typeof missionMaybeOfferRepeatAttack === "function") missionMaybeOfferRepeatAttack(attacker, defender);
     }
 
 
@@ -352,6 +360,15 @@
 
 
     function applyDamage(target, amount, source="danno", options={}) {
+      const sourceSide = Number(options.sourceSide || (options.attacker && options.attacker.side) || ((!options.status && state) ? state.currentPlayer : 0)) || null;
+      let damageKind = options.damageKind || "effect";
+      if (!options.damageKind) {
+        if (options.status && /sanguinamento/i.test(String(source))) damageKind = "bleed";
+        else if (/spine/i.test(String(source))) damageKind = "thorns";
+        else if (options.baseAttack) damageKind = "attack";
+        else if (options.tactic) damageKind = "tactic";
+        else if (options.ability) damageKind = "ability";
+      }
       const vulnerable = options.amplifiable ? getStatus(target, "fabeot_vulnerable") : null;
       if (vulnerable) {
         amount += vulnerable.value || 1;
@@ -369,8 +386,11 @@
           targetId: target.uid,
           targetName: target.name,
           targetSide: target.side,
+          targetPos: Array.isArray(target.pos) ? [...target.pos] : null,
           amount,
           source,
+          sourceSide,
+          damageKind,
           defLoss: 0,
           hpLoss,
           directHp: true
@@ -384,6 +404,10 @@
           unitName: target.name,
           side: target.side,
           faction: target.faction,
+          unitType: target.type,
+          unitWeight: target.weight,
+          unitRole: target.role || target.deckRole || null,
+          destroyedBySide: sourceSide,
           source
         });
           if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(target, options.attacker || null, source, options);
@@ -422,8 +446,11 @@
         targetId: target.uid,
         targetName: target.name,
         targetSide: target.side,
+        targetPos: Array.isArray(target.pos) ? [...target.pos] : null,
         amount,
         source,
+        sourceSide,
+        damageKind,
         defLoss,
         hpLoss,
         auraBlock,
@@ -442,6 +469,10 @@
           unitName: target.name,
           side: target.side,
           faction: target.faction,
+          unitType: target.type,
+          unitWeight: target.weight,
+          unitRole: target.role || target.deckRole || null,
+          destroyedBySide: sourceSide,
           source
         });
         if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(target, options.attacker || null, source, options);
@@ -478,8 +509,8 @@
 
 
 
-    function applyBleed(target, value, turns, source) {
-      applyStatus(target, { kind:"bleed", value, turns, source });
+    function applyBleed(target, value, turns, source, owner=null) {
+      applyStatus(target, { kind:"bleed", value, turns, source, owner });
     }
 
 

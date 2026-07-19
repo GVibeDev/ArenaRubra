@@ -216,6 +216,50 @@ const MAP_SKIN_PRESETS = Object.freeze([
     }
   },
   {
+    key: "exordium_battlegrounds",
+    label: "Campi di battaglia imperiali",
+    shortLabel: "Battlegrounds",
+    description: "Tema Exordium: rosso scuro, metallo annerito e highlight aurei.",
+    asset: { backgroundImage: mapSkinAssetUrl("battlegrounds.webp") },
+    css: {
+      "--map-bg-image": mapSkinAssetLayer("battlegrounds.webp"),
+      "--map-bg-art": mapSkinArtLayer("battlegrounds.webp", "radial-gradient(circle at 50% 45%, rgba(164, 36, 29, .30), rgba(71, 15, 17, .48) 39%, rgba(25, 7, 10, .84) 74%, rgba(5, 3, 5, .98) 100%)"),
+      "--map-bg-grid": "linear-gradient(30deg, rgba(255,219,105,.042) 0 1px, transparent 1px 42px), linear-gradient(150deg, rgba(255,219,105,.026) 0 1px, transparent 1px 42px)",
+      "--map-bg-tint": "linear-gradient(180deg, rgba(45,8,11,.72), rgba(8,3,5,.95))",
+      "--map-bg-position": "center center",
+      "--map-bg-size": "cover, cover"
+    },
+    ui: {
+      "--skin-accent": "#d8b33e",
+      "--skin-panel-bg": "linear-gradient(180deg, rgba(59,14,16,.94), rgba(20,7,9,.98))",
+      "--skin-panel-border": "rgba(216,179,62,.27)",
+      "--skin-button-bg": "linear-gradient(180deg, rgba(82,22,22,.95), rgba(34,10,12,.99))",
+      "--skin-hand-bg": "linear-gradient(180deg, rgba(63,16,18,.86), rgba(18,6,8,.97))"
+    }
+  },
+  {
+    key: "fabeot_velvet_hoods",
+    label: "Cappucci di velluto",
+    shortLabel: "Velvet Hoods",
+    description: "Tema Fabeot: viola profondo, ombre prugna e highlight giallo pallido.",
+    asset: { backgroundImage: mapSkinAssetUrl("velvet_hoods.webp") },
+    css: {
+      "--map-bg-image": mapSkinAssetLayer("velvet_hoods.webp"),
+      "--map-bg-art": mapSkinArtLayer("velvet_hoods.webp", "radial-gradient(circle at 50% 45%, rgba(116, 57, 135, .28), rgba(50, 24, 65, .48) 40%, rgba(18, 9, 25, .86) 75%, rgba(4, 3, 6, .98) 100%)"),
+      "--map-bg-grid": "linear-gradient(30deg, rgba(240,228,153,.038) 0 1px, transparent 1px 42px), linear-gradient(150deg, rgba(240,228,153,.024) 0 1px, transparent 1px 42px)",
+      "--map-bg-tint": "linear-gradient(180deg, rgba(34,16,44,.74), rgba(7,4,10,.96))",
+      "--map-bg-position": "center center",
+      "--map-bg-size": "cover, cover"
+    },
+    ui: {
+      "--skin-accent": "#e2d58b",
+      "--skin-panel-bg": "linear-gradient(180deg, rgba(50,24,65,.94), rgba(17,9,23,.98))",
+      "--skin-panel-border": "rgba(226,213,139,.24)",
+      "--skin-button-bg": "linear-gradient(180deg, rgba(70,35,88,.95), rgba(27,14,36,.99))",
+      "--skin-hand-bg": "linear-gradient(180deg, rgba(53,27,68,.86), rgba(15,8,21,.97))"
+    }
+  },
+  {
     key: "tactical_blueprint",
     label: "Blueprint tattico",
     shortLabel: "Blueprint",

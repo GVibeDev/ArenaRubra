@@ -268,6 +268,8 @@ function triggerCellEffectsAt(coord, unit) {
       if (typeof recordAiHazardTrigger === "function") recordAiHazardTrigger(unit.side, "bramble_path_trap", false);
       const beforeDef = unit.currentDef || 0;
       unit.currentDef = Math.max(0, beforeDef - 1);
+      const defLoss = Math.max(0, beforeDef - unit.currentDef);
+      if (defLoss && typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(unit, defLoss, effect.source || "Sentiero dei Rovi", { sourceType:"tactic_cell" });
       applyStatus(unit, { kind:"inhibit_move", turns:2, owner:effect.owner, source:effect.source || "Sentiero dei Rovi" });
       log(`${unit.name} attraversa il Sentiero dei Rovi: DEF ${beforeDef} → ${unit.currentDef}, movimento bloccato al prossimo turno.`);
       removeCellEffect(effect, "innescato");

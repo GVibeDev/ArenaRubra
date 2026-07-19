@@ -49,14 +49,15 @@
       if (!isHuman) return { canUse: false, reason: "Controllo bot", actionText };
       if (botRunning) return { canUse: false, reason: "Bot in esecuzione", actionText };
       if (purchaseLimitReached(side, bp)) return { canUse: false, reason: limitReason(side, bp), actionText };
+      const capState = typeof tacticalStarterCapState === "function" ? tacticalStarterCapState(side, card.starterRole) : { blocked:false };
+      if (capState.blocked) return { canUse:false, reason:`Cap Tattica ${capState.count}/${capState.cap} per questo tipo`, actionText };
       if (state.energy[side] < effectiveHandUnitCardCost(side, card, bp)) return { canUse: false, reason: "ENE insufficiente", actionText };
 
       if (bp.type === "Struttura") {
         const builder = getSelectedUnit();
-        if (!builder || builder.side !== side || !canBuildStructures(builder) || builder.acted) {
-          return { canUse: false, reason: "Seleziona costruttore attivo", actionText };
-        }
-        if (!buildableCells(builder).length) {
+        const unitBuildReady = Boolean(builder && builder.side === side && canBuildStructures(builder) && !builder.acted && buildableCells(builder).length);
+        const hqBuildReady = typeof canBuildFromOwnHq === "function" && canBuildFromOwnHq(side, bp);
+        if (!unitBuildReady && !hqBuildReady) {
           return { canUse: false, reason: "Nessuna cella libera adiacente", actionText };
         }
       } else if (!spawnCellsFor(side, bp).length) {
@@ -68,7 +69,7 @@
 
     function beginStarterCardPurchase(cardUid) {
       pendingHandCardUid = null;
-      if (!state || state.winner || botRunning) return false;
+      if (!state || state.winner || botRunning || (typeof missionInteractionBlocked === "function" && missionInteractionBlocked())) return false;
       const player = state.currentPlayer;
       const card = starterCardByUid(player, cardUid);
       if (!card) {
@@ -80,6 +81,7 @@
       const check = starterCardActionState(player, card);
       const bp = blueprintForStarterCard(card, player);
       if (!check.canUse || !bp) {
+        if (bp && card.starterRole && typeof tacticalStarterCapState === "function" && tacticalStarterCapState(player, card.starterRole).blocked && typeof noteTacticalStarterCapBlocked === "function") noteTacticalStarterCapBlocked(player, card.starterRole);
         log(`Starter ${card.name || card.id}: ${check.reason}.`);
         renderAll();
         return false;
@@ -94,6 +96,8 @@
         starterRole: card.starterRole,
         source: "C1c-starter-card"
       });
+      pendingStarterCardUid = card.cardUid;
+      pendingDeploymentContext = { source:"starter", starterRole:card.starterRole, cardUid:card.cardUid, side:player };
       beginPurchase(bp);
       if ((mode === "spawn" || mode === "build") && typeof closeHandPanelAfterAcceptedCardPlay === "function") closeHandPanelAfterAcceptedCardPlay();
       else if ((mode === "spawn" || mode === "build") && typeof apkM4CloseHandAfterCardPlay === "function") apkM4CloseHandAfterCardPlay();
@@ -295,10 +299,10 @@
       if (!card || !card.c2c6aCostAdjusted || !Number.isFinite(card.cost)) {
         const base = effectiveBlueprintCost(side, bp, coord);
         const handModifiers = typeof playerHandUnitCostModifiers === "function" ? playerHandUnitCostModifiers(side, bp) : [];
-        if (!handModifiers.length) return base;
         const delta = handModifiers.reduce((sum, mod) => sum + (mod.value || 0), 0);
         const minCost = handModifiers.reduce((min, mod) => Math.max(min, mod.minCost || 0), 0);
-        return Math.max(minCost, base + delta);
+        const normalCost = Math.max(minCost, base + delta);
+        return typeof missionEffectiveCardCost === "function" ? missionEffectiveCardCost(side, card, normalCost) : normalCost;
       }
 
       // C2c-6c: le carte pescate con costo modificato mantengono il proprio
@@ -314,7 +318,8 @@
       const modifierMin = allModifiers.reduce((min, mod) => Math.max(min, mod.minCost || 0), 0);
       const cardMin = Number.isFinite(card.c2c6aMinCost) ? card.c2c6aMinCost : 0;
       const minCost = Math.max(cardMin, modifierMin, placement.minCost || 0);
-      return Math.max(minCost, baseCost + delta);
+      const normalCost = Math.max(minCost, baseCost + delta);
+      return typeof missionEffectiveCardCost === "function" ? missionEffectiveCardCost(side, card, normalCost) : normalCost;
     }
 
     function c2c6aPendingHandCardFor(side, bp=null) {
@@ -342,6 +347,15 @@
 
       const isCurrent = state.currentPlayer === side;
       const isHuman = state.modes && state.modes[side] === "human";
+
+      if (card.sourceType === "mission") {
+        const runtime = typeof missionRuntime === "function" ? missionRuntime(side) : null;
+        const status = typeof missionUiStatus === "function" ? missionUiStatus(side) : null;
+        const canOpen = Boolean(state.currentPlayer === side && state.modes && state.modes[side] === "human" && !botRunning);
+        const playable = typeof missionCanPlayOrdinary === "function" ? missionCanPlayOrdinary(side, card) : { ok:false, reason:"Runtime Missione non disponibile" };
+        const reason = status ? `${status.label} · ${status.detail}` : playable.reason;
+        return { canUse:canOpen, reason, actionText:playable.ok ? "Gioca Missione" : "Apri progressi" };
+      }
 
       if (card.sourceType === "tactic") {
         const implemented = typeof isC2c1SingleDamageTacticCard === "function" && isC2c1SingleDamageTacticCard(card);
@@ -387,7 +401,9 @@
     }
 
     function beginHandCardPlay(cardUid) {
-      if (!state || state.winner || botRunning) return false;
+      pendingStarterCardUid = null;
+      pendingDeploymentContext = null;
+      if (!state || state.winner || botRunning || (typeof missionInteractionBlocked === "function" && missionInteractionBlocked())) return false;
 
       const player = state.currentPlayer;
       const card = handCardByUid(player, cardUid);
@@ -402,6 +418,12 @@
         log(`Carta ${card.name || card.id}: ${check.reason}.`);
         renderAll();
         return false;
+      }
+
+      if (card.sourceType === "mission") {
+        if (typeof missionUiOpenPanel === "function") missionUiOpenPanel(player);
+        if (typeof missionUiSelect === "function") missionUiSelect(player);
+        return true;
       }
 
       if (card.sourceType === "tactic") {
@@ -464,27 +486,30 @@
 
     function beginPurchase(bp) {
       pendingHandCardUid = null;
-      if (state.modes[state.currentPlayer] !== "human" || state.winner) return;
-      if (!canAffordBlueprint(state.currentPlayer, bp)) return;
+      if ((typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) || state.modes[state.currentPlayer] !== "human" || state.winner) return;
+      const pendingStarterCostCard = pendingStarterCardUid ? starterCardByUid(state.currentPlayer, pendingStarterCardUid) : null;
+      const canPayPendingStarter = pendingStarterCostCard
+        ? state.energy[state.currentPlayer] >= effectiveHandUnitCardCost(state.currentPlayer, pendingStarterCostCard, bp)
+        : canAffordBlueprint(state.currentPlayer, bp);
+      if (!canPayPendingStarter) return;
       if (commanderLimitReached(state.currentPlayer, bp)) {
         log(`${playerName(state.currentPlayer)} ha già schierato il proprio comandante.`);
         return;
       }
       if (bp.type === "Struttura") {
         const builder = getSelectedUnit();
-        if (!builder || builder.side !== state.currentPlayer || !canBuildStructures(builder) || builder.acted) {
-          log(`Per costruire ${bp.name}, seleziona prima una fanteria attiva o un veicolo costruttore attivo.`);
-          return;
-        }
-        if (!buildableCells(builder).length) {
-          log(`${builder.name} non ha celle libere adiacenti per costruire.`);
+        const unitBuildReady = Boolean(builder && builder.side === state.currentPlayer && canBuildStructures(builder) && !builder.acted && buildableCells(builder).length);
+        const hqBuildReady = typeof canBuildFromOwnHq === "function" && canBuildFromOwnHq(state.currentPlayer, bp);
+        if (!unitBuildReady && !hqBuildReady) {
+          log(`Nessuna costruzione valida per ${bp.name}: serve un costruttore attivo con spazio adiacente oppure il proprio QG libero.`);
           return;
         }
         mode = "build";
+        pendingBuildSource = unitBuildReady ? { type:"unit", builderId:builder.uid } : { type:"own_hq", side:state.currentPlayer };
         pendingBuildBlueprintId = bp.id;
         pendingPurchaseBlueprintId = null;
         pendingAbility = null;
-        log(`Scegli una cella blu adiacente a ${builder.name} per costruire ${bp.name}.`);
+        log(unitBuildReady ? `Scegli una cella blu adiacente a ${builder.name} per costruire ${bp.name}.` : `Costruzione dal QG: seleziona la casella del tuo QG per costruire ${bp.name}.`);
       } else {
         if (!spawnCellsFor(state.currentPlayer, bp).length) {
           log(`Nessuna cella libera di sbarco intorno al QG o agli edifici per piazzare ${bp.name}.`);
@@ -504,6 +529,7 @@
 
 
     function toggleBuildMode(unit) {
+      if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
       const structure = structureBlueprintFor(unit.side);
       if (!structure || !canBuildStructures(unit) || state.energy[unit.side] < effectiveBlueprintCost(unit.side, structure)) return;
       mode = mode === "build" ? "idle" : "build";
@@ -517,12 +543,20 @@
 
 
 
-    function spawnUnit(bp, side, coord) {
+    function spawnUnit(bp, side, coord, options={}) {
       if (purchaseLimitReached(side, bp)) return false;
       const handCard = c2c6aPendingHandCardFor(side, bp);
-      const paid = effectiveHandUnitCardCost(side, handCard, bp, coord);
-      if (state.energy[side] < paid || playerEnergyLocked(side)) { log(`${playerName(side)} non può pagare ${paid} ENE per piazzare ${bp.name} in questa cella.`); return false; }
+      const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
+      const costCard = handCard || starterCard;
+      const paid = effectiveHandUnitCardCost(side, costCard, bp, coord);
+      if (state.energy[side] < paid || (playerEnergyLocked(side) && paid > 0)) { log(`${playerName(side)} non può pagare ${paid} ENE per piazzare ${bp.name} in questa cella.`); return false; }
       const unit = createUnitFromBlueprint(bp, side);
+      const starterRole = options.spawnSource === "starter" ? options.starterRole : null;
+      if (starterRole && typeof tacticalStarterCapState === "function" && tacticalStarterCapState(side, starterRole).blocked) {
+        if (typeof noteTacticalStarterCapBlocked === "function") noteTacticalStarterCapBlocked(side, starterRole);
+        log(`Cap modalità Tattica raggiunto per ${starterRole}.`);
+        return false;
+      }
       state.energy[side] -= paid;
       // C2c-6c: se uno sconto di sbarco ha contribuito al costo effettivo,
       // va consumato anche quando la carta aveva già uno sconto C2c-6a.
@@ -534,8 +568,12 @@
       applyC2c6aHandCardSpawnBonuses(unit, handCard);
       unit.acted = !unit.vanguard;
       state.units.push(unit);
+      if (starterRole && typeof markStarterOrigin === "function") markStarterOrigin(unit, side, starterRole, paid);
+      const ownHq = getHq(side);
+      if (ownHq && sameCoord(coord, ownHq.pos) && state.f9n3Telemetry) state.f9n3Telemetry.hqDeployments[side] = (state.f9n3Telemetry.hqDeployments[side] || 0) + 1;
       if (typeof triggerMinesAt === "function") triggerMinesAt(unit.pos, unit);
       if (typeof triggerCellEffectsAt === "function") triggerCellEffectsAt(unit.pos, unit);
+      if (starterCard && typeof missionConsumeCardCostSequence === "function") missionConsumeCardCostSequence(side, starterCard);
       log(`${playerName(side)} acquista ${unit.name} #${unit.instanceNo} per ${paid} ENE e lo piazza in [${coord.join(",")}].${unit.vanguard ? " Avanguardia: può agire subito." : " Entra esausto."}`, EventTypes.UNIT_SPAWNED, {
         player: side,
         faction: state.factions[side],
@@ -544,7 +582,10 @@
         blueprintId: bp.id,
         cost: paid,
         coord: [...coord],
-        exhausted: !unit.vanguard
+        exhausted: !unit.vanguard,
+        spawnSource: unit.spawnSource || "deck_or_market",
+        starterRole: unit.starterRole || null,
+        deployedOnOwnHq: Boolean(ownHq && sameCoord(coord, ownHq.pos))
       });
       return true;
     }
@@ -574,21 +615,37 @@
       }
     }
 
-    function buildStructure(builder, bp, coord) {
-      const handCard = builder && bp ? c2c6aPendingHandCardFor(builder.side, bp) : null;
-      const paid = builder && bp ? effectiveHandUnitCardCost(builder.side, handCard, bp, coord) : Infinity;
-      if (!builder || !bp || playerEnergyLocked(builder.side) || state.energy[builder.side] < paid || purchaseLimitReached(builder.side, bp)) return false;
-      const structure = createUnitFromBlueprint(bp, builder.side);
-      state.energy[builder.side] -= paid;
+    function buildStructure(builder, bp, coord, options={}) {
+      const buildSource = options.buildSource === "own_hq" ? "own_hq" : "unit";
+      const side = buildSource === "own_hq" ? Number(options.side) : (builder && builder.side);
+      const hqCell = buildSource === "own_hq" && typeof ownHqBuildCell === "function" ? ownHqBuildCell(side) : null;
+      if (!side || !bp || (buildSource === "unit" && !builder) || (buildSource === "own_hq" && (!hqCell || !sameCoord(coord, hqCell)))) return false;
+      const handCard = c2c6aPendingHandCardFor(side, bp);
+      const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
+      const costCard = handCard || starterCard;
+      const paid = effectiveHandUnitCardCost(side, costCard, bp, coord);
+      const starterRole = options.spawnSource === "starter" ? options.starterRole : null;
+      if (starterRole && typeof tacticalStarterCapState === "function" && tacticalStarterCapState(side, starterRole).blocked) {
+        if (typeof noteTacticalStarterCapBlocked === "function") noteTacticalStarterCapBlocked(side, starterRole);
+        return false;
+      }
+      if ((playerEnergyLocked(side) && paid > 0) || state.energy[side] < paid || purchaseLimitReached(side, bp)) return false;
+      const structure = createUnitFromBlueprint(bp, side);
+      state.energy[side] -= paid;
       structure.pos = [...coord];
       structure.acted = true;
       state.units.push(structure);
-      builder.builtThisTurn = true;
-      log(`${builder.name} costruisce ${structure.name} #${structure.instanceNo} in [${coord.join(",")}] per ${paid} ENE.`, EventTypes.UNIT_BUILT, {
-        player: builder.side,
-        faction: state.factions[builder.side],
-        builderId: builder.uid,
-        builderName: builder.name,
+      if (starterRole && typeof markStarterOrigin === "function") markStarterOrigin(structure, side, starterRole, paid);
+      if (builder) builder.builtThisTurn = true;
+      if (buildSource === "own_hq" && state.f9n3Telemetry) state.f9n3Telemetry.hqBuilds[side] = (state.f9n3Telemetry.hqBuilds[side] || 0) + 1;
+      if (starterCard && typeof missionConsumeCardCostSequence === "function") missionConsumeCardCostSequence(side, starterCard);
+      const builderLabel = buildSource === "own_hq" ? `QG ${state.factions[side]}` : builder.name;
+      log(`${builderLabel} costruisce ${structure.name} #${structure.instanceNo} in [${coord.join(",")}] per ${paid} ENE.`, EventTypes.UNIT_BUILT, {
+        player: side,
+        faction: state.factions[side],
+        builderId: builder ? builder.uid : null,
+        builderName: builderLabel,
+        buildSource,
         unitId: structure.uid,
         unitName: structure.name,
         blueprintId: bp.id,
@@ -602,8 +659,12 @@
 
     function isBuildTarget(coord) {
       const u = getSelectedUnit();
-      if (mode !== "build" || !u || !pendingBuildBlueprintId) return false;
-      return buildableCells(u).some(c => sameCoord(c, coord));
+      if (mode !== "build" || !pendingBuildBlueprintId) return false;
+      if (pendingBuildSource && pendingBuildSource.type === "own_hq") {
+        const cell = typeof ownHqBuildCell === "function" ? ownHqBuildCell(pendingBuildSource.side) : null;
+        return Boolean(cell && sameCoord(cell, coord));
+      }
+      return Boolean(u && buildableCells(u).some(c => sameCoord(c, coord)));
     }
 
 
@@ -648,6 +709,8 @@
           cells.push(c);
         }
       };
+      const ownHq = getHq(player);
+      if (ownHq && Array.isArray(ownHq.pos)) addCell(ownHq.pos);
       for (const source of spawnSourcesFor(player)) for (const c of neighbors(source)) addCell(c);
       for (const src of specialSpawnSourcesFor(player, bp)) for (const c of cellsInRangeFrom(src.source, src.range)) addCell(c);
       return cells;
@@ -669,6 +732,7 @@
 
 
     function canAnyInfantryBuild(player, structure) {
-      return !playerEnergyLocked(player) && !purchaseLimitReached(player, structure) && activeCombatUnits(player).some(u => canBuildStructures(u) && buildableCells(u).length > 0) && state.energy[player] >= effectiveBlueprintCost(player, structure);
+      const unitPath = activeCombatUnits(player).some(u => canBuildStructures(u) && buildableCells(u).length > 0);
+      const hqPath = typeof canBuildFromOwnHq === "function" && canBuildFromOwnHq(player, structure);
+      return !playerEnergyLocked(player) && !purchaseLimitReached(player, structure) && (unitPath || hqPath) && state.energy[player] >= effectiveBlueprintCost(player, structure);
     }
-

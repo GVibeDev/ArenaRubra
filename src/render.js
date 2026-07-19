@@ -11,6 +11,7 @@ const MAP_HAND_OVERLAY_STATE = {
       selectedSide: 0,
       hiddenForTarget: false,
       hiddenForMovement: false,
+      manuallyCollapsed: false,
       lastSide: 0,
       hoverCardUid: "",
       hoverSource: "",
@@ -56,6 +57,7 @@ const MAP_HAND_OVERLAY_STATE = {
       if (typeof renderPersistentMatchHistoryPanel === "function") renderPersistentMatchHistoryPanel();
       if (typeof renderGameHud === "function") renderGameHud();
       if (typeof syncBoardCameraAfterRender === "function") syncBoardCameraAfterRender();
+      if (typeof combatFeedbackAfterRender === "function") combatFeedbackAfterRender();
     }
 
 
@@ -77,6 +79,7 @@ const MAP_HAND_OVERLAY_STATE = {
         const hqSide = hqSideAt(cell.coord);
         const div = document.createElement("button");
         div.className = "hex";
+        div.dataset.coordKey = cell.coord.join(",");
         const moveTarget = isMoveTarget(cell.coord);
         const attackTarget = isAttackTarget(cell.coord);
         const abilityTarget = isAbilityTarget(cell.coord) || isTacticTarget(cell.coord);
@@ -119,6 +122,8 @@ const MAP_HAND_OVERLAY_STATE = {
           if (unit.customRuntime === true) tokenClasses.push("is-custom");
           if (selectedId && unit.uid === selectedId) tokenClasses.push("is-selected");
           token.className = tokenClasses.join(" ");
+          token.dataset.unitUid = String(unit.uid || "");
+          token.dataset.unitPos = Array.isArray(unit.pos) ? unit.pos.join(",") : "";
           if (unit.acted && unit.type !== "QG") token.classList.add("acted");
           if (hasStatus(unit, "bleed")) token.classList.add("bleeding");
           if (hasAnyInhibition(unit)) token.classList.add("inhibited");
@@ -333,6 +338,8 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
       const faction = state.factions[player] || "—";
       const isHuman = state.modes && state.modes[player] === "human";
       const tactics = tacticsForFaction(faction) || [];
+      const income = typeof incomeSummaryForSide === "function" ? incomeSummaryForSide(player) : { total:0, sourceText:"n/d", delta:0, doctrineLabel:"n/d" };
+      const currentEnergy = state.energy && Number.isFinite(state.energy[player]) ? state.energy[player] : 0;
       const disabledGlobal = Boolean(state.winner) || !isHuman || botRunning;
       if (!tactics.length) {
         dock.innerHTML = `<div class="mapActionDockEmpty">Nessuna tattica fazione.</div>`;
@@ -362,8 +369,14 @@ ${reason}`);
       dock.innerHTML = `
         <div class="mapActionDockInner">
           <div class="mapActionDockHeader">
-            <strong>Azioni</strong>
-            <span>G${player} · ${escapeHtml(faction)}</span>
+            <div class="mapActionDockIdentity">
+              <strong>Azioni · ${escapeHtml(faction)}</strong>
+              <span>G${player}</span>
+            </div>
+            <div class="mapActionDockEnergy" title="${escapeHtml(`Prossimo income: ${income.total} ENE · ${income.sourceText || "n/d"}`)}">
+              <strong>${currentEnergy}<small> ENE</small></strong>
+              <span>+${income.total} prossimo turno</span>
+            </div>
           </div>
           <div class="mapActionDockList">
             ${rows}
@@ -387,7 +400,8 @@ ${reason}`);
         unit_infantry: "Fanteria",
         unit_vehicle: "Veicolo",
         unit: "Unità",
-        tactic: "Tattica"
+        tactic: "Tattica",
+        mission: "Missione"
       };
       return labels[card.cardType] || card.cardType || card.sourceType || "Carta";
     }
@@ -408,15 +422,18 @@ ${reason}`);
         base: "Deck · base",
         heavy: "Deck · pesante",
         elite: "Deck · elite",
-        tactic: "Deck · tattica"
+        tactic: "Deck · tattica",
+        mission: "Deck · Missione"
       };
       return roleLabels[card.deckRole] || card.deckRole || "Debug";
     }
 
     function cardCostLabel(card) {
       if (!card || !Number.isFinite(card.cost)) return "costo —";
-      const base = Number.isFinite(card.basePrintedCost) && card.basePrintedCost !== card.cost ? ` (base ${card.basePrintedCost})` : "";
-      return `${card.cost} ENE${base}`;
+      const side = Number(card.side || (state && state.currentPlayer) || 0);
+      const effective = typeof missionEffectiveCardCost === "function" ? missionEffectiveCardCost(side, card, card.cost) : card.cost;
+      const base = effective !== card.cost ? ` (base ${card.cost})` : (Number.isFinite(card.basePrintedCost) && card.basePrintedCost !== card.cost ? ` (base ${card.basePrintedCost})` : "");
+      return `${effective} ENE${base}`;
     }
 
     function cardLabel(card) {
@@ -496,15 +513,17 @@ ${reason}`);
       const faction = escapeHtml(card.faction || "—");
       const copy = Number.isFinite(card.deckCopyNo) ? `<span class="pill">Copia ${card.deckCopyNo}</span>` : "";
       const overflow = card.debugOverflowCopy ? `<span class="pill bad">Extra debug</span>` : "";
-      const sourceClass = card.sourceType === "tactic" ? " tacticCardDebug" : " unitCardDebug";
+      const isMission = card.sourceType === "mission";
+      const sourceClass = card.sourceType === "tactic" || isMission ? " tacticCardDebug" : " unitCardDebug";
       const isPlayableTactic = card.sourceType === "tactic" && typeof isC2c1SingleDamageTacticCard === "function" && isC2c1SingleDamageTacticCard(card);
-      const tacticPlayablePill = card.sourceType === "tactic" ? `<span class="pill ${isPlayableTactic ? "good" : "tacticPill"}">${isPlayableTactic ? "Giocabile" : "Data-only"}</span>` : "";
+      const tacticPlayablePill = card.sourceType === "tactic" ? `<span class="pill ${isPlayableTactic ? "good" : "tacticPill"}">${isPlayableTactic ? "Giocabile" : "Data-only"}</span>` : (isMission ? `<span class="pill tacticPill">Missione F9N10</span>` : "");
       const c2c6aCost = card.c2c6aCostAdjusted ? `<span class="pill good">Sconto pesca</span>` : "";
       const c2c6aAtt = card.c2c6aSpawnAttBonus ? `<span class="pill good">+${card.c2c6aSpawnAttBonus} ATT spawn</span>` : "";
       const c2c7aBlocked = (typeof handCardBlocked === "function" && handCardBlocked(card)) ? `<span class="pill bad">Bloccata: ${escapeHtml(card.c2c7aBlockedSource || "Embargo")}</span>` : "";
       const tacticMeta = renderTacticCardDebugDetails(card);
-      if (card.sourceType === "tactic") {
-        const compactCategory = escapeHtml(card.category || card.quality || "Tattica");
+      const missionMeta = isMission ? `<div class="tacticDebugDetails tacticCompactDetails"><div class="tacticEffect"><strong>Regole:</strong> ${escapeHtml(card.effectText || "Missione giocabile F9N10")}</div></div>` : "";
+      if (card.sourceType === "tactic" || isMission) {
+        const compactCategory = escapeHtml(card.category || card.quality || (isMission ? "Missione" : "Tattica"));
         return `
         <div class="debugCard${sourceClass}${card.debugOverflowCopy ? " overflow" : ""}">
           <strong>${name}</strong>
@@ -513,7 +532,7 @@ ${reason}`);
             <span class="pill enePill">${cost}</span>
             ${tacticPlayablePill}${copy}${overflow}${c2c6aCost}${c2c6aAtt}${c2c7aBlocked}
           </div>
-          ${tacticMeta}
+          ${isMission ? missionMeta : tacticMeta}
         </div>`;
       }
       return `
@@ -533,7 +552,7 @@ ${reason}`);
     function renderCardThumbnailShell(card, safeUid, source, label = "") {
       if (!card) return `<div class="handRenderedCard empty"><div class="handThumbEmpty">Slot vuoto</div></div>`;
       const title = escapeHtml(`${card.name || "Carta"} · ${cardTypeLabel(card)} · ${cardCostLabel(card)}`);
-      const badge = card.sourceType === "tactic" ? "TATTICA" : (card.deckRole === "commander" ? "COM." : "UNITÀ");
+      const badge = card.sourceType === "mission" ? "MISSIONE" : (card.sourceType === "tactic" ? "TATTICA" : (card.deckRole === "commander" ? "COM." : "UNITÀ"));
       return `
         <div class="handRenderedCard" title="${title}">
           ${label ? `<div class="miniLabel">${escapeHtml(label)}</div>` : ""}
@@ -589,7 +608,23 @@ ${reason}`);
         </div>`;
     }
 
+    function missionCardHiddenFromViewer(side, card) {
+      // F9N10: Missioni pubbliche nel digitale, giocabili su cicli multipli.
+      return false;
+    }
+
+    function renderHiddenMissionHandSlot() {
+      return `
+        <div class="debugHandSlot renderedHandSlot missionHiddenCard" aria-label="Missione avversaria nascosta">
+          <div class="handRenderedCard missionHiddenCardFace">
+            <div class="handThumbEmpty"><strong>MISSIONE</strong><span>Nascosta fino alla rivelazione</span></div>
+          </div>
+          <div class="handAction"><button type="button" disabled>Protetta</button><div class="meta">Informazione privata</div></div>
+        </div>`;
+    }
+
     function renderHandCardSlotDebug(side, card) {
+      if (missionCardHiddenFromViewer(side, card)) return renderHiddenMissionHandSlot();
       const action = typeof handCardActionState === "function"
         ? handCardActionState(side, card)
         : { canUse: false, reason: "Hand card controller non disponibile", actionText: "Non disponibile" };
@@ -598,14 +633,18 @@ ${reason}`);
       const pendingClass = pendingHandCardUid && card && pendingHandCardUid === card.cardUid ? " pending" : "";
       const safeUid = card && card.cardUid ? String(card.cardUid).replace(/'/g, "\\'") : "";
       const selectedClass = card && typeof gameCardPreviewSelectedHandUid === "function" && gameCardPreviewSelectedHandUid() === card.cardUid ? " previewSelected" : "";
+      const isMission = card && (card.sourceType === "mission" || card.cardType === "mission" || card.deckRole === "mission");
       const button = card
-        ? `<button type="button"${disabled} onclick="event.stopPropagation(); beginHandCardPlay('${safeUid}')">${escapeHtml(action.actionText)}</button>`
+        ? (isMission
+          ? `<button type="button"${disabled} onclick="event.stopPropagation(); missionUiOpenPanel(${side})">${escapeHtml(action.actionText)}</button>`
+          : `<button type="button"${disabled} onclick="event.stopPropagation(); beginHandCardPlay('${safeUid}')">${escapeHtml(action.actionText)}</button>`)
         : `<button type="button" disabled>Non disponibile</button>`;
+      const protectedBadge = card && typeof isProtectedHandCard === "function" && isProtectedHandCard(card) ? `<span class="pill good">PROTETTA</span>` : "";
       return `
         <div class="debugHandSlot renderedHandSlot${playableClass}${pendingClass}${selectedClass}"${card ? ` data-preview-card-uid="${safeUid}" onclick="gameCardPreviewSelectHandCard(${side}, '${safeUid}', 'hand')"` : ""}>
           ${renderCardThumbnailShell(card, safeUid, "hand")}
           <div class="handAction">
-            ${button}
+            ${button}${protectedBadge}
             <div class="meta">${escapeHtml(action.reason)}</div>
           </div>
         </div>`;
@@ -643,6 +682,7 @@ ${reason}`);
     function mapHandOverlayCardLabel(card) {
       if (!card) return "Carta";
       if (card.cardType === "commander" || card.deckRole === "commander") return "Comandante";
+      if (card.sourceType === "mission" || card.cardType === "mission") return "Missione";
       if (card.sourceType === "tactic" || card.cardType === "tactic") return "Tattica";
       return "Unità";
     }
@@ -654,7 +694,8 @@ ${reason}`);
         return starters.find(card => card && card.cardUid === cardUid) || null;
       }
       const hand = state.hand && state.hand[side] ? state.hand[side] : [];
-      return hand.find(card => card && card.cardUid === cardUid) || null;
+      const card = hand.find(item => item && item.cardUid === cardUid) || null;
+      return missionCardHiddenFromViewer(side, card) ? null : card;
     }
 
     function mapHandOverlayHoverEnabled() {
@@ -745,7 +786,15 @@ ${reason}`);
             </div>
           </div>
           <span class="mapHandKindPill">${escapeHtml(label)}</span>
+          ${typeof isProtectedHandCard === "function" && isProtectedHandCard(card) ? `<span class="mapHandKindPill protected">PROTETTA</span>` : ""}
         </div>`;
+    }
+
+    function mapHandOverlayHiddenMissionSlot() {
+      return `
+        <button class="mapHandCardSlot hand unavailable missionHiddenCard" type="button" title="Missione privata del giocatore" disabled>
+          <div class="mapHandVisualCard missionHiddenCardFace"><div class="handThumbEmpty"><strong>MISSIONE</strong><span>Nascosta</span></div></div>
+        </button>`;
     }
 
     function mapHandOverlayStarterCardSlot(side, card) {
@@ -766,6 +815,7 @@ ${reason}`);
 
     function mapHandOverlayCardSlot(side, card) {
       if (!card) return "";
+      if (missionCardHiddenFromViewer(side, card)) return mapHandOverlayHiddenMissionSlot();
       const action = typeof handCardActionState === "function"
         ? handCardActionState(side, card)
         : { canUse: false, reason: "Hand card controller non disponibile", actionText: "Gioca" };
@@ -809,8 +859,18 @@ ${reason}`);
       return true;
     }
 
+    function mapHandOverlayCollapse() {
+      if (!state || !state.cardDebug || !state.cardDebug.initialized) return false;
+      MAP_HAND_OVERLAY_STATE.manuallyCollapsed = true;
+      mapHandOverlayClearHoverState();
+      if (typeof renderAll === "function") renderAll();
+      else renderMapHandOverlay();
+      return true;
+    }
+
     function mapHandOverlayShowHand() {
       MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      MAP_HAND_OVERLAY_STATE.manuallyCollapsed = false;
       if (typeof renderAll === "function") renderAll();
       else renderMapHandOverlay();
       return true;
@@ -820,7 +880,17 @@ ${reason}`);
       if (!state || !cardUid) return false;
       const card = mapHandOverlayCardByUid(side, cardUid, source);
       if (!card) return false;
+      if (card.sourceType === "mission" || card.cardType === "mission" || card.deckRole === "mission") {
+        MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+        MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
+        MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
+        MAP_HAND_OVERLAY_STATE.selectedSource = "";
+        MAP_HAND_OVERLAY_STATE.selectedSide = 0;
+        if (typeof missionUiOpenPanel === "function") missionUiOpenPanel(side);
+        return true;
+      }
       MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+      MAP_HAND_OVERLAY_STATE.manuallyCollapsed = false;
       MAP_HAND_OVERLAY_STATE.selectedCardUid = cardUid;
       MAP_HAND_OVERLAY_STATE.selectedSource = source;
       MAP_HAND_OVERLAY_STATE.selectedSide = side;
@@ -866,6 +936,10 @@ ${reason}`);
       if (MAP_HAND_OVERLAY_STATE.lastSide !== side) {
         MAP_HAND_OVERLAY_STATE.lastSide = side;
         MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
+        MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
+        MAP_HAND_OVERLAY_STATE.selectedSource = "";
+        MAP_HAND_OVERLAY_STATE.selectedSide = 0;
+        mapHandOverlayClearHoverState();
       }
       const hand = state.hand && state.hand[side] ? state.hand[side] : [];
       const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
@@ -874,7 +948,8 @@ ${reason}`);
       const counts = typeof cardZoneCountsForSide === "function" ? cardZoneCountsForSide(side) : { deck: 0, hand: hand.length, discard: 0 };
       const faction = state.factions ? state.factions[side] : "—";
       if (targeting && typeof mapHandOverlayHideHoverPreview === "function") mapHandOverlayHideHoverPreview();
-      if (MAP_HAND_OVERLAY_STATE.hiddenForMovement && !targeting) {
+      const compactHand = Boolean((MAP_HAND_OVERLAY_STATE.hiddenForMovement || MAP_HAND_OVERLAY_STATE.manuallyCollapsed) && !targeting);
+      if (compactHand) {
         overlay.classList.add("isMovementHidden");
         overlay.innerHTML = `
           <div class="mapHandOverlayCompact" data-hand-zone-side="${side}">
@@ -902,6 +977,8 @@ ${reason}`);
           <div class="mapHandOverlayActions">
             <button class="danger mapHandEndTurnBtn" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
             <button class="ghost mapHandMoveUnitsBtn" type="button" onclick="mapHandOverlayMoveUnits()"${disabled ? " disabled" : ""}>Muovi unità</button>
+            <button class="ghost mapHandCollapseBtn" type="button" onclick="mapHandOverlayCollapse()">Riduci mano</button>
+            ${typeof missionUiMapBadgeHtml === "function" ? missionUiMapBadgeHtml(side) : ""}
           </div>
         </div>`;
       if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails();
@@ -983,7 +1060,8 @@ ${reason}`);
       const side = state.currentPlayer || 1;
       const check = canRecoverDeck(side);
       const isHuman = state.modes && state.modes[side] === "human";
-      const visible = check.ok || ((state.deck && state.deck[side] && state.deck[side].length <= 0) && (state.hand && state.hand[side] && state.hand[side].length <= 0));
+      const blockingHand = typeof deckRecoveryBlockingHandCards === "function" ? deckRecoveryBlockingHandCards(side) : (state.hand && state.hand[side] || []);
+      const visible = check.ok || ((state.deck && state.deck[side] && state.deck[side].length <= 0) && blockingHand.length <= 0);
       if (!visible) return "";
       const disabled = !check.ok || !isHuman ? " disabled" : "";
       const title = escapeHtml(check.ok ? `Paga ${check.cost} ENE, rimescola gli scarti nel deck e pesca ${check.draw}` : check.reason);
@@ -1039,6 +1117,7 @@ ${reason}`);
       const other = current === 1 ? 2 : 1;
       panel.innerHTML = `
         ${renderHandStatusBanner()}
+        ${typeof missionUiDashboardHtml === "function" ? missionUiDashboardHtml(current) : ""}
         ${handPreviewShellHtml()}
         <div class="cardZoneGrid handScrollContent">
           ${cardZoneDebugHtml(current)}

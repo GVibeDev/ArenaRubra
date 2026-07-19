@@ -1,0 +1,38 @@
+Arena Rubra – CHECK F9N9
+Build: C2-STABLE-1-F9N9-APK-M4c
+Baseline: C2-STABLE-1-F9N8-APK-M4c validata
+
+SCOPE
+- 5 Missioni disperate giocabili.
+- Moltiplicatore congelato alla giocata: x1-x3.
+- Bersagli multipli distinti scelti dal giocatore.
+- Quote senza bersaglio valido registrate come sprecate.
+- Ricompense temporali e cleanup a fine round.
+- Nessuna gestione IA Missioni e nessun nuovo ciclo/recupero (F9N10).
+
+MISSIONI
+- NXMSND01 Punto di Ripristino: +3 ENE e pesca 1 per condizione.
+- EXMSND01 Ultimo Assalto: veicoli distinti ignorano DEF al prossimo attacco; fanterie distinte ottengono seconda azione nel round.
+- LBMSND01 Ultima Possibilita: cariche selettive di ripetizione attacco nel round.
+- AGMSND01 Primo Verae: Scudo Fasico su unita alleate distinte fino a fine round.
+- FBMSND01 Anatema: Stordimento su unita nemiche distinte per il turno personale nemico.
+
+TEST ESEGUITI
+- Tutti i 68 file JavaScript: sintassi valida.
+- Riferimenti index.html: 57 controllati, 0 mancanti.
+- F9N1 Card Editor: 11/11.
+- F9N1 Custom Tactics: 12/12.
+- F9N3 Game Scale/HQ: 14/14.
+- F9N3a Mode/Cap: 20/20.
+- F9N4 Mission Contract: 15 Missioni + contratto 29+1.
+- F9N5 Opening/Protection: 36/36.
+- F9N6 Progress Tracker: 92/92.
+- F9N7a Mission UI: 14/14.
+- F9N7a Visibility/HUD: 18/18.
+- F9N8 Ordinary Missions: 36/36.
+- F9N8 Runtime Integration: 28/28.
+- F9N9 Desperate Missions: 41/41.
+- F9N9 Runtime Integration: 28/28.
+
+ESITO
+PASS statico e runtime Node. Necessaria validazione manuale browser/APK per usabilita delle selezioni e ritmo delle ripetizioni attacco.

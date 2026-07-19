@@ -28,7 +28,7 @@ function vehicleMoveRange() { return currentPace().vehicleMove || 1; }
     }
 
 function toggleMoveMode() {
-      if (!getSelectedUnit()) return;
+      if ((typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) || !getSelectedUnit()) return;
       mode = mode === "move" ? "idle" : "move";
       pendingAbility = null;
       pendingBuildBlueprintId = null;

@@ -20,7 +20,7 @@ const STATUS_DEFINITIONS = Object.freeze({
         directHp: true,
         blocks: {},
         tick(unit, status) {
-          applyDamage(unit, status.value, this.label, { status:true, directHp:true });
+          applyDamage(unit, status.value, this.label, { status:true, directHp:true, sourceSide:status.owner || null, damageKind:"bleed" });
           status.turns -= 1;
           return status.turns > 0 && unit.alive;
         }
@@ -79,6 +79,13 @@ const STATUS_DEFINITIONS = Object.freeze({
         stack: "refresh",
         blocks: {},
         description: "Non può essere bersagliata da attacchi, abilità o tattiche nemiche fino al prossimo turno del possessore."
+      },
+      mission_phase_shield: {
+        label: "Scudo Fasico Missione",
+        timing: "manual",
+        stack: "refresh",
+        blocks: {},
+        description: "Non può essere bersagliata da attacchi, abilità o tattiche nemiche fino alla fine del round corrente."
       },
       raid_mark: {
         label: "Marcato per Razzie",
@@ -279,11 +286,13 @@ const STATUS_DEFINITIONS = Object.freeze({
         existing.value = Math.max(existing.value || 0, status.value || 0);
         existing.turns = Math.max(existing.turns || 0, status.turns || 0);
         existing.source = status.source || existing.source;
+        existing.owner = status.owner || existing.owner;
       }
       log(`${target.name} subisce ${def.label} (${statusText(existing)}).`, EventTypes.STATUS_APPLIED, {
         targetId: target.uid,
         targetName: target.name,
         targetSide: target.side,
+        targetPos: Array.isArray(target.pos) ? [...target.pos] : null,
         statusKind: status.kind,
         statusLabel: def.label,
         value: existing.value || status.value || 0,
@@ -306,6 +315,7 @@ const STATUS_DEFINITIONS = Object.freeze({
       if (status.kind === "fabeot_sicario_contract") return `+${status.value || 1} ENE al Fabeot quando uccide con attacco base`;
       if (status.kind === "untargetable") return `non bersagliabile da nemici · ${status.turns || 1} turno`;
       if (status.kind === "phase_shield") return `Scudo Fasico · non bersagliabile da nemici · ${status.turns || 1} turno`;
+      if (status.kind === "mission_phase_shield") return `Scudo Fasico Missione · fino a fine round`;
       if (status.kind === "stealth") return `furtivo · finché non attacca/usa abilità o viene rilevato`;
       if (status.kind === "next_attack_ignore_defense") return `prossimo attacco base ignora DEF · ${status.turns || 1} turno`;
       if (status.kind === "ignore_defense_permanent") return `attacchi base ignorano DEF`;

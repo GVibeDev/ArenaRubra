@@ -1,0 +1,50 @@
+ARENA RUBRA – CHECK F9N1 CUSTOM TACTICS RUNTIME FOUNDATION
+Build: C2-STABLE-1-F9N1-APK-M4c
+Baseline: C2-STABLE-1-F9M2f-APK-M4c (validata con asset reali)
+Data: 2026-07-18
+
+STATIC CHECK
+- Tutti i file JS in src/ e data/: node --check OK.
+- Tutti gli script e fogli di stile richiamati da index.html: presenti.
+- src/custom_tactics.js caricato prima di src/tactics.js.
+- Nessun eval / new Function nel modulo custom tactics.
+
+SMOKE TEST RUNTIME
+Comando:
+  node tests/f9n1_custom_tactics_smoke.js
+
+Esito: 12/12 controlli superati.
+- normalizzazione valore/raggio: OK;
+- filtro fanteria: OK;
+- target side nemico: OK;
+- unsupported -> data-only: OK;
+- status non whitelistato: bloccato;
+- status whitelistato e clamp durata/valore: OK;
+- no-target draw: OK;
+- target board_cell / area: OK;
+- costo ENE sottratto una volta: OK;
+- carta scartata una volta: OK;
+- evento TACTIC_USED custom strutturato: OK;
+- gain_energy immediato: OK.
+
+SMOKE TEST CARD EDITOR / SCHEMA
+Comando:
+  node tests/f9n1_card_editor_schema_smoke.js
+
+Esito: 11/11 controlli superati.
+- nuovo editorVersion F9N1: OK;
+- schema targetDomain/targetSide/rangeMode: OK;
+- durationMode/durationValue espliciti: OK;
+- effectKind cell_blast disponibile soltanto per tattiche: OK;
+- customTacticRuntimeVersion: OK;
+- implementationStatus giocabile/data-only: OK;
+- limiti sicuri valore/raggio: OK;
+- metadata duplicazione tattica: OK.
+
+TOTALE SMOKE ASSERTIONS: 23/23.
+
+LIMITI INTENZIONALI
+- AI non usa tattiche custom in F9N1 e le ignora senza bloccare il turno.
+- Gli effetti complessi o non whitelistati restano data-only.
+- F9N1 non introduce Missioni, modalità Vasta scala/Tattica, QG sbarcabile/costruibile o feedback animati.
+- Resta richiesto il test visuale/manuale nel browser per UX di Card Editor, targeting e annullamento selezione.

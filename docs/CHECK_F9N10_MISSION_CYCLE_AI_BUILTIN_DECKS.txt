@@ -1,0 +1,85 @@
+Arena Rubra – CHECK F9N10
+Build: C2-STABLE-1-F9N10-APK-M4c
+Nome: Recupero Missioni, deck integrati e IA
+
+SCOPO
+- Completare il ciclo Missioni dopo l'esaurimento del deck.
+- Integrare i 13 deck forniti dall'autore come preset built-in.
+- Rendere l'IA capace di giocare e perseguire le Missioni.
+- Non introdurre ancora temi grafici o musiche: restano a F9O1.
+
+TEST MANUALE A – LIBRERIA BUILT-IN
+1. Aprire Setup o Deck Builder.
+2. Verificare la presenza dei 13 preset integrati.
+3. Verificare che i preset siano caricabili e non eliminabili.
+4. Controllare che esistano 3 deck senza Missione e 10 deck con Missione ordinaria.
+5. Selezionare "Agathoi · Alexandros · Tafos Lithos".
+6. Verificare la dicitura 30/30 + Missione supplementare.
+7. Avviare la partita e verificare: Tafos Lithos + Alexandros + 3 carte ordinarie nella prima mano.
+8. Verificare che il runtime totale sia 31 carte, ma il contatore legale resti 30/30.
+
+TEST MANUALE B – RECUPERO CON MISSIONE
+1. Usare un deck con Missione.
+2. Giocare la Missione o lasciarla in mano.
+3. Esaurire il deck e tutte le carte ordinarie in mano.
+4. Accumulare almeno 5 ENE e attivare Recupero deck.
+5. Verificare: -5 ENE, Missione direttamente in mano, 4 carte ordinarie pescate.
+6. Verificare che gli scarti ordinari siano rimescolati e che la Missione non sia mescolata nel deck.
+7. Verificare che tutti i progressi Missione ripartano da zero.
+8. Provare a giocare la Missione nello stesso turno: deve essere BLOCCATA.
+9. All'inizio del successivo turno personale verificare lo sblocco.
+10. Ricompletare la Missione e giocarla una seconda volta.
+
+TEST MANUALE C – RECUPERO SENZA MISSIONE
+1. Usare uno dei tre deck built-in senza Missione.
+2. Esaurire deck e mano, conservando almeno 5 ENE.
+3. Recuperare il deck.
+4. Verificare il comportamento storico: pesca 3 carte, nessun tracker Missione e nessun blocco Missione.
+
+TEST MANUALE D – IA MISSIONI ORDINARIE
+1. Assegnare al bot uno dei 10 preset Missione.
+2. Lasciare che completi gli obiettivi.
+3. Verificare che giochi automaticamente la Missione quando è pronta.
+4. Controllare che acquisti, movimento, attacchi, abilità e tattiche mostrino una preferenza coerente con gli obiettivi incompleti.
+5. Per Cospirazione con avversario umano, verificare che il gioco si fermi sulla scelta delle carte dell'avversario e che il bot riprenda dopo la conferma.
+
+TEST MANUALE E – IA MISSIONI DISPERATE
+1. Preparare una Missione disperata del bot con una sola condizione soddisfatta.
+2. Verificare che possa attendere se è in vantaggio e la ricompensa non è urgente.
+3. Portare la Missione a x2 o x3.
+4. Verificare che venga giocata e che i bersagli siano scelti automaticamente.
+5. Verificare che quote senza bersaglio valido risultino sprecate.
+
+DIAGNOSTICA CONSOLE
+- missionDiagnosticsSummary()
+- missionDiagnosticsForSide(1)
+- missionDiagnosticsForSide(2)
+- missionAiDiagnostics()
+- missionAiDiagnostics(1)
+- missionAiDiagnostics(2)
+- copyMissionDiagnosticsJson()
+- deckRuntimeValidationSummary()
+
+TELEMETRIA ATTESA
+- cyclesStarted
+- recoveriesWithMission / recoveriesWithoutMission
+- missionLocksApplied / missionUnlocks
+- missionsReady / missionsPlayed
+- secondOrLaterPlays
+- rewardsResolved
+- aiMissionPlays / aiMissionWaits
+- targetQuotasWasted
+- lastAiDecision
+- byMission
+
+TEST AUTOMATICI
+- Tutti i file JavaScript: node --check.
+- Tutte le regressioni F9N1–F9N9.
+- F9N10 Built-in Decks.
+- F9N10 Recovery/Cycle.
+- F9N10 Mission AI.
+- F9N10 Runtime Integration.
+
+NOTA BROWSER SANDBOX
+Il tentativo Chromium headless può restare bloccato dalle restrizioni Linux del sandbox
+(DBus/NETLINK/inotify). Il test visivo finale va quindi eseguito nel browser o APK reale.

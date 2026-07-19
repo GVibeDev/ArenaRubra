@@ -13,6 +13,9 @@ let pendingBuildBlueprintId = null;
 let pendingPurchaseBlueprintId = null;
 let pendingTacticId = null;
 let pendingHandCardUid = null;
+let pendingStarterCardUid = null;
+let pendingDeploymentContext = null; // { source:"starter", starterRole, cardUid, side }
+let pendingBuildSource = null; // { type:"unit", builderId } | { type:"own_hq", side }
 let botRunning = false;
 
 const $ = (id) => document.getElementById(id);
@@ -54,7 +57,8 @@ function readGameSetupFromDom() {
     },
     autoResignEnabled: $("autoResignToggle") ? $("autoResignToggle").checked : true,
     aiMode: $("botAiMode") ? $("botAiMode").value : "advanced",
-    pacePreset: $("pacePreset") ? $("pacePreset").value : "standard"
+    pacePreset: $("pacePreset") ? $("pacePreset").value : "standard",
+    gameScaleMode: $("gameScaleMode") ? $("gameScaleMode").value : "large_scale"
   };
 }
 
@@ -94,12 +98,35 @@ function createInitialGameState(setup) {
     autoResignEnabled: setup.autoResignEnabled,
     aiMode: setup.aiMode,
     pacePreset: setup.pacePreset,
+    gameScaleMode: setup.gameScaleMode === "tactical" ? "tactical" : "large_scale",
     winner: null,
     logSeq: 0,
     eventSeq: 0,
     events: [],
     matchRecorded: false,
     matchStats: null,
+
+    // F9N6 – stato Missione separato per giocatore.
+    // Viene popolato dopo l'inizializzazione delle zone carta.
+    missions: { 1:null, 2:null },
+    missionRewards: { 1:{ cardCostSequence:null }, 2:{ cardCostSequence:null } },
+    missionPendingReward: null,
+    missionTelemetry: {
+      cyclesStarted:{ 1:0, 2:0 },
+      recoveriesWithMission:{ 1:0, 2:0 },
+      recoveriesWithoutMission:{ 1:0, 2:0 },
+      missionLocksApplied:{ 1:0, 2:0 },
+      missionUnlocks:{ 1:0, 2:0 },
+      missionsReady:{ 1:0, 2:0 },
+      missionsPlayed:{ 1:0, 2:0 },
+      secondOrLaterPlays:{ 1:0, 2:0 },
+      rewardsResolved:{ 1:0, 2:0 },
+      aiMissionPlays:{ 1:0, 2:0 },
+      aiMissionWaits:{ 1:0, 2:0 },
+      targetQuotasWasted:{ 1:0, 2:0 },
+      lastAiDecision:{ 1:null, 2:null },
+      byMission:{}
+    },
 
     // C2e-4g – telemetry minima per regression/balancing AI.
     aiTelemetry: {
@@ -119,6 +146,16 @@ function createInitialGameState(setup) {
       pressureEmergencyTurns:{ 1:0, 2:0 },
       recoveriesFrom0PS:{ 1:0, 2:0 },
       wasAt0PS:{ 1:false, 2:false }
+    },
+
+    f9n3Telemetry: {
+      gameScaleMode: setup.gameScaleMode === "tactical" ? "tactical" : "large_scale",
+      starterSpawned: { 1:{ starter_infantry:0, starter_vehicle:0, starter_structure:0 }, 2:{ starter_infantry:0, starter_vehicle:0, starter_structure:0 } },
+      starterDestroyed: { 1:{ starter_infantry:0, starter_vehicle:0, starter_structure:0 }, 2:{ starter_infantry:0, starter_vehicle:0, starter_structure:0 } },
+      tacticalCapBlocked: { 1:{ starter_infantry:0, starter_vehicle:0, starter_structure:0 }, 2:{ starter_infantry:0, starter_vehicle:0, starter_structure:0 } },
+      starterEnergySpent: { 1:0, 2:0 },
+      hqDeployments: { 1:0, 2:0 },
+      hqBuilds: { 1:0, 2:0 }
     },
 
     // C1a – fondazione passiva carte/deck/mano.
@@ -149,6 +186,9 @@ function resetInteractionContext() {
   pendingPurchaseBlueprintId = null;
   pendingTacticId = null;
   pendingHandCardUid = null;
+  pendingStarterCardUid = null;
+  pendingDeploymentContext = null;
+  pendingBuildSource = null;
 }
 
 
@@ -218,4 +258,3 @@ function resetInteractionContext() {
         statuses: (bp.startStatuses || []).map(st => ({ ...st }))
       };
     }
-

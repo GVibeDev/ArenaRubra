@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9M2f Token Asset Cache / Flicker Fix metadata.
+// Arena Rubra – F9O2a Deployment Click / Pointer Capture Hotfix metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9M2f-APK-M4c",
-  buildName: "Token Asset Cache / Flicker Fix",
-  buildDate: "2026-07-08",
-  buildChannel: "token-asset-cache-flicker-fix",
-  logicBaseline: "C2-STABLE-1-F9M2e",
-  map: "MAP1 radius 6 · visual layer/token/highlight foundation · F9M2f token asset cache",
-  notes: "Fase F9M2f: Token Asset Cache / Flicker Fix. Mantiene F9M2e validata, precarica/cachea gli asset token e renderizza i token grafici come background-image già pronti quando disponibili, evitando il flash temporaneo ai token CSS/SVG durante i render rapidi del bot. Nessun terrain per cella, nessuna modifica a gameplay, AI, targeting, regole Starter, deck, carte ufficiali o bilanciamento."
+  version: "C2-STABLE-1-F9O2a-APK-M4c",
+  buildName: "Deployment Click & Pointer Capture Hotfix",
+  buildDate: "2026-07-19",
+  buildChannel: "camera-deployment-click-hotfix",
+  logicBaseline: "C2-STABLE-1-F9O2-APK-M4c",
+  map: "MAP1 radius 6 · QG sbarcabile e costruzione diretta sul proprio QG",
+  notes: "F9O2a corregge il conflitto fra pointer capture della camera e click/tap sulle celle: la capture parte solo dopo la soglia di trascinamento o con pinch, preservando sbarco, movimento, attacco e targeting."
 });
 
 function buildInfoLabel() {

@@ -1,0 +1,32 @@
+Arena Rubra — F9O2a Deployment Click & Pointer Capture Hotfix
+Data: 2026-07-19
+
+Correzione verificata
+- Nessuna pointer capture al semplice pointerdown.
+- Pointer capture attivata solo dopo la soglia di trascinamento.
+- Pinch a due dita continua ad acquisire i puntatori.
+- Tap/click breve raggiunge il bottone .hex.
+- Drag della mappa sopprime il click fantasma.
+
+Test automatici
+- Sintassi JavaScript: 82/82 file validi.
+- Suite Node/regressioni: 22/22 superate.
+- F9O2 camera interaction smoke: 58/58.
+
+Test Chromium reale su Pointer Events
+- Tap su cella: 1 click ricevuto dalla cella.
+- Stato puntatori dopo tap: 0.
+- Nessuna soppressione del click dopo tap.
+- Drag da cella: camera spostata.
+- Drag da cella: 0 click di gameplay.
+- Soppressione click fantasma dopo drag: attiva.
+
+Esito: PASS.
+
+Audit riferimenti HTML
+- 65 riferimenti locali totali.
+- 62 riferimenti codice/stile presenti.
+- 3 asset binari intenzionalmente assenti nella build LITE:
+  assets/intro/g-vibe-dev-logo.png
+  assets/intro/arena-rubra-title.png
+  assets/audio/432-hertz-rift.mp3

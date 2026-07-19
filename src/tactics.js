@@ -68,7 +68,7 @@
 
 
     function canUseTactic(player, tactic) {
-      if (!state || state.winner || !tactic) return false;
+      if (!state || state.winner || !tactic || (typeof missionInteractionBlocked === "function" && missionInteractionBlocked())) return false;
       if (state.tacticUsedThisTurn[player]) return false;
       if (tacticCooldown(player, tactic) > 0) return false;
       if (state.energy[player] < tactic.cost) return false;
@@ -143,7 +143,8 @@
         tacticKind: tactic.kind,
         cost: tactic.cost,
         targetId: target && target.uid ? target.uid : null,
-        targetName: target ? targetLabel(target) : null
+        targetName: target ? targetLabel(target) : null,
+        missionTags: typeof missionEffectTagsFromTactic === "function" ? missionEffectTagsFromTactic(tactic) : []
       });
       TACTIC_HANDLERS[tactic.kind](player, target, tactic);
       return true;
@@ -321,11 +322,10 @@ function c2cPlayableEffectKinds() {
 
 function isC2c1SingleDamageTacticCard(card) {
   // Nome storico conservato per compatibilità UI C2c-1b.
-  // Da C2c-2 indica: tattica da mano implementata nel ciclo C2c.
-  // C2c-4a-fix: normalizza tramite DECK_TACTICS, così anche carte già in mano
-  // create da dati vecchi diventano giocabili se il loro tacticId è ora implementato.
+  // Da F9N1 comprende anche le tattiche CUSTOM semplici validate dalla whitelist runtime.
   const c = normalizeHandTacticCard(card);
   if (!c || c.sourceType !== "tactic") return false;
+  if (typeof customTacticRuntimePlayable === "function" && customTacticRuntimePlayable(c)) return true;
   if (!c2cPlayableTacticIds().has(c.tacticId || c.sourceId)) return false;
   return c2cPlayableEffectKinds().has(c.effectKind);
 }
@@ -431,11 +431,13 @@ function isC2c8cFinalAdvancedTacticCard(card) {
 
 function isHandTacticCellTargetCard(card) {
   const c = normalizeHandTacticCard(card);
+  if (typeof customTacticIsCellTarget === "function" && customTacticIsCellTarget(c)) return true;
   return Boolean(c && (c.targetDomain === "board_cell" || c.targetDomain === "deployment_cell" || c.targetDomain === "deployment_cell_group" || c.targetDomain === "board_edge_cells" || c2c4PlayableEffectKinds().has(c.effectKind)));
 }
 
 function isHandTacticImmediateNoTargetCard(card) {
   const c = normalizeHandTacticCard(card);
+  if (typeof customTacticIsImmediateNoTarget === "function" && customTacticIsImmediateNoTarget(c)) return true;
   return Boolean(c && c.sourceType === "tactic" && (
     (c2c6aPlayableEffectKinds().has(c.effectKind) && (c.targetDomain === "deck" || c.rangeMode === "none"))
     || (c2c6bPlayableEffectKinds().has(c.effectKind) && ["energy_pool", "player"].includes(c.targetDomain) && c.rangeMode === "none")
@@ -458,10 +460,15 @@ function handTacticDefinition(card) {
 
 function normalizeHandTacticCard(card) {
   if (!card || card.sourceType !== "tactic") return card;
+  if (typeof customTacticIsCard === "function" && customTacticIsCard(card) && typeof normalizeCustomTacticCard === "function") {
+    const custom = normalizeCustomTacticCard(card);
+    if (custom && typeof missionEffectiveCardCost === "function") custom.cost = missionEffectiveCardCost(card.side || (state && state.currentPlayer), card, custom.cost || 0);
+    return custom;
+  }
   const id = tacticIdFromHandCard(card);
   const def = deckTacticById(id);
   if (!def) return card;
-  return {
+  const normalized = {
     ...card,
     tacticId: id,
     sourceId: card.sourceId || id,
@@ -484,6 +491,8 @@ function normalizeHandTacticCard(card) {
     implementationStatus: def.implementationStatus || card.implementationStatus || "data_only",
     notes: def.notes || card.notes || ""
   };
+  if (typeof missionEffectiveCardCost === "function") normalized.cost = missionEffectiveCardCost(card.side || (state && state.currentPlayer), card, normalized.cost || 0);
+  return normalized;
 }
 
 function handTacticEffectKind(card) {
@@ -494,6 +503,7 @@ function handTacticEffectKind(card) {
 function handTacticDamageAmount(card, target) {
   const c = normalizeHandTacticCard(card);
   if (!c || !target) return 0;
+  if (c.customTacticRuntime && c.customTacticSchema && ["damage", "cell_blast"].includes(c.customTacticSchema.effectKind)) return c.customTacticSchema.value || 0;
   if (c.effectKind === "damage_bonus_vs_vehicle") return handTacticIsVehicle(target) ? 3 : 2;
   if (c.effectKind === "damage_structure") return 4;
   if (c.effectKind === "demolition_charge") return 5;
@@ -508,6 +518,7 @@ function handTacticDamageAmount(card, target) {
 function handTacticSourceCells(player, card) {
   const c = normalizeHandTacticCard(card);
   if (!state || !c) return [];
+  if (c.customTacticRuntime && typeof customTacticSourceCells === "function") return customTacticSourceCells(player, c);
   if (c.effectKind === "demolition_charge") {
     // C2c-1b: Carica da Demolizione resta volutamente più stretta:
     // fonte valida = fanteria/veicolo Liberti vivo, non struttura e non QG.
@@ -646,6 +657,7 @@ function c2c5cCommanderMilitiaCoords(player, commander) {
 function handTacticCandidateCells(player, card) {
   const c = normalizeHandTacticCard(card);
   if (!state || !c || !isHandTacticCellTargetCard(c)) return [];
+  if (c.customTacticRuntime && typeof customTacticCandidateCellTargets === "function") return customTacticCandidateCellTargets(player, c);
 
   if (c.effectKind === "spawn_two_militia") {
     const bp = c2c5cMilitiaBlueprint();
@@ -751,6 +763,7 @@ function c2c5bHordeGroup(player, anchor) {
 
 function handTacticTargetUnitFilter(player, card, target) {
   const c = normalizeHandTacticCard(card);
+  if (c && c.customTacticRuntime && typeof customTacticTargetUnitValid === "function") return customTacticTargetUnitValid(player, c, target);
   if (!c || !target || !isFieldUnit(target) || isUntargetableTo(target, player)) return false;
 
   const sideRule = c.targetSide || "enemy";
@@ -801,6 +814,7 @@ function handTacticTargetUnitFilter(player, card, target) {
 function handTacticCandidateUnits(player, card) {
   const c = normalizeHandTacticCard(card);
   if (!c) return [];
+  if (c.customTacticRuntime && typeof customTacticCandidateUnits === "function") return customTacticCandidateUnits(player, c);
   if (c.targetSide === "ally") return combatUnits(player);
   if (c.targetSide === "both") return combatUnits(null);
   return combatUnits(enemyOf(player));
@@ -809,6 +823,7 @@ function handTacticCandidateUnits(player, card) {
 function handTacticTargets(player, card) {
   const c = normalizeHandTacticCard(card);
   if (!isC2c1SingleDamageTacticCard(c)) return [];
+  if (c.customTacticRuntime && typeof customTacticTargets === "function") return customTacticTargets(player, c);
   if (isHandTacticCellTargetCard(c)) return handTacticCandidateCells(player, c);
   return handTacticCandidateUnits(player, c)
     .filter(target => handTacticTargetUnitFilter(player, c, target))
@@ -821,8 +836,12 @@ function canUseHandTacticCard(player, card) {
   if (!isC2c1SingleDamageTacticCard(c)) return { ok:false, reason:"Tattica C2 non ancora implementata" };
   if (playerHandLocked(player)) return { ok:false, reason:"Mano bloccata" };
   if (typeof handCardBlocked === "function" && handCardBlocked(card)) return { ok:false, reason:handCardBlockReason(card) };
-  if (playerEnergyLocked(player) && (card.cost || 0) > 0) return { ok:false, reason:"ENE bloccata" };
+  if (playerEnergyLocked(player) && (c.cost || 0) > 0) return { ok:false, reason:"ENE bloccata" };
   if ((state.energy[player] || 0) < (c.cost || 0)) return { ok:false, reason:"ENE insufficiente" };
+
+  if (c.customTacticRuntime && typeof customTacticCanUse === "function") {
+    return customTacticCanUse(player, c);
+  }
 
   if (isC2c6aDrawCardEconomyTacticCard(c)) {
     const deckCount = state.deck && state.deck[player] ? state.deck[player].length : 0;
@@ -942,13 +961,16 @@ function removeHandTacticPositiveEffects(target, source) {
     return;
   }
   let removed = 0;
+  const beforeDef = target.currentDef || 0;
   for (const buff of target.buffs || []) {
     if (buff.stat === "att") target.currentAtt = Math.max(0, target.currentAtt - (buff.value || 0));
     if (buff.stat === "def") target.currentDef = Math.max(0, target.currentDef - (buff.value || 0));
     removed += 1;
   }
+  const defLoss = Math.max(0, beforeDef - (target.currentDef || 0));
+  if (defLoss && typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(target, defLoss, source, { sourceType:"tactic" });
   target.buffs = [];
-  const positive = new Set(["thorns", "untargetable", "phase_shield", "ability_untargetable", "ambush", "counterattack", "extra_attack_on_kill", "stealth", "enemy_effect_immune"]);
+  const positive = new Set(["thorns", "untargetable", "phase_shield", "mission_phase_shield", "ability_untargetable", "ambush", "counterattack", "extra_attack_on_kill", "stealth", "enemy_effect_immune"]);
   const before = (target.statuses || []).length;
   target.statuses = (target.statuses || []).filter(st => !positive.has(st.kind));
   removed += before - target.statuses.length;
@@ -976,6 +998,7 @@ function applyTemporaryDefToOne(target, source) {
     return 0;
   }
   target.currentDef = 1;
+  if (typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(target, reduction, source, { sourceType:"tactic" });
   target.buffs = target.buffs || [];
   target.buffs.push({ stat:"def", value:-reduction, turns:1, source, c2c2TemporaryDebuff:true });
   log(`${target.name} viene neutralizzato: DEF corrente portata a 1 fino al prossimo turno.`);
@@ -1211,6 +1234,8 @@ function c2c5cSpawnUnitFromTactic(player, bp, coord, source, options={}) {
     blueprintId: bp.id,
     coord: [...unit.pos],
     source: "C2c-5c-tactic-spawn",
+    spawnSource: "tactic",
+    cost: bp.cost,
     exhausted: unit.acted
   });
   return unit;
@@ -1324,9 +1349,11 @@ function resolveHandTacticDrawCardEconomyEffect(player, card) {
 
 function c2c6bDiscardRandomEnemyCard(player, sourceName) {
   const enemy = enemyOf(player);
-  const hand = state && state.hand ? (state.hand[enemy] || []) : [];
+  const hand = typeof discardableHandCards === "function"
+    ? discardableHandCards(enemy)
+    : (state && state.hand ? (state.hand[enemy] || []).filter(card => card && card.cardType !== "commander" && card.deckRole !== "commander" && card.sourceType !== "mission" && card.cardType !== "mission" && card.deckRole !== "mission") : []);
   if (!hand.length) {
-    log(`${sourceName}: ${playerName(enemy)} non ha carte da scartare.`);
+    log(`${sourceName}: ${playerName(enemy)} non ha carte ordinarie scartabili.`);
     return null;
   }
   const index = Math.floor(Math.random() * hand.length);
@@ -1691,6 +1718,8 @@ function c2c8ReactionAttack(attacker, defender, source="Reazione", options={}) {
     defenderId: defender.uid,
     defenderName: defender.name,
     defenderSide: defender.side,
+    attackerPos: Array.isArray(attacker.pos) ? [...attacker.pos] : null,
+    defenderPos: Array.isArray(defender.pos) ? [...defender.pos] : null,
     amount,
     rawAmount,
     multiplier,
@@ -1708,17 +1737,17 @@ function c2c8ReactionAttack(attacker, defender, source="Reazione", options={}) {
   let specialBleedApplied = false;
   if (bleedTwo) {
     if (defender.alive && typeof canBleed === "function" && canBleed(defender)) {
-      applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis");
+      applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis", attacker.side);
       specialBleedApplied = true;
     }
     removeStatusKind(attacker, "next_attack_bleed_two", "attacco base consumato");
   }
-  if (attacker.faction === "Liberti" && typeof hasBleedingAttackRule === "function" && hasBleedingAttackRule(attacker) && defender.alive && typeof canBleed === "function" && canBleed(defender) && !specialBleedApplied) applyBleed(defender, 1 + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name);
+  if (attacker.faction === "Liberti" && typeof hasBleedingAttackRule === "function" && hasBleedingAttackRule(attacker) && defender.alive && typeof canBleed === "function" && canBleed(defender) && !specialBleedApplied) applyBleed(defender, 1 + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name, attacker.side);
   if (lastRunStatus && typeof c2c8cResolveLastRunAfterAttack === "function") c2c8cResolveLastRunAfterAttack(attacker, defender, lastRunStatus);
   if (thorns && attacker.alive && attacker.type !== "QG") {
     const thornDamage = Math.max(1, thorns.value || 1);
     log(`${attacker.name} viene ferito dalle Spine di ${defender.name}.`);
-    applyDamage(attacker, thornDamage, "Spine", { directHp:true, reaction:true, skipC2c8Reactions:true });
+    applyDamage(attacker, thornDamage, "Spine", { directHp:true, reaction:true, skipC2c8Reactions:true, sourceSide:defender.side, damageKind:"thorns" });
   }
   return true;
 }
@@ -1900,6 +1929,10 @@ function c2c8cResolveFinalAdvancedTactic(player, card, target) {
       unitId: target.uid,
       unitName: target.name,
       side: target.side,
+      unitType: target.type,
+      unitWeight: target.weight,
+      unitRole: target.role || target.deckRole || null,
+      destroyedBySide: player,
       source:"C2c-8c-obliterator"
     });
     handleUnitDestroyed(target);
@@ -1940,6 +1973,7 @@ function resolveHandTacticFabeotHandTheftEffect(player, card, target) {
 
 function resolveHandTacticEffect(player, card, target) {
   const c = normalizeHandTacticCard(card);
+  if (c && c.customTacticRuntime && typeof resolveCustomTacticEffect === "function") return resolveCustomTacticEffect(player, c, target);
   const finalAdvanced = c2c8cResolveFinalAdvancedTactic(player, c, target);
   if (finalAdvanced) return finalAdvanced;
   const buffHeal = c2c8bResolveBuffHealTactic(player, c, target);
@@ -1992,7 +2026,7 @@ function resolveHandTacticEffect(player, card, target) {
     result.extra = "-1 ATT permanente";
   } else if (effectKind === "damage_and_bleed") {
     if (target.alive && typeof canBleed === "function" && canBleed(target)) {
-      applyBleed(target, 1, 2, c.name);
+      applyBleed(target, 1, 2, c.name, player);
       result.extra = "Sanguinamento 1";
     } else if (target.alive) {
       log(`${c.name}: ${target.name} non può sanguinare.`);
@@ -2023,6 +2057,8 @@ function resolveHandTacticEffect(player, card, target) {
 
 
 function handTacticLogSource(card) {
+  const c = normalizeHandTacticCard(card);
+  if (c && c.customTacticRuntime) return "F9N1-custom-tactic-runtime";
   if (isC2c8cFinalAdvancedTacticCard(card)) return "C2c-8c-hand-tactic";
   if (isC2c8bBuffHealTacticCard(card)) return "C2c-8b-hand-tactic";
   if (isC2c8ReactionTacticCard(card)) return "C2c-8-hand-tactic";
@@ -2073,6 +2109,13 @@ function useHandTacticCard(player, rawCard, target) {
     targetName: target ? target.name : null,
     targetSide: target ? (target.side || null) : null,
     damage: predictedDamage,
+    custom: Boolean(card.custom === true),
+    customRuntimeVersion: card.customTacticRuntimeVersion || null,
+    targetDomain: card.targetDomain || null,
+    durationMode: card.durationMode || null,
+    effectValue: card.customTacticSchema ? card.customTacticSchema.value : null,
+    statusKind: card.customTacticSchema ? card.customTacticSchema.statusKind : null,
+    missionTags: typeof missionEffectTagsFromTactic === "function" ? missionEffectTagsFromTactic(card) : [],
     source: handTacticLogSource(card)
   });
 
@@ -2122,4 +2165,3 @@ const TACTIC_HANDLERS = Object.freeze({
         addPlayerEffect(enemyOf(player), { kind:"cost_delta", value:1, minCost:1, turns:1, timing:"endTurn", filterSpec:"all", source:tactic.name });
       }
     });
-
