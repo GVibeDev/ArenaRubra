@@ -19,5 +19,3 @@ F9O2a mantiene la camera F9O2 e corregge il conflitto fra pointer capture e clic
 - diagnostica `cameraDiagnostics()` e `cameraGetState()`.
 
 La build conserva inoltre temi fazione, mappe, musica dinamica e controlli audio persistenti della baseline F9O1b.
-
-Questa è una build **LITE**: gli asset binari restano nel deploy completo.
