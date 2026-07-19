@@ -1,0 +1,8 @@
+Arena Rubra F9O3 — Test report
+
+- Sintassi JavaScript: tutti i file validi.
+- Suite Node: 27/27 superate.
+- F9O3 event/narrative smoke: 38/38.
+- Browser Chromium F9O3: animazione verticale, opacità centrale, click dismiss, dialogo sinistra/destra e avatar placeholder verificati.
+- Regressioni browser: camera freeze F9O2c, token F9O2d e Mission UI F9O2e superate.
+- Nessun errore page/console nei test browser.

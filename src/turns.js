@@ -88,7 +88,12 @@ function startTurn(player, first=false) {
       if (!first) log(`Inizia il turno di ${playerName(player)}.`, EventTypes.TURN_STARTED, {
         player,
         faction: state.factions[player],
-        round: state.turn
+        round: state.turn,
+        firstTurn:false
+      });
+      else if (typeof emitGameEvent === "function") emitGameEvent({
+        type:EventTypes.TURN_STARTED,
+        data:{ player, faction:state.factions[player], round:state.turn, firstTurn:true }
       });
       if (typeof drawCardForTurn === "function") drawCardForTurn(player, { first });
       if (typeof applyC1fAfterDrawPassives === "function") applyC1fAfterDrawPassives(player, first);

@@ -28,6 +28,8 @@ const EventTypes = Object.freeze({
   CARD_DRAWN: "CARD_DRAWN",
   CARD_PLAYED: "CARD_PLAYED",
   CARD_DISCARDED: "CARD_DISCARDED",
+  CARD_STOLEN: "CARD_STOLEN",
+  CARD_BLOCKED: "CARD_BLOCKED",
 
   ABILITY_USED: "ABILITY_USED",
   TACTIC_USED: "TACTIC_USED",
@@ -36,6 +38,9 @@ const EventTypes = Object.freeze({
 
   ECONOMY_CHANGED: "ECONOMY_CHANGED",
   PS_CONTROL_CHANGED: "PS_CONTROL_CHANGED",
+  PRESSURE_CHANGED: "PRESSURE_CHANGED",
+  HQ_THREATENED: "HQ_THREATENED",
+  DECK_EXHAUSTED: "DECK_EXHAUSTED",
   AI_PLAN_CHANGED: "AI_PLAN_CHANGED",
 
   VICTORY: "VICTORY",
@@ -95,6 +100,11 @@ function emitGameEvent(event) {
   if (typeof combatFeedbackEnqueueEvent === "function") {
     try { combatFeedbackEnqueueEvent(normalized); }
     catch (err) { console.warn("Arena Rubra F9N2 feedback enqueue failed", err); }
+  }
+
+  if (typeof eventOverlayEnqueueGameEvent === "function") {
+    try { eventOverlayEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O3 event overlay enqueue failed", err); }
   }
 
   return normalized;

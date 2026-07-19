@@ -18,8 +18,8 @@ let checks = 0;
 const ok = (value, message) => { assert.ok(value, message); checks += 1; };
 const equal = (actual, expected, message) => { assert.strictEqual(actual, expected, message); checks += 1; };
 
-ok(build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c") || build.includes("C2-STABLE-1-F9O2c-APK-M4c") || build.includes("C2-STABLE-1-F9O2b-APK-M4c"), "metadata F9O2b o successiva");
-ok(build.includes("mission-accessibility-build-flow") || build.includes("token-layering-active-unit-cues") || build.includes("bot-camera-freeze-hotfix") || build.includes("camera-autonomy-inspection"), "canale F9O2b o successivo");
+ok(build.includes("C2-STABLE-1-F9O3-APK-M4c") || build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c") || build.includes("C2-STABLE-1-F9O2c-APK-M4c") || build.includes("C2-STABLE-1-F9O2b-APK-M4c"), "metadata F9O2b o successiva");
+ok(build.includes("event-narrative-overlay-foundation") || build.includes("mission-accessibility-build-flow") || build.includes("token-layering-active-unit-cues") || build.includes("bot-camera-freeze-hotfix") || build.includes("camera-autonomy-inspection"), "canale F9O2b o successivo");
 ok(!mobile.includes("centerApkM4CameraOn(selected.pos)"), "nessun autofocus render mobile");
 ok(!gameScreen.includes("centerApkM4CameraOn(apkM4FocusCoord())"), "scheda unità non centra camera");
 ok(!camera.includes('if (boardCamera.mode === "focus") {\n    const coord = boardCameraFocusCoord()'), "render desktop non ricentra focus");

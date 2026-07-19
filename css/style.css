@@ -6818,3 +6818,155 @@ body.mobile-apk-m4 .mapMissionCompactRow { font-size:7px; }
 body.mobile-apk-m4 .mapMissionCompactValue { max-width:52px; }
 body.mobile-apk-m4 .mapMissionCompactActions button,
 body.mobile-apk-m4 .mapMissionCompactConfirm button { min-height:22px; padding:2px 5px; font-size:7px; }
+
+/* =====================================================
+   F9O3 — Event & Narrative Overlay Foundation
+   ===================================================== */
+.gameEventOverlayRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 88;
+  pointer-events: none;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.gameEventOverlayCard {
+  --event-overlay-duration: 1000ms;
+  pointer-events: auto;
+  min-width: min(520px, 72vw);
+  max-width: min(720px, 86vw);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 11px 18px;
+  border: 1px solid color-mix(in srgb, var(--theme-highlight, #e5c76b) 75%, transparent);
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(6,8,12,.82), rgba(18,20,26,.94), rgba(6,8,12,.82));
+  color: var(--theme-text, #f6f1df);
+  box-shadow: 0 12px 40px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.04);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  cursor: pointer;
+  text-align: left;
+  will-change: transform, opacity;
+}
+
+.gameEventOverlayCard[hidden] { display: none !important; }
+.gameEventOverlayCard.isRunning { animation: arenaEventRise var(--event-overlay-duration) linear both; }
+.gameEventOverlayCard.isReduced { animation-name: arenaEventFadeReduced; }
+.gameEventOverlayCard[data-priority="critical"] {
+  border-color: color-mix(in srgb, #ffcf58 86%, transparent);
+  box-shadow: 0 14px 44px rgba(0,0,0,.5), 0 0 28px rgba(255,170,42,.18);
+}
+.gameEventOverlayCard[data-priority="high"] { border-color: color-mix(in srgb, var(--theme-highlight, #e5c76b) 88%, transparent); }
+
+.gameEventOverlayIcon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--theme-highlight, #e5c76b) 17%, rgba(0,0,0,.55));
+  border: 1px solid color-mix(in srgb, var(--theme-highlight, #e5c76b) 62%, transparent);
+  color: var(--theme-highlight, #e5c76b);
+  font-size: 19px;
+  font-weight: 900;
+}
+.gameEventOverlayCopy { min-width: 0; display: grid; gap: 2px; }
+.gameEventOverlayTitle {
+  font-size: clamp(13px, 1.45vw, 18px);
+  line-height: 1.05;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--theme-highlight, #e5c76b);
+}
+.gameEventOverlayMessage {
+  font-size: clamp(11px, 1.15vw, 15px);
+  line-height: 1.22;
+  color: var(--theme-text, #f6f1df);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes arenaEventRise {
+  0%   { transform: translate3d(0, 86px, 0) scale(.985); opacity: .23; }
+  24%  { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  74%  { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  100% { transform: translate3d(0, -86px, 0) scale(.985); opacity: .23; }
+}
+@keyframes arenaEventFadeReduced {
+  0% { opacity: .23; }
+  20%, 80% { opacity: 1; }
+  100% { opacity: .23; }
+}
+
+.narrativeOverlayRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 96;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: clamp(12px, 3vw, 34px);
+  background: linear-gradient(to top, rgba(0,0,0,.52), rgba(0,0,0,.08) 48%, transparent 72%);
+}
+.narrativeOverlayRoot[hidden] { display: none !important; }
+.narrativeDialog {
+  width: min(980px, 96%);
+  min-height: 170px;
+  display: grid;
+  grid-template-columns: minmax(118px, 180px) minmax(0, 1fr);
+  gap: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 2px solid color-mix(in srgb, var(--theme-highlight, #e5c76b) 72%, #2a1a12);
+  background: linear-gradient(135deg, rgba(12,14,18,.96), rgba(30,25,22,.96));
+  box-shadow: 0 20px 70px rgba(0,0,0,.62), inset 0 0 0 1px rgba(255,255,255,.05);
+  color: var(--theme-text, #f6f1df);
+}
+.narrativeDialog[data-side="right"] { grid-template-columns: minmax(0, 1fr) minmax(118px, 180px); }
+.narrativeDialog[data-side="right"] .narrativePortrait { grid-column: 2; grid-row: 1; }
+.narrativeDialog[data-side="right"] .narrativeContent { grid-column: 1; grid-row: 1; }
+.narrativePortrait {
+  min-height: 142px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--theme-highlight, #e5c76b) 48%, transparent);
+  background: radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--theme-highlight, #e5c76b) 18%, transparent), rgba(0,0,0,.55));
+}
+.narrativePortraitImage { width: 100%; height: 100%; object-fit: contain; }
+.narrativePortraitPlaceholder { display: grid; place-items: center; gap: 6px; text-transform: uppercase; letter-spacing: .08em; }
+.narrativePortraitSymbol { font-size: 58px; line-height: 1; color: var(--theme-highlight, #e5c76b); }
+.narrativeExpressionLabel { opacity: .72; }
+.narrativeContent { min-width: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 10px; }
+.narrativeHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 7px; }
+.narrativeHeader strong { color: var(--theme-highlight, #e5c76b); font-size: 17px; letter-spacing: .045em; }
+.narrativeStepLabel { opacity: .68; font-size: 12px; }
+.narrativeText { min-height: 62px; font-size: clamp(14px, 1.6vw, 20px); line-height: 1.38; white-space: pre-wrap; }
+.narrativeControls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+@media (max-width: 760px) {
+  .gameEventOverlayCard { min-width: min(360px, 88vw); max-width: 92vw; padding: 9px 12px; gap: 9px; }
+  .gameEventOverlayIcon { width: 28px; height: 28px; font-size: 16px; }
+  .narrativeOverlayRoot { padding: 8px; }
+  .narrativeDialog,
+  .narrativeDialog[data-side="right"] { width: 100%; min-height: 0; grid-template-columns: 82px minmax(0, 1fr); gap: 9px; padding: 9px; }
+  .narrativeDialog[data-side="right"] .narrativePortrait { grid-column: 1; grid-row: 1; }
+  .narrativeDialog[data-side="right"] .narrativeContent { grid-column: 2; grid-row: 1; }
+  .narrativePortrait { min-height: 104px; }
+  .narrativePortraitSymbol { font-size: 40px; }
+  .narrativeText { font-size: 13px; min-height: 48px; }
+  .narrativeControls { gap: 5px; }
+  .narrativeControls button { padding: 6px 8px; font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gameEventOverlayCard.isRunning { animation-name: arenaEventFadeReduced; }
+  .narrativeDialog { scroll-behavior: auto; }
+}

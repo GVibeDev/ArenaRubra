@@ -579,6 +579,26 @@ function overdrawToDiscard(side, card, source="pesca") {
   return card;
 }
 
+
+function maybeEmitDeckExhausted(side, source="draw") {
+  if (!state || !state.deck || !state.deck[side]) return false;
+  if (!state.f9o3DeckExhaustedNotified) state.f9o3DeckExhaustedNotified = { 1:false, 2:false };
+  const empty = state.deck[side].length === 0;
+  if (!empty) {
+    state.f9o3DeckExhaustedNotified[side] = false;
+    return false;
+  }
+  if (state.f9o3DeckExhaustedNotified[side]) return false;
+  state.f9o3DeckExhaustedNotified[side] = true;
+  if (typeof emitGameEvent === "function" && typeof EventTypes !== "undefined" && EventTypes.DECK_EXHAUSTED) {
+    emitGameEvent({
+      type:EventTypes.DECK_EXHAUSTED,
+      data:{ player:side, faction:state.factions && state.factions[side], source, handSize:state.hand && state.hand[side] ? state.hand[side].length : 0, discardSize:state.discard && state.discard[side] ? state.discard[side].length : 0, round:state.turn }
+    });
+  }
+  return true;
+}
+
 function drawCards(side, count = 1, options = {}) {
   if (!state || !state.deck || !state.hand || !state.discard) return [];
   const drawn = [];
@@ -601,6 +621,7 @@ function drawCards(side, count = 1, options = {}) {
     type:EventTypes.CARD_DRAWN,
     data:{ player:side, faction:state.factions && state.factions[side], count:drawn.length, source, cards:drawn.map(c => ({ id:c.id, cardUid:c.cardUid, cardType:c.cardType, sourceType:c.sourceType, overdrawDiscarded:Boolean(c.overdrawDiscarded) })) }
   });
+  maybeEmitDeckExhausted(side, source);
   return drawn;
 }
 
@@ -699,12 +720,14 @@ function moveHandCardBetweenPlayers(fromSide, toSide, cardUid, source="Furto car
   delete moved.c2c7aBlockedSource;
   state.hand[toSide].push(moved);
   syncCardDebugState();
-  log(`${playerName(toSide)} ruba ${moved.name} dalla mano di ${playerName(fromSide)} (${source}).`, EventTypes.LOG_MESSAGE, {
+  log(`${playerName(toSide)} ruba ${moved.name} dalla mano di ${playerName(fromSide)} (${source}).`, EventTypes.CARD_STOLEN, {
     fromSide,
     toSide,
+    fromFaction:state.factions && state.factions[fromSide],
+    toFaction:state.factions && state.factions[toSide],
     cardUid: moved.cardUid,
     cardName: moved.name,
-    source: "C2c-7a-move-hand-card"
+    source
   });
   return moved;
 }
@@ -923,6 +946,8 @@ function recoverDeckForPlayer(side, options = {}) {
     delete card.overdrawSource;
     return card;
   });
+  if (!state.f9o3DeckExhaustedNotified) state.f9o3DeckExhaustedNotified = { 1:false, 2:false };
+  state.f9o3DeckExhaustedNotified[side] = false;
 
   let missionRuntimeAfter = null;
   if (detachedMission) {

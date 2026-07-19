@@ -18,8 +18,8 @@ const app = read("src/app.js");
 const css = read("css/style.css");
 const config = read("data/cards_base.js");
 
-ok(build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c") || build.includes("C2-STABLE-1-F9O2c-APK-M4c") || build.includes("C2-STABLE-1-F9O2b-APK-M4c") || build.includes("C2-STABLE-1-F9O2a-APK-M4c") || build.includes("C2-STABLE-1-F9O2-APK-M4c") || build.includes("C2-STABLE-1-F9O1b-APK-M4c"), "build F9O1 o successiva");
-ok(build.includes("mission-accessibility-build-flow") || build.includes("token-layering-active-unit-cues") || build.includes("bot-camera-freeze-hotfix") || build.includes("camera-autonomy-inspection") || build.includes("camera-deployment-click-hotfix") || build.includes("interactive-map-camera-foundation") || build.includes("music-controls-persistent-volume"), "canale F9O1b o successivo");
+ok(build.includes("C2-STABLE-1-F9O3-APK-M4c") || build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c") || build.includes("C2-STABLE-1-F9O2c-APK-M4c") || build.includes("C2-STABLE-1-F9O2b-APK-M4c") || build.includes("C2-STABLE-1-F9O2a-APK-M4c") || build.includes("C2-STABLE-1-F9O2-APK-M4c") || build.includes("C2-STABLE-1-F9O1b-APK-M4c"), "build F9O1 o successiva");
+ok(build.includes("event-narrative-overlay-foundation") || build.includes("mission-accessibility-build-flow") || build.includes("token-layering-active-unit-cues") || build.includes("bot-camera-freeze-hotfix") || build.includes("camera-autonomy-inspection") || build.includes("camera-deployment-click-hotfix") || build.includes("interactive-map-camera-foundation") || build.includes("music-controls-persistent-volume"), "canale F9O1b o successivo");
 ok(config.includes("factionPresentationRuntimeF9O1: true"), "flag tema");
 ok(config.includes("postMatchAudioPlaylistF9O1: true"), "flag playlist");
 ok(index.indexOf('src/audio_manager.js') < index.indexOf('src/splash.js'), "audio manager prima dello splash");

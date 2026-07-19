@@ -463,6 +463,10 @@ const ABILITY_HANDLERS = Object.freeze({
         log(`${source}: ${playerName(toSide)} ruba ${moved.name} appena pescata da ${playerName(fromSide)}.`);
       }
       if (typeof syncCardDebugState === "function") syncCardDebugState();
+      if (typeof emitGameEvent === "function" && typeof EventTypes !== "undefined" && EventTypes.CARD_STOLEN) emitGameEvent({
+        type:EventTypes.CARD_STOLEN,
+        data:{ fromSide, toSide, fromFaction:state.factions && state.factions[fromSide], toFaction:state.factions && state.factions[toSide], cardUid:moved.cardUid, cardName:moved.name, source, destination:moved.zone }
+      });
       return moved;
     }
 

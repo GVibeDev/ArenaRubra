@@ -390,6 +390,22 @@ function runPrecheck(options = {}) {
       info.push("F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.");
     }
 
+    // F9O3 – overlay eventi rapidi e fondazione narrativa.
+    if (typeof eventOverlayEnqueueGameEvent !== "function" || typeof eventOverlayDiagnostics !== "function") {
+      problems.push("Runtime overlay eventi F9O3 non disponibile.");
+    } else {
+      const overlayDiag = eventOverlayDiagnostics();
+      if (!overlayDiag || !overlayDiag.config || overlayDiag.config.durationMs !== 1000) problems.push("Overlay F9O3: durata rapida non valida.");
+      info.push("F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.");
+    }
+    if (typeof narrativeOpen !== "function" || typeof narrativeRegisterPortraitSet !== "function" || typeof narrativeDiagnostics !== "function") {
+      problems.push("Fondazione narrativa F9O3 non disponibile.");
+    } else {
+      const narrativeDiag = narrativeDiagnostics();
+      if (!narrativeDiag || !Array.isArray(narrativeDiag.expressions) || narrativeDiag.expressions.length < 5) problems.push("Narrativa F9O3: espressioni avatar incomplete.");
+      info.push("F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.");
+    }
+
     // Handler orfani: non errore, ma utile per pulizia.
     if (typeof ABILITY_HANDLERS !== "undefined") {
       const usedKinds = new Set(blueprints.map(bp => bp.ability && bp.ability.kind).filter(Boolean));

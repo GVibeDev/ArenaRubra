@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9O2e Mission Accessibility & Build Flow Reliability metadata.
+// Arena Rubra – F9O3 Event & Narrative Overlay Foundation metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9O2e-APK-M4c",
-  buildName: "Mission Accessibility & Build Flow Reliability",
+  version: "C2-STABLE-1-F9O3-APK-M4c",
+  buildName: "Event & Narrative Overlay Foundation",
   buildDate: "2026-07-19",
-  buildChannel: "mission-accessibility-build-flow",
-  logicBaseline: "C2-STABLE-1-F9O2d-APK-M4c",
+  buildChannel: "event-narrative-overlay-foundation",
+  logicBaseline: "C2-STABLE-1-F9O2e-APK-M4c",
   map: "MAP1 radius 6 · QG sbarcabile e costruzione diretta sul proprio QG",
-  notes: "F9O2e libera correttamente gli slot Starter dopo la distruzione, abilita la costruzione delle strutture da carta anche sul proprio QG, rende la Missione giocabile cliccando la carta con conferma, mostra i progressi nel dock Azioni e applica il primo tuning accessibile delle soglie Missione."
+  notes: "F9O3 aggiunge una coda di messaggi rapidi a scorrimento verticale per gli eventi principali, chiudibili al click o dopo 1 secondo, e una fondazione narrativa riutilizzabile con cornice, narratore, avatar multi-espressione e comandi Avanti/Indietro/Ripeti/Chiudi."
 });
 
 function buildInfoLabel() {

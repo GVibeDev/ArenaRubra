@@ -5,8 +5,8 @@
 // Non modifica gameplay, mercato, tattiche o AI.
 
 const CARD_CATALOG_CONFIG = {
-  version: "C2-STABLE-1-F9O2d-APK-M4c",
-  mode: "token_layering_active_unit_cues",
+  version: "C2-STABLE-1-F9O3-APK-M4c",
+  mode: "event_narrative_overlay_foundation",
   factionPresentationRuntimeF9O1: true,
   factionPresentationRuntimeF9O1a: true,
   liveLayoutCalibrationOverrideF9O1a: true,
@@ -28,6 +28,10 @@ const CARD_CATALOG_CONFIG = {
   tokenFactionBaseOpacityIndependentF9O2d: true,
   activeUnitHaloArrowF9O2d: true,
   reducedMotionTokenCuesF9O2d: true,
+  quickEventOverlayF9O3: true,
+  quickEventOverlayDurationMsF9O3: 1000,
+  narrativeOverlayFoundationF9O3: true,
+  narrativeExpressionsF9O3: ["neutral", "explain", "approve", "warning", "stern"],
   playerOneDeterminesPresentationTheme: true,
   postMatchAudioPlaylistF9O1: true,
   optionalMissionDeckContract: true,

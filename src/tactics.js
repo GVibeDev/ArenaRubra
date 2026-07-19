@@ -1572,8 +1572,8 @@ function c2c7aBlockRandomEnemyHandCards(player, card) {
     blocked.push(selected);
   }
   if (typeof syncCardDebugState === "function") syncCardDebugState();
-  log(`${c.name}: ${playerName(player)} controlla ${ps} PS e blocca ${blocked.length} carta${blocked.length !== 1 ? "e" : ""} nella mano di ${playerName(enemy)}: ${blocked.map(x => x.name).join(", ") || "nessuna"}.`, EventTypes.LOG_MESSAGE, {
-    player, enemy, ps, blocked: blocked.map(x => ({ cardUid:x.cardUid, name:x.name })), source:"C2c-7a-embargo"
+  log(`${c.name}: ${playerName(player)} controlla ${ps} PS e blocca ${blocked.length} carta${blocked.length !== 1 ? "e" : ""} nella mano di ${playerName(enemy)}: ${blocked.map(x => x.name).join(", ") || "nessuna"}.`, EventTypes.CARD_BLOCKED, {
+    player, enemy, faction:state.factions && state.factions[player], enemyFaction:state.factions && state.factions[enemy], ps, count:blocked.length, blocked:blocked.map(x => ({ cardUid:x.cardUid, name:x.name })), source:c.name
   });
   return { damage:0, extra:`${blocked.length} carte bloccate` };
 }

@@ -105,11 +105,17 @@ function resolveEndOfRound() {
         const p1 = countControlledPS(1);
         const p2 = countControlledPS(2);
         if (p1 > p2) {
-          state.pressure[1] += 1;
-          log(`Pressione Strategica: ${playerName(1)} controlla più PS (${p1}-${p2}) e sale a ${state.pressure[1]}/${PRESSURE_WIN}.`);
+          const previous = state.pressure[1] || 0;
+          state.pressure[1] = previous + 1;
+          log(`Pressione Strategica: ${playerName(1)} controlla più PS (${p1}-${p2}) e sale a ${state.pressure[1]}/${PRESSURE_WIN}.`, EventTypes.PRESSURE_CHANGED, {
+            player:1, faction:state.factions[1], previous, current:state.pressure[1], delta:1, limit:PRESSURE_WIN, controlledPs:p1, enemyControlledPs:p2, round:state.turn
+          });
         } else if (p2 > p1) {
-          state.pressure[2] += 1;
-          log(`Pressione Strategica: ${playerName(2)} controlla più PS (${p2}-${p1}) e sale a ${state.pressure[2]}/${PRESSURE_WIN}.`);
+          const previous = state.pressure[2] || 0;
+          state.pressure[2] = previous + 1;
+          log(`Pressione Strategica: ${playerName(2)} controlla più PS (${p2}-${p1}) e sale a ${state.pressure[2]}/${PRESSURE_WIN}.`, EventTypes.PRESSURE_CHANGED, {
+            player:2, faction:state.factions[2], previous, current:state.pressure[2], delta:1, limit:PRESSURE_WIN, controlledPs:p2, enemyControlledPs:p1, round:state.turn
+          });
         } else {
           log(`Pressione Strategica: parità PS (${p1}-${p2}), nessuno avanza.`);
         }
