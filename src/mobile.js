@@ -96,7 +96,6 @@ function apkM4PanelElements() {
 function showApkM4SelectedUnitFloat() {
   closeApkM4Panel();
   if (typeof expandSelectedUnitFloat === "function") expandSelectedUnitFloat();
-  if (typeof centerApkM4CameraOn === "function") centerApkM4CameraOn(apkM4FocusCoord());
 }
 
 function setApkM4Panel(panel, options = {}) {
@@ -308,17 +307,17 @@ function bindApkM4ShellControls() {
   const fitBtn = document.getElementById("fitBoardBtn");
   if (fitBtn && fitBtn.dataset.apkM4Bound !== "1") {
     fitBtn.dataset.apkM4Bound = "1";
-    fitBtn.addEventListener("click", () => setApkM4CameraMode("fit"));
+    fitBtn.addEventListener("click", () => { if (typeof cameraInteractionFit === "function") cameraInteractionFit(); else setApkM4CameraMode("fit"); });
   }
   const zoomIn = document.getElementById("zoomInBoardBtn");
   if (zoomIn && zoomIn.dataset.apkM4Bound !== "1") {
     zoomIn.dataset.apkM4Bound = "1";
-    zoomIn.addEventListener("click", () => setApkM4CameraMode("play"));
+    zoomIn.addEventListener("click", () => { if (typeof cameraInteractionZoomIn === "function") cameraInteractionZoomIn(); else setApkM4CameraMode("play"); });
   }
   const zoomOut = document.getElementById("zoomOutBoardBtn");
   if (zoomOut && zoomOut.dataset.apkM4Bound !== "1") {
     zoomOut.dataset.apkM4Bound = "1";
-    zoomOut.addEventListener("click", () => setApkM4CameraMode("fit"));
+    zoomOut.addEventListener("click", () => { if (typeof cameraInteractionZoomOut === "function") cameraInteractionZoomOut(); else setApkM4CameraMode("fit"); });
   }
   const handDrawer = document.getElementById("openHandDrawerBtn");
   if (handDrawer && handDrawer.dataset.apkM4Bound !== "1") {
@@ -348,10 +347,13 @@ function patchApkM4RenderRefresh() {
         const selected = typeof getSelectedUnit === "function" ? getSelectedUnit() : null;
         apkM4Camera.lastSelectedId = selected ? selected.uid : null;
         updateApkM4StatusStrip();
-        fitApkM4Board({ preserveCamera:true });
+        // F9O2c: nessun fit o ricalcolo camera nei refresh prodotti dal bot.
+        // La trasformazione corrente viene già mantenuta da syncBoardCameraAfterRender().
+        if (typeof cameraInteractionUpdateControls === "function") cameraInteractionUpdateControls();
         if (apkM4Camera.mobile && selected && selected.uid !== wasSelected) {
           if (typeof expandSelectedUnitFloat === "function") expandSelectedUnitFloat();
-          centerApkM4CameraOn(selected.pos);
+          // F9O2b: render, selezioni e azioni bot non cambiano mai la camera.
+          // Focus e Fit restano comandi espliciti; l'unica eccezione automatica è il fit sbarco.
         }
       });
     }
@@ -368,10 +370,10 @@ function initApkM4MobileLayout() {
   fitApkM4Board({ preserveCamera:false });
   updateApkM4StatusStrip();
 
-  window.addEventListener("resize", () => fitApkM4Board({ preserveCamera:false }), { passive:true });
-  window.addEventListener("orientationchange", () => setTimeout(() => fitApkM4Board({ preserveCamera:false }), 160), { passive:true });
+  window.addEventListener("resize", () => fitApkM4Board({ preserveCamera:true }), { passive:true });
+  window.addEventListener("orientationchange", () => setTimeout(() => fitApkM4Board({ preserveCamera:true }), 160), { passive:true });
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", () => fitApkM4Board({ preserveCamera:false }), { passive:true });
+    window.visualViewport.addEventListener("resize", () => fitApkM4Board({ preserveCamera:true }), { passive:true });
   }
   if (typeof window.matchMedia === "function") {
     const mq = window.matchMedia(APK_M4_MOBILE_QUERY);

@@ -51,8 +51,31 @@ const MENU_LAYOUT_CALIBRATION_FIELDS = Object.freeze([
 
 const menuLayoutCalibrationState = {
   values: { ...MENU_LAYOUT_CALIBRATION_DEFAULTS },
-  lastExport: ""
+  lastExport: "",
+  context: "global",
+  returnScreen: "mainMenu"
 };
+
+function menuLayoutCalibrationIsGameContext() {
+  return menuLayoutCalibrationState.context === "game";
+}
+
+function menuLayoutCalibrationActiveGameMapKey() {
+  if (typeof state !== "undefined" && state && state.presentationTheme) {
+    return state.presentationTheme.activeMapSkinKey || state.presentationTheme.mapSkinKey || state.presentationTheme.defaultMapSkinKey || null;
+  }
+  if (typeof document !== "undefined" && document.documentElement) return document.documentElement.dataset.mapSkin || null;
+  return null;
+}
+
+function menuLayoutCalibrationFactionDefaultMapKey() {
+  if (typeof state !== "undefined" && state && state.presentationTheme && state.presentationTheme.defaultMapSkinKey) {
+    return state.presentationTheme.defaultMapSkinKey;
+  }
+  const faction = typeof state !== "undefined" && state && state.factions ? state.factions[1] : "Nexus";
+  if (typeof arenaPresentationThemeForFaction === "function") return arenaPresentationThemeForFaction(faction).mapSkinKey;
+  return MENU_LAYOUT_CALIBRATION_DEFAULTS.mapSkinKey;
+}
 
 function menuLayoutCalibrationSkinKey(value) {
   if (typeof mapSkinByKey === "function") return mapSkinByKey(value).key;
@@ -155,7 +178,7 @@ function menuLayoutCalibrationCssValue(field, value) {
   return field.suffix === "px" ? `${Math.round(n)}px` : String(Math.round(n * 100) / 100);
 }
 
-function applyMenuLayoutCalibration(values = menuLayoutCalibrationState.values) {
+function applyMenuLayoutCalibration(values = menuLayoutCalibrationState.values, options = {}) {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
   const clean = menuLayoutCalibrationSanitize(values);
@@ -163,14 +186,19 @@ function applyMenuLayoutCalibration(values = menuLayoutCalibrationState.values) 
   root.classList.toggle("f9l1-menu-layout-calibration-disabled", !clean.enabled);
   if (!clean.enabled) {
     for (const field of MENU_LAYOUT_CALIBRATION_FIELDS) root.style.removeProperty(field.css);
+    if (menuLayoutCalibrationIsGameContext() && typeof arenaPresentationClearGameCalibrationOverride === "function") {
+      arenaPresentationClearGameCalibrationOverride({ apply: true });
+    }
     return;
   }
 
-  // F9M2d: applica prima la skin, poi gli override del calibratore.
-  // Così eventuali variabili impostate dalla skin non possono coprire
-  // slider come opacità celle/griglia/fondo.
-  if (typeof mapSkinApply === "function") mapSkinApply(clean.mapSkinKey);
-  if (typeof visualAssetSetTokenGraphicsMode === "function") visualAssetSetTokenGraphicsMode(clean.tokenGraphicsMode);
+  const applyAsGameOverride = options.gameOverride === true || (options.gameOverride !== false && menuLayoutCalibrationIsGameContext());
+  if (applyAsGameOverride && typeof arenaPresentationSetGameCalibrationOverride === "function") {
+    arenaPresentationSetGameCalibrationOverride(clean);
+  } else {
+    if (typeof mapSkinApply === "function") mapSkinApply(clean.mapSkinKey);
+    if (typeof visualAssetSetTokenGraphicsMode === "function") visualAssetSetTokenGraphicsMode(clean.tokenGraphicsMode);
+  }
 
   for (const field of MENU_LAYOUT_CALIBRATION_FIELDS) {
     root.style.setProperty(field.css, menuLayoutCalibrationCssValue(field, clean[field.key]));
@@ -233,12 +261,13 @@ function menuLayoutCalibrationEnsureScreen() {
     <div class="menuLayoutLabCard">
       <div class="deckBuilderHeader menuLayoutLabHeader">
         <div>
-          <div class="mainMenuKicker">Dev Tool temporaneo</div>
-          <h2>Menu Layout Calibration</h2>
-          <p class="deckBuilderIntro">F9M2c calibra layout menu/setup/laboratorio, skin UI/mappa e modalità token grafici tramite variabili CSS/localStorage. Non modifica gameplay, deck, AI, combat o dati ufficiali.</p>
+          <div class="mainMenuKicker">Strumento visuale</div>
+          <h2>Layout Calibration</h2>
+          <p class="deckBuilderIntro">Il preset di fazione definisce l'aspetto iniziale della partita. Il calibratore gestisce separatamente geometria dell'interfaccia e aspetto della mappa, e può applicare un override live alla partita corrente senza modificare gameplay o dati.</p>
+          <div class="deckBuilderMeta" id="menuLayoutContextLine">Contesto globale.</div>
         </div>
         <div class="deckBuilderHeaderActions menuLayoutLabHeaderActions">
-          <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
+          <button class="ghost" id="menuLayoutReturnBtn" type="button">Torna al menu</button>
           <button class="ghost" data-menu-layout-preview="mainMenu" type="button">Vedi menu</button>
           <button class="ghost" data-menu-layout-preview="setup" type="button">Vedi setup</button>
           <button class="ghost" data-menu-layout-preview="deckBuilder" type="button">Vedi Deck Builder</button>
@@ -250,15 +279,22 @@ function menuLayoutCalibrationEnsureScreen() {
           <h3>Override locali</h3>
           <span class="help">Usa i range, salva localmente oppure copia JSON/CSS per riportare i valori nel codice.</span>
         </div>
-        <label class="checkline menuLayoutLabEnabledLine"><input id="menuLayoutEnabledInput" type="checkbox" checked> Applica override locali F9M2c</label>
-        <div class="mapSkinSlotRow" id="mapSkinSlotRow"></div>
-        <div class="menuLayoutLabGrid" id="menuLayoutLabControls"></div>
+        <label class="checkline menuLayoutLabEnabledLine"><input id="menuLayoutEnabledInput" type="checkbox" checked> Applica calibrazione visuale</label>
+        <div class="menuLayoutCompetenceBlock">
+          <div class="deckBuilderBoxTitleRow"><h4>Aspetto partita</h4><span class="help">Skin, mappa e token. In partita sostituisce il preset di fazione solo per la sessione corrente.</span></div>
+          <div class="mapSkinSlotRow" id="mapSkinSlotRow"></div>
+        </div>
+        <div class="menuLayoutCompetenceBlock">
+          <div class="deckBuilderBoxTitleRow"><h4>Geometria e leggibilità</h4><span class="help">Dimensioni dei pannelli, spaziature, testo e opacità della mappa.</span></div>
+          <div class="menuLayoutLabGrid" id="menuLayoutLabControls"></div>
+        </div>
         <div class="menuLayoutLabActions">
           <button class="primary" id="menuLayoutApplyBtn" type="button">Applica preview</button>
           <button class="ghost" id="menuLayoutSaveBtn" type="button">Salva locale</button>
           <button class="ghost" id="menuLayoutCopyJsonBtn" type="button">Copia JSON</button>
           <button class="ghost" id="menuLayoutCopyCssBtn" type="button">Copia CSS</button>
-          <button class="danger" id="menuLayoutResetBtn" type="button">Reset default</button>
+          <button class="ghost" id="menuLayoutFactionDefaultBtn" type="button" hidden>Ripristina preset fazione</button>
+          <button class="danger" id="menuLayoutResetBtn" type="button">Reset calibrazione</button>
         </div>
         <div class="deckBuilderMeta" id="menuLayoutStatusLine">Override pronti.</div>
       </section>
@@ -399,7 +435,10 @@ function menuLayoutCalibrationApplyFromControls(save = false) {
     const ok = menuLayoutCalibrationSaveStore();
     if (typeof mapSkinSaveKey === "function") mapSkinSaveKey(next.mapSkinKey);
     if (typeof visualAssetSetTokenGraphicsMode === "function") visualAssetSetTokenGraphicsMode(next.tokenGraphicsMode, { save:true });
-    menuLayoutCalibrationSetStatus(ok ? "Override layout, skin e token mode salvati in locale." : "Salvataggio locale non riuscito.", ok ? "good" : "bad");
+    const message = menuLayoutCalibrationIsGameContext()
+      ? "Override applicato alla partita e calibrazione salvata. Il prossimo match partirà comunque dal preset della fazione scelta."
+      : "Calibrazione layout, skin e token salvata in locale.";
+    menuLayoutCalibrationSetStatus(ok ? message : "Salvataggio locale non riuscito.", ok ? "good" : "bad");
   } else {
     menuLayoutCalibrationSetStatus("Preview layout applicata.", "good");
   }
@@ -435,6 +474,19 @@ function menuLayoutCalibrationBindScreen(screen) {
   if (!screen || screen.dataset.bound === "1") return;
   screen.dataset.bound = "1";
 
+  const returnBtn = screen.querySelector("#menuLayoutReturnBtn");
+  if (returnBtn) returnBtn.addEventListener("click", menuLayoutCalibrationReturnToSource);
+
+  const factionDefaultBtn = screen.querySelector("#menuLayoutFactionDefaultBtn");
+  if (factionDefaultBtn) factionDefaultBtn.addEventListener("click", () => {
+    if (!menuLayoutCalibrationIsGameContext()) return;
+    const mapSkinKey = menuLayoutCalibrationFactionDefaultMapKey();
+    if (typeof arenaPresentationClearGameCalibrationOverride === "function") arenaPresentationClearGameCalibrationOverride({ apply: true });
+    menuLayoutCalibrationState.values = menuLayoutCalibrationSanitize({ ...menuLayoutCalibrationState.values, mapSkinKey });
+    menuLayoutCalibrationWriteControls(menuLayoutCalibrationState.values);
+    menuLayoutCalibrationSetStatus("Preset della fazione del Giocatore 1 ripristinato per la partita corrente.", "good");
+  });
+
   screen.addEventListener("input", event => {
     const target = event.target;
     if (!target || !target.matches("[data-menu-layout-field], [data-menu-layout-skin], [data-menu-layout-token-mode], #menuLayoutEnabledInput")) return;
@@ -454,13 +506,21 @@ function menuLayoutCalibrationBindScreen(screen) {
 
   const resetBtn = screen.querySelector("#menuLayoutResetBtn");
   if (resetBtn) resetBtn.addEventListener("click", () => {
-    menuLayoutCalibrationState.values = { ...MENU_LAYOUT_CALIBRATION_DEFAULTS };
-    applyMenuLayoutCalibration(menuLayoutCalibrationState.values);
+    const mapSkinKey = menuLayoutCalibrationIsGameContext()
+      ? menuLayoutCalibrationFactionDefaultMapKey()
+      : MENU_LAYOUT_CALIBRATION_DEFAULTS.mapSkinKey;
+    menuLayoutCalibrationState.values = menuLayoutCalibrationSanitize({ ...MENU_LAYOUT_CALIBRATION_DEFAULTS, mapSkinKey });
+    if (menuLayoutCalibrationIsGameContext() && typeof arenaPresentationClearGameCalibrationOverride === "function") {
+      arenaPresentationClearGameCalibrationOverride({ apply: true });
+      applyMenuLayoutCalibration(menuLayoutCalibrationState.values, { gameOverride: false });
+    } else {
+      applyMenuLayoutCalibration(menuLayoutCalibrationState.values, { gameOverride: false });
+      menuLayoutCalibrationSaveStore();
+      if (typeof mapSkinSaveKey === "function") mapSkinSaveKey(menuLayoutCalibrationState.values.mapSkinKey);
+      if (typeof visualAssetSetTokenGraphicsMode === "function") visualAssetSetTokenGraphicsMode(menuLayoutCalibrationState.values.tokenGraphicsMode, { save:true });
+    }
     menuLayoutCalibrationWriteControls(menuLayoutCalibrationState.values);
-    menuLayoutCalibrationSaveStore();
-    if (typeof mapSkinSaveKey === "function") mapSkinSaveKey(menuLayoutCalibrationState.values.mapSkinKey);
-    if (typeof visualAssetSetTokenGraphicsMode === "function") visualAssetSetTokenGraphicsMode(menuLayoutCalibrationState.values.tokenGraphicsMode, { save:true });
-    menuLayoutCalibrationSetStatus("Valori F9M2c riportati ai default.", "good");
+    menuLayoutCalibrationSetStatus(menuLayoutCalibrationIsGameContext() ? "Calibrazione resettata e preset fazione ripristinato." : "Calibrazione globale riportata ai default.", "good");
   });
 
   const copyJsonBtn = screen.querySelector("#menuLayoutCopyJsonBtn");
@@ -485,13 +545,62 @@ function menuLayoutCalibrationBindScreen(screen) {
   });
 }
 
+function menuLayoutCalibrationRefreshContextUi() {
+  if (typeof document === "undefined") return;
+  const gameContext = menuLayoutCalibrationIsGameContext();
+  const line = document.getElementById("menuLayoutContextLine");
+  const returnBtn = document.getElementById("menuLayoutReturnBtn");
+  const factionBtn = document.getElementById("menuLayoutFactionDefaultBtn");
+  if (line) {
+    if (gameContext) {
+      const faction = typeof state !== "undefined" && state && state.factions ? state.factions[1] : "Giocatore 1";
+      line.textContent = `Contesto partita · preset iniziale ${faction} · le modifiche sono visibili in tempo reale e restano attive fino a fine partita.`;
+      line.classList.add("good");
+    } else {
+      line.textContent = "Contesto globale · modifica e salva i valori di calibrazione generali; una nuova partita applicherà comunque il preset della fazione del Giocatore 1.";
+      line.classList.remove("good");
+    }
+  }
+  if (returnBtn) returnBtn.textContent = gameContext ? "Torna alla partita" : "Torna al menu";
+  if (factionBtn) factionBtn.hidden = !gameContext;
+}
+
+function menuLayoutCalibrationReturnToSource() {
+  if (menuLayoutCalibrationIsGameContext() && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
+    setAppScreen(ARENA_APP_SCREENS.GAME);
+    if (typeof renderAll === "function") renderAll();
+    if (typeof arenaAudioResumeForState === "function") arenaAudioResumeForState();
+    if (typeof maybeRunBot === "function") maybeRunBot();
+    menuLayoutCalibrationState.context = "global";
+    menuLayoutCalibrationState.returnScreen = "mainMenu";
+    return;
+  }
+  menuLayoutCalibrationState.context = "global";
+  menuLayoutCalibrationState.returnScreen = "mainMenu";
+  if (typeof openMainMenu === "function") openMainMenu();
+}
+
 function renderMenuLayoutCalibrationLab() {
   const screen = menuLayoutCalibrationEnsureScreen();
   if (!screen) return;
   menuLayoutCalibrationWriteControls(menuLayoutCalibrationState.values);
+  menuLayoutCalibrationRefreshContextUi();
 }
 
-function openMenuLayoutCalibrationLabScreen() {
+function openMenuLayoutCalibrationLabScreen(options = {}) {
+  const sourceScreen = options.sourceScreen || (typeof currentAppScreen === "function" ? currentAppScreen() : "mainMenu");
+  const gameContext = sourceScreen === "game" && typeof state !== "undefined" && Boolean(state);
+  menuLayoutCalibrationState.context = gameContext ? "game" : "global";
+  menuLayoutCalibrationState.returnScreen = gameContext ? "game" : "mainMenu";
+  if (gameContext) {
+    const activeMapSkinKey = menuLayoutCalibrationActiveGameMapKey() || menuLayoutCalibrationFactionDefaultMapKey();
+    menuLayoutCalibrationState.values = menuLayoutCalibrationSanitize({
+      ...menuLayoutCalibrationState.values,
+      mapSkinKey: activeMapSkinKey
+    });
+  } else {
+    menuLayoutCalibrationState.values = menuLayoutCalibrationLoadStore();
+  }
   menuLayoutCalibrationEnsureScreen();
   renderMenuLayoutCalibrationLab();
   if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {

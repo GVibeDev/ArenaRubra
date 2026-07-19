@@ -1,0 +1,32 @@
+ARENA RUBRA – CHECK F9N7
+Build: C2-STABLE-1-F9N7-APK-M4c
+Nome: Mission UI privata e rivelazione
+Baseline: C2-STABLE-1-F9N6
+
+SCOPE
+- UI privata progressi Missione.
+- 3 indicatori obiettivi/condizioni.
+- Stati tracking/ready/blocked/revealed/absent.
+- Selezione, conferma e annullamento sicuri.
+- Rivelazione pubblica senza ricompense/scarto.
+- Hook futuro missionUiRevealOnPlay(side).
+
+ESCLUSIONI
+- Nessun reward.
+- Nessuno scarto Missione.
+- Nessun gioco effettivo della carta.
+- Nessuna IA Missioni.
+
+TEST AUTOMATICI
+- F9N1 card editor: 11/11.
+- F9N1 custom tactics: 12/12.
+- F9N3 game scale/HQ: 14/14.
+- F9N3a reliability: 20/20.
+- F9N4 mission contract: OK, 15 Missioni.
+- F9N5 opening/protection: 36/36.
+- F9N6 tracker: 92/92.
+- F9N7 mission UI: 26/26.
+- Sintassi JavaScript: OK.
+
+NOTA BROWSER SANDBOX
+Chromium locale è presente, ma la policy amministrativa del sandbox blocca sia URL localhost sia file://. Il browser smoke completo va eseguito nel browser/app reale.

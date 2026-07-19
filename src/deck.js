@@ -71,7 +71,7 @@ function deckCopyLimitForCard(card) {
 }
 
 function deckRoleSortValue(card) {
-  const roleOrder = { commander: 0, base: 1, heavy: 2, elite: 3, tactic: 4, pivot: 5 };
+  const roleOrder = { commander: 0, base: 1, heavy: 2, elite: 3, tactic: 4, pivot: 5, mission: 6 };
   return roleOrder[card && card.deckRole] ?? 99;
 }
 
@@ -87,7 +87,11 @@ function deckCardSort(a, b) {
 
 function deckLegalCapacityForFaction(faction, catalog = null, options = {}) {
   const pool = deckPoolCardsForFaction(faction, catalog, options);
-  return pool.reduce((sum, card) => sum + deckCopyLimitForCard(card), 0);
+  const ordinaryCapacity = pool
+    .filter(card => card && card.sourceType !== "mission")
+    .reduce((sum, card) => sum + deckCopyLimitForCard(card), 0);
+  const missionCapacity = pool.some(card => card && card.sourceType === "mission") ? 1 : 0;
+  return ordinaryCapacity + missionCapacity;
 }
 
 function withDeckCopyMeta(card, copyNo, options = {}) {
@@ -102,7 +106,9 @@ function withDeckCopyMeta(card, copyNo, options = {}) {
 function buildLegalDeckTemplateForFaction(faction, catalog = null, size = null, options = {}) {
   const config = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : {};
   const targetSize = Number.isFinite(size) ? size : (config.deckSize || 30);
-  const pool = deckPoolCardsForFaction(faction, catalog, options).sort(deckCardSort);
+  const pool = deckPoolCardsForFaction(faction, catalog, options)
+    .filter(card => card && card.sourceType !== "mission")
+    .sort(deckCardSort);
   const deck = [];
 
   // C2a: quando il pool contiene almeno 30 carte diverse, il template automatico prende
@@ -240,6 +246,7 @@ function deckSanityForFaction(faction, catalog = null, size = null, options = {}
   const overflowCopies = deck.filter(card => card && card.debugOverflowCopy).length;
   const commanderCards = deck.filter(card => card && (card.deckRole === "commander" || card.cardType === "commander"));
   const pivotCards = deck.filter(card => card && (card.deckRole === "pivot" || card.cardType === "pivot"));
+  const missionCards = deck.filter(card => card && (card.deckRole === "mission" || card.cardType === "mission"));
   const legalCapacity = deckLegalCapacityForFaction(faction, sourceCatalog, options);
 
   return {
@@ -253,6 +260,7 @@ function deckSanityForFaction(faction, catalog = null, size = null, options = {}
     uniqueCards: Object.keys(countCardCopies(deck)).length,
     commanderCopies: commanderCards.length,
     pivotCopies: pivotCards.length,
+    missionCopies: missionCards.length,
     roleCounts: deckRoleCounts(deck),
     copyViolations: violations
   };
@@ -284,10 +292,14 @@ function deckRuntimeValidationForSide(side) {
   const faction = state && state.factions ? state.factions[side] : null;
   const catalog = state && state.cardCatalog ? state.cardCatalog : buildCardCatalog();
   const allCards = playerDeckRuntimeCards(side);
+  const countedCards = allCards.filter(card => card && card.countedInDeck !== false);
+  const supplementalCards = allCards.filter(card => card && card.countedInDeck === false);
   const copyViolations = deckCopyViolations(allCards);
   const debugOverflowCopies = allCards.filter(card => card && card.debugOverflowCopy).length;
   const commanderCopies = allCards.filter(card => card && (card.deckRole === "commander" || card.cardType === "commander")).length;
   const pivotCopies = allCards.filter(card => card && (card.deckRole === "pivot" || card.cardType === "pivot")).length;
+  const missionCopies = allCards.filter(card => card && (card.deckRole === "mission" || card.cardType === "mission")).length;
+  const supplementalMissionCopies = supplementalCards.filter(card => card && (card.deckRole === "mission" || card.cardType === "mission")).length;
   const selectedCommanderId = side && typeof selectedCommanderBlueprintIdForSide === "function" ? selectedCommanderBlueprintIdForSide(side, catalog) : null;
   const legalCapacity = faction ? deckLegalCapacityForFaction(faction, catalog, { selectedCommanderId }) : 0;
   const zoneCounts = {
@@ -298,23 +310,31 @@ function deckRuntimeValidationForSide(side) {
 
   const issues = [];
   if (!faction) issues.push("fazione assente");
-  if (allCards.length !== targetSize) issues.push(`totale carte runtime ${allCards.length}/${targetSize}`);
+  if (countedCards.length !== targetSize) issues.push(`carte conteggiate runtime ${countedCards.length}/${targetSize}`);
+  if (supplementalCards.some(card => !(card.sourceType === "mission" || card.cardType === "mission" || card.deckRole === "mission"))) issues.push("sono presenti carte supplementari non-Missione");
+  if (supplementalMissionCopies > 1) issues.push(`Missioni supplementari ${supplementalMissionCopies}, massimo 1`);
   if (legalCapacity < targetSize) issues.push(`capacità legale ${legalCapacity}/${targetSize}`);
   if (debugOverflowCopies > 0) issues.push(`overflow debug presente: ${debugOverflowCopies}`);
   if (commanderCopies !== 1) issues.push(`copie comandante ${commanderCopies}, atteso 1`);
   if (pivotCopies > 1) issues.push(`copie pivot ${pivotCopies}, massimo 1`);
+  if (missionCopies > 1) issues.push(`copie Missione ${missionCopies}, massimo 1`);
   if (copyViolations.length) issues.push(`violazioni copie: ${copyViolations.map(v => `${v.name || v.id} ${v.count}/${v.limit}`).join(", ")}`);
 
   return {
     side,
     faction,
     targetSize,
+    countedDeckSize:countedCards.length,
     totalCards: allCards.length,
+    runtimeCardTotal:allCards.length,
+    supplementalCards:supplementalCards.length,
+    supplementalMissionCopies,
     zoneCounts,
     legalCapacity,
     debugOverflowCopies,
     commanderCopies,
     pivotCopies,
+    missionCopies,
     uniqueCards: Object.keys(countCardCopies(allCards)).length,
     roleCounts: deckRoleCounts(allCards),
     copyViolations,
@@ -348,9 +368,15 @@ function createInitialHandFromDeck(deck, options = {}) {
   const config = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : {};
   const handSize = options.handSize || config.initialHandSize || 5;
   const requireCommander = options.requireCommander ?? config.initialHandRequiresCommander ?? true;
+  const includeMissionWhenPresent = options.includeMissionWhenPresent ?? config.initialHandIncludesMissionWhenPresent ?? true;
 
   const drawDeck = [...deck];
   const hand = [];
+
+  if (includeMissionWhenPresent) {
+    const missionIndex = drawDeck.findIndex(card => card && (card.sourceType === "mission" || card.cardType === "mission" || card.deckRole === "mission"));
+    if (missionIndex >= 0) hand.push(drawDeck.splice(missionIndex, 1)[0]);
+  }
 
   if (requireCommander) {
     const commanderIndex = drawDeck.findIndex(card => card.cardType === "commander" || card.deckRole === "commander");
@@ -367,6 +393,21 @@ function createInitialHandFromDeck(deck, options = {}) {
     deck: runtimeDeck.map((card, i) => ({ ...card, zone: "deck", instanceNo: i + 1 })),
     hand: hand.map((card, i) => ({ ...card, zone: "hand", instanceNo: i + 1 })),
     runtimeDeckShuffled: runtimeDeck !== drawDeck
+  };
+}
+
+function openingHandContractSummary(cards) {
+  const hand = (cards || []).filter(Boolean);
+  const missionCards = hand.filter(isMissionHandCard);
+  const commanderCards = hand.filter(isCommanderHandCard);
+  return {
+    size: hand.length,
+    missionCopies: missionCards.length,
+    missionId: missionCards[0] ? missionCards[0].missionId || missionCards[0].sourceId || missionCards[0].id : null,
+    commanderCopies: commanderCards.length,
+    commanderId: commanderCards[0] ? commanderCards[0].blueprintId || commanderCards[0].sourceId || commanderCards[0].id : null,
+    ordinaryCopies: hand.length - missionCards.length - commanderCards.length,
+    ok: hand.length === 5 && commanderCards.length === 1 && missionCards.length <= 1 && (missionCards.length ? hand.length - missionCards.length - commanderCards.length === 3 : hand.length - commanderCards.length === 4)
   };
 }
 
@@ -387,12 +428,16 @@ function buildRawRuntimeDeckForSide(side, faction, sourceCatalog, selectedComman
       const issues = check && Array.isArray(check.issues) ? check.issues.join("; ") : "deck personalizzato assente/non valido";
       throw new Error(`Deck personalizzato G${side} non valido: ${issues}`);
     }
-    return check.cards.map((card, i) => createCardInstance({
+    const runtimeCards = Array.isArray(check.runtimeCards) && check.runtimeCards.length ? check.runtimeCards : check.cards;
+    return runtimeCards.map((card, i) => createCardInstance({
       ...card,
+      countedInDeck:card.countedInDeck !== false,
       customMatchLabRuntime: Boolean(check.containsCustomCards || check.runtimeMode === "custom_lab"),
       customMatchLabRuntimeMode: check.runtimeMode || "official",
       customMatchLabSavedKey: check.savedKey || check.key || "",
-      customMatchLabDeckName: check.deckName || (check.payload && (check.payload.deckName || check.payload.name)) || ""
+      customMatchLabDeckName: check.deckName || (check.payload && (check.payload.deckName || check.payload.name)) || "",
+      builtInDeckRuntime:Boolean(check.builtIn || (check.payload && check.payload.builtIn)),
+      supplementalMissionRuntime:Boolean(card.supplementalDeckCard)
     }, null, "deck", i));
   }
   return buildDebugDeckForFaction(faction, sourceCatalog, null, { selectedCommanderId });
@@ -453,6 +498,10 @@ function initializeCardZonesForGame() {
     customRuntimeCards: {
       1: [...(state.deck[1] || []), ...(state.hand[1] || [])].filter(card => card && card.custom === true).length,
       2: [...(state.deck[2] || []), ...(state.hand[2] || [])].filter(card => card && card.custom === true).length
+    },
+    openingHand: {
+      1: openingHandContractSummary(state.hand[1]),
+      2: openingHandContractSummary(state.hand[2])
     },
     runtimeDeckShuffled: shouldShuffleRuntimeDeckAfterInitialHand(),
     runtimeDeckShuffleMode: shouldShuffleRuntimeDeckAfterInitialHand() ? "after_initial_hand" : "off",
@@ -548,13 +597,47 @@ function drawCards(side, count = 1, options = {}) {
     drawn.push(card);
   }
   syncCardDebugState();
+  if (drawn.length && typeof emitGameEvent === "function") emitGameEvent({
+    type:EventTypes.CARD_DRAWN,
+    data:{ player:side, faction:state.factions && state.factions[side], count:drawn.length, source, cards:drawn.map(c => ({ id:c.id, cardUid:c.cardUid, cardType:c.cardType, sourceType:c.sourceType, overdrawDiscarded:Boolean(c.overdrawDiscarded) })) }
+  });
   return drawn;
 }
 
-function discardCard(side, cardUid) {
+function isMissionHandCard(card) {
+  return Boolean(card && (card.sourceType === "mission" || card.cardType === "mission" || card.deckRole === "mission"));
+}
+
+function isCommanderHandCard(card) {
+  return Boolean(card && (card.cardType === "commander" || card.deckRole === "commander"));
+}
+
+function isProtectedHandCard(card) {
+  return isMissionHandCard(card) || isCommanderHandCard(card);
+}
+
+function protectedHandCardReason(card) {
+  if (isMissionHandCard(card)) return "Missione protetta";
+  if (isCommanderHandCard(card)) return "Comandante protetto";
+  return "";
+}
+
+function discardableHandCards(side) {
+  if (!state || !state.hand || !state.hand[side]) return [];
+  return state.hand[side].filter(card => card && !isProtectedHandCard(card));
+}
+
+function stealableHandCards(side) {
+  if (!state || !state.hand || !state.hand[side]) return [];
+  return state.hand[side].filter(card => card && !isProtectedHandCard(card));
+}
+
+function discardCard(side, cardUid, options = {}) {
   if (!state || !state.hand || !state.discard) return null;
   const index = state.hand[side].findIndex(card => card.cardUid === cardUid);
   if (index < 0) return null;
+  const candidate = state.hand[side][index];
+  if (isProtectedHandCard(candidate) && options.allowProtected !== true) return null;
   const [card] = state.hand[side].splice(index, 1);
   card.zone = "discard";
   state.discard[side].push(card);
@@ -606,6 +689,7 @@ function moveHandCardBetweenPlayers(fromSide, toSide, cardUid, source="Furto car
   if (!state || !state.hand || !state.hand[fromSide] || !state.hand[toSide]) return null;
   const idx = state.hand[fromSide].findIndex(card => card && card.cardUid === cardUid);
   if (idx < 0) return null;
+  if (isProtectedHandCard(state.hand[fromSide][idx])) return null;
   const [original] = state.hand[fromSide].splice(idx, 1);
   const moved = createCardInstance(original, toSide, "hand", state.hand[toSide].length);
   moved.stolenFrom = fromSide;
@@ -645,8 +729,9 @@ function isPlayableTacticHandCard(card) {
 }
 
 function discardPlayedHandCard(side, cardUid) {
-  const card = discardCard(side, cardUid);
+  const card = discardCard(side, cardUid, { allowProtected:true, reason:"played_from_hand" });
   if (card) {
+    if (typeof missionConsumeCardCostSequence === "function") missionConsumeCardCostSequence(side, card);
     log(`${playerName(side)} consuma la carta ${card.name}: va negli scarti.`, EventTypes.LOG_MESSAGE, {
       player: side,
       faction: state.factions[side],
@@ -655,6 +740,10 @@ function discardPlayedHandCard(side, cardUid) {
       cardName: card.name,
       cardType: card.cardType,
       source: "C1e-hand-card-play"
+    });
+    if (typeof emitGameEvent === "function") emitGameEvent({
+      type:EventTypes.CARD_PLAYED,
+      data:{ player:side, faction:state.factions && state.factions[side], cardUid:card.cardUid, cardId:card.id, cardName:card.name, cardType:card.cardType, sourceType:card.sourceType, deckRole:card.deckRole }
     });
   }
   return card;
@@ -750,19 +839,58 @@ function deckRecoveryConfig() {
   const config = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : {};
   return {
     cost: Number.isFinite(config.deckRecoveryCost) ? config.deckRecoveryCost : 5,
-    draw: Number.isFinite(config.deckRecoveryDraw) ? config.deckRecoveryDraw : 3
+    draw: Number.isFinite(config.deckRecoveryDraw) ? config.deckRecoveryDraw : 3,
+    missionOrdinaryDraw: Number.isFinite(config.deckRecoveryMissionOrdinaryDraw) ? config.deckRecoveryMissionOrdinaryDraw : 4
   };
+}
+
+function deckRecoveryBlockingHandCards(side) {
+  if (!state || !state.hand || !state.hand[side]) return [];
+  return state.hand[side].filter(card => card && !isMissionHandCard(card));
 }
 
 function canRecoverDeck(side) {
   const cfg = deckRecoveryConfig();
-  if (!state || !state.deck || !state.hand || !state.discard || !state.energy) return { ok:false, reason:"Partita non inizializzata", cost:cfg.cost, draw:cfg.draw };
-  if (state.winner) return { ok:false, reason:"Partita conclusa", cost:cfg.cost, draw:cfg.draw };
-  if ((state.deck[side] || []).length > 0) return { ok:false, reason:"Il deck non è vuoto", cost:cfg.cost, draw:cfg.draw };
-  if ((state.hand[side] || []).length > 0) return { ok:false, reason:"La mano non è vuota", cost:cfg.cost, draw:cfg.draw };
-  if ((state.discard[side] || []).length <= 0) return { ok:false, reason:"Gli scarti sono vuoti", cost:cfg.cost, draw:cfg.draw };
-  if ((state.energy[side] || 0) < cfg.cost) return { ok:false, reason:`Servono ${cfg.cost} ENE`, cost:cfg.cost, draw:cfg.draw };
-  return { ok:true, reason:"Pronto", cost:cfg.cost, draw:cfg.draw };
+  if (!state || !state.deck || !state.hand || !state.discard || !state.energy) return { ok:false, reason:"Partita non inizializzata", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  if (state.winner) return { ok:false, reason:"Partita conclusa", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return { ok:false, reason:"Completa prima la ricompensa Missione in sospeso", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  if ((state.deck[side] || []).length > 0) return { ok:false, reason:"Il deck non è vuoto", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  if (deckRecoveryBlockingHandCards(side).length > 0) return { ok:false, reason:"La mano contiene ancora carte ordinarie", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  if ((state.discard[side] || []).length <= 0) return { ok:false, reason:"Gli scarti sono vuoti", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  if ((state.energy[side] || 0) < cfg.cost) return { ok:false, reason:`Servono ${cfg.cost} ENE`, cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+  return { ok:true, reason:"Pronto", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+}
+
+function deckRecoveryMissionCard(side) {
+  if (!state) return null;
+  for (const zoneName of ["hand","discard","deck"]) {
+    const zone = state[zoneName] && state[zoneName][side] ? state[zoneName][side] : [];
+    const card = zone.find(isMissionHandCard);
+    if (card) return card;
+  }
+  return null;
+}
+
+function detachMissionCardForRecovery(side, missionCard) {
+  if (!state || !missionCard) return null;
+  for (const zoneName of ["hand","discard","deck"]) {
+    const zone = state[zoneName] && state[zoneName][side] ? state[zoneName][side] : [];
+    const index = zone.findIndex(card => card && card.cardUid === missionCard.cardUid);
+    if (index >= 0) return zone.splice(index, 1)[0];
+  }
+  return null;
+}
+
+function prepareMissionCardForNewCycle(card, side) {
+  if (!card) return null;
+  card.side = side;
+  card.zone = "hand";
+  delete card.missionPlayed;
+  delete card.missionPlayedAt;
+  delete card.missionMultiplier;
+  delete card.overdrawDiscarded;
+  delete card.overdrawSource;
+  return card;
 }
 
 function recoverDeckForPlayer(side, options = {}) {
@@ -779,10 +907,14 @@ function recoverDeckForPlayer(side, options = {}) {
     return { ok:false, reason:check.reason, drawn:[] };
   }
 
+  const missionCard = deckRecoveryMissionCard(side);
+  const hasMission = Boolean(missionCard);
   const beforeEnergy = state.energy[side] || 0;
   state.energy[side] = beforeEnergy - check.cost;
   if (state.aiTelemetry && state.aiTelemetry.deckRecoveries) state.aiTelemetry.deckRecoveries[side] = (state.aiTelemetry.deckRecoveries[side] || 0) + 1;
-  const pile = state.discard[side].splice(0);
+
+  const detachedMission = hasMission ? detachMissionCardForRecovery(side, missionCard) : null;
+  const pile = state.discard[side].splice(0).filter(card => card && !isMissionHandCard(card));
   const shuffled = shuffleCardsRuntime(pile);
   state.deck[side] = shuffled.map((card, i) => {
     card.zone = "deck";
@@ -792,30 +924,50 @@ function recoverDeckForPlayer(side, options = {}) {
     return card;
   });
 
-  log(`${playerName(side)} paga ${check.cost} ENE: scarti rimescolati nel deck (${state.deck[side].length} carte), poi pesca ${check.draw} carte.`, EventTypes.LOG_MESSAGE, {
+  let missionRuntimeAfter = null;
+  if (detachedMission) {
+    const prepared = prepareMissionCardForNewCycle(detachedMission, side);
+    state.hand[side].push(prepared);
+    if (typeof missionResetCycle === "function") missionRuntimeAfter = missionResetCycle(side, { source:"deck_recovery", lockUntilNextOwnerTurn:true });
+    if (typeof missionTelemetryRecord === "function") missionTelemetryRecord(side, "recoveriesWithMission", 1);
+  } else if (typeof missionTelemetryRecord === "function") {
+    missionTelemetryRecord(side, "recoveriesWithoutMission", 1);
+  }
+
+  const drawCount = detachedMission ? check.missionOrdinaryDraw : check.draw;
+  log(detachedMission
+    ? `${playerName(side)} paga ${check.cost} ENE: inizia un nuovo ciclo Missione, rimette “${detachedMission.name}” in mano e pesca ${drawCount} carte. La Missione sarà utilizzabile dal prossimo turno personale.`
+    : `${playerName(side)} paga ${check.cost} ENE: scarti rimescolati nel deck (${state.deck[side].length} carte), poi pesca ${drawCount} carte.`, EventTypes.LOG_MESSAGE, {
     player: side,
     faction: state.factions && state.factions[side],
     energyBefore: beforeEnergy,
     energyAfter: state.energy[side],
     deckSize: state.deck[side].length,
-    draw: check.draw,
-    source: "C2-FINAL-A-deck-recovery"
+    draw: drawCount,
+    missionRecovered:Boolean(detachedMission),
+    missionId:missionRuntimeAfter && missionRuntimeAfter.missionId || null,
+    missionCycle:missionRuntimeAfter && missionRuntimeAfter.cycle || null,
+    source: "F9N10-deck-recovery"
   });
 
-  const drawn = drawCards(side, check.draw, { source:"recupero_deck" });
+  const drawn = drawCards(side, drawCount, { source:"recupero_deck" });
   if (drawn.length) {
     log(`${playerName(side)} pesca da recupero deck: ${drawn.map(c => c.name || c.id).join(", ")}.`, EventTypes.LOG_MESSAGE, {
       player: side,
       faction: state.factions && state.factions[side],
       count: drawn.length,
       cards: drawn.map(c => ({ id:c.id, name:c.name, zone:c.zone, overdrawDiscarded:Boolean(c.overdrawDiscarded) })),
-      source: "C2-FINAL-A-deck-recovery-draw"
+      source: "F9N10-deck-recovery-draw"
     });
   }
+  if (typeof emitGameEvent === "function" && EventTypes.DECK_RECOVERED) emitGameEvent({
+    type:EventTypes.DECK_RECOVERED,
+    data:{ player:side, faction:state.factions && state.factions[side], cost:check.cost, draw:drawn.length, requestedDraw:drawCount, missionRecovered:Boolean(detachedMission), missionId:missionRuntimeAfter && missionRuntimeAfter.missionId || null, missionCycle:missionRuntimeAfter && missionRuntimeAfter.cycle || null, deckSize:state.deck[side].length, handSize:state.hand[side].length }
+  });
   syncCardDebugState();
   if (typeof renderAll === "function" && !options.skipRender) renderAll();
   if (typeof maybeRunBot === "function" && !options.skipBot) maybeRunBot();
-  return { ok:true, drawn };
+  return { ok:true, drawn, mission:detachedMission || null, missionCycle:missionRuntimeAfter && missionRuntimeAfter.cycle || null };
 }
 
 function recoverCurrentPlayerDeck() {
@@ -868,8 +1020,8 @@ function addBlueprintCardToHand(side, blueprintId, faction=null, source="C1f") {
 
 function copyRandomEnemyHandCard(side) {
   const enemy = enemyOf(side);
-  const pool = state.hand && state.hand[enemy] ? state.hand[enemy] : [];
-  if (!pool.length) { log(`${playerName(enemy)} non ha carte in mano da copiare.`); return null; }
+  const pool = stealableHandCards(enemy);
+  if (!pool.length) { log(`${playerName(enemy)} non ha carte ordinarie rubabili o copiabili in mano.`); return null; }
   const original = pool[Math.floor(Math.random() * pool.length)];
   const copy = createCardInstance(original, side, "hand", state.hand[side].length);
   copy.copiedFrom = enemy;

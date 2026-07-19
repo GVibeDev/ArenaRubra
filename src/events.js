@@ -20,8 +20,14 @@ const EventTypes = Object.freeze({
   UNIT_MOVED: "UNIT_MOVED",
   UNIT_ATTACKED: "UNIT_ATTACKED",
   UNIT_DAMAGED: "UNIT_DAMAGED",
+  UNIT_DEFENSE_LOST: "UNIT_DEFENSE_LOST",
   UNIT_DESTROYED: "UNIT_DESTROYED",
   UNIT_BUILT: "UNIT_BUILT",
+  UNIT_CONVERTED: "UNIT_CONVERTED",
+
+  CARD_DRAWN: "CARD_DRAWN",
+  CARD_PLAYED: "CARD_PLAYED",
+  CARD_DISCARDED: "CARD_DISCARDED",
 
   ABILITY_USED: "ABILITY_USED",
   TACTIC_USED: "TACTIC_USED",
@@ -33,7 +39,20 @@ const EventTypes = Object.freeze({
   AI_PLAN_CHANGED: "AI_PLAN_CHANGED",
 
   VICTORY: "VICTORY",
-  MATCH_STATS_RECORDED: "MATCH_STATS_RECORDED"
+  MATCH_STATS_RECORDED: "MATCH_STATS_RECORDED",
+
+  MISSION_PROGRESS_CHANGED: "MISSION_PROGRESS_CHANGED",
+  MISSION_READY: "MISSION_READY",
+  MISSION_CHECKPOINT: "MISSION_CHECKPOINT",
+  MISSION_REVEALED: "MISSION_REVEALED",
+  MISSION_PLAYED: "MISSION_PLAYED",
+  MISSION_REWARD_PENDING: "MISSION_REWARD_PENDING",
+  MISSION_REWARD_RESOLVED: "MISSION_REWARD_RESOLVED",
+  DECK_RECOVERED: "DECK_RECOVERED",
+  MISSION_CYCLE_RESET: "MISSION_CYCLE_RESET",
+  MISSION_RECOVERY_LOCKED: "MISSION_RECOVERY_LOCKED",
+  MISSION_UNLOCKED: "MISSION_UNLOCKED",
+  MISSION_AI_DECISION: "MISSION_AI_DECISION"
 });
 
 function normalizeGameEvent(event) {
@@ -66,6 +85,16 @@ function emitGameEvent(event) {
       try { updateMatchStatsFromEvent(normalized); }
       catch (err) { console.warn("Arena Rubra matchStats update failed", err); }
     }
+
+    if (typeof missionTrackerHandleEvent === "function") {
+      try { missionTrackerHandleEvent(normalized); }
+      catch (err) { console.warn("Arena Rubra F9N6 mission tracker update failed", err); }
+    }
+  }
+
+  if (typeof combatFeedbackEnqueueEvent === "function") {
+    try { combatFeedbackEnqueueEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9N2 feedback enqueue failed", err); }
   }
 
   return normalized;

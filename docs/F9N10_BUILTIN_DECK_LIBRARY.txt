@@ -1,0 +1,34 @@
+Arena Rubra – Libreria deck built-in F9N10
+Fonte: export JSON dell'autore del 19/07/2026.
+
+DECK SENZA MISSIONE
+1. Nexus · Avatex · Ufficiale
+2. Varran default
+3. Pravus default
+
+DECK PER MISSIONI ORDINARIE
+1. Nexus · Avatex · Civiltà Algoritmica — NXMSN01
+2. Nexus · UC · Mainframe — NXMSN02
+3. Exordium · Varran · Triumphale Iter — EXMSN01
+4. Exordium · Nemira · Ordo Legio — EXMSN02
+5. Liberti · Rauk · Arena Selvaggia — LBMSN01
+6. Liberti · Pravus · Sangue e Sabbia — LBMSN02
+7. Agathoi · Alexandros · Tafos Lithos — AGMSN01 supplementare
+8. Agathoi · Dikayos · Erkos — AGMSN02
+9. Fabeot · Gerarca · Ex Lucis Tenebrae — FBMSN01
+10. Fabeot · Emissario · Cospirazione — FBMSN02
+
+CONTRATTO TAFOS LITHOS
+- 30 carte in deckIds.
+- AGMSN01 aggiunta come vera carta Missione runtime.
+- countedInDeck = false soltanto per il contatore legale.
+- countedDeckSize = 30.
+- runtimeCardTotal = 31.
+- Prima mano: Missione + Comandante + 3 carte ordinarie.
+
+AUDIT
+- 13/13 payload mantengono tutti i campi originali.
+- 13/13 hanno 30 carte conteggiate.
+- 13/13 hanno un solo Comandante.
+- Nessuna copia supera il limite.
+- Tutti gli ID carta risultano validi nella baseline F9N10.

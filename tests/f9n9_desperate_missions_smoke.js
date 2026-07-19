@@ -1,0 +1,38 @@
+"use strict";
+const fs=require("fs"),vm=require("vm"),assert=require("assert");
+const ctx={console,Date,JSON,Math,Set,Map,botRunning:false,renderAll(){},log(){},playerName:s=>`G${s}`,
+ EventTypes:{ECONOMY_CHANGED:"ECONOMY_CHANGED",MISSION_PLAYED:"MISSION_PLAYED",MISSION_REWARD_PENDING:"MISSION_REWARD_PENDING",MISSION_REWARD_RESOLVED:"MISSION_REWARD_RESOLVED",CARD_PLAYED:"CARD_PLAYED"}, emitted:[]};
+ctx.emitGameEvent=e=>{ctx.emitted.push(e);return e};ctx.globalThis=ctx;vm.createContext(ctx);
+for(const f of ["data/missions_base.js","src/missions.js","src/mission_rewards.js"])vm.runInContext(fs.readFileSync(f,"utf8"),ctx,{filename:f});
+ctx.state={turn:8,currentPlayer:1,winner:null,factions:{1:"Nexus",2:"Exordium"},modes:{1:"human",2:"human"},energy:{1:10,2:10},pressure:{1:0,2:0},cells:[],units:[],hand:{1:[],2:[]},deck:{1:[],2:[]},discard:{1:[],2:[]},missions:{1:null,2:null},missionRewards:{1:{cardCostSequence:null},2:{cardCostSequence:null}},missionPendingReward:null};
+ctx.missionEvaluateSide=()=>{};ctx.playerHandLocked=()=>false;ctx.handCardBlocked=()=>false;ctx.missionUiCancelSelection=()=>true;ctx.missionUiOpenPanel=()=>true;
+ctx.discardPlayedHandCard=(side,uid)=>{const i=ctx.state.hand[side].findIndex(c=>c.cardUid===uid);if(i<0)return null;const[c]=ctx.state.hand[side].splice(i,1);c.zone="discard";ctx.state.discard[side].push(c);return c};
+ctx.drawCards=(side,n)=>{const out=[];for(let i=0;i<n&&ctx.state.deck[side].length;i++){const c=ctx.state.deck[side].shift();c.zone="hand";ctx.state.hand[side].push(c);out.push(c)}return out};
+ctx.combatUnits=side=>ctx.state.units.filter(u=>u.alive&&u.side===side&&u.type!=="QG");
+ctx.hasStatus=(u,k)=>(u.statuses||[]).some(s=>s.kind===k);ctx.isUntargetableTo=()=>false;ctx.areAdjacent=(a,b)=>Math.max(...a.map((v,i)=>Math.abs(v-b[i])))===1;ctx.statusBlocks=()=>false;
+ctx.applyStatus=(u,st)=>{u.statuses=u.statuses||[];const e=u.statuses.find(x=>x.kind===st.kind);if(e)Object.assign(e,st);else u.statuses.push({...st});};
+ctx.attackCalls=[];ctx.attackUnit=(a,d)=>{ctx.attackCalls.push([a.uid,d.uid]);a.attacksMade=(a.attacksMade||0)+1;if(d.currentHp>0)d.currentHp-=1;if(d.currentHp<=0)d.alive=false;};
+let checks=0;const ok=(v,m)=>{assert.ok(v,m);checks++};const eq=(a,b,m)=>{assert.deepStrictEqual(a,b,m);checks++};
+function card(uid,name,cost=1,extra={}){return{cardUid:uid,id:uid,name,cost,sourceType:"unit",deckRole:"base",cardType:"unit",zone:"hand",...extra}}
+function unit(uid,side,type,extra={}){return{uid,name:uid,side,type,weight:"Base",alive:true,pos:extra.pos||[side===1?0:1,side===1?0:-1,0],acted:false,attacksMade:0,attacksPerTurn:1,currentHp:3,statuses:[],...extra}}
+function prep(id,multiplier){const d=ctx.missionDefinitionById(id),r=ctx.createMissionRuntime(1,d);r.ready=true;r.readyCount=multiplier;r.status="ready";let i=0;for(const e of Object.values(r.entries)){e.satisfied=i<multiplier;e.completed=i<multiplier;i++}ctx.state.missions[1]=r;ctx.state.currentPlayer=1;ctx.state.modes[1]="human";ctx.state.hand[1]=[card(`M_${id}`,d.name,0,{sourceType:"mission",deckRole:"mission",cardType:"mission",missionId:id,sourceId:id})];ctx.state.discard[1]=[];ctx.state.deck[1]=[];ctx.state.energy[1]=10;ctx.state.missionPendingReward=null;ctx.state.missionRewards[1]={cardCostSequence:null,repeatAttacksRemaining:0,repeatAttacksGranted:0,repeatAttacksUsed:0,repeatAttacksRound:null};ctx.state.units=[];return{d,r};}
+
+// Nexus x2: +6 ENE e pesca 2.
+prep("NXMSND01",2);ctx.state.deck[1]=[card("D1","D1"),card("D2","D2")];ok(ctx.missionPlayDesperate(1),"Punto di Ripristino giocata");eq(ctx.state.energy[1],16,"+6 ENE");eq(ctx.state.hand[1].length,2,"pesca 2");eq(ctx.state.missions[1].playedMultiplier,2,"moltiplicatore congelato");eq(ctx.state.discard[1].length,1,"missione scartata");
+
+// Exordium x3: solo 2 veicoli e 1 fanteria => quote mancanti sprecate.
+prep("EXMSND01",3);ctx.state.factions[1]="Exordium";const v1=unit("V1",1,"Veicolo"),v2=unit("V2",1,"Veicolo"),f1=unit("F1",1,"Fanteria",{acted:true});ctx.state.units=[v1,v2,f1];ok(ctx.missionPlayDesperate(1),"Ultimo Assalto giocata");let pending=ctx.missionPendingReward();eq(pending.kind,"mission_target_selection","selezione bersagli");eq(pending.groups[0].required,2,"2 veicoli disponibili");eq(pending.groups[0].wasted,1,"1 quota veicolo sprecata");eq(pending.groups[1].required,1,"1 fanteria disponibile");eq(pending.groups[1].wasted,2,"2 quote fanteria sprecate");ctx.missionRewardToggleTargetSelection("vehicles","V1");ctx.missionRewardToggleTargetSelection("vehicles","V2");ctx.missionRewardToggleTargetSelection("infantry","F1");ok(ctx.missionRewardConfirmTargetSelection(),"bersagli confermati");ok(ctx.hasStatus(v1,"next_attack_ignore_defense")&&ctx.hasStatus(v2,"next_attack_ignore_defense"),"veicoli ignorano DEF");eq(f1.acted,false,"fanteria già agita riattivata");eq(f1.missionExtraActionCredits,0,"credito consumato per riattivazione");
+
+// Liberti x2: cariche scelte dopo attacco, conserva e poi usa.
+prep("LBMSND01",2);ctx.state.factions[1]="Liberti";const a=unit("A",1,"Fanteria",{pos:[0,0,0]}),d=unit("D",2,"Fanteria",{pos:[1,-1,0],currentHp:5});ctx.state.units=[a,d];ok(ctx.missionPlayDesperate(1),"Ultima Possibilità giocata");eq(ctx.missionRepeatAttackState(1).repeatAttacksRemaining,2,"2 cariche");ok(ctx.missionMaybeOfferRepeatAttack(a,d),"offerta ripetizione");ok(ctx.missionRewardSkipRepeatAttack(),"carica conservata");eq(ctx.missionRepeatAttackState(1).repeatAttacksRemaining,2,"nessun consumo");ok(ctx.missionMaybeOfferRepeatAttack(a,d),"seconda offerta");ok(ctx.missionRewardConfirmRepeatAttack(),"ripetizione confermata");eq(ctx.attackCalls.length,1,"attacco ripetuto");eq(ctx.missionRepeatAttackState(1).repeatAttacksRemaining,1,"una carica rimasta");ctx.missionRewardSkipRepeatAttack();ctx.missionCleanupEndOfRound(8);ok(!ctx.missionRepeatAttackState(1),"cariche scadute fine round");
+
+// Agathoi x2: un solo bersaglio => uno scudo, una quota sprecata.
+prep("AGMSND01",2);ctx.state.factions[1]="Agathoi";const ag=unit("AG",1,"Fanteria");ctx.state.units=[ag];ok(ctx.missionPlayDesperate(1),"Primo Verae giocata");pending=ctx.missionPendingReward();eq(pending.groups[0].required,1,"un bersaglio scudo");eq(pending.groups[0].wasted,1,"uno scudo sprecato");ctx.missionRewardToggleTargetSelection("allies","AG");ctx.missionRewardConfirmTargetSelection();ok(ctx.hasStatus(ag,"mission_phase_shield"),"scudo missione applicato");ctx.missionCleanupEndOfRound(8);ok(!ctx.hasStatus(ag,"mission_phase_shield"),"scudo scade fine round");
+
+// Fabeot x3: 2 nemici validi => 2 storditi, 1 quota sprecata.
+prep("FBMSND01",3);ctx.state.factions[1]="Fabeot";const e1=unit("E1",2,"Fanteria"),e2=unit("E2",2,"Veicolo");ctx.state.units=[e1,e2];ok(ctx.missionPlayDesperate(1),"Anatema giocata");pending=ctx.missionPendingReward();eq(pending.groups[0].required,2,"due nemici validi");eq(pending.groups[0].wasted,1,"uno stordimento sprecato");ctx.missionRewardToggleTargetSelection("enemies","E1");ctx.missionRewardToggleTargetSelection("enemies","E2");ctx.missionRewardConfirmTargetSelection();ok(ctx.hasStatus(e1,"inhibit_action")&&ctx.hasStatus(e2,"inhibit_action"),"nemici storditi");
+
+// Sicurezza: zero condizioni e IA non possono giocare.
+let x=prep("NXMSND01",1);x.r.ready=false;x.r.readyCount=0;ok(!ctx.missionPlayDesperate(1),"zero condizioni bloccata");x=prep("NXMSND01",1);ctx.state.modes[1]="bot";ok(!ctx.missionPlayDesperate(1),"IA rinviata F9N10");
+for(const id of ["NXMSND01","EXMSND01","LBMSND01","AGMSND01","FBMSND01"])ok(ctx.missionDefinitionById(id).missionClass==="desperate",`${id} coperta`);
+console.log(`F9N9 desperate missions smoke: ${checks}/${checks} OK`);

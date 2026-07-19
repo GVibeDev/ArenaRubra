@@ -9,12 +9,47 @@ const gameScreenUiState = {
   lastSelectedUnitId: null,
   logDockCollapsed: false,
   lastHudModeText: "",
-  lastMapReturnAt: 0
+  lastMapReturnAt: 0,
+  inspectedUnitId: null
 };
 
 function safeText(id, value) {
   const el = typeof document !== "undefined" ? document.getElementById(id) : null;
   if (el) el.textContent = value;
+}
+
+function gameScreenInspectedUnit() {
+  if (!gameScreenUiState.inspectedUnitId || typeof state === "undefined" || !state || !Array.isArray(state.units)) return null;
+  return state.units.find(unit => unit && unit.uid === gameScreenUiState.inspectedUnitId && unit.alive && Array.isArray(unit.pos)) || null;
+}
+
+function gameScreenDisplayedUnit() {
+  return gameScreenInspectedUnit() || (typeof getSelectedUnit === "function" ? getSelectedUnit() : null);
+}
+
+function gameScreenDisplayedUnitId() {
+  const unit = gameScreenDisplayedUnit();
+  return unit && unit.uid ? unit.uid : null;
+}
+
+function gameScreenInspectUnit(unitOrId) {
+  let unit = unitOrId;
+  if (typeof unitOrId === "string" && typeof state !== "undefined" && state && Array.isArray(state.units)) {
+    unit = state.units.find(candidate => candidate && candidate.uid === unitOrId);
+  }
+  if (!unit || !unit.uid || !unit.alive || !Array.isArray(unit.pos)) return false;
+  gameScreenUiState.inspectedUnitId = unit.uid;
+  return true;
+}
+
+function gameScreenClearInspection() {
+  gameScreenUiState.inspectedUnitId = null;
+}
+
+function gameScreenRevealInspectionPanels() {
+  if (typeof expandSelectedUnitFloat === "function") expandSelectedUnitFloat();
+  const isMobileApk = typeof document !== "undefined" && document.body && document.body.classList.contains("mobile-apk-m4");
+  if (isMobileApk && typeof setApkM4Panel === "function") setApkM4Panel("actions", { force:true, scrollTo:"tacticPanel" });
 }
 
 function gameScreenCardCounts(side) {
@@ -47,7 +82,7 @@ function syncSelectedUnitFloatState() {
   const card = document.getElementById("selectedUnitFloat");
   if (!card) return;
   const hasPlayableState = typeof state !== "undefined" && state && Array.isArray(state.units);
-  const selected = hasPlayableState && typeof getSelectedUnit === "function" ? getSelectedUnit() : null;
+  const selected = hasPlayableState && typeof gameScreenDisplayedUnit === "function" ? gameScreenDisplayedUnit() : (typeof getSelectedUnit === "function" ? getSelectedUnit() : null);
   const selectedId = selected && selected.uid ? selected.uid : null;
   card.classList.toggle("hasSelected", Boolean(selected));
   card.classList.toggle("noSelected", !selected);
@@ -265,7 +300,6 @@ function handleGameActionBarClick(action) {
     if (action === "unit") {
       if (typeof closeApkM4Panel === "function") closeApkM4Panel();
       expandSelectedUnitFloat();
-      if (typeof centerApkM4CameraOn === "function" && typeof apkM4FocusCoord === "function") centerApkM4CameraOn(apkM4FocusCoord());
       return;
     }
     if (action === "actions") { setApkM4Panel("actions", { force:true, scrollTo:"tacticPanel" }); return; }

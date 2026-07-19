@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9K2b/F9K6b Card Editor + Runtime-safe custom ability data.
+// Arena Rubra – F9N1 Card Editor + Runtime-safe custom unit/tactic data.
 // Crea e gestisce carte custom separate dal catalogo ufficiale, con import immagine e allineamento art permanente.
 // F9K6b collega al runtime anche apply_status tramite whitelist sicura; le carte ufficiali restano read-only.
 
@@ -27,6 +27,7 @@ const CARD_EDITOR_ACTIVE_EFFECTS = Object.freeze({
   apply_status: { label: "Applica stato", target: "any", valueLabel: "Valore stato" },
   draw_card: { label: "Pesca carta", target: "self", valueLabel: "Carte" },
   gain_energy: { label: "Ottieni ENE", target: "self", valueLabel: "ENE" },
+  cell_blast: { label: "Danno area su cella", target: "any", valueLabel: "Danno", tacticOnly: true },
   custom_text_only: { label: "Descrittiva / futura", target: "any", valueLabel: "Valore" }
 });
 
@@ -564,7 +565,7 @@ function cardEditorBuildPreviewCard() {
     cost,
     custom: true,
     official: false,
-    editorVersion: "F9K6b",
+    editorVersion: "F9N1",
     createdAt: new Date().toISOString(),
     description,
     abilityText,
@@ -578,6 +579,9 @@ function cardEditorBuildPreviewCard() {
     const category = cardEditorFormValue("cardEditorTacticCategory", "Operazione");
     const target = cardEditorFormValue("cardEditorTacticTarget", active ? active.target : "any");
     const range = active ? active.range : cardEditorInt(cardEditorFormValue("cardEditorActiveRange", "1"), 1);
+    const runtimeMeta = typeof customTacticEditorMetadata === "function"
+      ? customTacticEditorMetadata(active)
+      : { playable:false, targetDomain:"none", targetSide:"self", rangeMode:"none", durationMode:"data_only", durationValue:0, runtimeVersion:"F9N1" };
     return {
       ...base,
       sourceType: "tactic",
@@ -590,19 +594,25 @@ function cardEditorBuildPreviewCard() {
       category,
       quality: "Custom",
       target,
-      targetDomain: "custom",
-      targetSide: target,
-      rangeMode: range > 0 ? "range" : "none",
+      targetDomain: runtimeMeta.targetDomain,
+      targetSide: runtimeMeta.targetSide,
+      rangeMode: runtimeMeta.rangeMode,
       range,
+      customTargetFilter: active ? active.filter : "any",
       condition: "",
-      duration: active ? String(active.cooldown || "") : "",
+      duration: runtimeMeta.durationMode,
+      durationMode: runtimeMeta.durationMode,
+      durationValue: runtimeMeta.durationValue,
       effectKind: active ? active.kind : "custom_text_only",
       statusKind: active && active.kind === "apply_status" ? active.statusKind : null,
       statusTurns: active && active.kind === "apply_status" ? active.statusTurns : null,
       statusValue: active && active.kind === "apply_status" ? active.value : null,
-      implementationStatus: "custom_data_only",
+      implementationStatus: runtimeMeta.playable ? "custom_playable_f9n1" : "custom_data_only",
+      customTacticRuntimeVersion: runtimeMeta.runtimeVersion || "F9N1",
       effectText: description || abilityText || "Tattica custom data-only.",
-      notes: "Carta custom creata dal Card Editor. Le unità custom possono usare binding abilità F9K6b se l’effetto è supportato."
+      notes: runtimeMeta.playable
+        ? "F9N1: tattica custom semplice collegata al runtime tramite whitelist sicura."
+        : "F9N1: tattica custom conservata data-only; effetto non ancora supportato dal runtime."
     };
   }
 
@@ -676,6 +686,8 @@ function cardEditorValidateCard(card = null) {
   }
 
   if (c.sourceType === "unit") {
+    const activeDef = active ? CARD_EDITOR_ACTIVE_EFFECTS[active.kind] : null;
+    if (activeDef && activeDef.tacticOnly) issues.push(`${activeDef.label} è disponibile soltanto per le tattiche custom.`);
     const hp = cardEditorInt(c.hp, 0);
     const def = cardEditorInt(c.def, 0);
     const att = cardEditorInt(c.att, 0);
@@ -688,9 +700,17 @@ function cardEditorValidateCard(card = null) {
     if (abilityCount === 0) warnings.push("Nessuna abilità: carta valida, ma meno caratterizzata.");
   }
 
+  let customTacticRuntimeCheck = null;
   if (c.sourceType === "tactic") {
     if (!c.effectText && !c.description) warnings.push("Tattica senza testo effetto.");
     if (!active) warnings.push("Tattica data-only senza effetto attivo selezionato.");
+    if (typeof validateCustomTacticCard === "function") {
+      customTacticRuntimeCheck = validateCustomTacticCard(c);
+      if (active && !customTacticRuntimeCheck.playable) {
+        warnings.push(`Runtime F9N1 non disponibile: ${(customTacticRuntimeCheck.errors || []).join("; ") || "effetto data-only"}.`);
+      }
+      for (const warning of customTacticRuntimeCheck.warnings || []) warnings.push(`Runtime F9N1: ${warning}.`);
+    }
   }
 
   const existingOfficial = typeof buildCardCatalog === "function" ? buildCardCatalog().find(card => card && card.id === c.id) : null;
@@ -699,7 +719,7 @@ function cardEditorValidateCard(card = null) {
   const existingCustom = cardEditorCustomCards().find(card => card && card.id === c.id);
   if (existingCustom && cardEditorState.selectedCustomId !== c.id) warnings.push("ID già presente tra le custom: il salvataggio aggiornerà/sostituirà la carta custom.");
 
-  return { ok: issues.length === 0, issues, warnings, budget, statTotal: c.sourceType === "unit" ? cardEditorInt(c.hp, 0) + cardEditorInt(c.def, 0) + cardEditorInt(c.att, 0) : 0 };
+  return { ok: issues.length === 0, issues, warnings, budget, customTacticRuntimeCheck, statTotal: c.sourceType === "unit" ? cardEditorInt(c.hp, 0) + cardEditorInt(c.def, 0) + cardEditorInt(c.att, 0) : 0 };
 }
 
 function cardEditorValidationHtml(result) {
@@ -726,17 +746,40 @@ function cardEditorSyncConditionalFields() {
   document.querySelectorAll("[data-card-editor-status-only]").forEach(el => { el.hidden = !isStatus; });
 
   const opt = cardEditorStatusOption();
+  const activeDef = CARD_EDITOR_ACTIVE_EFFECTS[activeKind] || CARD_EDITOR_ACTIVE_EFFECTS.custom_text_only;
   const activeTarget = document.getElementById("cardEditorActiveTarget");
   if (activeTarget && isStatus && activeTarget.value !== opt.target) activeTarget.value = opt.target || "enemy";
+  if (activeTarget && kind === "tactic" && ["draw_card", "gain_energy"].includes(activeKind)) activeTarget.value = "self";
+  if (activeTarget && kind === "tactic" && activeKind === "cell_blast") activeTarget.value = "any";
+  const tacticTarget = document.getElementById("cardEditorTacticTarget");
+  if (tacticTarget && kind === "tactic" && ["draw_card", "gain_energy"].includes(activeKind)) tacticTarget.value = "none";
+  if (tacticTarget && kind === "tactic" && activeKind === "cell_blast") tacticTarget.value = "any";
+  const runtimeEffect = typeof customTacticEffectDefinition === "function" ? customTacticEffectDefinition(activeKind) : null;
+  const valueInput = document.getElementById("cardEditorActiveValue");
+  const rangeInput = document.getElementById("cardEditorActiveRange");
+  if (kind === "tactic" && runtimeEffect && valueInput) {
+    valueInput.min = String(runtimeEffect.valueMin);
+    valueInput.max = String(runtimeEffect.valueMax);
+  }
+  if (kind === "tactic" && runtimeEffect && rangeInput) {
+    rangeInput.min = String(runtimeEffect.rangeMin);
+    rangeInput.max = String(runtimeEffect.rangeMax);
+    if (runtimeEffect.rangeMode === "none" && rangeInput.value !== "0") rangeInput.value = "0";
+  }
   const valueLabel = document.getElementById("cardEditorActiveValueLabel");
-  if (valueLabel) valueLabel.textContent = isStatus ? `Valore status (${opt.valueMin || 0}-${Number.isFinite(opt.valueMax) ? opt.valueMax : 0})` : "Valore";
+  if (valueLabel) valueLabel.textContent = isStatus ? `Valore status (${opt.valueMin || 0}-${Number.isFinite(opt.valueMax) ? opt.valueMax : 0})` : (activeDef.valueLabel || "Valore");
   const statusHint = document.getElementById("cardEditorStatusHint");
   if (statusHint) statusHint.textContent = isStatus ? `${opt.label}: target ${opt.target === "ally" ? "alleato" : "nemico"}, durata ${opt.turnsMin || 1}-${opt.turnsMax || 1}, valore ${opt.valueMin || 0}-${Number.isFinite(opt.valueMax) ? opt.valueMax : 0}. ${opt.text || ""}` : "";
 
   const cost = Math.max(1, Math.min(7, cardEditorInt(cardEditorFormValue("cardEditorCost", "1"), 1)));
   const budget = cardEditorBudgetForCost(cost);
   const budgetLine = document.getElementById("cardEditorBudgetLine");
-  if (budgetLine) budgetLine.textContent = `${cost} ENE: ${budget.label}. Abilità consentite: ${cardEditorAbilityAllowanceText(cost)}.`;
+  if (budgetLine) {
+    const runtimeText = kind === "tactic"
+      ? (runtimeEffect ? ` Runtime F9N1: ${activeKind === "apply_status" && !CARD_EDITOR_STATUS_OPTIONS[cardEditorFormValue("cardEditorActiveStatusKind", "")] ? "data-only" : "whitelist disponibile"}.` : " Runtime F9N1: data-only.")
+      : "";
+    budgetLine.textContent = `${cost} ENE: ${budget.label}. Abilità consentite: ${cardEditorAbilityAllowanceText(cost)}.${runtimeText}`;
+  }
 }
 
 function renderCardEditorPreview() {
@@ -994,7 +1037,7 @@ function cardEditorNormalizeImportedCard(card) {
   copy.id = cardEditorCardId(copy.sourceType, copy.sourceId);
   copy.custom = true;
   copy.official = false;
-  copy.editorVersion = copy.editorVersion || "F9K2b";
+  copy.editorVersion = copy.editorVersion || "F9N1";
   copy.importedAt = new Date().toISOString();
   if (copy.sourceType === "unit") {
     copy.blueprintId = copy.sourceId;
@@ -1083,7 +1126,7 @@ function cardEditorCustomClone(source, name = null) {
   clone.id = cardEditorCardId(kind, sourceId);
   clone.custom = true;
   clone.official = false;
-  clone.editorVersion = "F9K6b";
+  clone.editorVersion = "F9N1";
   clone.createdAt = new Date().toISOString();
   clone.updatedAt = clone.createdAt;
   clone.sourceType = kind;
@@ -1115,7 +1158,7 @@ function cardEditorCustomFromCatalogCard(source) {
     cost: Math.max(1, Math.min(7, cardEditorInt(source.cost, 1))),
     custom: true,
     official: false,
-    editorVersion: "F9K6b",
+    editorVersion: "F9N1",
     createdAt: new Date().toISOString(),
     description: desc,
     abilityText: "",
@@ -1135,7 +1178,12 @@ function cardEditorCustomFromCatalogCard(source) {
       category: source.category || "Operazione",
       quality: "Custom",
       target: source.target || "any",
+      targetDomain: source.targetDomain || "none",
+      targetSide: source.targetSide || "self",
+      rangeMode: source.rangeMode || "none",
       range: source.range || 0,
+      duration: source.duration || "",
+      durationMode: source.durationMode || "data_only",
       effectKind: source.effectKind || "custom_text_only",
       implementationStatus: "custom_data_only",
       effectText: source.effectText || desc || "Tattica custom duplicata dal catalogo.",

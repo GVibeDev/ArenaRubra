@@ -1,0 +1,158 @@
+{
+  "viewport": {
+    "width": 1365,
+    "height": 900
+  },
+  "boardVisualStackRect": {
+    "x": 222.5,
+    "y": 133,
+    "width": 920,
+    "height": 780
+  },
+  "boardWrapRect": {
+    "x": 14,
+    "y": 116,
+    "width": 1337,
+    "height": 814
+  },
+  "hexCount": 127,
+  "tapClickCount": 1,
+  "dragClickCount": 1,
+  "dragSuppressedClick": true,
+  "beforeDrag": {
+    "mobile": false,
+    "locked": false,
+    "mode": "fit",
+    "x": 0,
+    "y": 0,
+    "zoom": 1,
+    "fitScale": 1,
+    "totalScale": 1,
+    "lastInput": "mouse"
+  },
+  "afterDrag": {
+    "mobile": false,
+    "locked": false,
+    "mode": "manual",
+    "x": 24,
+    "y": 24,
+    "zoom": 1,
+    "fitScale": 1,
+    "totalScale": 1,
+    "lastInput": "mouse"
+  },
+  "beforeWheel": {
+    "mobile": false,
+    "locked": false,
+    "mode": "manual",
+    "x": 24,
+    "y": 24,
+    "zoom": 1,
+    "fitScale": 1,
+    "totalScale": 1,
+    "lastInput": "mouse"
+  },
+  "afterWheel": {
+    "mobile": false,
+    "locked": false,
+    "mode": "manual",
+    "x": 1.447395132149623,
+    "y": 50.00660741517882,
+    "zoom": 1.406353240862169,
+    "fitScale": 1,
+    "totalScale": 1.406353240862169,
+    "lastInput": "wheel"
+  },
+  "afterFit": {
+    "mobile": false,
+    "locked": false,
+    "mode": "fit",
+    "x": 0,
+    "y": 0,
+    "zoom": 1,
+    "fitScale": 1,
+    "totalScale": 1,
+    "lastInput": "wheel"
+  },
+  "pinchState": {
+    "mobile": false,
+    "locked": false,
+    "mode": "manual",
+    "x": 0,
+    "y": 0,
+    "zoom": 1.5,
+    "fitScale": 1,
+    "totalScale": 1.5,
+    "lastInput": "touch"
+  },
+  "precheck": {
+    "ok": true,
+    "source": "F9O2-browser-smoke",
+    "at": "2026-07-19T12:18:46.995Z",
+    "problems": [],
+    "warnings": [],
+    "info": [
+      "Fazioni: 5",
+      "Blueprint unità: 96",
+      "Tattiche starter/base: 10",
+      "Tattiche deck C2-FINAL-C2: 59",
+      "Missioni F9N6: 15",
+      "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+      "Catalogo carte C2a: 170",
+      "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+      "Tattiche giocabili C2-FINAL-C2: 59/59.",
+      "Deck C2-FINAL-C2 Nexus: 30/30, pool 30, capacità legale 51, overflow debug 0.",
+      "Deck C2-FINAL-C2 Exordium: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+      "Deck C2-FINAL-C2 Liberti: 30/30, pool 30, capacità legale 52, overflow debug 0.",
+      "Deck C2-FINAL-C2 Agathoi: 30/30, pool 30, capacità legale 48, overflow debug 0.",
+      "Deck C2-FINAL-C2 Fabeot: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+      "Deck C2-FINAL-C2 G1: 25",
+      "Deck C2-FINAL-C2 G2: 25",
+      "Mano C2-FINAL-C2 G1: 5",
+      "Mano C2-FINAL-C2 G2: 5",
+      "F9N5 mano iniziale G1: Comandante + 4 ordinarie.",
+      "F9N5 mano iniziale G2: Comandante + 4 ordinarie.",
+      "Runtime deck shuffle C2c-6a-fix2: after_initial_hand.",
+      "Runtime deck C2-FINAL-C2 G1: totale 30/30, deck 25, mano 5, scarti 0, overflow 0, ok true.",
+      "Runtime deck C2-FINAL-C2 G2: totale 30/30, deck 25, mano 5, scarti 0, overflow 0, ok true.",
+      "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+      "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+      "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+      "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+      "F9N10: 13 deck integrati, 10 preset Missione; Tafos Lithos 30+Missione.",
+      "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+      "F9O1: 5 temi fazione collegati al Giocatore 1.",
+      "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+      "F9O2: pan mouse/touch, zoom wheel/pinch, controlli Fit/Centra e API focus tutorial disponibili.",
+      "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+    ]
+  },
+  "cameraDiagnostics": {
+    "build": "C2-STABLE-1-F9O2-APK-M4c",
+    "camera": {
+      "mobile": false,
+      "locked": false,
+      "mode": "manual",
+      "x": 0,
+      "y": 0,
+      "zoom": 1.5,
+      "fitScale": 1,
+      "totalScale": 1.5,
+      "lastInput": "touch"
+    },
+    "limits": {
+      "minZoom": 0.72,
+      "maxZoom": 2.2
+    },
+    "api": [
+      "cameraFocusHex",
+      "cameraFocusUnit",
+      "cameraFocusHQ",
+      "cameraSetZoom",
+      "cameraResetView",
+      "cameraLockInput"
+    ]
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}

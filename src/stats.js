@@ -39,6 +39,7 @@ function loadMatchStats() {
         p2Mode: state.modes[2],
         aiMode: state.aiMode,
         pacePreset: state.pacePreset,
+        gameScaleMode: state.gameScaleMode || "large_scale",
         winnerSide: winner,
         winnerFaction: winner ? state.factions[winner] : "Pareggio",
         loserFaction: winner ? state.factions[enemyOf(winner)] : "Pareggio",
@@ -81,6 +82,7 @@ function loadMatchStats() {
         pressureEmergencyTurnsP2: state.aiTelemetry && state.aiTelemetry.pressureEmergencyTurns ? state.aiTelemetry.pressureEmergencyTurns[2] || 0 : 0,
         recoveriesFrom0PSP1: state.aiTelemetry && state.aiTelemetry.recoveriesFrom0PS ? state.aiTelemetry.recoveriesFrom0PS[1] || 0 : 0,
         recoveriesFrom0PSP2: state.aiTelemetry && state.aiTelemetry.recoveriesFrom0PS ? state.aiTelemetry.recoveriesFrom0PS[2] || 0 : 0,
+        f9n3Telemetry: state.f9n3Telemetry ? JSON.parse(JSON.stringify(state.f9n3Telemetry)) : null,
         message: state.winner || ""
       };
       const items = loadMatchStats();
@@ -116,6 +118,8 @@ function loadMatchStats() {
         selectedDecks,
         aiMode: record.aiMode,
         pacePreset: record.pacePreset,
+        gameScaleMode: record.gameScaleMode || "large_scale",
+        f9n3Telemetry: record.f9n3Telemetry || null,
         map: typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.map : "Starter MAP1 radius 6",
         winnerSide: record.winnerSide,
         winnerFaction: record.winnerFaction,
@@ -220,6 +224,8 @@ function matchLogHeaderText() {
     `MatchId: ${state.matchId || ""}`,
     `Round: ${state.turn || 0}`,
     `PacePreset: ${state.pacePreset || ""}`,
+    `GameScaleMode: ${state.gameScaleMode || "large_scale"}`,
+    `F9N3Telemetry: ${state.f9n3Telemetry ? JSON.stringify(state.f9n3Telemetry) : "{}"}`,
     `AiMode: ${state.aiMode || ""}`,
     `P1: ${state.factions && state.factions[1] ? state.factions[1] : ""} · Commander: ${commanderLogLabel(1)} · Mode: ${state.modes && state.modes[1] ? state.modes[1] : ""}`,
     `P2: ${state.factions && state.factions[2] ? state.factions[2] : ""} · Commander: ${commanderLogLabel(2)} · Mode: ${state.modes && state.modes[2] ? state.modes[2] : ""}`,

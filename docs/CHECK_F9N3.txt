@@ -1,0 +1,20 @@
+Arena Rubra - CHECK F9N3
+Build: C2-STABLE-1-F9N3-APK-M4c
+Baseline: C2-STABLE-1-F9N2a-APK-M4c validata
+
+TEST AUTOMATICI COMPLETATI
+- Sintassi JavaScript dell'intero pacchetto.
+- Regressione custom tactics runtime: 12/12.
+- Regressione Card Editor/schema: 11/11.
+- Smoke modalità/cap/QG: 14/14.
+- Riferimenti locali di index.html.
+
+TEST MANUALI CONSIGLIATI
+1. In Vasta scala superare due Starter dello stesso ruolo, nei limiti generali.
+2. In Tattica verificare il blocco della terza Starter dello stesso ruolo.
+3. Distruggerne una e verificare che lo slot torni disponibile.
+4. Verificare che una copia da deck dello stesso blueprint non consumi lo slot Starter.
+5. Sbarcare sul proprio QG libero.
+6. Costruire sul proprio QG senza costruttore e verificare buildSource=own_hq.
+7. Verificare che un QG occupato non consenta sbarco o costruzione.
+8. Eseguire bot-vs-bot in entrambe le modalità e confrontare la telemetria.

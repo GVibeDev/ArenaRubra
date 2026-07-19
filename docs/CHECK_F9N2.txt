@@ -1,0 +1,41 @@
+Arena Rubra – CHECK F9N2
+Build: C2-STABLE-1-F9N2-APK-M4c · Combat & Status Feedback Layer
+Baseline: C2-STABLE-1-F9N1-APK-M4c validata
+Data: 2026-07-18
+
+ESITI AUTOMATICI
+- Sintassi JavaScript: OK (tutti i file .js)
+- Riferimenti script/CSS di index.html: OK, nessun file mancante
+- Regressione F9N1 custom tactics runtime: OK, 12/12
+- Regressione F9N1 Card Editor schema: OK, 11/11
+- Chromium visual smoke: OK
+  * affondo miniatura attaccante
+  * float -DEF e -HP simultanei
+  * impatto bersaglio
+  * STORDITO / inhibit_action
+  * BLOCCO / inhibit_move
+  * SANGUINAMENTO / bleed
+  * perdita DEF diretta via UNIT_DEFENSE_LOST
+  * coda finale vuota, nessun elemento float residuo
+  * nessun page error e nessun console error
+
+AUDIT COPERTURA
+- applyDamage(): DEF/HP effettivi e targetPos
+- attacco base: attackerPos/defenderPos
+- attacchi di reazione: attackerPos/defenderPos
+- applyStatus(): targetPos
+- abilità shred/damageShred/furto DEF: evento visuale
+- rimozione buff DEF: evento visuale
+- Neutralizza Armamenti: evento visuale
+- tattiche custom shred_def: evento visuale
+- Sentiero dei Rovi: evento visuale + BLOCCO
+
+VINCOLI CONSERVATI
+- nessuna modifica ai calcoli danno/DEF/HP
+- nessuna modifica a targeting, IA, deck, carte, Missioni o bilanciamento
+- compatibilità token grafici ON/OFF
+- supporto prefers-reduced-motion
+
+VALIDAZIONE MANUALE RICHIESTA
+Testare in gioco reale con asset token e turni bot rapidi per giudicare durata, leggibilità,
+accodamento e intensità delle animazioni prima di dichiarare F9N2 validata.

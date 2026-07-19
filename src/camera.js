@@ -64,10 +64,15 @@ function setBoardCameraAnimating(enabled) {
 function updateBoardCameraHud() {
   const chip = typeof document !== "undefined" ? document.getElementById("gameHudCamera") : null;
   if (!chip) return;
-  const modeLabel = boardCamera.mode === "focus" ? "Focus" : boardCamera.mode === "play" ? "Play" : boardCamera.mode === "manual" ? "Manuale" : "Fit";
-  const pct = Math.round(boardCameraTotalScale() * 100);
+  const active = isApkM4CameraActive() && typeof apkM4Camera !== "undefined" && apkM4Camera ? apkM4Camera : boardCamera;
+  const mode = active && active.mode ? active.mode : "fit";
+  const modeLabel = mode === "focus" ? "Focus" : mode === "play" ? "Play" : mode === "manual" ? "Manuale" : mode === "deployment-fit" ? "Sbarco" : "Fit";
+  const totalScale = active && Number.isFinite(active.fitScale) && Number.isFinite(active.zoom)
+    ? active.fitScale * active.zoom
+    : boardCameraTotalScale();
+  const pct = Math.round(totalScale * 100);
   chip.textContent = `Camera: ${modeLabel} ${pct}%`;
-  chip.dataset.cameraMode = boardCamera.mode || "fit";
+  chip.dataset.cameraMode = mode;
 }
 
 function applyBoardCamera(options = {}) {
@@ -124,10 +129,10 @@ function firstCoordFromTargetList(list) {
 
 function boardCameraFocusCoord() {
   try {
-    if (typeof getSelectedUnit === "function") {
-      const selected = getSelectedUnit();
-      if (selected && Array.isArray(selected.pos)) return selected.pos;
-    }
+    const selected = typeof gameScreenDisplayedUnit === "function"
+      ? gameScreenDisplayedUnit()
+      : (typeof getSelectedUnit === "function" ? getSelectedUnit() : null);
+    if (selected && Array.isArray(selected.pos)) return selected.pos;
 
     if (typeof state !== "undefined" && state) {
       if (mode === "spawn" && typeof pendingBlueprintForHandOrMarket === "function" && typeof spawnCellsFor === "function") {
@@ -266,8 +271,13 @@ function screenToBoardCoord(point) {
 }
 
 function syncBoardCameraAfterRender() {
+  // F9O2c: un render di gioco non deve mai ricalcolare o riposizionare la camera.
+  // I bot possono generare molti render consecutivi per movimento, attacco e abilità:
+  // ricalcolare fitScale in questo punto produce salti di zoom anche con x/y preservati.
   if (isApkM4CameraActive()) {
-    if (typeof fitApkM4Board === "function") fitApkM4Board({ preserveCamera:true });
+    if (typeof applyApkM4Camera === "function") applyApkM4Camera();
+    if (typeof updateApkM4StatusStrip === "function") updateApkM4StatusStrip();
+    if (typeof cameraInteractionUpdateControls === "function") cameraInteractionUpdateControls();
     return;
   }
   if (!boardCamera.initialized) {
@@ -275,20 +285,8 @@ function syncBoardCameraAfterRender() {
     fitToBoard({ animate:false });
     return;
   }
-  boardCamera.fitScale = computeBoardFitScale();
-  if (boardCamera.mode === "focus") {
-    const coord = boardCameraFocusCoord();
-    const key = Array.isArray(coord) ? coord.join(",") : "center";
-    boardCamera.lastFocusKey = key;
-    centerBoardCameraOn(coord, { keepZoom:true, animate:false });
-  } else if (boardCamera.mode === "fit") {
-    boardCamera.zoom = BOARD_CAMERA_ZOOMS.fit;
-    boardCamera.x = 0;
-    boardCamera.y = 0;
-    applyBoardCamera({ animate:false });
-  } else {
-    applyBoardCamera({ animate:false });
-  }
+  applyBoardCamera({ animate:false });
+  if (typeof cameraInteractionUpdateControls === "function") cameraInteractionUpdateControls();
 }
 
 function initializeBoardCamera() {

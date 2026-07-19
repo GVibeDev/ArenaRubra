@@ -1,0 +1,15 @@
+ARENA RUBRA — CHECK F9O2d
+Token Layering & Active Unit Cues
+
+Baseline: C2-STABLE-1-F9O2c-APK-M4c
+Build: C2-STABLE-1-F9O2d-APK-M4c
+
+Contratto verificato:
+- base procedurale di fazione separata dall'asset grafico;
+- base sempre trasparente quando Token ON e asset caricato;
+- stato acted attenua soltanto l'asset grafico;
+- statistiche e indicatori restano leggibili;
+- unità selezionata con alone pulsante e freccia;
+- movimento ridotto converte gli indicatori in stato statico;
+- pointer-events none su alone/freccia per compatibilità mouse, touch, pan e pinch;
+- nessuna modifica a gameplay, camera, targeting, IA o bilanciamento.

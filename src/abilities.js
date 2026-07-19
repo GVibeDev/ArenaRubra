@@ -15,7 +15,7 @@
 // - render/events: log, EventTypes
 
 const ABILITY_HANDLERS = Object.freeze({
-      damage(user, target, ab) { applyDamage(target, abilityDamageValue(ab, target), ab.name, { amplifiable:true }); },
+      damage(user, target, ab) { applyDamage(target, abilityDamageValue(ab, target), ab.name, { amplifiable:true, attacker:user, ability:true }); },
       heal(user, target, ab) {
         const before = target.currentHp;
         target.currentHp = Math.min(target.maxHp, target.currentHp + ab.value);
@@ -29,6 +29,7 @@ const ABILITY_HANDLERS = Object.freeze({
       shred(user, target, ab) {
         const loss = Math.min(target.currentDef, ab.value);
         target.currentDef -= loss;
+        if (typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(target, loss, ab.name, { sourceType:"ability", sourceId:user && user.uid });
         log(`${target.name} perde ${loss} DEF.`);
       },
       buffAtt(user, target, ab) {
@@ -113,6 +114,7 @@ const ABILITY_HANDLERS = Object.freeze({
         const victim = bestDeceptivePositioningVictim(user);
         if (victim && victim.currentDef > 0) {
           victim.currentDef -= 1;
+          if (typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(victim, 1, ab.name, { sourceType:"ability", sourceId:user && user.uid });
           user.currentDef += 1;
           user.buffs.push({ stat:"def", value:1, turns:1, source:ab.name });
           log(`${user.name} ruba 1 DEF a ${victim.name}: ${victim.name} -1 DEF, ${user.name} +1 DEF temporaneo.`);
@@ -277,10 +279,11 @@ const ABILITY_HANDLERS = Object.freeze({
         }
       },
       damageShred(user, target, ab) {
-        applyDamage(target, ab.damage || 1, ab.name, { amplifiable:true });
+        applyDamage(target, ab.damage || 1, ab.name, { amplifiable:true, attacker:user, ability:true });
         if (target.alive && (ab.shred || 0) > 0) {
           const loss = Math.min(target.currentDef, ab.shred || 1);
           target.currentDef -= loss;
+          if (typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(target, loss, ab.name, { sourceType:"ability", sourceId:user && user.uid });
           log(`${target.name} perde ${loss} DEF da ${ab.name}.`);
         }
       },
@@ -427,6 +430,7 @@ const ABILITY_HANDLERS = Object.freeze({
 
 
     function c2finalc2CanStealDrawnCombatUnit(card) {
+      if (typeof isProtectedHandCard === "function" && isProtectedHandCard(card)) return false;
       if (!card || card.sourceType !== "unit" || !card.blueprintId) return false;
       const bp = typeof BLUEPRINTS !== "undefined" ? BLUEPRINTS.find(x => x && x.id === card.blueprintId) : null;
       if (!bp) return false;
@@ -440,6 +444,7 @@ const ABILITY_HANDLERS = Object.freeze({
       if (!state || !state.hand || !state.hand[fromSide] || !state.hand[toSide]) return null;
       const idx = state.hand[fromSide].findIndex(c => c && c.cardUid === card.cardUid);
       if (idx < 0) return null;
+      if (typeof isProtectedHandCard === "function" && isProtectedHandCard(state.hand[fromSide][idx])) return null;
       const [original] = state.hand[fromSide].splice(idx, 1);
       const moved = createCardInstance(original, toSide, "hand", state.hand[toSide].length);
       moved.stolenFrom = fromSide;
@@ -524,7 +529,9 @@ const ABILITY_HANDLERS = Object.freeze({
       target.statuses = (target.statuses || []).filter(st => !["fabeot_bounty", "fabeot_vulnerable", "logistic_choke", "raid_mark"].includes(st.kind));
       applyStatus(target, { kind:"inhibit_action", turns:1, source:ab.name });
       updateControlFromOccupants();
-      log(`${target.name} (${oldFaction} G${oldSide}) viene ${label} da ${playerName(user.side)} e passa sotto controllo Fabeot. Entra esausto.`);
+      log(`${target.name} (${oldFaction} G${oldSide}) viene ${label} da ${playerName(user.side)} e passa sotto controllo Fabeot. Entra esausto.`, EventTypes.UNIT_CONVERTED, {
+        unitId:target.uid, unitName:target.name, oldSide, oldFaction, newSide:user.side, newFaction:user.faction, source:ab.name || label
+      });
     }
 
 
@@ -562,13 +569,16 @@ const ABILITY_HANDLERS = Object.freeze({
     function removePositiveEffects(target, source="Cleansing") {
       if (!target) return;
       let removed = 0;
+      const beforeDef = target.currentDef || 0;
       for (const buff of target.buffs || []) {
         if (buff.stat === "att") target.currentAtt = Math.max(0, target.currentAtt - (buff.value || 0));
         if (buff.stat === "def") target.currentDef = Math.max(0, target.currentDef - (buff.value || 0));
         removed += 1;
       }
+      const defLoss = Math.max(0, beforeDef - (target.currentDef || 0));
+      if (defLoss && typeof combatFeedbackEmitDefenseLoss === "function") combatFeedbackEmitDefenseLoss(target, defLoss, source, { sourceType:"ability" });
       target.buffs = [];
-      const positive = new Set(["thorns","untargetable","phase_shield","ability_untargetable","ambush","counterattack","extra_attack_on_kill","stealth","enemy_effect_immune"]);
+      const positive = new Set(["thorns","untargetable","phase_shield","mission_phase_shield","ability_untargetable","ambush","counterattack","extra_attack_on_kill","stealth","enemy_effect_immune"]);
       const before = (target.statuses || []).length;
       target.statuses = (target.statuses || []).filter(st => !positive.has(st.kind));
       removed += before - target.statuses.length;
@@ -613,7 +623,7 @@ const ABILITY_HANDLERS = Object.freeze({
 
     function isUntargetableTo(target, attackerSide) {
       if (!target || target.side === attackerSide) return false;
-      if (hasStatus(target, "untargetable") || hasStatus(target, "phase_shield")) return true;
+      if (hasStatus(target, "untargetable") || hasStatus(target, "phase_shield") || hasStatus(target, "mission_phase_shield")) return true;
       if (hasStatus(target, "stealth") && !sideHasVisionOnTarget(attackerSide, target)) return true;
       return false;
     }
@@ -662,7 +672,8 @@ const ABILITY_HANDLERS = Object.freeze({
         targetName: displayedTarget,
         rawTargetName: targetLabel(target),
         cost,
-        baseCost: ab.cost || 0
+        baseCost: ab.cost || 0,
+        missionTags: typeof missionEffectTagsFromAbility === "function" ? missionEffectTagsFromAbility(ab) : []
       });
       handler(user, target, ab);
       if (ab.economyLock && user.faction === "Fabeot" && state.fabeotEconomyAbilityUsed) state.fabeotEconomyAbilityUsed[user.side] = true;
@@ -741,4 +752,3 @@ const ABILITY_HANDLERS = Object.freeze({
         return true;
       });
     }
-

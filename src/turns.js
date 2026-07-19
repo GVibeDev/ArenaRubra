@@ -16,6 +16,7 @@ function postActionChecks(autoEnd=true) {
 
 function endTurn() {
       if (state.winner) return;
+      if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) { if (typeof log === "function") log("Completa la scelta della ricompensa Missione prima di terminare il turno."); if (typeof renderAll === "function") renderAll(); return; }
       updateControlFromOccupants();
       log(`${playerName(state.currentPlayer)} chiude il turno.`, EventTypes.TURN_ENDED, {
         player: state.currentPlayer,
@@ -34,6 +35,8 @@ function endTurn() {
       if (state.winner) { renderAll(); return; }
       if (state.orderIndex >= state.turnOrder.length - 1) {
         resolveEndOfRound();
+        if (typeof missionCheckpointRoundEnd === "function") missionCheckpointRoundEnd(state.turn);
+        if (typeof missionCleanupEndOfRound === "function") missionCleanupEndOfRound(state.turn);
         if (state.winner) { renderAll(); return; }
         // v1.8.6: niente inversione automatica dell'ordine a fine round.
         // La vecchia reverse() produceva sequenze tipo G2→G2 o G1→G1 ai confini del round.
@@ -50,6 +53,7 @@ function endTurn() {
     }
 
 function startTurn(player, first=false) {
+      if (typeof missionUiResetSelectionForTurn === "function") missionUiResetSelectionForTurn();
       tickPsLocksAtStart(player);
       if (typeof tickCellEffectsAtStart === "function") tickCellEffectsAtStart(player);
       resetTurnEconomyFlags(player);
@@ -88,6 +92,7 @@ function startTurn(player, first=false) {
       });
       if (typeof drawCardForTurn === "function") drawCardForTurn(player, { first });
       if (typeof applyC1fAfterDrawPassives === "function") applyC1fAfterDrawPassives(player, first);
+      if (typeof missionCheckpointTurnStart === "function") missionCheckpointTurnStart(player);
       maybeAutoResign(player);
     }
 
@@ -123,6 +128,10 @@ function endUnitAction(unit) {
       pendingPurchaseBlueprintId = null;
       pendingTacticId = null;
       pendingHandCardUid = null;
+      pendingStarterCardUid = null;
+      pendingDeploymentContext = null;
+      pendingBuildSource = null;
+      if (typeof missionMaybeReactivateAfterAction === "function") missionMaybeReactivateAfterAction(unit);
     }
 
 

@@ -618,7 +618,7 @@ function cardRendererEscapeHtml(value) {
 }
 
 function cardRendererPassiveEntries(card) {
-  if (!card || card.sourceType === "tactic") return [];
+  if (!card || card.sourceType === "tactic" || card.sourceType === "mission") return [];
   const bp = cardRendererSourceBlueprint(card) || (card.custom ? card : null);
   if (!bp) return [];
   const entries = [];
@@ -694,6 +694,17 @@ function cardRendererLocalizedTacticType(card) {
   return category ? `TATTICA · ${category.toUpperCase()}` : "TATTICA";
 }
 
+function cardRendererUsesTacticLayout(card) {
+  return Boolean(card && (card.sourceType === "tactic" || card.sourceType === "mission"));
+}
+
+function cardRendererSourceTypeLabel(card) {
+  if (!card) return "Carta";
+  if (card.sourceType === "mission") return "Missione";
+  if (card.sourceType === "tactic") return "Tattica";
+  return "Unità";
+}
+
 function cardRendererStatPalette() {
   return {
     ene: "#f2cf57",
@@ -704,12 +715,14 @@ function cardRendererStatPalette() {
 }
 function cardRendererTypeText(card) {
   if (!card) return "—";
+  if (card.sourceType === "mission") return card.missionClass === "desperate" ? "MISSIONE DISPERATA" : "MISSIONE";
   if (card.sourceType === "tactic") return cardRendererLocalizedTacticType(card);
   return cardRendererLocalizedUnitType(card) || String(card.cardType || "CARTA").toUpperCase();
 }
 
 function cardRendererDescriptionText(card) {
   if (!card) return "";
+  if (card.sourceType === "mission") return String(card.effectText || card.description || "").trim();
   if (card.custom && (card.description || card.abilityText || card.effectText || card.notes)) {
     const passiveText = cardRendererPassiveText(card);
     return [card.description, card.abilityText, passiveText, card.effectText, card.notes].filter(Boolean).join(" ").trim();
@@ -965,7 +978,7 @@ function cardRendererDrawStats(ctx, card, layout, style) {
     cardRendererSetStatFont(ctx, stat.ene.valueSize || 104);
     cardRendererDrawOutlinedText(ctx, Number.isFinite(cost) ? cost : "—", stat.ene.cx, stat.ene.valueY, { fill: palette.ene, stroke: style.stroke, fontSize: stat.ene.valueSize || 104, lineWidth: 7 });
   }
-  if (card.sourceType !== "tactic") {
+  if (!cardRendererUsesTacticLayout(card)) {
     if (stat.hp) {
       cardRendererDrawStatLabel(ctx, "HP", stat.hp, palette.hp, style);
       cardRendererSetStatFont(ctx, stat.hp.valueSize || 104);
@@ -991,7 +1004,7 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
     if (canvas.isConnected) renderArenaCardPreviewCanvas(canvas, card, options);
   };
   const ctx = canvas.getContext("2d");
-  const kind = typeof cardAssetKind === "function" ? cardAssetKind(card) : (card && card.sourceType === "tactic" ? "tactic" : "unit");
+  const kind = typeof cardAssetKind === "function" ? cardAssetKind(card) : (cardRendererUsesTacticLayout(card) ? "tactic" : "unit");
   const layout = cardRendererLayoutFor(card, kind);
   const style = cardRendererFactionStyle(card);
   const virtualW = CARD_COMPOSER_TEMPLATE_GEOMETRY.canvas.w;
@@ -1083,7 +1096,10 @@ function gameCardPreviewCardByUid(side, cardUid) {
   if (!state || !cardUid || !side) return null;
   const hand = state.hand && state.hand[side] ? state.hand[side] : [];
   const inHand = hand.find(card => card && card.cardUid === cardUid);
-  if (inHand) return inHand;
+  if (inHand) {
+    if (typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, inHand)) return null;
+    return inHand;
+  }
   const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]) : [];
   return starters.find(card => card && card.cardUid === cardUid) || null;
 }
@@ -1118,6 +1134,7 @@ function syncGameHandPreviewSelectionUi() {
 }
 
 function gameCardPreviewSelectHandCard(side, cardUid, source = "hand") {
+  if (!gameCardPreviewCardByUid(side, cardUid)) return "";
   GAME_CARD_PREVIEW_STATE.handSide = Number(side || 0) || 0;
   GAME_CARD_PREVIEW_STATE.handCardUid = String(cardUid || "");
   GAME_CARD_PREVIEW_STATE.handSource = String(source || "hand");
@@ -1134,7 +1151,9 @@ function gameCardPreviewEnsureDefaultHandCard(side) {
   if (!state || !side) return null;
   const current = gameCardPreviewCardByUid(side, GAME_CARD_PREVIEW_STATE.handCardUid);
   if (current) return current;
-  const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+  const hand = state.hand && state.hand[side]
+    ? state.hand[side].filter(card => !(typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, card)))
+    : [];
   if (hand.length) {
     GAME_CARD_PREVIEW_STATE.handSide = side;
     GAME_CARD_PREVIEW_STATE.handCardUid = hand[0].cardUid || "";
@@ -1165,7 +1184,7 @@ function gameCardPreviewBodyHtml(card, context = "hand") {
       <span><strong>Ruolo</strong> ${dbEscapeHtml(role)}</span>
       <span><strong>Tipo</strong> ${dbEscapeHtml(cardRendererTypeText(card))}</span>
       <span><strong>ENE</strong> ${Number.isFinite(cardRendererStat(card, "cost")) ? cardRendererStat(card, "cost") : "—"}</span>
-      ${card.sourceType !== "tactic" ? `<span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
+      ${!cardRendererUsesTacticLayout(card) ? `<span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
       <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
       <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
     </div>
@@ -1183,7 +1202,7 @@ function renderInGameHandCardPreview() {
   const card = gameCardPreviewCardByUid(side, GAME_CARD_PREVIEW_STATE.handCardUid) || gameCardPreviewEnsureDefaultHandCard(side);
   renderArenaCardPreviewCanvas(canvas, card || null);
   meta.textContent = card
-    ? `${card.faction || "—"} · ${card.sourceType === "tactic" ? "Tattica" : "Unità"} · ${card.id || ""}`
+    ? `${card.faction || "—"} · ${cardRendererSourceTypeLabel(card)} · ${card.id || ""}`
     : "Seleziona una carta dalla mano o una starter card per vedere l'anteprima.";
   body.innerHTML = gameCardPreviewBodyHtml(card, "hand");
   syncGameHandPreviewSelectionUi();
@@ -1216,7 +1235,7 @@ function renderDeckBuilderCardPreview(report) {
   renderArenaCardPreviewCanvas(canvas, card);
   if (meta) {
     meta.textContent = card
-      ? `${card.faction || "—"} · ${card.sourceType === "tactic" ? "Tattica" : "Unità"} · ${card.id || ""}`
+      ? `${card.faction || "—"} · ${cardRendererSourceTypeLabel(card)} · ${card.id || ""}`
       : "Nessuna carta selezionata.";
   }
   if (body) {
@@ -1230,7 +1249,7 @@ function renderDeckBuilderCardPreview(report) {
           <span><strong>Ruolo</strong> ${dbEscapeHtml(typeof deckBuilderRoleLabel === "function" ? deckBuilderRoleLabel(card) : (card.deckRole || "—"))}</span>
           <span><strong>Tipo</strong> ${dbEscapeHtml(cardRendererTypeText(card))}</span>
           <span><strong>ENE</strong> ${Number.isFinite(cardRendererStat(card, "cost")) ? cardRendererStat(card, "cost") : "—"}</span>
-          ${card.sourceType !== "tactic" ? `<span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
+          ${!cardRendererUsesTacticLayout(card) ? `<span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
           <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
           <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
         </div>

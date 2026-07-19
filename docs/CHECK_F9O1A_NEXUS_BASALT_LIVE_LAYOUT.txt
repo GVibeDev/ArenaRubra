@@ -1,0 +1,42 @@
+Arena Rubra — F9O1a verification report
+Build: C2-STABLE-1-F9O1a-APK-M4c
+Date: 2026-07-19
+
+JavaScript syntax:
+- 59 application/data files valid
+
+Regression and feature tests:
+F9N10 built-in decks smoke: 13/13 validi · 10 preset Missione · Tafos 30+1 OK
+F9N10 Mission AI smoke: gioco/wait, acquisti, abilità, movimento e tattiche OK
+F9N10 recovery/cycle smoke: Missione+4, lock/unlock, secondo completamento e recupero legacy OK
+F9N10 runtime integration smoke: 29/29 OK
+{
+  "ok": true,
+  "tests": 11
+}
+{
+  "ok": true,
+  "tests": 12,
+  "events": 4,
+  "logs": 4,
+  "discarded": 2
+}
+F9N3 game scale/HQ smoke: 14/14 OK
+F9N3a mode/cap reliability smoke: 20/20 OK
+F9N4 mission data/deck/asset smoke: 15 Missioni + contratto 29+1 OK
+F9N5 opening hand/protection smoke: 36/36 OK
+F9N6 mission tracker smoke: 92/92 OK
+F9N7a mission UI smoke: 14/14 OK
+F9N7a visibility/HUD smoke: 18/18 OK
+F9N8 ordinary missions smoke: 36/36 OK
+F9N8 runtime integration smoke: 28/28 OK
+F9N9 desperate missions smoke: 41/41 OK
+F9N9 runtime integration smoke: 28/28 OK
+F9O1 presentation runtime smoke: 13/13 OK
+F9O1 theme/audio integration smoke: 73/73 OK
+F9O1a live layout calibration smoke: 20/20 OK
+
+Static HTML references:
+- 61 references checked
+- missing: []
+- duplicates: []

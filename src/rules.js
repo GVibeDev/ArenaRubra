@@ -176,6 +176,15 @@ function maybeAutoResign(player) {
       });
       recordMatchResult();
       renderMatchupStats();
+      if (typeof arenaAudioHandleMatchEnd === "function") {
+        arenaAudioHandleMatchEnd({
+          winnerSide: state.winnerSide,
+          winType: state.winType,
+          modes: state.modes,
+          factions: state.factions,
+          round: state.turn
+        });
+      }
     }
 
     function inferWinnerSide(message) {

@@ -1,0 +1,31 @@
+Arena Rubra – CHECK F9N8
+Build: C2-STABLE-1-F9N8-APK-M4c
+Nome: Missioni ordinarie giocabili
+Baseline: F9N7a validata
+
+COPERTURA
+- 10/10 Missioni ordinarie giocabili
+- 7 famiglie di ricompensa
+- verifica finale ready
+- conferma/annullamento UI
+- scarto carta Missione
+- selezione avversaria Cospirazione
+- protezione Missione/Comandante
+- blocco interazioni durante scelta pendente
+- eventi e diagnostica
+
+TEST
+- F9N1 Card Editor: 11/11
+- F9N1 Custom Tactics: 12/12
+- F9N3 Game Scale/HQ: 14/14
+- F9N3a Mode/Cap: 20/20
+- F9N4 Mission Contract: OK, 15 definizioni
+- F9N5 Opening/Protection: 36/36
+- F9N6 Tracker: 92/92
+- F9N7a Mission UI: 14/14
+- F9N7a Visibility/HUD: 18/18
+- F9N8 Ordinary Missions: 36/36
+- F9N8 Runtime Integration: 28/28
+
+NOTE
+Il test Chromium automatico è bloccato dalla policy amministrativa dell'ambiente (ERR_BLOCKED_BY_ADMINISTRATOR). È richiesto il normale controllo visivo nel browser/APK reale.

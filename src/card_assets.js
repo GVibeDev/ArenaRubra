@@ -117,7 +117,7 @@ function cardAssetFactionKey(cardOrFaction) {
 }
 
 function cardAssetKind(card) {
-  return card && card.sourceType === "tactic" ? CARD_ASSET_KIND_KEYS.tactic : CARD_ASSET_KIND_KEYS.unit;
+  return card && (card.sourceType === "tactic" || card.sourceType === "mission") ? CARD_ASSET_KIND_KEYS.tactic : CARD_ASSET_KIND_KEYS.unit;
 }
 
 function cardAssetSourceStableId(card) {

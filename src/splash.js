@@ -46,11 +46,16 @@ async function tryStartArenaMusic() {
   const audio = arenaIntroAudio();
   if (!audio || arenaSplashState.musicStarted) return true;
   try {
-    audio.loop = true;
-    audio.volume = 0.67;
-    await audio.play();
-    arenaSplashState.musicStarted = true;
-    return true;
+    let ok = false;
+    if (typeof arenaAudioEnterMenu === "function") ok = await arenaAudioEnterMenu({ fade: false });
+    else {
+      audio.loop = true;
+      audio.volume = 0.67;
+      await audio.play();
+      ok = true;
+    }
+    arenaSplashState.musicStarted = Boolean(ok);
+    return Boolean(ok);
   } catch (_) {
     return false;
   }

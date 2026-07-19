@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="utf-8"><title>F9N4_SMOKE_PENDING</title></head>
+<body>
+  <iframe id="app" src="../index.html" style="width:1280px;height:900px"></iframe>
+  <pre id="result">PENDING</pre>
+  <script>
+    document.getElementById("app").addEventListener("load", () => {
+      window.setTimeout(() => {
+        const output = document.getElementById("result");
+        try {
+          const w = document.getElementById("app").contentWindow;
+          const catalog = w.buildCardCatalog();
+          const missions = catalog.filter(card => card.sourceType === "mission");
+          const sample = missions.find(card => card.id === "MISSION:NXMSN01");
+          const canvas = w.document.createElement("canvas");
+          const rendered = w.renderArenaCardPreviewCanvas(canvas, sample);
+          const precheck = w.runPrecheck({ quiet:true, source:"f9n4_browser_smoke" });
+          const report = w.deckBuilderReportObject();
+          const result = {
+            build:w.buildInfoLabel(),
+            missionDefinitions:w.eval("MISSION_DEFINITIONS.length"),
+            missionCards:missions.length,
+            sampleType:w.cardRendererTypeText(sample),
+            sampleKind:w.cardAssetKind(sample),
+            sampleArt:w.cardAssetEntryFor(sample).artPath,
+            canvas:{ width:canvas.width, height:canvas.height, rendered },
+            precheck:{ ok:precheck.ok, problems:precheck.problems },
+            poolMissionCount:report.pool.filter(card => card.sourceType === "mission").length,
+            templateMissionCount:report.deck.filter(card => card.sourceType === "mission").length,
+            missionFilterOption:Boolean(w.document.querySelector('#cardPoolKindSelect option[value="mission"]'))
+          };
+          const ok = result.build === "C2-STABLE-1-F9N4-APK-M4c"
+            && result.missionDefinitions === 15 && result.missionCards === 15
+            && result.sampleType === "MISSIONE" && result.sampleKind === "tactic"
+            && result.sampleArt === "assets/cards/art/nexus/tactics/nxmsn01.webp"
+            && result.canvas.rendered && result.canvas.width > 0 && result.canvas.height > 0
+            && result.precheck.ok && result.poolMissionCount === 3
+            && result.templateMissionCount === 0 && result.missionFilterOption;
+          document.title = ok ? "F9N4_SMOKE_OK" : "F9N4_SMOKE_FAIL";
+          output.textContent = `${document.title} ${JSON.stringify(result)}`;
+        } catch (error) {
+          document.title = "F9N4_SMOKE_FAIL";
+          output.textContent = `${document.title} ${error && error.stack ? error.stack : error}`;
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>

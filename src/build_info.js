@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9M2f Token Asset Cache / Flicker Fix metadata.
+// Arena Rubra – F9O2e Mission Accessibility & Build Flow Reliability metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9M2f-APK-M4c",
-  buildName: "Token Asset Cache / Flicker Fix",
-  buildDate: "2026-07-08",
-  buildChannel: "token-asset-cache-flicker-fix",
-  logicBaseline: "C2-STABLE-1-F9M2e",
-  map: "MAP1 radius 6 · visual layer/token/highlight foundation · F9M2f token asset cache",
-  notes: "Fase F9M2f: Token Asset Cache / Flicker Fix. Mantiene F9M2e validata, precarica/cachea gli asset token e renderizza i token grafici come background-image già pronti quando disponibili, evitando il flash temporaneo ai token CSS/SVG durante i render rapidi del bot. Nessun terrain per cella, nessuna modifica a gameplay, AI, targeting, regole Starter, deck, carte ufficiali o bilanciamento."
+  version: "C2-STABLE-1-F9O2e-APK-M4c",
+  buildName: "Mission Accessibility & Build Flow Reliability",
+  buildDate: "2026-07-19",
+  buildChannel: "mission-accessibility-build-flow",
+  logicBaseline: "C2-STABLE-1-F9O2d-APK-M4c",
+  map: "MAP1 radius 6 · QG sbarcabile e costruzione diretta sul proprio QG",
+  notes: "F9O2e libera correttamente gli slot Starter dopo la distruzione, abilita la costruzione delle strutture da carta anche sul proprio QG, rende la Missione giocabile cliccando la carta con conferma, mostra i progressi nel dock Azioni e applica il primo tuning accessibile delle soglie Missione."
 });
 
 function buildInfoLabel() {

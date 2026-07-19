@@ -72,16 +72,54 @@ function runPrecheck(options = {}) {
     const blueprints = typeof BLUEPRINTS !== "undefined" ? BLUEPRINTS : [];
     const tactics = typeof TACTICS !== "undefined" ? TACTICS : [];
     const deckTactics = typeof DECK_TACTICS !== "undefined" ? DECK_TACTICS : [];
+    const missions = typeof MISSION_DEFINITIONS !== "undefined" ? MISSION_DEFINITIONS : [];
 
     const factionNames = Object.keys(factions);
     info.push(`Fazioni: ${factionNames.length}`);
     info.push(`Blueprint unità: ${blueprints.length}`);
     info.push(`Tattiche starter/base: ${tactics.length}`);
     info.push(`Tattiche deck C2-FINAL-C2: ${deckTactics.length}`);
+    info.push(`Missioni F9N6: ${missions.length}`);
+    if (typeof missionUiDashboardHtml !== "function") warnings.push("F9N7: missionUiDashboardHtml non disponibile.");
+    else info.push("F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.");
+    if (typeof missionUiRevealOnPlay !== "function") warnings.push("F9N7: hook missionUiRevealOnPlay non disponibile.");
+
+    if (missions.length !== 15) problems.push(`Missioni F9N6: ${missions.length}/15.`);
+    for (const dup of collectDuplicateValues(missions, mission => mission && mission.id)) {
+      problems.push(`Mission ID duplicato: ${dup.key}`);
+    }
+    for (const mission of missions) {
+      if (!mission || !mission.id || !mission.name || !mission.faction) {
+        problems.push("Missione F9N6 senza id, nome o fazione.");
+        continue;
+      }
+      if (!factionNames.includes(mission.faction)) problems.push(`Missione ${mission.id}: fazione non valida ${mission.faction}.`);
+      if (!["ordinary", "desperate"].includes(mission.missionClass)) problems.push(`Missione ${mission.id}: classe non valida ${mission.missionClass}.`);
+      const clauses = mission.missionClass === "desperate" ? mission.conditions : mission.objectives;
+      if (!Array.isArray(clauses) || clauses.length !== 3) problems.push(`Missione ${mission.id}: obiettivi/condizioni ${Array.isArray(clauses) ? clauses.length : 0}/3.`);
+      if (!mission.reward || !mission.reward.kind || !mission.reward.text) problems.push(`Missione ${mission.id}: ricompensa incompleta.`);
+      for (const clause of clauses || []) {
+        if (!clause.id || !clause.metric || !clause.operator || !clause.text) problems.push(`Missione ${mission.id}: clausola incompleta.`);
+        if (clause.consecutive && !clause.durationMode) problems.push(`Missione ${mission.id}/${clause.id}: durata consecutiva senza durationMode.`);
+      }
+    }
+    for (const factionName of factionNames) {
+      const factionMissions = missions.filter(mission => mission && mission.faction === factionName);
+      const ordinary = factionMissions.filter(mission => mission.missionClass === "ordinary").length;
+      const desperate = factionMissions.filter(mission => mission.missionClass === "desperate").length;
+      if (factionMissions.length !== 3 || ordinary !== 2 || desperate !== 1) {
+        problems.push(`Missioni ${factionName}: totale ${factionMissions.length}/3, ordinarie ${ordinary}/2, disperate ${desperate}/1.`);
+      }
+    }
 
     // C1a – controlli passivi card/deck/hand foundation.
     if (typeof CARD_CATALOG_CONFIG === "undefined") {
       warnings.push("CARD_CATALOG_CONFIG non definito: fondazione carte C1a non caricata.");
+    } else {
+      if (CARD_CATALOG_CONFIG.initialHandIncludesMissionWhenPresent !== true) problems.push("F9N5: Missione non garantita nella mano iniziale.");
+      const protectedRoles = Array.isArray(CARD_CATALOG_CONFIG.protectedHandCardRoles) ? CARD_CATALOG_CONFIG.protectedHandCardRoles : [];
+      if (!protectedRoles.includes("mission") || !protectedRoles.includes("commander")) problems.push("F9N5: ruoli protetti Missione/Comandante incompleti.");
+      if (CARD_CATALOG_CONFIG.protectedHandCardsCanBeBlocked !== true) problems.push("F9N5: le carte protette devono poter essere bloccate temporaneamente.");
     }
     if (typeof buildCardCatalog !== "function") {
       warnings.push("buildCardCatalog non definita: catalogo carte C1a non disponibile.");
@@ -89,11 +127,36 @@ function runPrecheck(options = {}) {
       const cardCatalog = buildCardCatalog();
       info.push(`Catalogo carte C2a: ${cardCatalog.length}`);
 
+      // F9N1 – le tattiche custom restano fuori dal catalogo ufficiale, ma il precheck
+      // verifica la libreria locale e distingue runtime whitelistato da fallback data-only.
+      if (typeof cardEditorCustomCards === "function" && typeof validateCustomTacticCard === "function") {
+        const customTactics = cardEditorCustomCards().filter(card => card && card.custom === true && card.sourceType === "tactic");
+        let customPlayable = 0;
+        let customDataOnly = 0;
+        for (const card of customTactics) {
+          const check = validateCustomTacticCard(card);
+          if (check && check.playable) customPlayable += 1;
+          else {
+            customDataOnly += 1;
+            warnings.push(`Tattica custom data-only ${card.name || card.id}: ${check && check.errors && check.errors.length ? check.errors.join("; ") : "schema runtime non supportato"}`);
+          }
+          for (const warning of check && check.warnings || []) warnings.push(`Tattica custom ${card.name || card.id}: ${warning}`);
+        }
+        info.push(`Tattiche custom F9N1: ${customTactics.length} · runtime ${customPlayable} · data-only ${customDataOnly}.`);
+      }
+
       for (const dup of collectDuplicateValues(cardCatalog, card => card && card.id)) {
         problems.push(`Card ID duplicato: ${dup.key}`);
       }
 
       const deckTacticCards = cardCatalog.filter(card => card.sourceType === "tactic");
+      const missionCards = cardCatalog.filter(card => card.sourceType === "mission");
+      if (missionCards.length !== 15) problems.push(`Carte Missione F9N4 nel catalogo: ${missionCards.length}/15.`);
+      for (const card of missionCards) {
+        if (card.cardType !== "mission" || card.deckRole !== "mission" || card.implementationStatus !== "data_only") {
+          problems.push(`Carta Missione ${card.id}: contratto catalogo non valido.`);
+        }
+      }
       if (deckTacticCards.length !== 59) problems.push(`Tattiche deck C2-FINAL-C2 nel catalogo: ${deckTacticCards.length}/59.`);
       const expectedTacticCounts = { Nexus:12, Exordium:12, Liberti:14, Agathoi:9, Fabeot:12 };
       for (const [factionName, expected] of Object.entries(expectedTacticCounts)) {
@@ -134,6 +197,15 @@ function runPrecheck(options = {}) {
         info.push(`Deck C2-FINAL-C2 G2: ${state.deck && state.deck[2] ? state.deck[2].length : 0}`);
         info.push(`Mano C2-FINAL-C2 G1: ${state.hand && state.hand[1] ? state.hand[1].length : 0}`);
         info.push(`Mano C2-FINAL-C2 G2: ${state.hand && state.hand[2] ? state.hand[2].length : 0}`);
+        if (state.cardDebug.openingHand) {
+          for (const side of [1, 2]) {
+            const opening = state.cardDebug.openingHand[side];
+            if (!opening || opening.ok !== true) problems.push(`F9N5 mano iniziale G${side}: contratto non valido.`);
+            else info.push(`F9N5 mano iniziale G${side}: ${opening.missionCopies ? "Missione + " : ""}Comandante + ${opening.ordinaryCopies} ordinarie.`);
+          }
+        } else {
+          warnings.push("F9N5: diagnostica mano iniziale non disponibile nello stato runtime.");
+        }
         if (state.cardDebug && Object.prototype.hasOwnProperty.call(state.cardDebug, "runtimeDeckShuffled")) {
           info.push(`Runtime deck shuffle C2c-6a-fix2: ${state.cardDebug.runtimeDeckShuffleMode || (state.cardDebug.runtimeDeckShuffled ? "after_initial_hand" : "off")}.`);
         }
@@ -228,6 +300,94 @@ function runPrecheck(options = {}) {
       if (tactic.statusKind && typeof STATUS_DEFINITIONS !== "undefined" && !STATUS_DEFINITIONS[tactic.statusKind]) {
         warnings.push(`Tattica applica status non definito: ${tactic.statusKind} su ${tactic.id || tactic.name}`);
       }
+    }
+
+    // F9N6 – Mission Progress Tracker contract.
+    if (missions.length !== 15) problems.push(`Missioni F9N6: ${missions.length}/15 definizioni.`);
+    if (typeof missionSupportedMetrics !== "function") problems.push("missionSupportedMetrics non disponibile.");
+    else {
+      const supportedMetrics = missionSupportedMetrics();
+      for (const mission of missions) {
+        const items = typeof missionObjectivesFor === "function" ? missionObjectivesFor(mission) : [];
+        if (items.length !== 3) problems.push(`Missione ${mission.id}: ${items.length}/3 obiettivi/condizioni.`);
+        for (const item of items) {
+          if (!supportedMetrics.has(item.metric)) problems.push(`Missione ${mission.id}/${item.id}: metrica senza tracker ${item.metric}.`);
+          if (item.consecutive && !["owner_turns","enemy_turns","rounds"].includes(item.durationMode)) problems.push(`Missione ${mission.id}/${item.id}: durata consecutiva ambigua (${item.durationMode || "assente"}).`);
+        }
+      }
+      info.push(`Missioni F9N6: ${missions.length} definizioni, ${missions.reduce((n,m)=>n+(missionObjectivesFor(m).length),0)} condizioni tracciate.`);
+    }
+    if (typeof initializeMissionTrackerForGame !== "function" || typeof missionDiagnosticsSummary !== "function") problems.push("Runtime/diagnostica Missioni F9N6 non disponibile.");
+
+    // F9N8 – 10 Missioni ordinarie e reward handlers.
+    const ordinaryRewardKinds = new Set(["card_cost_sequence","gain_energy_per_controlled_ps","draw_with_discount","draw_cards","gain_energy","enemy_loses_energy_fraction","enemy_discards_hand_fraction"]);
+    const ordinaryMissions = missions.filter(mission => mission && mission.missionClass === "ordinary");
+    if (ordinaryMissions.length !== 10) problems.push(`Missioni ordinarie F9N8: ${ordinaryMissions.length}/10.`);
+    for (const mission of ordinaryMissions) {
+      if (!mission.reward || !ordinaryRewardKinds.has(mission.reward.kind)) problems.push(`Missione ordinaria ${mission.id}: ricompensa senza handler F9N8 (${mission.reward && mission.reward.kind || "assente"}).`);
+    }
+    if (typeof missionPlayOrdinary !== "function" || typeof missionApplyOrdinaryReward !== "function") problems.push("Runtime Missioni ordinarie F9N8 non disponibile.");
+    else info.push(`F9N8: ${ordinaryMissions.length} Missioni ordinarie giocabili; ${ordinaryRewardKinds.size} famiglie ricompensa supportate.`);
+
+    // F9N9 – 5 Missioni disperate e ricompense x1-x3.
+    const desperateMissions = missions.filter(m => m && m.missionClass === "desperate");
+    const desperateRewardKinds = new Set(["energy_and_draw_per_condition","distinct_units_per_condition","repeat_attacks_current_round","phase_shield_per_condition","stun_enemy_per_condition"]);
+    if (desperateMissions.length !== 5) problems.push(`Missioni disperate F9N9: ${desperateMissions.length}/5.`);
+    for (const mission of desperateMissions) if (!mission.reward || !desperateRewardKinds.has(mission.reward.kind)) problems.push(`Missione disperata ${mission.id}: ricompensa senza handler F9N9 (${mission.reward && mission.reward.kind || "assente"}).`);
+    if (typeof missionPlayDesperate !== "function" || typeof missionApplyDesperateReward !== "function") problems.push("Runtime Missioni disperate F9N9 non disponibile.");
+    else info.push(`F9N9: ${desperateMissions.length} Missioni disperate giocabili; ${desperateRewardKinds.size} famiglie ricompensa supportate.`);
+
+    // F9N10 – recupero ciclico, deck built-in e gestione IA Missioni.
+    if (typeof recoverDeckForPlayer !== "function" || typeof missionResetCycle !== "function" || typeof missionIsRecoveryLocked !== "function") {
+      problems.push("Runtime recupero/ciclo Missioni F9N10 non disponibile.");
+    } else info.push("F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.");
+
+    const builtInDecks = typeof BUILTIN_DECKS !== "undefined" && BUILTIN_DECKS ? BUILTIN_DECKS : {};
+    const builtInEntries = Object.entries(builtInDecks);
+    if (builtInEntries.length !== 13) problems.push(`Deck built-in F9N10: ${builtInEntries.length}/13.`);
+    else if (typeof deckBuilderValidateSavedDeckPayload !== "function" || typeof buildCardCatalog !== "function") warnings.push("Validazione runtime deck built-in F9N10 non disponibile nel precheck.");
+    else {
+      const catalogF9N10 = buildCardCatalog();
+      let missionPresets = 0;
+      for (const [key, payload] of builtInEntries) {
+        const check = deckBuilderValidateSavedDeckPayload(payload, payload.faction, payload.commanderId, catalogF9N10, { allowCustom:true, setupRuntime:true, savedKey:key });
+        if (!check.ok) problems.push(`Deck built-in ${key}: ${check.issues.join("; ")}`);
+        if (check.runtimeMissionCopies === 1) missionPresets += 1;
+      }
+      if (missionPresets !== 10) problems.push(`Preset Missione built-in F9N10: ${missionPresets}/10.`);
+      const tafos = builtInDecks["Agathoi::AG0B00::agathoi-alexandros-tafos-lithos"];
+      if (!tafos || tafos.supplementalMissionId !== "AGMSN01" || tafos.deckIds.length !== 30) problems.push("Preset Tafos Lithos F9N10 non rispetta 30 carte + Missione supplementare AGMSN01.");
+      else info.push(`F9N10: ${builtInEntries.length} deck integrati, ${missionPresets} preset Missione; Tafos Lithos 30+Missione.`);
+    }
+
+    if (typeof botTryPlayMission !== "function" || typeof botMissionPurchaseBonus !== "function" || typeof botMissionMoveBonus !== "function") problems.push("Runtime IA Missioni F9N10 non disponibile.");
+    else info.push("F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.");
+
+    // F9O1 – tema fazione Giocatore 1, mappe e audio.
+    if (typeof ARENA_FACTION_PRESENTATION_THEMES === "undefined" || Object.keys(ARENA_FACTION_PRESENTATION_THEMES).length !== 5) {
+      problems.push("Temi fazione F9O1 incompleti.");
+    } else {
+      const exTheme = ARENA_FACTION_PRESENTATION_THEMES.Exordium;
+      const fbTheme = ARENA_FACTION_PRESENTATION_THEMES.Fabeot;
+      if (!exTheme || exTheme.mapSkinKey !== "exordium_battlegrounds") problems.push("Tema Exordium F9O1 non collegato a battlegrounds.");
+      if (!fbTheme || fbTheme.mapSkinKey !== "fabeot_velvet_hoods") problems.push("Tema Fabeot F9O1 non collegato a velvet_hoods.");
+      info.push("F9O1: 5 temi fazione collegati al Giocatore 1.");
+    }
+    if (typeof ARENA_AUDIO_TRACKS === "undefined" || !ARENA_AUDIO_TRACKS.victory || !ARENA_AUDIO_TRACKS.defeat) problems.push("Manifest audio F9O1 incompleto.");
+    if (typeof arenaAudioHandleMatchEnd !== "function" || typeof arenaAudioChoosePostMatchTrack !== "function") problems.push("Playlist post-partita F9O1 non disponibile.");
+    else info.push("F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.");
+
+    // F9O2 – camera interattiva e API tutorial.
+    const cameraApiF9O2 = ["cameraFocusHex", "cameraFocusUnit", "cameraFocusHQ", "cameraFitCoords", "cameraFitDeploymentTargets", "cameraSetZoom", "cameraResetView", "cameraLockInput"];
+    for (const apiName of cameraApiF9O2) {
+      if (typeof globalThis[apiName] !== "function") problems.push(`Camera F9O2: API ${apiName} non disponibile.`);
+    }
+    if (typeof cameraDiagnostics !== "function" || typeof initializeCameraInteraction !== "function") problems.push("Runtime camera F9O2 incompleto.");
+    else {
+      const diagnostics = cameraDiagnostics();
+      if (!diagnostics || !diagnostics.limits || diagnostics.limits.minZoom >= diagnostics.limits.maxZoom) problems.push("Camera F9O2: limiti zoom non validi.");
+      info.push("F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.");
+      info.push("F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.");
     }
 
     // Handler orfani: non errore, ma utile per pulizia.

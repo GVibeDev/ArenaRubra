@@ -1,0 +1,54 @@
+===== tests/f9n10_builtin_decks_smoke.js =====
+F9N10 built-in decks smoke: 13/13 validi · 10 preset Missione · Tafos 30+1 OK
+===== tests/f9n10_mission_ai_smoke.js =====
+F9N10 Mission AI smoke: gioco/wait, acquisti, abilità, movimento e tattiche OK
+===== tests/f9n10_recovery_cycle_smoke.js =====
+F9N10 recovery/cycle smoke: Missione+4, lock/unlock, secondo completamento e recupero legacy OK
+===== tests/f9n10_runtime_integration_smoke.js =====
+F9N10 runtime integration smoke: 29/29 OK
+===== tests/f9n1_card_editor_schema_smoke.js =====
+{
+  "ok": true,
+  "tests": 11
+}
+===== tests/f9n1_custom_tactics_smoke.js =====
+{
+  "ok": true,
+  "tests": 12,
+  "events": 4,
+  "logs": 4,
+  "discarded": 2
+}
+===== tests/f9n3_game_scale_hq_smoke.js =====
+F9N3 game scale/HQ smoke: 14/14 OK
+===== tests/f9n3a_mode_cap_reliability_smoke.js =====
+F9N3a mode/cap reliability smoke: 20/20 OK
+===== tests/f9n4_mission_contract_smoke.js =====
+F9N4 mission data/deck/asset smoke: 15 Missioni + contratto 29+1 OK
+===== tests/f9n5_opening_protection_smoke.js =====
+F9N5 opening hand/protection smoke: 36/36 OK
+===== tests/f9n6_mission_progress_tracker_smoke.js =====
+F9N6 mission tracker smoke: 92/92 OK
+===== tests/f9n7_mission_ui_smoke.js =====
+F9N7a mission UI smoke: 14/14 OK
+===== tests/f9n7a_visibility_hud_smoke.js =====
+F9N7a visibility/HUD smoke: 18/18 OK
+===== tests/f9n8_ordinary_missions_smoke.js =====
+F9N8 ordinary missions smoke: 36/36 OK
+===== tests/f9n8_runtime_integration_smoke.js =====
+F9N8 runtime integration smoke: 28/28 OK
+===== tests/f9n9_desperate_missions_smoke.js =====
+F9N9 desperate missions smoke: 41/41 OK
+===== tests/f9n9_runtime_integration_smoke.js =====
+F9N9 runtime integration smoke: 28/28 OK
+===== tests/f9o1_presentation_runtime_smoke.js =====
+F9O1 presentation runtime smoke: 13/13 OK
+===== tests/f9o1_theme_audio_integration_smoke.js =====
+F9O1 theme/audio integration smoke: 73/73 OK
+===== tests/f9o1a_live_layout_calibration_smoke.js =====
+F9O1a live layout calibration smoke: 20/20 OK
+===== tests/f9o1b_music_controls_smoke.js =====
+F9O1b music controls smoke: 31/31 OK
+===== tests/f9o2_camera_interaction_smoke.js =====
+F9O2 camera interaction smoke: 51/51
+TOTAL_TEST_FILES_PASSED=22

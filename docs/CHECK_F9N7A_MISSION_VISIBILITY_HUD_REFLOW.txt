@@ -1,0 +1,31 @@
+ARENA RUBRA – CHECK F9N7a
+Build: C2-STABLE-1-F9N7a-APK-M4c
+Nome: Missioni visibili e HUD mappa riorganizzato
+Baseline: C2-STABLE-1-F9N7
+Data: 2026-07-19
+
+SCOPO
+- rimuovere la privacy Missioni nella versione digitale;
+- mantenere Missione e Comandante nella mano iniziale controllata;
+- permettere di ridurre la mano sulla mappa anche durante il turno bot;
+- spostare il dock tattiche al centro verticale;
+- mostrare ENE corrente in evidenza e prossimo income in forma secondaria.
+
+ESITO TEST
+- sintassi JavaScript: 63 file OK;
+- riferimenti HTML/CSS/JS: 56, mancanti 0;
+- F9N1 Card Editor: 11/11;
+- F9N1 Custom Tactics: 12/12;
+- F9N3 Game Scale/HQ: 14/14;
+- F9N3a Mode/Cap: 20/20;
+- F9N4 Mission Contract: 15 Missioni + 29+1 OK;
+- F9N5 Opening/Protection: 36/36;
+- F9N6 Tracker: 92/92;
+- F9N7a Mission UI: 14/14;
+- F9N7a Visibility/HUD: 18/18.
+
+NOTE
+- il browser headless del sandbox blocca file:// e localhost per policy amministrativa;
+- resta consigliato un controllo visivo nel browser/APK reale;
+- nessuna ricompensa Missione viene applicata;
+- nessuna parte della frase utente tronca “la fazione…” è stata inventata.
