@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9O4d Cross-platform Render Signature Integrity Hotfix metadata.
+// Arena Rubra – F9O4f Real Art Thumbnail Cache Finalization Hotfix metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9O4d-APK-M4c",
-  buildName: "Cross-platform Render Signature Integrity Hotfix",
+  version: "C2-STABLE-1-F9O4f-APK-M4c",
+  buildName: "Real Art Thumbnail Cache Finalization Hotfix",
   buildDate: "2026-07-23",
-  buildChannel: "cross-platform-render-signature-integrity-hotfix",
-  logicBaseline: "C2-STABLE-1-F9O4c-APK-M4c",
+  buildChannel: "real-art-thumbnail-cache-finalization-hotfix",
+  logicBaseline: "C2-STABLE-1-F9O4e-APK-M4c",
   map: "MAP1 radius 6 · QG sbarcabile e costruzione diretta sul proprio QG",
-  notes: "F9O4d conserva integralmente le ottimizzazioni Android/desktop di F9O4c e corregge la coerenza del renderer incrementale per le Missioni: firme complete di obiettivi, stato pronto, conferma gioco, ciclo e ricompensa pendente; invalidazione esplicita sugli eventi Missione e DECK_RECOVERED."
+  notes: "F9O4f usa F9O4e come candidata e impedisce alla cache dei thumbnail di finalizzare Art mancante mentre l’illustrazione reale è ancora in caricamento: placeholder provvisorio, ridisegno reale e fallback definitivo solo dopo esaurimento dei candidati."
 });
 
 function buildInfoLabel() {

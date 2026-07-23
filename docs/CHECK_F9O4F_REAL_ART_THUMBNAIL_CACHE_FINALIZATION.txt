@@ -1,0 +1,21 @@
+Arena Rubra — F9O4f Real Art Thumbnail Cache Finalization Hotfix
+Data: 2026-07-23
+Baseline logica: C2-STABLE-1-F9O4e-APK-M4c
+
+Scopo
+- Impedire che il placeholder Art mancante venga salvato come thumbnail definitivo mentre l'arte reale è ancora in caricamento.
+- Conservare la stabilità bitmap F9O4e per Starter, Comandante e Missione visibili nei match bot-vs-bot.
+
+Contratto verificato
+- placeholder loaded + real art pending => cardRenderState pending, snapshot provvisorio, nessun data-thumb-rendered.
+- real art loaded => snapshot definitivo real, sostituzione della cache e aggiornamento dei canvas collegati.
+- tutti i candidati reali in errore + placeholder loaded => fallback definitivo consentito.
+- prewarm detached autorizzato a ricevere e completare redraw asincroni.
+- dorsi coperti, gameplay, IA, Missioni e camera invariati.
+
+Esito test
+- 96 file JavaScript sintatticamente validi.
+- 34 suite Node superate.
+- 15 suite Python/Chromium superate.
+- Test gara cache F9O4f superato senza page errors o console errors.
+- Test storici camera, renderer incrementale, Missioni, overlay, mano nascosta e stabilità Android superati.

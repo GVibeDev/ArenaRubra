@@ -5,8 +5,8 @@
 // Non modifica gameplay, mercato, tattiche o AI.
 
 const CARD_CATALOG_CONFIG = {
-  version: "C2-STABLE-1-F9O4d-APK-M4c",
-  mode: "cross_platform_render_signature_integrity_hotfix",
+  version: "C2-STABLE-1-F9O4e-APK-M4c",
+  mode: "public_bot_card_thumbnail_stability_hotfix",
   factionPresentationRuntimeF9O1: true,
   factionPresentationRuntimeF9O1a: true,
   liveLayoutCalibrationOverrideF9O1a: true,
@@ -55,6 +55,11 @@ const CARD_CATALOG_CONFIG = {
   missionEventDrivenRenderInvalidationF9O4d: true,
   missionUiPendingStateSignatureF9O4d: true,
   missionUiPureRenderF9O4d: true,
+  publicBotHandThumbnailCacheF9O4e: true,
+  publicBotCardPrewarmF9O4e: true,
+  hiddenBotCardArtBypassF9O4e: true,
+  realArtThumbnailFinalizationF9O4f: true,
+  provisionalPlaceholderCacheF9O4f: true,
   playerOneDeterminesPresentationTheme: true,
   postMatchAudioPlaylistF9O1: true,
   optionalMissionDeckContract: true,

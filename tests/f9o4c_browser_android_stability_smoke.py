@@ -100,7 +100,7 @@ result={
   'ignoredBaselineConsoleErrors':len(console_errors)-len(unexpected)
 }
 print(json.dumps(result,ensure_ascii=False,indent=2))
-assert base['build'] in {'C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c'},base
+assert base['build'] in {'C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c'},base
 assert base['pre']['ok'],base['pre']['problems']
 assert base['replaceChildren']=='undefined',base
 assert base['mobile'] and base['gameBar'],base

@@ -1029,8 +1029,43 @@ ${reason}`);
       return renderInGameHandThumbnails({ onlyUnrendered:true });
     }
 
+    function handThumbCardForCanvas(canvas) {
+      if (!canvas || !state) return null;
+      const uid = canvas.getAttribute("data-hand-thumb-card-uid");
+      const source = canvas.getAttribute("data-hand-thumb-source") || "hand";
+      const sideBox = typeof canvas.closest === "function" ? canvas.closest("[data-hand-zone-side]") : null;
+      const side = sideBox ? Number(sideBox.getAttribute("data-hand-zone-side")) : (state.currentPlayer || 1);
+      if (source === "starter") {
+        const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+        return starters.find(card => card && card.cardUid === uid) || null;
+      }
+      const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+      return hand.find(card => card && card.cardUid === uid) || null;
+    }
+
+    function handThumbPrewarmPublicBotCards() {
+      if (!state || !state.modes || typeof cardRendererPrewarmHandThumbnail !== "function") return 0;
+      if (state.modes[1] !== "bot" || state.modes[2] !== "bot") return 0;
+      let requested = 0;
+      for (const side of [1, 2]) {
+        const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+        const hand = state.hand && state.hand[side] ? state.hand[side].filter(card => {
+          if (!card) return false;
+          return !(typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, card));
+        }) : [];
+        for (const card of [...starters, ...hand]) {
+          if (cardRendererPrewarmHandThumbnail(card)) requested += 1;
+        }
+      }
+      return requested;
+    }
+
     function renderInGameHandThumbnails(options = {}) {
       if (typeof document === "undefined" || typeof renderArenaCardPreviewCanvas !== "function" || !state) return false;
+
+      // F9O4e: prepara in anticipo le sole carte pubbliche dei due bot. Le carte
+      // coperte non hanno canvas e non entrano mai nel resolver delle illustrazioni.
+      handThumbPrewarmPublicBotCards();
 
       // F9O4c: la coda non viene più cancellata a ogni renderAll(). Nei turni bot rapidi
       // una nuova mano può sostituire i nodi precedenti, ma i canvas ancora validi restano
@@ -1044,6 +1079,10 @@ ${reason}`);
         return aMap - bMap;
       });
       for (const canvas of canvases) {
+        const card = handThumbCardForCanvas(canvas);
+        if (!card) continue;
+        const restored = typeof cardRendererRestoreHandThumbnailSnapshot === "function" ? cardRendererRestoreHandThumbnailSnapshot(canvas, card) : false;
+        if (restored === "ready") continue;
         if (HAND_THUMB_RENDER_QUEUE.queued.has(canvas)) continue;
         HAND_THUMB_RENDER_QUEUE.queued.add(canvas);
         HAND_THUMB_RENDER_QUEUE.pending.push(canvas);
@@ -1058,23 +1097,15 @@ ${reason}`);
           HAND_THUMB_RENDER_QUEUE.queued.delete(canvas);
           if (!handThumbCanvasShouldRender(canvas)) continue;
           budget -= 1;
-          const uid = canvas.getAttribute("data-hand-thumb-card-uid");
-          const source = canvas.getAttribute("data-hand-thumb-source") || "hand";
-          const sideBox = typeof canvas.closest === "function" ? canvas.closest("[data-hand-zone-side]") : null;
-          const side = sideBox ? Number(sideBox.getAttribute("data-hand-zone-side")) : (state.currentPlayer || 1);
-          let card = null;
-          if (source === "starter") {
-            const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
-            card = starters.find(c => c && c.cardUid === uid) || null;
-          } else {
-            const hand = state.hand && state.hand[side] ? state.hand[side] : [];
-            card = hand.find(c => c && c.cardUid === uid) || null;
-          }
+          const card = handThumbCardForCanvas(canvas);
           if (!card) continue;
+          const restored = typeof cardRendererRestoreHandThumbnailSnapshot === "function" ? cardRendererRestoreHandThumbnailSnapshot(canvas, card) : false;
+          if (restored === "ready") continue;
           const thumbScale = Number(canvas.getAttribute("data-hand-thumb-scale") || 0.19);
           const rendered = renderArenaCardPreviewCanvas(canvas, card, { scale: Number.isFinite(thumbScale) && thumbScale > 0 ? thumbScale : 0.19 });
           if (rendered) {
-            canvas.dataset.thumbRendered = "1";
+            if (canvas.dataset.cardRenderState === "ready") canvas.dataset.thumbRendered = "1";
+            else if (typeof canvas.removeAttribute === "function") canvas.removeAttribute("data-thumb-rendered");
             HAND_THUMB_RENDER_QUEUE.renderedThisRun += 1;
           }
         }

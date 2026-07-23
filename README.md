@@ -1,6 +1,27 @@
-# Arena Rubra — C2-STABLE-1-F9O4d-APK-M4c
+# Arena Rubra — C2-STABLE-1-F9O4f-APK-M4c
 
-## Cross-platform Render Signature Integrity Hotfix
+## F9O4f — Real Art Thumbnail Cache Finalization Hotfix
+
+Micro-patch della candidata F9O4e. Corregge i thumbnail pubblici che potevano congelare `Art mancante` anche quando l’illustrazione reale esisteva ed era visibile nelle altre finestre. Il placeholder resta provvisorio finché i candidati reali sono in caricamento; diventa definitivo soltanto dopo il fallimento di tutti i candidati reali. La cache continua a stabilizzare Starter, Comandante e Missione nei match bot-vs-bot senza caricare le carte coperte.
+
+# Arena Rubra — C2-STABLE-1-F9O4e-APK-M4c
+
+## Public Bot Card Thumbnail Stability Hotfix
+
+F9O4e usa la F9O4d validata come baseline. Corregge lo sfarfallio osservato nella mano durante le partite bot-vs-bot, limitato alle carte pubbliche: tre Starter, Comandante e Missione. I dorsi delle carte ordinarie coperte erano già stabili e non vengono modificati.
+
+### Correzioni F9O4e
+
+- Cache bitmap persistente delle miniature carta già completamente renderizzate.
+- Ripristino sincrono della miniatura quando la mano rapida o il pannello Mano ricreano il canvas.
+- Precaricamento controllato delle sole carte pubbliche per entrambi i bot.
+- Nessun caricamento art/cornice per le carte ordinarie coperte.
+- Cache visuale basata sull'identità grafica della carta, non sul singolo nodo DOM.
+- Limite LRU di 40 miniature per contenere la memoria.
+- Compatibilità con renderer incrementale F9O4c, firme Missione F9O4d, Android, browser e Windows.
+- Nessuna modifica a gameplay, IA, Missioni, privacy, camera, animazioni carta o asset.
+
+## Cronologia F9O4d
 
 F9O4d usa F9O4c come baseline tecnica e ne conserva renderer DOM incrementale, camera composita, fallback WebView e code thumbnail limitate. Corregge una regressione condivisa da Android, browser ed EXE Windows: le firme della mano e del pannello carte non includevano lo stato completo delle Missioni e potevano lasciare visibili contatori o comandi superati.
 

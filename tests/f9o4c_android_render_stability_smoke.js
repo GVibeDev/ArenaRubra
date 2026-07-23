@@ -11,9 +11,9 @@ const config=read("data/cards_base.js");
 const precheck=read("src/precheck.js");
 let checks=0;
 function ok(value,message){assert.ok(value,message);checks++;}
-ok(build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c"),"metadata F9O4c o successiva");
-ok(build.includes("cross-platform-render-signature-integrity-hotfix") || build.includes("android-render-stability-hotfix"),"canale F9O4c o successiva");
-ok(build.includes('logicBaseline: "C2-STABLE-1-F9O4c-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4a-APK-M4c"'),"baseline logica F9O4c/F9O4a");
+ok(build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4e-APK-M4c") || build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c"),"metadata F9O4c o successiva");
+ok(build.includes("real-art-thumbnail-cache-finalization-hotfix") || build.includes("public-bot-card-thumbnail-stability-hotfix") || build.includes("cross-platform-render-signature-integrity-hotfix") || build.includes("android-render-stability-hotfix"),"canale F9O4c o successiva");
+ok(build.includes('logicBaseline: "C2-STABLE-1-F9O4e-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4d-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4c-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4a-APK-M4c"'),"baseline logica F9O4c/F9O4a");
 ok(config.includes("webViewReplaceChildrenFallbackF9O4c: true"),"flag compatibilità WebView");
 ok(config.includes("boardContainmentDisabledF9O4c: true"),"flag containment disattivato");
 ok(config.includes("boundedThumbnailQueueF9O4c: true"),"flag coda thumbnail");

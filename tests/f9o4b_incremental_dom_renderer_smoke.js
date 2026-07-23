@@ -23,8 +23,8 @@ ok(!boardSegment.includes('board.innerHTML = ""'),"renderBoard non distrugge il 
 ok(!boardSegment.includes('addEventListener("click"'),"renderBoard non registra listener per cella");
 ok(render.includes('board.addEventListener("click", BOARD_DOM_CACHE.delegatedClick)'),"unico listener delegato sul board");
 ok(render.includes("entry.element.insertBefore(token, entry.coordLabel)"),"token spostato riusando il nodo");
-ok(build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c"),"metadata F9O4b");
-ok(build.includes("Cross-platform Render Signature Integrity Hotfix") || build.includes("Android Render Stability Hotfix") || build.includes("Incremental DOM Renderer"),"nome build F9O4b/F9O4c o successiva");
+ok(build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4e-APK-M4c") || build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c"),"metadata F9O4b");
+ok(build.includes("Real Art Thumbnail Cache Finalization Hotfix") || build.includes("Public Bot Card Thumbnail Stability Hotfix") || build.includes("Cross-platform Render Signature Integrity Hotfix") || build.includes("Android Render Stability Hotfix") || build.includes("Incremental DOM Renderer"),"nome build F9O4b/F9O4c o successiva");
 ok(config.includes("incrementalBoardDomF9O4b: true"),"flag renderer incrementale");
 ok(config.includes("persistentHexNodesF9O4b: true"),"flag celle persistenti");
 ok(config.includes("delegatedBoardInputF9O4b: true"),"flag input delegato");

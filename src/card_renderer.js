@@ -583,6 +583,163 @@ function cardRendererLayoutFor(card, kind) {
 
 const cardRendererImageCache = Object.create(null);
 
+// F9O4e: cache bitmap delle miniature pubbliche della mano.
+// Evita che Starter, Comandante e Missione tornino al fallback quando il DOM
+// della mano viene ricostruito durante i turni bot rapidi.
+const CARD_RENDERER_HAND_THUMB_CACHE_LIMIT = 40;
+const cardRendererHandThumbCache = new Map();
+const cardRendererHandThumbPrewarm = new Map();
+
+function cardRendererHandThumbVisualKey(card) {
+  if (!card) return "";
+  const art = card && card.customArt && card.customArt.dataUrl ? String(card.customArt.dataUrl) : "";
+  const artToken = art ? `${art.length}:${art.slice(0, 24)}:${art.slice(-24)}` : "";
+  let assetToken = "";
+  try {
+    const paths = cardRendererPreviewAssetPaths(card);
+    assetToken = `${(paths.art || []).join(",")}::${(paths.frame || []).join(",")}`;
+  } catch (_) {}
+  return [
+    card.id || card.sourceId || card.name || "card",
+    card.id || "",
+    card.sourceId || "",
+    card.name || "",
+    card.faction || "",
+    card.sourceType || "",
+    card.cardType || "",
+    card.deckRole || "",
+    Number.isFinite(Number(card.cost)) ? Number(card.cost) : "",
+    Number.isFinite(Number(card.hp)) ? Number(card.hp) : "",
+    Number.isFinite(Number(card.maxHp)) ? Number(card.maxHp) : "",
+    Number.isFinite(Number(card.att)) ? Number(card.att) : "",
+    Number.isFinite(Number(card.def)) ? Number(card.def) : "",
+    card.effectText || card.description || card.text || "",
+    artToken,
+    assetToken
+  ].join("¦");
+}
+
+function cardRendererHandThumbCacheableCanvas(canvas) {
+  if (!canvas) return false;
+  if (canvas.dataset && canvas.dataset.handThumbPrewarm === "1") return true;
+  return Boolean(canvas.classList && canvas.classList.contains("handCardThumbCanvas"));
+}
+
+function cardRendererHandThumbQualityRank(ready, artSource) {
+  if (artSource === "real") return ready ? 40 : 30;
+  if (artSource === "placeholder") return ready ? 20 : 10;
+  return ready ? 5 : 0;
+}
+
+function cardRendererStoreHandThumbnailSnapshot(canvas, card, options = {}) {
+  if (!canvas || !card || !cardRendererHandThumbCacheableCanvas(canvas)) return false;
+  if (typeof document === "undefined" || typeof document.createElement !== "function") return false;
+  if (!canvas.width || !canvas.height || typeof canvas.getContext !== "function") return false;
+  const key = cardRendererHandThumbVisualKey(card);
+  if (!key) return false;
+  const ready = options.ready === true;
+  const artSource = String(options.artSource || "pending");
+  const qualityRank = cardRendererHandThumbQualityRank(ready, artSource);
+  try {
+    const snapshot = document.createElement("canvas");
+    snapshot.width = canvas.width;
+    snapshot.height = canvas.height;
+    const ctx = snapshot.getContext("2d");
+    if (!ctx || typeof ctx.drawImage !== "function") return false;
+    ctx.drawImage(canvas, 0, 0);
+    const previous = cardRendererHandThumbCache.get(key);
+    const largerOrEqual = !previous || (snapshot.width * snapshot.height) >= (previous.canvas.width * previous.canvas.height);
+    const previousRank = previous && Number.isFinite(previous.qualityRank) ? previous.qualityRank : cardRendererHandThumbQualityRank(Boolean(previous && previous.ready), previous && previous.artSource);
+    // F9O4f: una bitmap provvisoria (placeholder mentre l'arte reale è ancora
+    // pendente) non può mai sostituire uno snapshot definitivo. A parità di
+    // finalizzazione prevale la sorgente grafica migliore e poi la risoluzione.
+    const shouldReplace = !previous
+      || (ready && !previous.ready)
+      || (ready === Boolean(previous.ready) && (qualityRank > previousRank || (qualityRank === previousRank && largerOrEqual)));
+    if (shouldReplace) {
+      cardRendererHandThumbCache.delete(key);
+      cardRendererHandThumbCache.set(key, { canvas:snapshot, ready, artSource, qualityRank, storedAt:Date.now() });
+      while (cardRendererHandThumbCache.size > CARD_RENDERER_HAND_THUMB_CACHE_LIMIT) {
+        const oldest = cardRendererHandThumbCache.keys().next().value;
+        cardRendererHandThumbCache.delete(oldest);
+      }
+    }
+    canvas.__arenaHandThumbCacheKey = key;
+    if (ready) {
+      cardRendererHandThumbPrewarm.delete(key);
+      const current = cardRendererHandThumbCache.get(key);
+      if (current && typeof document.querySelectorAll === "function") {
+        document.querySelectorAll(".handCardThumbCanvas").forEach(target => {
+          if (!target || target === canvas || target.__arenaHandThumbCacheKey !== key) return;
+          cardRendererRestoreHandThumbnailSnapshot(target, card);
+        });
+      }
+    }
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function cardRendererRestoreHandThumbnailSnapshot(canvas, card) {
+  if (!canvas || !card || typeof canvas.getContext !== "function") return false;
+  const key = cardRendererHandThumbVisualKey(card);
+  const entry = key ? cardRendererHandThumbCache.get(key) : null;
+  if (!entry || !entry.canvas) return false;
+  try {
+    const ctx = canvas.getContext("2d");
+    if (!ctx || typeof ctx.drawImage !== "function") return false;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(entry.canvas, 0, 0, canvas.width, canvas.height);
+    canvas.__arenaHandThumbCacheKey = key;
+    canvas.dataset.thumbCacheRestored = "1";
+    canvas.dataset.cardRenderState = entry.ready ? "ready" : "pending";
+    canvas.dataset.cardArtState = entry.artSource || (entry.ready ? "final" : "pending");
+    canvas.dataset.thumbSnapshotFinal = entry.ready ? "1" : "0";
+    if (entry.ready) canvas.dataset.thumbRendered = "1";
+    else if (typeof canvas.removeAttribute === "function") canvas.removeAttribute("data-thumb-rendered");
+    const wrap = typeof canvas.closest === "function"
+      ? (canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard"))
+      : null;
+    // Anche uno snapshot provvisorio evita il flash, ma non viene marcato come
+    // render definitivo e quindi resta eleggibile per il ridisegno reale.
+    if (wrap && wrap.classList) wrap.classList.add("thumbRendered");
+    cardRendererHandThumbCache.delete(key);
+    cardRendererHandThumbCache.set(key, entry);
+    return entry.ready ? "ready" : "pending";
+  } catch (_) {
+    return false;
+  }
+}
+
+function cardRendererPrewarmHandThumbnail(card) {
+  if (!card || typeof document === "undefined" || typeof document.createElement !== "function") return false;
+  const key = cardRendererHandThumbVisualKey(card);
+  if (!key || cardRendererHandThumbCache.has(key) || cardRendererHandThumbPrewarm.has(key)) return false;
+  const canvas = document.createElement("canvas");
+  canvas.width = 215;
+  canvas.height = 323;
+  canvas.dataset.handThumbPrewarm = "1";
+  cardRendererHandThumbPrewarm.set(key, canvas);
+  const rendered = renderArenaCardPreviewCanvas(canvas, card, { scale:0.21 });
+  if (!rendered) cardRendererHandThumbPrewarm.delete(key);
+  return Boolean(rendered);
+}
+
+function cardRendererHandThumbCacheDiagnostics() {
+  const entries = Array.from(cardRendererHandThumbCache.values());
+  return {
+    cached: entries.length,
+    final: entries.filter(entry => entry && entry.ready).length,
+    provisional: entries.filter(entry => entry && !entry.ready).length,
+    realArt: entries.filter(entry => entry && entry.artSource === "real").length,
+    placeholderArt: entries.filter(entry => entry && entry.artSource === "placeholder").length,
+    prewarming: cardRendererHandThumbPrewarm.size,
+    limit: CARD_RENDERER_HAND_THUMB_CACHE_LIMIT
+  };
+}
+
 function cardRendererSelectCard(cardId, source = "") {
   CARD_RENDERER_STATE.selectedCardId = String(cardId || "");
   CARD_RENDERER_STATE.selectedSource = String(source || "");
@@ -823,40 +980,86 @@ function cardRendererLoadFirstAvailableImage(paths, onDone) {
   return cardRendererLoadImage(src, listener);
 }
 
-function cardRendererImagePathsSettled(paths) {
+function cardRendererImagePathsState(paths) {
   const list = Array.isArray(paths) ? paths.filter(Boolean) : [paths].filter(Boolean);
-  if (!list.length) return true;
-  if (list.some(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "loaded")) return true;
-  return list.every(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "error");
+  if (!list.length) return "empty";
+  if (list.some(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "loaded")) return "loaded";
+  if (list.every(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "error")) return "error";
+  return "pending";
+}
+
+function cardRendererImagePathsSettled(paths) {
+  return cardRendererImagePathsState(paths) !== "pending";
 }
 
 function cardRendererPreviewAssetPaths(card) {
   const embeddedArtPath = card && card.customArt && card.customArt.dataUrl ? card.customArt.dataUrl : "";
-  const artPaths = embeddedArtPath
+  const realArtPaths = embeddedArtPath
     ? [embeddedArtPath]
     : (typeof cardAssetArtCandidatePathsFor === "function" ? cardAssetArtCandidatePathsFor(card) : (typeof cardAssetArtPathFor === "function" ? [cardAssetArtPathFor(card)] : []));
   const placeholderPath = typeof cardAssetEntryFor === "function" ? (cardAssetEntryFor(card).placeholderPath || "") : "";
   const framePath = typeof cardAssetFramePathFor === "function" ? cardAssetFramePathFor(card) : "";
+  const placeholder = placeholderPath ? [placeholderPath] : [];
   return {
-    art: [...artPaths, placeholderPath].filter(Boolean),
+    realArt: realArtPaths.filter(Boolean),
+    placeholder,
+    // Compatibilità diagnostica con i consumer precedenti.
+    art: [...realArtPaths, ...placeholder].filter(Boolean),
     frame: framePath ? [framePath] : []
   };
 }
 
-function cardRendererPreviewAssetsSettled(card) {
-  if (!card) return true;
+function cardRendererPreviewAssetState(card) {
+  if (!card) return {
+    ready: true,
+    artSource: "none",
+    realArtState: "empty",
+    placeholderState: "empty",
+    frameState: "empty"
+  };
   const paths = cardRendererPreviewAssetPaths(card);
-  return cardRendererImagePathsSettled(paths.art) && cardRendererImagePathsSettled(paths.frame);
+  const realArtState = cardRendererImagePathsState(paths.realArt);
+  const placeholderState = cardRendererImagePathsState(paths.placeholder);
+  const frameState = cardRendererImagePathsState(paths.frame);
+  const realLoaded = realArtState === "loaded";
+  const realExhausted = realArtState === "error" || realArtState === "empty";
+  const placeholderSettled = placeholderState !== "pending";
+  const frameSettled = frameState !== "pending";
+  let artSource = "pending";
+  if (realLoaded) artSource = "real";
+  else if (realExhausted && placeholderState === "loaded") artSource = "placeholder";
+  else if (realExhausted && placeholderSettled) artSource = "none";
+  else if (placeholderState === "loaded") artSource = "placeholder"; // solo provvisorio
+  const artSettled = realLoaded || (realExhausted && placeholderSettled);
+  return {
+    ready: artSettled && frameSettled,
+    artSource,
+    realArtState,
+    placeholderState,
+    frameState
+  };
+}
+
+function cardRendererPreviewAssetsSettled(card) {
+  return cardRendererPreviewAssetState(card).ready;
 }
 
 function cardRendererSyncCanvasReadyState(canvas, card) {
   if (!canvas) return false;
-  const ready = cardRendererPreviewAssetsSettled(card);
+  const assetState = cardRendererPreviewAssetState(card);
+  const ready = assetState.ready;
   canvas.dataset.cardRenderState = ready ? "ready" : "pending";
+  canvas.dataset.cardArtState = assetState.artSource;
+  canvas.dataset.cardRealArtState = assetState.realArtState;
+  canvas.dataset.cardPlaceholderState = assetState.placeholderState;
+  if (ready) canvas.dataset.thumbRendered = "1";
+  else if (typeof canvas.removeAttribute === "function") canvas.removeAttribute("data-thumb-rendered");
   const wrap = typeof canvas.closest === "function"
     ? (canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard"))
     : null;
-  if (wrap && wrap.classList) wrap.classList.toggle("thumbRendered", ready);
+  const cachedVisual = canvas.dataset && canvas.dataset.thumbCacheRestored === "1";
+  if (wrap && wrap.classList) wrap.classList.toggle("thumbRendered", ready || cachedVisual);
+  cardRendererStoreHandThumbnailSnapshot(canvas, card, { ready, artSource:assetState.artSource });
   return ready;
 }
 
@@ -1052,7 +1255,8 @@ function cardRendererDrawStats(ctx, card, layout, style) {
 }
 
 function cardRendererScheduleCanvasRedraw(canvas, card, options, generation) {
-  if (!canvas || !canvas.isConnected || canvas.__arenaCardRenderGeneration !== generation) return;
+  const isPrewarmCanvas = Boolean(canvas && canvas.dataset && canvas.dataset.handThumbPrewarm === "1");
+  if (!canvas || (!canvas.isConnected && !isPrewarmCanvas) || canvas.__arenaCardRenderGeneration !== generation) return;
   if (canvas.__arenaCardRedrawPending) return;
   canvas.__arenaCardRedrawPending = true;
   const schedule = typeof window !== "undefined" && typeof window.requestAnimationFrame === "function"
@@ -1060,7 +1264,8 @@ function cardRendererScheduleCanvasRedraw(canvas, card, options, generation) {
     : callback => setTimeout(callback, 16);
   schedule(() => {
     canvas.__arenaCardRedrawPending = false;
-    if (!canvas.isConnected || canvas.__arenaCardRenderGeneration !== generation) return;
+    const stillPrewarm = Boolean(canvas.dataset && canvas.dataset.handThumbPrewarm === "1");
+    if ((!canvas.isConnected && !stillPrewarm) || canvas.__arenaCardRenderGeneration !== generation) return;
     cardRendererDrawPreviewCanvas(canvas, card, options, generation);
   });
 }
