@@ -13,9 +13,9 @@ const config = read("data/cards_base.js");
 let checks = 0;
 const ok = (value, message) => { assert.ok(value, message); checks += 1; };
 
-ok(build.includes("C2-STABLE-1-F9O3-APK-M4c") || build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c"), "metadata F9O2d");
-ok(build.includes("event-narrative-overlay-foundation") || build.includes("mission-accessibility-build-flow") || build.includes("token-layering-active-unit-cues"), "canale F9O2d");
-ok(build.includes('logicBaseline: "C2-STABLE-1-F9O2e-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O2d-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O2c-APK-M4c"'), "baseline F9O2c");
+ok(build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c") || build.includes("C2-STABLE-1-F9O4a-APK-M4c") || build.includes("C2-STABLE-1-F9O4-APK-M4c") || build.includes("C2-STABLE-1-F9O3-APK-M4c") || build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c"), "metadata F9O2d");
+ok(build.includes("cross-platform-render-signature-integrity-hotfix") || build.includes("android-render-stability-hotfix") || build.includes("incremental-dom-renderer") || build.includes("android-camera-performance-hotfix") || build.includes("hidden-bot-hand-card-backs-motion") || build.includes("event-narrative-overlay-foundation") || build.includes("mission-accessibility-build-flow") || build.includes("token-layering-active-unit-cues"), "canale F9O2d");
+ok(build.includes('logicBaseline: "C2-STABLE-1-F9O4c-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4a-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O3-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O2e-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O2d-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O2c-APK-M4c"'), "baseline F9O2c");
 ok(precheck.includes("F9O2d: livelli token separati"), "precheck F9O2d");
 ok(config.includes("tokenLayeringF9O2d: true"), "flag token layering");
 ok(config.includes("tokenFactionBaseOpacityIndependentF9O2d: true"), "flag opacità indipendente");

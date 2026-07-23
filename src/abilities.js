@@ -257,11 +257,13 @@ const ABILITY_HANDLERS = Object.freeze({
           return;
         }
         if (card.zone !== "hand") {
-          log(`${ab.name}: ${card.name} non entra in mano a ${playerName(enemy)} e non può essere rubata.`);
+          const visibleDrawName = typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(enemy, card) : card.name;
+          log(`${ab.name}: ${visibleDrawName} non entra in mano a ${playerName(enemy)} e non può essere rubata.`);
           return;
         }
         if (!c2finalc2CanStealDrawnCombatUnit(card)) {
-          log(`${ab.name}: ${playerName(enemy)} pesca ${card.name}, ma non è fanteria/veicolo rubabile.`);
+          const visibleDrawName = typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(enemy, card) : card.name;
+          log(`${ab.name}: ${playerName(enemy)} pesca ${visibleDrawName}, ma la carta non è fanteria/veicolo rubabile.`);
           return;
         }
         c2finalc2StealDrawnCardToFabeot(user.side, enemy, card, ab.name);
@@ -457,10 +459,12 @@ const ABILITY_HANDLERS = Object.freeze({
         moved.overdrawDiscarded = true;
         moved.overdrawSource = source;
         state.discard[toSide].push(moved);
-        log(`${source}: ${playerName(toSide)} ruba ${moved.name}, ma la mano è piena: la carta va negli scarti Fabeot.`);
+        const visibleName = typeof cardPresentationCanRevealTransfer === "function" && !cardPresentationCanRevealTransfer(fromSide, toSide) ? "una carta coperta" : moved.name;
+        log(`${source}: ${playerName(toSide)} ruba ${visibleName}, ma la mano è piena: la carta va negli scarti Fabeot.`);
       } else {
         state.hand[toSide].push(moved);
-        log(`${source}: ${playerName(toSide)} ruba ${moved.name} appena pescata da ${playerName(fromSide)}.`);
+        const visibleName = typeof cardPresentationCanRevealTransfer === "function" && !cardPresentationCanRevealTransfer(fromSide, toSide) ? "una carta coperta" : moved.name;
+        log(`${source}: ${playerName(toSide)} ruba ${visibleName} appena pescata da ${playerName(fromSide)}.`);
       }
       if (typeof syncCardDebugState === "function") syncCardDebugState();
       if (typeof emitGameEvent === "function" && typeof EventTypes !== "undefined" && EventTypes.CARD_STOLEN) emitGameEvent({

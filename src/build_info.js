@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9O3 Event & Narrative Overlay Foundation metadata.
+// Arena Rubra – F9O4d Cross-platform Render Signature Integrity Hotfix metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
@@ -8,13 +8,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9O3-APK-M4c",
-  buildName: "Event & Narrative Overlay Foundation",
-  buildDate: "2026-07-19",
-  buildChannel: "event-narrative-overlay-foundation",
-  logicBaseline: "C2-STABLE-1-F9O2e-APK-M4c",
+  version: "C2-STABLE-1-F9O4d-APK-M4c",
+  buildName: "Cross-platform Render Signature Integrity Hotfix",
+  buildDate: "2026-07-23",
+  buildChannel: "cross-platform-render-signature-integrity-hotfix",
+  logicBaseline: "C2-STABLE-1-F9O4c-APK-M4c",
   map: "MAP1 radius 6 · QG sbarcabile e costruzione diretta sul proprio QG",
-  notes: "F9O3 aggiunge una coda di messaggi rapidi a scorrimento verticale per gli eventi principali, chiudibili al click o dopo 1 secondo, e una fondazione narrativa riutilizzabile con cornice, narratore, avatar multi-espressione e comandi Avanti/Indietro/Ripeti/Chiudi."
+  notes: "F9O4d conserva integralmente le ottimizzazioni Android/desktop di F9O4c e corregge la coerenza del renderer incrementale per le Missioni: firme complete di obiettivi, stato pronto, conferma gioco, ciclo e ricompensa pendente; invalidazione esplicita sugli eventi Missione e DECK_RECOVERED."
 });
 
 function buildInfoLabel() {

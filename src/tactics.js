@@ -1291,7 +1291,10 @@ function c2c6aDrawCardsForTactic(player, count, source) {
     });
     return [];
   }
-  log(`${source}: ${playerName(player)} pesca ${drawn.length} carta${drawn.length > 1 ? "e" : ""}: ${drawn.map(c => `${c.name} (${c2c6aCardTypeName(c)})`).join(", ")}.`, EventTypes.LOG_MESSAGE, {
+  const drawnVisibleLabel = typeof cardPresentationVisibleCardsLabel === "function"
+    ? cardPresentationVisibleCardsLabel(player, drawn, { formatter:c => `${c.name} (${c2c6aCardTypeName(c)})` })
+    : drawn.map(c => `${c.name} (${c2c6aCardTypeName(c)})`).join(", ");
+  log(`${source}: ${playerName(player)} pesca ${drawn.length} carta${drawn.length > 1 ? "e" : ""}: ${drawnVisibleLabel}.`, EventTypes.LOG_MESSAGE, {
     player, faction: state.factions[player], requested:count, drawn:drawn.length, cards: drawn.map(c => ({ cardUid:c.cardUid, id:c.id, name:c.name, sourceType:c.sourceType, cardType:c.cardType, unitType:c.unitType, cost:c.cost })), source:"C2c-6a-draw"
   });
   return drawn;
@@ -1313,7 +1316,9 @@ function resolveHandTacticDrawCardEconomyEffect(player, card) {
     }
     let discounts = 0;
     for (const d of drawn) discounts += c2c6aApplyCardDiscount(d, -1, c.name, 1);
-    if (discounts > 0) log(`${c.name}: ${drawn.length} carta${drawn.length === 1 ? "" : "e"} pescata${drawn.length === 1 ? "" : "e"} riceve costo -1 ENE permanente sull'istanza, minimo 1.`);
+    if (discounts > 0) log(typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(player)
+      ? `${c.name}: applica il proprio sconto alle carte pescate.`
+      : `${c.name}: ${drawn.length} carta${drawn.length === 1 ? "" : "e"} pescata${drawn.length === 1 ? "" : "e"} riceve costo -1 ENE permanente sull'istanza, minimo 1.`);
     return { damage:0, extra:`pescate ${drawn.length}, sconto totale ${discounts}` };
   }
 
@@ -1321,7 +1326,9 @@ function resolveHandTacticDrawCardEconomyEffect(player, card) {
     const drawn = c2c6aDrawCardsForTactic(player, 2, c.name);
     let buffed = 0;
     for (const d of drawn) buffed += c2c6aApplyVehicleAttackBonusToCard(d, 1, c.name);
-    if (buffed > 0) log(`${c.name}: ${buffed} veicolo/i pescato/i riceve/ricevono +1 ATT permanente quando schierato/i.`);
+    if (buffed > 0) log(typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(player)
+      ? `${c.name}: applica il proprio potenziamento alle carte pescate valide.`
+      : `${c.name}: ${buffed} veicolo/i pescato/i riceve/ricevono +1 ATT permanente quando schierato/i.`);
     return { damage:0, extra:`pescate ${drawn.length}, veicoli buffati ${buffed}` };
   }
 
@@ -1360,7 +1367,8 @@ function c2c6bDiscardRandomEnemyCard(player, sourceName) {
   const card = hand[index];
   const discarded = typeof discardCard === "function" ? discardCard(enemy, card.cardUid) : null;
   if (discarded) {
-    log(`${sourceName}: ${playerName(enemy)} scarta casualmente ${discarded.name}.`, EventTypes.LOG_MESSAGE, {
+    const discardedVisibleName = typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(enemy) ? "una carta coperta" : discarded.name;
+    log(`${sourceName}: ${playerName(enemy)} scarta casualmente ${discardedVisibleName}.`, EventTypes.LOG_MESSAGE, {
       player: enemy,
       faction: state.factions && state.factions[enemy],
       cardUid: discarded.cardUid,
@@ -1419,7 +1427,7 @@ function resolveHandTacticEnergyEconomyEffect(player, card, target) {
     addPlayerEffect(enemy, { kind:"income_delta", value:-1, minIncome:0, turns:2, timing:"afterIncome", source:c.name });
     const discarded = before === 0 ? c2c6bDiscardRandomEnemyCard(player, c.name) : null;
     log(`${c.name}: ${playerName(enemy)} perde ${before > 0 ? 1 : 0} ENE depot e subisce -1 income per 2 turni${discarded ? ", più 1 scarto casuale" : ""}.`, EventTypes.ECONOMY_CHANGED, {
-      player: enemy, faction: state.factions[enemy], caster: player, energyBefore: before, energyAfter: state.energy[enemy], incomeDelta:-1, turns:2, discarded: discarded ? discarded.name : null, source:"C2c-6b-usury"
+      player: enemy, faction: state.factions[enemy], caster: player, energyBefore: before, energyAfter: state.energy[enemy], incomeDelta:-1, turns:2, discarded: discarded ? (typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(enemy) ? "Carta coperta" : discarded.name) : null, source:"C2c-6b-usury"
     });
     return { damage:0, extra:`usura su ${playerName(enemy)}` };
   }
@@ -1531,7 +1539,10 @@ function c2c7aApplyBountyCopy(player, card, target) {
 function c2c7aDrawOne(player, source) {
   const drawn = typeof drawCards === "function" ? drawCards(player, 1) : [];
   const card = drawn && drawn[0] ? drawn[0] : null;
-  if (card) log(`${source}: ${playerName(player)} pesca ${card.name}.`, EventTypes.LOG_MESSAGE, { player, cardUid:card.cardUid, cardName:card.name, source:"C2c-7a-draw-one" });
+  if (card) {
+    const visibleDrawName = typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(player, card) : card.name;
+    log(`${source}: ${playerName(player)} pesca ${visibleDrawName}.`, EventTypes.LOG_MESSAGE, { player, cardUid:card.cardUid, cardName:card.name, source:"C2c-7a-draw-one" });
+  }
   else log(`${source}: ${playerName(player)} non pesca, deck vuoto.`);
   return card;
 }
@@ -1549,7 +1560,10 @@ function c2c7aResolveMutualDrawSteal(player, card) {
   if (ownDraw && enemyDraw && c2c7aIsTacticCard(ownDraw) && typeof moveHandCardBetweenPlayers === "function") {
     stolen = moveHandCardBetweenPlayers(enemy, player, enemyDraw.cardUid, c.name);
   }
-  log(`${c.name}: ${playerName(player)} pesca ${ownDraw ? ownDraw.name : "niente"}; ${playerName(enemy)} pesca ${enemyDraw ? enemyDraw.name : "niente"}${stolen ? `; Fabeot ruba ${stolen.name}` : "; nessun furto"}.`, EventTypes.LOG_MESSAGE, {
+  const ownVisibleName = ownDraw ? (typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(player, ownDraw) : ownDraw.name) : "niente";
+  const enemyVisibleName = enemyDraw ? (typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(enemy, enemyDraw) : enemyDraw.name) : "niente";
+  const stolenVisibleName = stolen ? (typeof cardPresentationEventCardName === "function" ? cardPresentationEventCardName({ fromSide:enemy, toSide:player, cardName:stolen.name }, "una carta coperta") : stolen.name) : "";
+  log(`${c.name}: ${playerName(player)} pesca ${ownVisibleName}; ${playerName(enemy)} pesca ${enemyVisibleName}${stolen ? `; Fabeot ruba ${stolenVisibleName}` : "; nessun furto"}.`, EventTypes.LOG_MESSAGE, {
     player, enemy, ownDraw: ownDraw ? ownDraw.name : null, enemyDraw: enemyDraw ? enemyDraw.name : null, stolen: stolen ? stolen.name : null, source:"C2c-7a-mutual-draw-steal"
   });
   return { damage:0, extra: stolen ? `rubata ${stolen.name}` : "pesca reciproca" };
@@ -1572,7 +1586,9 @@ function c2c7aBlockRandomEnemyHandCards(player, card) {
     blocked.push(selected);
   }
   if (typeof syncCardDebugState === "function") syncCardDebugState();
-  log(`${c.name}: ${playerName(player)} controlla ${ps} PS e blocca ${blocked.length} carta${blocked.length !== 1 ? "e" : ""} nella mano di ${playerName(enemy)}: ${blocked.map(x => x.name).join(", ") || "nessuna"}.`, EventTypes.CARD_BLOCKED, {
+  const blockedNamesVisible = typeof cardPresentationCanViewHand === "function" && cardPresentationCanViewHand(enemy);
+  const blockedSummary = blockedNamesVisible ? (blocked.map(x => x.name).join(", ") || "nessuna") : `${blocked.length} carta/e coperte`;
+  log(`${c.name}: ${playerName(player)} controlla ${ps} PS e blocca ${blocked.length} carta${blocked.length !== 1 ? "e" : ""} nella mano di ${playerName(enemy)}: ${blockedSummary}.`, EventTypes.CARD_BLOCKED, {
     player, enemy, faction:state.factions && state.factions[player], enemyFaction:state.factions && state.factions[enemy], ps, count:blocked.length, blocked:blocked.map(x => ({ cardUid:x.cardUid, name:x.name })), source:c.name
   });
   return { damage:0, extra:`${blocked.length} carte bloccate` };

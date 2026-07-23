@@ -92,8 +92,10 @@ function applyBoardCamera(options = {}) {
   board.style.setProperty("--board-fit-scale", String(totalScale.toFixed(4)));
   board.style.setProperty("--board-camera-x", `${Math.round(boardCamera.x)}px`);
   board.style.setProperty("--board-camera-y", `${Math.round(boardCamera.y)}px`);
-  wrap.style.setProperty("--board-visual-width", `${Math.round(BOARD_CAMERA_W * totalScale)}px`);
-  wrap.style.setProperty("--board-visual-height", `${Math.round(BOARD_CAMERA_H * totalScale)}px`);
+  if (!options.skipLayoutSize) {
+    wrap.style.setProperty("--board-visual-width", `${Math.round(BOARD_CAMERA_W * totalScale)}px`);
+    wrap.style.setProperty("--board-visual-height", `${Math.round(BOARD_CAMERA_H * totalScale)}px`);
+  }
   updateBoardCameraHud();
 }
 

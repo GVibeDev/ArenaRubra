@@ -352,7 +352,7 @@
         const runtime = typeof missionRuntime === "function" ? missionRuntime(side) : null;
         const status = typeof missionUiStatus === "function" ? missionUiStatus(side) : null;
         const canOpen = Boolean(state.currentPlayer === side && state.modes && state.modes[side] === "human" && !botRunning);
-        const playable = typeof missionUiPlayCheck === "function" ? missionUiPlayCheck(side, card) : { ok:false, reason:"Runtime Missione non disponibile" };
+        const playable = typeof missionUiPlayCheck === "function" ? missionUiPlayCheck(side, card, { evaluate:false, source:"hand_render" }) : { ok:false, reason:"Runtime Missione non disponibile" };
         const reason = status ? `${status.label} · ${playable.reason || status.detail}` : playable.reason;
         return { canUse:canOpen, reason, actionText:playable.ok ? "Gioca Missione" : "Mostra progressi" };
       }

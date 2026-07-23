@@ -19,8 +19,52 @@ const apkM4Camera = {
   mode: "fit",
   panel: null,
   lastSelectedId: null,
-  renderPatched: false
+  renderPatched: false,
+  appliedCamera: { mobile:null, scale:"", x:"", y:"", visualW:"", visualH:"" }
 };
+
+const apkM4PanelLayoutState = {
+  token: 0,
+  frame: 0
+};
+
+function apkM4RequestFrame(callback) {
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") return window.requestAnimationFrame(callback);
+  return setTimeout(callback, 16);
+}
+
+function apkM4CancelFrame(handle) {
+  if (!handle) return;
+  if (typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function") window.cancelAnimationFrame(handle);
+  else clearTimeout(handle);
+}
+
+function apkM4SchedulePanelLayout(options = {}) {
+  if (typeof document === "undefined" || !document.body) return;
+  apkM4PanelLayoutState.token += 1;
+  const token = apkM4PanelLayoutState.token;
+  if (apkM4PanelLayoutState.frame) apkM4CancelFrame(apkM4PanelLayoutState.frame);
+  document.body.classList.add("mobile-panel-layout-pending");
+  apkM4PanelLayoutState.frame = apkM4RequestFrame(() => {
+    apkM4PanelLayoutState.frame = apkM4RequestFrame(() => {
+      apkM4PanelLayoutState.frame = 0;
+      if (token !== apkM4PanelLayoutState.token) return;
+      if (typeof cameraInteractionInvalidateGeometry === "function") cameraInteractionInvalidateGeometry();
+      if (typeof fitApkM4Board === "function") fitApkM4Board({ preserveCamera:true });
+      if (apkM4Camera.panel === "hand" && typeof requestInGameHandThumbnailRender === "function") requestInGameHandThumbnailRender();
+      if (options.scrollTo) {
+        const target = document.getElementById(options.scrollTo);
+        if (target) {
+          const scroller = target.closest ? (target.closest(".body, .cardZonePanel, #log") || target) : target;
+          if (scroller && typeof scroller.scrollTop === "number") scroller.scrollTop = 0;
+          else if (typeof target.scrollIntoView === "function") target.scrollIntoView({ block:"start", inline:"nearest", behavior:"auto" });
+        }
+      }
+      document.body.classList.remove("mobile-panel-layout-pending");
+    });
+  });
+}
+
 
 function apkM4MobileMediaMatches() {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
@@ -122,24 +166,14 @@ function setApkM4Panel(panel, options = {}) {
     if (details) details.setAttribute("open", "open");
   }
 
-  window.requestAnimationFrame(() => {
-    fitApkM4Board({ preserveCamera:true });
-    if (options.scrollTo) {
-      const target = document.getElementById(options.scrollTo);
-      if (target) {
-        const scroller = target.closest(".body, .cardZonePanel, #log") || target;
-        if (scroller && typeof scroller.scrollTop === "number") scroller.scrollTop = 0;
-        else if (typeof target.scrollIntoView === "function") target.scrollIntoView({ block:"start", inline:"nearest", behavior:"smooth" });
-      }
-    }
-  });
+  apkM4SchedulePanelLayout({ scrollTo:options.scrollTo || "" });
 }
 
 function closeApkM4Panel() {
   apkM4Camera.panel = null;
   if (!document.body) return;
   document.body.classList.remove("mobile-panel-hand", "mobile-panel-command", "mobile-panel-actions", "mobile-panel-log", "mobile-panel-setup", "mobile-panel-stats", "mobile-hand-play-started");
-  window.requestAnimationFrame(() => fitApkM4Board({ preserveCamera:true }));
+  apkM4SchedulePanelLayout();
 }
 
 function apkM4CloseHandAfterCardPlay() {
@@ -147,9 +181,9 @@ function apkM4CloseHandAfterCardPlay() {
   document.body.classList.add("mobile-hand-play-started");
   apkM4Camera.panel = null;
   document.body.classList.remove("mobile-panel-hand", "mobile-panel-command", "mobile-panel-actions", "mobile-panel-log", "mobile-panel-setup", "mobile-panel-stats");
-  window.requestAnimationFrame(() => {
+  apkM4RequestFrame(() => {
     document.body.classList.remove("mobile-hand-play-started");
-    fitApkM4Board({ preserveCamera:true });
+    apkM4SchedulePanelLayout();
   });
 }
 
@@ -175,10 +209,13 @@ function apkM4FocusCoord() {
   return CENTER_PS_COORD;
 }
 
-function clampApkM4Camera() {
+function clampApkM4Camera(options = {}) {
   const wrap = document.getElementById("boardWrap");
   if (!wrap) return;
-  const rect = wrap.getBoundingClientRect();
+  const rect = typeof cameraInteractionViewportRect === "function"
+    ? cameraInteractionViewportRect({ refresh:options.refreshGeometry === true })
+    : wrap.getBoundingClientRect();
+  if (!rect) return;
   const scale = apkM4Camera.fitScale * apkM4Camera.zoom;
   const visualW = APK_M4_BOARD_W * scale;
   const visualH = APK_M4_BOARD_H * scale;
@@ -189,25 +226,38 @@ function clampApkM4Camera() {
   apkM4Camera.y = apkM4Clamp(apkM4Camera.y, -(extraY + margin), extraY + margin);
 }
 
-function applyApkM4Camera() {
+function applyApkM4Camera(options = {}) {
   const board = document.getElementById("boardVisualStack") || document.getElementById("board");
   const wrap = document.getElementById("boardWrap");
   if (!board || !wrap) return;
+  const applied = apkM4Camera.appliedCamera;
   if (!apkM4Camera.mobile) {
-    board.style.setProperty("--board-fit-scale", "1");
-    board.style.setProperty("--board-camera-x", "0px");
-    board.style.setProperty("--board-camera-y", "0px");
+    if (applied.mobile !== false || applied.scale !== "1") board.style.setProperty("--board-fit-scale", "1");
+    if (applied.mobile !== false || applied.x !== "0px") board.style.setProperty("--board-camera-x", "0px");
+    if (applied.mobile !== false || applied.y !== "0px") board.style.setProperty("--board-camera-y", "0px");
     wrap.style.removeProperty("--board-visual-width");
     wrap.style.removeProperty("--board-visual-height");
+    apkM4Camera.appliedCamera = { mobile:false, scale:"1", x:"0px", y:"0px", visualW:"", visualH:"" };
     return;
   }
-  clampApkM4Camera();
+  if (!options.skipClamp) clampApkM4Camera({ refreshGeometry:options.refreshGeometry === true });
   const totalScale = apkM4Camera.fitScale * apkM4Camera.zoom;
-  board.style.setProperty("--board-fit-scale", String(totalScale.toFixed(4)));
-  board.style.setProperty("--board-camera-x", `${Math.round(apkM4Camera.x)}px`);
-  board.style.setProperty("--board-camera-y", `${Math.round(apkM4Camera.y)}px`);
-  wrap.style.setProperty("--board-visual-width", `${Math.round(APK_M4_BOARD_W * totalScale)}px`);
-  wrap.style.setProperty("--board-visual-height", `${Math.round(APK_M4_BOARD_H * totalScale)}px`);
+  const scaleValue = String(totalScale.toFixed(4));
+  const xValue = `${Math.round(apkM4Camera.x)}px`;
+  const yValue = `${Math.round(apkM4Camera.y)}px`;
+  if (applied.mobile !== true || applied.scale !== scaleValue) board.style.setProperty("--board-fit-scale", scaleValue);
+  if (applied.mobile !== true || applied.x !== xValue) board.style.setProperty("--board-camera-x", xValue);
+  if (applied.mobile !== true || applied.y !== yValue) board.style.setProperty("--board-camera-y", yValue);
+
+  let visualW = applied.visualW;
+  let visualH = applied.visualH;
+  if (!options.skipLayoutSize) {
+    visualW = `${Math.round(APK_M4_BOARD_W * totalScale)}px`;
+    visualH = `${Math.round(APK_M4_BOARD_H * totalScale)}px`;
+    if (applied.mobile !== true || applied.visualW !== visualW) wrap.style.setProperty("--board-visual-width", visualW);
+    if (applied.mobile !== true || applied.visualH !== visualH) wrap.style.setProperty("--board-visual-height", visualH);
+  }
+  apkM4Camera.appliedCamera = { mobile:true, scale:scaleValue, x:xValue, y:yValue, visualW, visualH };
 }
 
 function fitApkM4Board(options = {}) {
@@ -223,7 +273,9 @@ function fitApkM4Board(options = {}) {
     return 1;
   }
 
-  const rect = wrap.getBoundingClientRect();
+  const rect = typeof cameraInteractionViewportRect === "function"
+    ? cameraInteractionViewportRect({ refresh:true })
+    : wrap.getBoundingClientRect();
   const pad = apkM4IsLandscape() ? 8 : 12;
   const availableW = Math.max(220, rect.width - pad);
   const availableH = Math.max(180, rect.height - pad);

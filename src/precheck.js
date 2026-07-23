@@ -83,6 +83,12 @@ function runPrecheck(options = {}) {
     if (typeof missionUiDashboardHtml !== "function") warnings.push("F9N7: missionUiDashboardHtml non disponibile.");
     else info.push("F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.");
     if (typeof missionUiRevealOnPlay !== "function") warnings.push("F9N7: hook missionUiRevealOnPlay non disponibile.");
+    if (typeof handCardHiddenFromViewer !== "function" || typeof cardPresentationViewerSide !== "function") problems.push("F9O4: privacy mano bot non disponibile.");
+    else info.push("F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.");
+    if (typeof cardAssetBackCandidatePathsFor !== "function" || typeof cardBackVisualHtml !== "function") problems.push("F9O4: resolver dorsi fazione non disponibile.");
+    else for (const factionName of ["Nexus","Exordium","Liberti","Agathoi","Fabeot"]) info.push(`F9O4 dorso ${factionName}: ${cardAssetBackCandidatePathsFor(factionName)[0]}.`);
+    if (typeof cardMotionEnqueueGameEvent !== "function") problems.push("F9O4: coda animazioni carte non disponibile.");
+    else info.push("F9O4: coda animazioni carta non bloccante disponibile.");
 
     if (missions.length !== 15) problems.push(`Missioni F9N6: ${missions.length}/15.`);
     for (const dup of collectDuplicateValues(missions, mission => mission && mission.id)) {
@@ -388,6 +394,30 @@ function runPrecheck(options = {}) {
       if (!diagnostics || !diagnostics.limits || diagnostics.limits.minZoom >= diagnostics.limits.maxZoom) problems.push("Camera F9O2: limiti zoom non validi.");
       info.push("F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.");
       info.push("F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.");
+      const perf = diagnostics && diagnostics.performance;
+      if (!perf || !perf.frameCoalescing || !perf.geometryCache || !perf.compositeTransform || !perf.gestureReducedEffects) problems.push("F9O4a: contratto prestazioni camera Android incompleto.");
+      else info.push("F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.");
+    }
+
+    // F9O4b – renderer DOM incrementale della mappa.
+    const rendererFlagsF9O4b = typeof CARD_CATALOG_CONFIG !== "undefined" && CARD_CATALOG_CONFIG ? CARD_CATALOG_CONFIG : {};
+    if (typeof boardRenderDiagnostics !== "function") {
+      problems.push("F9O4b: diagnostica renderer DOM incrementale non disponibile.");
+    } else if (!rendererFlagsF9O4b.incrementalBoardDomF9O4b || !rendererFlagsF9O4b.persistentHexNodesF9O4b || !rendererFlagsF9O4b.delegatedBoardInputF9O4b || !rendererFlagsF9O4b.cachedBoardTargetsF9O4b || !rendererFlagsF9O4b.reusableUnitTokensF9O4b) {
+      problems.push("F9O4b: contratto renderer DOM incrementale incompleto.");
+    } else {
+      const rendererDiag = boardRenderDiagnostics();
+      if (!rendererDiag || !Number.isFinite(rendererDiag.generation)) problems.push("F9O4b: diagnostica renderer non valida.");
+      else info.push("F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.");
+    }
+
+    // F9O4c – stabilità WebView Android, asset canvas e pannelli mobile.
+    if (!rendererFlagsF9O4b.webViewReplaceChildrenFallbackF9O4c || !rendererFlagsF9O4b.boardContainmentDisabledF9O4c || !rendererFlagsF9O4b.boundedThumbnailQueueF9O4c || !rendererFlagsF9O4b.staleCanvasRedrawGuardF9O4c || !rendererFlagsF9O4b.coalescedMobilePanelLayoutF9O4c) {
+      problems.push("F9O4c: contratto stabilità Android incompleto.");
+    } else if (typeof boardRenderReplaceChildrenCompat !== "function" || typeof requestInGameHandThumbnailRender !== "function" || typeof apkM4SchedulePanelLayout !== "function") {
+      problems.push("F9O4c: runtime compatibilità/coda/pannelli non disponibile.");
+    } else {
+      info.push("F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.");
     }
 
     // F9O3 – overlay eventi rapidi e fondazione narrativa.

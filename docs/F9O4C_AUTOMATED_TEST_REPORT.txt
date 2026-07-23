@@ -1,0 +1,47 @@
+ARENA RUBRA — F9O4c AUTOMATED TEST REPORT
+Build: C2-STABLE-1-F9O4c-APK-M4c
+Data: 22 luglio 2026
+Baseline logica dichiarata: C2-STABLE-1-F9O4a-APK-M4c
+Stato: CANDIDATA A TEST APK — non validata automaticamente su dispositivo reale
+
+CONTESTO
+F9O4b è stata respinta dal test Android per sparizione di menu/celle, caricamento instabile delle miniature e freeze dei menu inferiori.
+
+DIAGNOSI RIPRODOTTA
+Con il sorgente F9O4b e Element.prototype.replaceChildren disabilitato, renderBoard() produce:
+TypeError: board.replaceChildren is not a function
+Il punto di errore è boardRenderEnsureSkeleton; renderAll() viene interrotto prima dei pannelli.
+
+CORREZIONI VERIFICATE
+- fallback replaceChildren compatibile con WebView precedenti;
+- autoripristino skeleton se una cella viene rimossa;
+- marker renderer incremental-f9o4c e 127 celle persistenti;
+- containment F9O4b su board/celle disattivato;
+- fallback carta visibile mentre il canvas è pending;
+- fallback nascosto soltanto nello stato ready;
+- art candidate successiva caricata dopo errore della prima;
+- evento finale settled-error quando tutti i candidati sono esauriti;
+- coda thumbnail persistente, deduplicata e limitata per frame;
+- apertura pannelli coalescente e cancellazione richieste obsolete;
+- 24 cambi rapidi di bottom panel senza perdita celle/menu nel browser mobile;
+- precheck iniziale e finale senza problemi.
+
+RISULTATI
+- File JavaScript con sintassi valida: 93/93
+- Suite Node: 31/31 superate
+- Suite browser Playwright/Chromium: 11/11 superate
+- Test WebView compatibility con replaceChildren assente: SUPERATO
+- Test autoripristino board 126 → 127 celle: SUPERATO
+- Test apertura rapida pannelli mobile: SUPERATO
+- Test fallback CSS pending/ready: SUPERATO
+- Test catena immagine errore → fallback valido: SUPERATO
+- Test esaurimento immagini → settled-error: SUPERATO
+- Errori pagina inattesi: 0
+- Errori console inattesi: 0
+
+LIMITI
+I test browser non sostituiscono la WebView reale del telefono. Fluidità, pressione memoria, tempi di decodifica degli asset FULL e stabilità su partita lunga devono essere verificati nell'APK.
+
+ESITO AUTOMATICO
+PASS — pacchetto idoneo al test APK correttivo F9O4c.
+La baseline ufficiale resta F9O4a fino alla validazione dell'autore.

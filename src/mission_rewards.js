@@ -67,7 +67,7 @@ function missionCanPlayOrdinary(side, card=null, options={}) {
   if (!missionCard || !missionCardMatchesRuntime(missionCard, runtime)) return { ok:false, reason:"La carta Missione non è nella mano" };
   if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { ok:false, reason:"Mano bloccata" };
   if (typeof handCardBlocked === "function" && handCardBlocked(missionCard)) return { ok:false, reason:typeof handCardBlockReason === "function" ? handCardBlockReason(missionCard) : "Missione bloccata" };
-  if (typeof missionEvaluateSide === "function") missionEvaluateSide(side, "f9n8_final_validation", { checkpoint:"mission_play", side, round:state.turn });
+  if (options.evaluate !== false && typeof missionEvaluateSide === "function") missionEvaluateSide(side, "f9n8_final_validation", { checkpoint:"mission_play", side, round:state.turn });
   if (!runtime.ready) return { ok:false, reason:"Obiettivi non tutti completati" };
   return { ok:true, reason:"Missione ordinaria pronta", card:missionCard, runtime };
 }
@@ -154,7 +154,9 @@ function missionRewardDraw(side, amount, source, discount=0, minCost=0) {
     for (const card of drawn) discounted += c2c6aApplyCardDiscount(card, -discount, `Missione: ${source}`, minCost);
   }
   if (typeof log === "function") {
-    const names = drawn.map(card => card.name || card.id).join(", ") || "nessuna";
+    const names = typeof cardPresentationVisibleCardsLabel === "function"
+      ? cardPresentationVisibleCardsLabel(side, drawn)
+      : (drawn.map(card => card.name || card.id).join(", ") || "nessuna");
     log(`Missione “${source}”: ${playerName(side)} pesca ${drawn.length}/${requested} carte (${names})${discount > 0 ? `; sconto applicato alle carte disponibili in mano` : ""}.`);
   }
   return { requested, drawn:drawn.length, discounted, cards:drawn.map(card => card.cardUid) };
@@ -195,7 +197,11 @@ function missionDiscardSelectedCards(targetSide, selectedUids, source, missionOw
       data:{ player:targetSide, faction:state.factions && state.factions[targetSide], cardUid:card.cardUid, cardId:card.id, cardName:card.name, source:`Missione: ${source}`, missionOwnerSide }
     });
   }
-  if (typeof log === "function") log(`${playerName(targetSide)} sceglie e scarta ${discarded.length} carte per la Missione “${source}”: ${discarded.map(c => c.name || c.id).join(", ") || "nessuna"}.`);
+  if (typeof log === "function") {
+    const canRevealDiscarded = typeof cardPresentationCanViewHand !== "function" || cardPresentationCanViewHand(targetSide);
+    const discardedLabel = canRevealDiscarded ? (discarded.map(c => c.name || c.id).join(", ") || "nessuna") : (discarded.length ? `${discarded.length} carta/e coperte` : "nessuna");
+    log(`${playerName(targetSide)} sceglie e scarta ${discarded.length} carte per la Missione “${source}”: ${discardedLabel}.`);
+  }
   return discarded;
 }
 
@@ -390,7 +396,7 @@ function missionCanPlayDesperate(side, card=null, options={}) {
   if (!missionCard || !missionCardMatchesRuntime(missionCard, runtime)) return { ok:false, reason:"La carta Missione non è nella mano" };
   if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { ok:false, reason:"Mano bloccata" };
   if (typeof handCardBlocked === "function" && handCardBlocked(missionCard)) return { ok:false, reason:typeof handCardBlockReason === "function" ? handCardBlockReason(missionCard) : "Missione bloccata" };
-  if (typeof missionEvaluateSide === "function") missionEvaluateSide(side, "f9n9_final_validation", { checkpoint:"mission_play", side, round:state.turn });
+  if (options.evaluate !== false && typeof missionEvaluateSide === "function") missionEvaluateSide(side, "f9n9_final_validation", { checkpoint:"mission_play", side, round:state.turn });
   const multiplier = missionDesperateMultiplier(runtime);
   if (!runtime.ready || multiplier < 1) return { ok:false, reason:"Nessuna condizione disperata soddisfatta" };
   return { ok:true, reason:`Missione disperata pronta ×${multiplier}`, card:missionCard, runtime, multiplier };

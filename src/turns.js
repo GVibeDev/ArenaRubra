@@ -191,7 +191,10 @@ function applyC1fAfterDrawPassives(player, first=false) {
   const hasStealthSpy = combatUnits(player).some(u => u.stealthDraw && hasStatus(u, "stealth"));
   if (hasStealthSpy && typeof drawCards === "function") {
     const drawn = drawCards(player, 1);
-    if (drawn.length) log(`${playerName(player)} pesca +1 per Spia Silente furtiva: ${drawn.map(c=>c.name).join(", ")}.`);
+    if (drawn.length) {
+      const visibleDrawLabel = typeof cardPresentationVisibleCardsLabel === "function" ? cardPresentationVisibleCardsLabel(player, drawn) : drawn.map(c=>c.name).join(", ");
+      log(`${playerName(player)} pesca +1 per Spia Silente furtiva: ${visibleDrawLabel}.`);
+    }
   }
 }
 

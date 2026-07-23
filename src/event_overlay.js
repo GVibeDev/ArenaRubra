@@ -287,7 +287,10 @@ function eventOverlayDescriptorsForGameEvent(event) {
   if (type === "PRESSURE_CHANGED" && Number(d.delta) > 0) out.push({ type, title:"AUMENTO PRESSIONE", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${d.current}/${d.limit}`, icon:"▲", side:d.player, priority:"high", key:`pressure:${d.player}:${d.current}:${d.round}` });
   if (type === "HQ_THREATENED") out.push({ type, title:"QG MINACCIATO", message:`${eventOverlaySideLabel(d.hqSide, d.hqFaction)} · nemico entro R${d.range || 4}`, icon:"!", side:d.hqSide, priority:"critical", key:`hq-threat:${d.hqSide}:${d.episode || 1}` });
   if (type === "UNIT_CONVERTED") out.push({ type, title:"UNITÀ CONVERTITA", message:`${d.unitName || d.targetName || "Unità"} passa a ${eventOverlaySideLabel(d.newSide, d.newFaction)}`, icon:"⇄", side:d.newSide, priority:"high", key:`converted:${d.unitId || d.targetId}:${d.newSide}` });
-  if (type === "CARD_STOLEN") out.push({ type, title:"CARTA RUBATA", message:`${eventOverlaySideLabel(d.toSide, d.toFaction)} · ${d.cardName || "Carta"}`, icon:"↤", side:d.toSide, priority:"high", key:`card-stolen:${d.cardUid}:${d.toSide}` });
+  if (type === "CARD_STOLEN") {
+    const visibleName = typeof cardPresentationEventCardName === "function" ? cardPresentationEventCardName(d, "Carta coperta") : (d.cardName || "Carta");
+    out.push({ type, title:"CARTA RUBATA", message:`${eventOverlaySideLabel(d.toSide, d.toFaction)} · ${visibleName}`, icon:"↤", side:d.toSide, priority:"high", key:`card-stolen:${d.cardUid}:${d.toSide}` });
+  }
   if (type === "CARD_BLOCKED" && Number(d.count || (d.blocked && d.blocked.length) || 0) > 0) out.push({ type, title:"CARTE BLOCCATE", message:`${eventOverlaySideLabel(d.enemy, d.enemyFaction)} · ${Number(d.count || d.blocked.length)} carta/e`, icon:"⊘", side:d.enemy, priority:"high", key:`card-blocked:${d.enemy}:${d.round || ""}:${d.source || ""}` });
 
   if (type === "VICTORY") {

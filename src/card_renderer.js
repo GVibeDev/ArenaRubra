@@ -775,14 +775,14 @@ function cardRendererLoadImage(src, onDone) {
     if (!entry) return;
     entry.status = "loaded";
     const listeners = entry.listeners.splice(0);
-    listeners.forEach(fn => { try { fn(); } catch (_) {} });
+    listeners.forEach(fn => { try { fn("loaded", src); } catch (_) {} });
   };
   img.onerror = () => {
     const entry = cardRendererImageCache[src];
     if (!entry) return;
     entry.status = "error";
     const listeners = entry.listeners.splice(0);
-    listeners.forEach(fn => { try { fn(); } catch (_) {} });
+    listeners.forEach(fn => { try { fn("error", src); } catch (_) {} });
   };
   img.src = src;
   return null;
@@ -795,16 +795,69 @@ function cardRendererLoadFirstAvailableImage(paths, onDone) {
     const cached = cardRendererImageCache[src];
     if (cached && cached.status === "loaded") return cached.img;
   }
-  for (const src of list) {
+
+  const firstCandidateIndex = list.findIndex(src => {
     const cached = cardRendererImageCache[src];
-    if (cached && cached.status === "loading") {
-      if (typeof onDone === "function") cached.listeners.push(onDone);
-      return null;
+    return !cached || cached.status !== "error";
+  });
+  if (firstCandidateIndex < 0) return null;
+  const src = list[firstCandidateIndex];
+  const cached = cardRendererImageCache[src];
+  const listener = status => {
+    if (status === "error") {
+      // Prosegue con il candidato successivo anche se il canvas che aveva richiesto
+      // l'immagine è già stato sostituito da un render successivo.
+      cardRendererLoadFirstAvailableImage(list, onDone);
+      // L'ultimo errore deve provocare un ridisegno conclusivo: senza questo segnale
+      // il canvas può restare per sempre nello stato "in caricamento" nelle build LITE.
+      const exhausted = list.every(path => cardRendererImageCache[path] && cardRendererImageCache[path].status === "error");
+      if (exhausted && typeof onDone === "function") onDone("settled-error", src);
+      return;
     }
+    if (typeof onDone === "function") onDone(status, src);
+  };
+  if (cached && cached.status === "loading") {
+    cached.listeners.push(listener);
+    return null;
   }
-  const next = list.find(src => !cardRendererImageCache[src] || cardRendererImageCache[src].status !== "error");
-  if (!next) return null;
-  return cardRendererLoadImage(next, onDone);
+  return cardRendererLoadImage(src, listener);
+}
+
+function cardRendererImagePathsSettled(paths) {
+  const list = Array.isArray(paths) ? paths.filter(Boolean) : [paths].filter(Boolean);
+  if (!list.length) return true;
+  if (list.some(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "loaded")) return true;
+  return list.every(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "error");
+}
+
+function cardRendererPreviewAssetPaths(card) {
+  const embeddedArtPath = card && card.customArt && card.customArt.dataUrl ? card.customArt.dataUrl : "";
+  const artPaths = embeddedArtPath
+    ? [embeddedArtPath]
+    : (typeof cardAssetArtCandidatePathsFor === "function" ? cardAssetArtCandidatePathsFor(card) : (typeof cardAssetArtPathFor === "function" ? [cardAssetArtPathFor(card)] : []));
+  const placeholderPath = typeof cardAssetEntryFor === "function" ? (cardAssetEntryFor(card).placeholderPath || "") : "";
+  const framePath = typeof cardAssetFramePathFor === "function" ? cardAssetFramePathFor(card) : "";
+  return {
+    art: [...artPaths, placeholderPath].filter(Boolean),
+    frame: framePath ? [framePath] : []
+  };
+}
+
+function cardRendererPreviewAssetsSettled(card) {
+  if (!card) return true;
+  const paths = cardRendererPreviewAssetPaths(card);
+  return cardRendererImagePathsSettled(paths.art) && cardRendererImagePathsSettled(paths.frame);
+}
+
+function cardRendererSyncCanvasReadyState(canvas, card) {
+  if (!canvas) return false;
+  const ready = cardRendererPreviewAssetsSettled(card);
+  canvas.dataset.cardRenderState = ready ? "ready" : "pending";
+  const wrap = typeof canvas.closest === "function"
+    ? (canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard"))
+    : null;
+  if (wrap && wrap.classList) wrap.classList.toggle("thumbRendered", ready);
+  return ready;
 }
 
 function cardRendererSetStatFont(ctx, size) {
@@ -916,7 +969,7 @@ function cardRendererDrawArtArea(ctx, card, layout, redraw) {
   const customTransform = embeddedArtPath ? (card.customArtTransform || card.customArt.transform || {}) : {};
   const transform = { ...baseTransform, ...customTransform };
   const artImg = cardRendererLoadFirstAvailableImage(artPaths, redraw);
-  const placeholderImg = cardRendererLoadFirstAvailableImage([placeholderPath], redraw);
+  const placeholderImg = artImg ? null : cardRendererLoadFirstAvailableImage([placeholderPath], redraw);
   const img = artImg || placeholderImg;
   if (img && img.width && img.height) {
     const zoom = Number.isFinite(transform.zoom) ? transform.zoom : 1;
@@ -998,11 +1051,23 @@ function cardRendererDrawStats(ctx, card, layout, style) {
   ctx.textAlign = "left";
 }
 
-function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
+function cardRendererScheduleCanvasRedraw(canvas, card, options, generation) {
+  if (!canvas || !canvas.isConnected || canvas.__arenaCardRenderGeneration !== generation) return;
+  if (canvas.__arenaCardRedrawPending) return;
+  canvas.__arenaCardRedrawPending = true;
+  const schedule = typeof window !== "undefined" && typeof window.requestAnimationFrame === "function"
+    ? window.requestAnimationFrame.bind(window)
+    : callback => setTimeout(callback, 16);
+  schedule(() => {
+    canvas.__arenaCardRedrawPending = false;
+    if (!canvas.isConnected || canvas.__arenaCardRenderGeneration !== generation) return;
+    cardRendererDrawPreviewCanvas(canvas, card, options, generation);
+  });
+}
+
+function cardRendererDrawPreviewCanvas(canvas, card, options, generation) {
   if (!canvas || typeof canvas.getContext !== "function") return false;
-  const redraw = () => {
-    if (canvas.isConnected) renderArenaCardPreviewCanvas(canvas, card, options);
-  };
+  const redraw = () => cardRendererScheduleCanvasRedraw(canvas, card, options, generation);
   const ctx = canvas.getContext("2d");
   const kind = typeof cardAssetKind === "function" ? cardAssetKind(card) : (cardRendererUsesTacticLayout(card) ? "tactic" : "unit");
   const layout = cardRendererLayoutFor(card, kind);
@@ -1012,8 +1077,8 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
   const scale = Number.isFinite(options.scale) && options.scale > 0 ? options.scale : 1;
   const renderW = Math.max(1, Math.round(virtualW * scale));
   const renderH = Math.max(1, Math.round(virtualH * scale));
-  canvas.width = renderW;
-  canvas.height = renderH;
+  if (canvas.width !== renderW) canvas.width = renderW;
+  if (canvas.height !== renderH) canvas.height = renderH;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, renderW, renderH);
   ctx.save();
@@ -1029,6 +1094,7 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
     cardRendererSetFont(ctx, 24, "400", "system-ui, sans-serif");
     ctx.fillText("Deck Builder · anteprima renderer F9I1", virtualW / 2, virtualH / 2 + 26);
     ctx.restore();
+    cardRendererSyncCanvasReadyState(canvas, card);
     return true;
   }
 
@@ -1062,7 +1128,16 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
 
   cardRendererDrawStats(ctx, card, layout, style);
   ctx.restore();
+  cardRendererSyncCanvasReadyState(canvas, card);
   return true;
+}
+
+function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
+  if (!canvas || typeof canvas.getContext !== "function") return false;
+  const generation = (Number(canvas.__arenaCardRenderGeneration) || 0) + 1;
+  canvas.__arenaCardRenderGeneration = generation;
+  canvas.__arenaCardRedrawPending = false;
+  return cardRendererDrawPreviewCanvas(canvas, card, options, generation);
 }
 
 function cardRendererCatalogCardById(cardId) {
@@ -1097,6 +1172,7 @@ function gameCardPreviewCardByUid(side, cardUid) {
   const hand = state.hand && state.hand[side] ? state.hand[side] : [];
   const inHand = hand.find(card => card && card.cardUid === cardUid);
   if (inHand) {
+    if (typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, inHand)) return null;
     if (typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, inHand)) return null;
     return inHand;
   }
@@ -1152,7 +1228,7 @@ function gameCardPreviewEnsureDefaultHandCard(side) {
   const current = gameCardPreviewCardByUid(side, GAME_CARD_PREVIEW_STATE.handCardUid);
   if (current) return current;
   const hand = state.hand && state.hand[side]
-    ? state.hand[side].filter(card => !(typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, card)))
+    ? state.hand[side].filter(card => !(typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, card)) && !(typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, card)))
     : [];
   if (hand.length) {
     GAME_CARD_PREVIEW_STATE.handSide = side;

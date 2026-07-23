@@ -15,7 +15,15 @@ const MAP_HAND_OVERLAY_STATE = {
       lastSide: 0,
       hoverCardUid: "",
       hoverSource: "",
-      hoverSide: 0
+      hoverSide: 0,
+      renderSignature: ""
+    };
+
+    const HAND_THUMB_RENDER_QUEUE = {
+      frame: 0,
+      pending: [],
+      queued: new Set(),
+      renderedThisRun: 0
     };
 
 // Nota architetturale:
@@ -62,122 +70,438 @@ const MAP_HAND_OVERLAY_STATE = {
 
 
 
-    function renderBoard() {
-      if (typeof syncBoardCssMetrics === "function") syncBoardCssMetrics();
-      if (typeof syncMapVisualLayerState === "function") syncMapVisualLayerState();
-      const board = $("board");
-      const displayedSelectedId = typeof gameScreenDisplayedUnitId === "function" ? gameScreenDisplayedUnitId() : selectedId;
-      board.innerHTML = "";
-      board.dataset.interactionMode = mode || "idle";
-      board.classList.toggle("has-tactical-mode", Boolean(mode && mode !== "idle"));
+    const BOARD_DOM_CACHE = {
+      board: null,
+      structureKey: "",
+      cells: new Map(),
+      unitNodes: new Map(),
+      unitSignatures: new Map(),
+      delegatedClick: null,
+      generation: 0,
+      lastMetrics: {
+        fullBuilds: 0,
+        renders: 0,
+        patchedCells: 0,
+        patchedTokens: 0,
+        reusedTokens: 0,
+        skeletonRepairs: 0
+      }
+    };
+
+
+    function boardRenderCoordKey(coord) {
+      return Array.isArray(coord) ? coord.join(",") : String(coord || "");
+    }
+
+
+    function boardRenderParseCoordKey(key) {
+      const values = String(key || "").split(",").map(Number);
+      return values.length === 3 && values.every(Number.isFinite) ? values : null;
+    }
+
+
+    function boardRenderResetCache() {
+      BOARD_DOM_CACHE.board = null;
+      BOARD_DOM_CACHE.structureKey = "";
+      BOARD_DOM_CACHE.cells.clear();
+      BOARD_DOM_CACHE.unitNodes.clear();
+      BOARD_DOM_CACHE.unitSignatures.clear();
+      BOARD_DOM_CACHE.delegatedClick = null;
+      BOARD_DOM_CACHE.generation += 1;
+    }
+
+
+    function boardRenderDiagnostics() {
+      return {
+        generation: BOARD_DOM_CACHE.generation,
+        cells: BOARD_DOM_CACHE.cells.size,
+        unitNodes: BOARD_DOM_CACHE.unitNodes.size,
+        ...BOARD_DOM_CACHE.lastMetrics
+      };
+    }
+
+
+    function boardRenderHandleDelegatedClick(event) {
+      const board = BOARD_DOM_CACHE.board;
+      if (!board || !event || !event.target || typeof event.target.closest !== "function") return;
+      const cell = event.target.closest(".hex[data-coord-key]");
+      if (!cell || !board.contains(cell)) return;
+      const coord = boardRenderParseCoordKey(cell.dataset.coordKey);
+      if (coord && typeof handleCellClick === "function") handleCellClick(coord);
+    }
+
+
+    function boardRenderStructureKey() {
+      if (!state || !Array.isArray(state.cells)) return "";
+      return state.cells.map(cell => boardRenderCoordKey(cell.coord)).join("|");
+    }
+
+
+    function boardRenderReplaceChildrenCompat(board, fragment) {
+      if (!board) return;
+      if (typeof board.replaceChildren === "function") {
+        board.replaceChildren(fragment);
+        return;
+      }
+      while (board.firstChild) board.removeChild(board.firstChild);
+      board.appendChild(fragment);
+    }
+
+
+    function boardRenderCacheNodesConnected(board) {
+      if (!board || BOARD_DOM_CACHE.cells.size === 0) return false;
+      for (const entry of BOARD_DOM_CACHE.cells.values()) {
+        if (!entry || !entry.element || entry.element.parentNode !== board) return false;
+      }
+      return true;
+    }
+
+
+    function boardRenderEnsureSkeleton(board) {
+      const structureKey = boardRenderStructureKey();
+      const cacheValid = BOARD_DOM_CACHE.board === board
+        && BOARD_DOM_CACHE.structureKey === structureKey
+        && BOARD_DOM_CACHE.cells.size === state.cells.length
+        && board.childElementCount === state.cells.length
+        && boardRenderCacheNodesConnected(board);
+      if (cacheValid) return false;
+
+      if (BOARD_DOM_CACHE.board && BOARD_DOM_CACHE.delegatedClick) {
+        BOARD_DOM_CACHE.board.removeEventListener("click", BOARD_DOM_CACHE.delegatedClick);
+      }
+      BOARD_DOM_CACHE.board = board;
+      BOARD_DOM_CACHE.structureKey = structureKey;
+      BOARD_DOM_CACHE.cells.clear();
+      BOARD_DOM_CACHE.unitNodes.clear();
+      BOARD_DOM_CACHE.unitSignatures.clear();
+      BOARD_DOM_CACHE.delegatedClick = boardRenderHandleDelegatedClick;
+
+      const fragment = document.createDocumentFragment();
       for (const cell of state.cells) {
         const [x, y, z] = cell.coord;
         const q = x;
         const r = z;
         const left = CENTER_X + HEX_SIZE * Math.sqrt(3) * (q + r / 2);
         const top = CENTER_Y + HEX_SIZE * 1.5 * r;
-        const unit = getUnitAt(cell.coord);
-        const hqSide = hqSideAt(cell.coord);
-        const div = document.createElement("button");
-        div.className = "hex";
-        div.dataset.coordKey = cell.coord.join(",");
-        const moveTarget = isMoveTarget(cell.coord);
-        const attackTarget = isAttackTarget(cell.coord);
-        const abilityTarget = isAbilityTarget(cell.coord) || isTacticTarget(cell.coord);
-        const buildTarget = isBuildTarget(cell.coord);
-        const spawnTarget = isSpawnTarget(cell.coord);
-        const tacticalTarget = moveTarget || attackTarget || abilityTarget || buildTarget || spawnTarget;
-
-        if (cell.ps) div.classList.add("ps", "cellObjective");
-        if (cell.ps && isPsLocked(cell.coord)) div.classList.add("psLocked");
-        if (typeof isCellBlockedByEffect === "function" && isCellBlockedByEffect(cell.coord)) div.classList.add("cellBlocked");
-        if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "cell_movement_trap")) div.classList.add("cellTrapNexus");
-        if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "cell_movement_boost")) div.classList.add("cellPassageNexus");
-        if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "vegetal_anathema_trap")) div.classList.add("cellTrapAgathoi");
-        if (typeof hasCellEffect === "function" && hasCellEffect(cell.coord, "bramble_path_trap")) div.classList.add("cellBramble");
-        if (hqSide) div.classList.add("hq", `hq${hqSide}`, "cellObjective");
-        if (cell.control) {
-          div.classList.add("controlledCell", `controlledSide${cell.control}`);
-          div.style.setProperty("--cell-control-color", factionMetaBySide(cell.control).color);
-        }
-        if (displayedSelectedId && unit && unit.uid === displayedSelectedId) div.classList.add("selected");
-        if (tacticalTarget) div.classList.add("tacticalTarget");
-        if (moveTarget) div.classList.add("moveTarget");
-        if (attackTarget) div.classList.add("attackTarget");
-        if (abilityTarget) div.classList.add("abilityTarget");
-        if (buildTarget) div.classList.add("buildTarget");
-        if (spawnTarget) div.classList.add("spawnTarget");
-        div.style.left = left + "px";
-        div.style.top = top + "px";
-        if (cell.control) div.style.boxShadow = `inset 0 0 0 3px ${factionMetaBySide(cell.control).color}cc`;
-        const notes = [];
-        if (cell.ps) notes.push(isPsLocked(cell.coord) ? "Punto Strategico bloccato" : "Punto Strategico");
-        if (hqSide) notes.push(`QG ${playerName(hqSide)} · cella obiettivo`);
-        if (typeof cellEffectsSummary === "function" && cellEffectsSummary(cell.coord)) notes.push(cellEffectsSummary(cell.coord));
-        div.title = `${cell.coord.join(",")} ${notes.length ? "· " + notes.join(" · ") : ""}`;
-        div.addEventListener("click", () => handleCellClick(cell.coord));
-
-        if (unit) {
-          const token = document.createElement("div");
-          const tokenClasses = ["unitToken", `faction-${factionMeta(unit.faction).key}`, tokenTypeClass(unit), tokenWeightClass(unit)].filter(Boolean);
-          if (unit.customRuntime === true) tokenClasses.push("is-custom");
-          if (displayedSelectedId && unit.uid === displayedSelectedId) tokenClasses.push("is-selected");
-          token.className = tokenClasses.join(" ");
-          token.dataset.unitUid = String(unit.uid || "");
-          token.dataset.unitPos = Array.isArray(unit.pos) ? unit.pos.join(",") : "";
-          if (unit.acted && unit.type !== "QG") token.classList.add("acted");
-          if (hasStatus(unit, "bleed")) token.classList.add("bleeding");
-          if (hasAnyInhibition(unit)) token.classList.add("inhibited");
-          if (effectiveThorns(unit)) token.classList.add("thorns");
-          div.classList.add("occupied");
-          const occupiedTypeClass = tokenTypeClass(unit);
-          const occupiedWeightClass = tokenWeightClass(unit);
-          if (occupiedTypeClass) div.classList.add(`occupied-${occupiedTypeClass}`);
-          if (occupiedWeightClass) div.classList.add(`occupied-${occupiedWeightClass}`);
-          if (unit.customRuntime === true) div.classList.add("occupied-custom");
-          const customBadge = unit.customRuntime === true ? `<span class="tokenCustomBadge" title="Custom runtime">C</span>` : "";
-          const selectionCues = displayedSelectedId && unit.uid === displayedSelectedId
-            ? `<span class="tokenSelectionHalo" aria-hidden="true"></span><span class="tokenActiveArrow" aria-hidden="true"></span>`
-            : "";
-          token.innerHTML = `<span class="tokenFactionBase" aria-hidden="true"></span><span class="symbol">${unitIcon(unit)}</span>${unitOverlay(unit)}${customBadge}<span class="mini statMini"><span class="statNum statHp">${unit.currentHp}</span><span class="statNum statDef">${unit.currentDef}</span><span class="statNum statAtt">${effectiveAtt(unit)}</span></span>${selectionCues}`;
-          if (typeof visualAssetTokenGraphicsEnabled === "function" && visualAssetTokenGraphicsEnabled() && typeof visualAssetTokenArtForUnit === "function") {
-            const tokenArtPath = visualAssetTokenArtForUnit(unit);
-            if (tokenArtPath) {
-              token.classList.add("has-token-art");
-              token.dataset.tokenArt = tokenArtPath;
-              const art = document.createElement("span");
-              art.className = "tokenArt";
-              art.setAttribute("aria-hidden", "true");
-              art.style.backgroundImage = `url("${String(tokenArtPath).replace(/\"/g, "%22")}")`;
-              const status = typeof visualAssetTokenAssetStatus === "function" ? visualAssetTokenAssetStatus(tokenArtPath) : "unknown";
-              if (status === "loaded") {
-                token.classList.add("token-art-loaded");
-              } else if (status === "missing") {
-                token.classList.add("token-art-missing");
-              } else {
-                token.classList.add("token-art-loading");
-                if (typeof visualAssetPreloadTokenArt === "function") {
-                  visualAssetPreloadTokenArt(tokenArtPath, nextStatus => {
-                    if (!token || !token.isConnected || token.dataset.tokenArt !== tokenArtPath) return;
-                    token.classList.remove("token-art-loading");
-                    token.classList.toggle("token-art-loaded", nextStatus === "loaded");
-                    token.classList.toggle("token-art-missing", nextStatus === "missing");
-                  });
-                }
-              }
-              token.prepend(art);
-            }
-          }
-          token.title = `${unit.name}
-HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveAtt(unit)}${unitStatusSummary(unit) ? "\nStati: " + unitStatusSummary(unit) : ""}`;
-          div.appendChild(token);
-        }
-        const coord = document.createElement("span");
-        coord.className = "coord";
-        coord.textContent = `${x},${y},${z}`;
-        div.appendChild(coord);
-        board.appendChild(div);
+        const element = document.createElement("button");
+        element.type = "button";
+        element.className = "hex";
+        element.dataset.coordKey = boardRenderCoordKey(cell.coord);
+        element.style.left = `${left}px`;
+        element.style.top = `${top}px`;
+        const coordLabel = document.createElement("span");
+        coordLabel.className = "coord";
+        coordLabel.textContent = `${x},${y},${z}`;
+        element.appendChild(coordLabel);
+        fragment.appendChild(element);
+        BOARD_DOM_CACHE.cells.set(element.dataset.coordKey, {
+          element,
+          coordLabel,
+          cellSignature: "",
+          tokenUid: ""
+        });
       }
+      boardRenderReplaceChildrenCompat(board, fragment);
+      board.addEventListener("click", BOARD_DOM_CACHE.delegatedClick);
+      BOARD_DOM_CACHE.generation += 1;
+      BOARD_DOM_CACHE.lastMetrics.fullBuilds += 1;
+      BOARD_DOM_CACHE.lastMetrics.skeletonRepairs += 1;
+      return true;
+    }
+
+
+    function boardRenderCoordSet(items) {
+      const out = new Set();
+      for (const item of Array.isArray(items) ? items : []) {
+        const coord = Array.isArray(item) ? item : item && Array.isArray(item.pos) ? item.pos : item && Array.isArray(item.coord) ? item.coord : null;
+        if (coord) out.add(boardRenderCoordKey(coord));
+      }
+      return out;
+    }
+
+
+    function boardRenderTargetSets() {
+      const empty = () => new Set();
+      const targets = {
+        move: empty(),
+        attack: empty(),
+        ability: empty(),
+        build: empty(),
+        spawn: empty()
+      };
+      const selected = typeof getSelectedUnit === "function" ? getSelectedUnit() : null;
+      try {
+        if (mode === "move" && selected && typeof movableCells === "function") targets.move = boardRenderCoordSet(movableCells(selected));
+        if (mode === "idle" && selected && selected.side === state.currentPlayer && selected.type !== "QG" && typeof canAttack === "function" && canAttack(selected) && typeof adjacentAttackTargets === "function") targets.attack = boardRenderCoordSet(adjacentAttackTargets(selected));
+        if (mode === "ability" && selected && pendingAbility && typeof abilityTargets === "function") targets.ability = boardRenderCoordSet(abilityTargets(selected, pendingAbility));
+        if (mode === "tactic") {
+          let tacticTargetsNow = [];
+          if (pendingHandCardUid && typeof handCardByUid === "function" && typeof handTacticTargets === "function") {
+            const card = handCardByUid(state.currentPlayer, pendingHandCardUid);
+            if (card) tacticTargetsNow = handTacticTargets(state.currentPlayer, card);
+          } else if (pendingTacticId && typeof tacticById === "function" && typeof tacticTargets === "function") {
+            const tactic = tacticById(pendingTacticId);
+            if (tactic) tacticTargetsNow = tacticTargets(state.currentPlayer, tactic);
+          }
+          targets.ability = boardRenderCoordSet(tacticTargetsNow);
+        }
+        if (mode === "build" && pendingBuildBlueprintId) {
+          if (pendingBuildSource && pendingBuildSource.type === "own_hq" && typeof ownHqBuildCell === "function") {
+            const ownHqCell = ownHqBuildCell(pendingBuildSource.side);
+            targets.build = boardRenderCoordSet(ownHqCell ? [ownHqCell] : []);
+          } else if (selected && typeof buildableCells === "function") {
+            targets.build = boardRenderCoordSet(buildableCells(selected));
+          }
+        }
+        if (mode === "spawn" && pendingPurchaseBlueprintId && typeof pendingBlueprintForHandOrMarket === "function" && typeof spawnCellsFor === "function") {
+          const bp = pendingBlueprintForHandOrMarket(state.currentPlayer, pendingPurchaseBlueprintId);
+          if (bp) targets.spawn = boardRenderCoordSet(spawnCellsFor(state.currentPlayer, bp));
+        }
+      } catch (error) {
+        console.warn("F9O4b target cache fallback", error);
+      }
+      return targets;
+    }
+
+
+    function boardRenderCellVisualIndex() {
+      const index = new Map();
+      const ensure = key => {
+        if (!index.has(key)) index.set(key, { psLocked:false, blocked:false, kinds:new Set(), summary:"" });
+        return index.get(key);
+      };
+      for (const lock of state && Array.isArray(state.psLocks) ? state.psLocks : []) {
+        if (lock && Array.isArray(lock.coord)) ensure(boardRenderCoordKey(lock.coord)).psLocked = true;
+      }
+      const summaries = new Map();
+      for (const effect of state && Array.isArray(state.cellEffects) ? state.cellEffects : []) {
+        if (!effect || !Array.isArray(effect.coord)) continue;
+        const key = boardRenderCoordKey(effect.coord);
+        const visual = ensure(key);
+        visual.kinds.add(effect.kind || "");
+        if (effect.kind === "temporary_block_cell") visual.blocked = true;
+        const label = typeof cellEffectLabel === "function" ? cellEffectLabel(effect) : (effect.source || effect.kind || "Effetto cella");
+        const summary = `${label}${Number.isFinite(effect.turns) ? ` (${effect.turns})` : ""}`;
+        if (!summaries.has(key)) summaries.set(key, []);
+        summaries.get(key).push(summary);
+      }
+      for (const [key, parts] of summaries.entries()) ensure(key).summary = parts.join(" · ");
+      return index;
+    }
+
+
+    function boardRenderCellClasses(cell, unit, hqSide, flags, displayedSelectedId, visual) {
+      const classes = ["hex"];
+      if (cell.ps) classes.push("ps", "cellObjective");
+      if (cell.ps && visual.psLocked) classes.push("psLocked");
+      if (visual.blocked) classes.push("cellBlocked");
+      if (visual.kinds.has("cell_movement_trap")) classes.push("cellTrapNexus");
+      if (visual.kinds.has("cell_movement_boost")) classes.push("cellPassageNexus");
+      if (visual.kinds.has("vegetal_anathema_trap")) classes.push("cellTrapAgathoi");
+      if (visual.kinds.has("bramble_path_trap")) classes.push("cellBramble");
+      if (hqSide) classes.push("hq", `hq${hqSide}`, "cellObjective");
+      if (cell.control) classes.push("controlledCell", `controlledSide${cell.control}`);
+      if (displayedSelectedId && unit && unit.uid === displayedSelectedId) classes.push("selected");
+      if (flags.tacticalTarget) classes.push("tacticalTarget");
+      if (flags.moveTarget) classes.push("moveTarget");
+      if (flags.attackTarget) classes.push("attackTarget");
+      if (flags.abilityTarget) classes.push("abilityTarget");
+      if (flags.buildTarget) classes.push("buildTarget");
+      if (flags.spawnTarget) classes.push("spawnTarget");
+      if (unit) {
+        classes.push("occupied");
+        const occupiedTypeClass = tokenTypeClass(unit);
+        const occupiedWeightClass = tokenWeightClass(unit);
+        if (occupiedTypeClass) classes.push(`occupied-${occupiedTypeClass}`);
+        if (occupiedWeightClass) classes.push(`occupied-${occupiedWeightClass}`);
+        if (unit.customRuntime === true) classes.push("occupied-custom");
+      }
+      return classes.join(" ");
+    }
+
+
+    function boardRenderCellTitle(cell, hqSide, visual) {
+      const notes = [];
+      if (cell.ps) notes.push(visual.psLocked ? "Punto Strategico bloccato" : "Punto Strategico");
+      if (hqSide) notes.push(`QG ${playerName(hqSide)} · cella obiettivo`);
+      if (visual.summary) notes.push(visual.summary);
+      return `${boardRenderCoordKey(cell.coord)} ${notes.length ? "· " + notes.join(" · ") : ""}`;
+    }
+
+
+    function boardRenderTokenSignature(unit, displayedSelectedId, tokenArtPath, tokenArtStatus) {
+      return [
+        unit.uid,
+        unit.name,
+        unit.faction,
+        unit.type,
+        unit.weight,
+        unit.customRuntime === true ? 1 : 0,
+        displayedSelectedId && unit.uid === displayedSelectedId ? 1 : 0,
+        unit.acted && unit.type !== "QG" ? 1 : 0,
+        hasStatus(unit, "bleed") ? 1 : 0,
+        hasAnyInhibition(unit) ? 1 : 0,
+        effectiveThorns(unit) || 0,
+        unit.currentHp,
+        unit.maxHp,
+        unit.currentDef,
+        effectiveAtt(unit),
+        unitStatusSummary(unit),
+        unitIcon(unit),
+        unitOverlay(unit),
+        tokenArtPath || "",
+        tokenArtStatus || ""
+      ].join("¦");
+    }
+
+
+    function boardRenderPatchToken(token, unit, displayedSelectedId, tokenArtPath, tokenArtStatus) {
+      const tokenClasses = ["unitToken", `faction-${factionMeta(unit.faction).key}`, tokenTypeClass(unit), tokenWeightClass(unit)].filter(Boolean);
+      if (unit.customRuntime === true) tokenClasses.push("is-custom");
+      if (displayedSelectedId && unit.uid === displayedSelectedId) tokenClasses.push("is-selected");
+      if (unit.acted && unit.type !== "QG") tokenClasses.push("acted");
+      if (hasStatus(unit, "bleed")) tokenClasses.push("bleeding");
+      if (hasAnyInhibition(unit)) tokenClasses.push("inhibited");
+      if (effectiveThorns(unit)) tokenClasses.push("thorns");
+      if (tokenArtPath) {
+        tokenClasses.push("has-token-art");
+        if (tokenArtStatus === "loaded") tokenClasses.push("token-art-loaded");
+        else if (tokenArtStatus === "missing") tokenClasses.push("token-art-missing");
+        else tokenClasses.push("token-art-loading");
+      }
+      token.className = tokenClasses.join(" ");
+      token.dataset.unitUid = String(unit.uid || "");
+      token.dataset.unitPos = Array.isArray(unit.pos) ? unit.pos.join(",") : "";
+      if (tokenArtPath) token.dataset.tokenArt = tokenArtPath;
+      else delete token.dataset.tokenArt;
+      const customBadge = unit.customRuntime === true ? `<span class="tokenCustomBadge" title="Custom runtime">C</span>` : "";
+      const selectionCues = displayedSelectedId && unit.uid === displayedSelectedId
+        ? `<span class="tokenSelectionHalo" aria-hidden="true"></span><span class="tokenActiveArrow" aria-hidden="true"></span>`
+        : "";
+      token.innerHTML = `<span class="tokenFactionBase" aria-hidden="true"></span><span class="symbol">${unitIcon(unit)}</span>${unitOverlay(unit)}${customBadge}<span class="mini statMini"><span class="statNum statHp">${unit.currentHp}</span><span class="statNum statDef">${unit.currentDef}</span><span class="statNum statAtt">${effectiveAtt(unit)}</span></span>${selectionCues}`;
+      if (tokenArtPath) {
+        const art = document.createElement("span");
+        art.className = "tokenArt";
+        art.setAttribute("aria-hidden", "true");
+        art.style.backgroundImage = `url("${String(tokenArtPath).replace(/\"/g, "%22")}")`;
+        token.prepend(art);
+        if (tokenArtStatus !== "loaded" && tokenArtStatus !== "missing" && typeof visualAssetPreloadTokenArt === "function") {
+          const expectedUid = String(unit.uid || "");
+          visualAssetPreloadTokenArt(tokenArtPath, nextStatus => {
+            if (!token || !token.isConnected || token.dataset.unitUid !== expectedUid || token.dataset.tokenArt !== tokenArtPath) return;
+            token.classList.remove("token-art-loading");
+            token.classList.toggle("token-art-loaded", nextStatus === "loaded");
+            token.classList.toggle("token-art-missing", nextStatus === "missing");
+            BOARD_DOM_CACHE.unitSignatures.delete(expectedUid);
+          });
+        }
+      }
+      token.title = `${unit.name}\nHP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveAtt(unit)}${unitStatusSummary(unit) ? "\nStati: " + unitStatusSummary(unit) : ""}`;
+    }
+
+
+    function renderBoard() {
+      if (typeof syncBoardCssMetrics === "function") syncBoardCssMetrics();
+      if (typeof syncMapVisualLayerState === "function") syncMapVisualLayerState();
+      const board = $("board");
+      if (!board || !state || !Array.isArray(state.cells)) return;
+      const displayedSelectedId = typeof gameScreenDisplayedUnitId === "function" ? gameScreenDisplayedUnitId() : selectedId;
+      board.dataset.interactionMode = mode || "idle";
+      board.classList.toggle("has-tactical-mode", Boolean(mode && mode !== "idle"));
+      boardRenderEnsureSkeleton(board);
+
+      const targetSets = boardRenderTargetSets();
+      const cellVisualIndex = boardRenderCellVisualIndex();
+      const emptyCellVisual = { psLocked:false, blocked:false, kinds:new Set(), summary:"" };
+      const occupancy = new Map();
+      for (const unit of Array.isArray(state.units) ? state.units : []) {
+        if (unit && unit.alive && Array.isArray(unit.pos)) occupancy.set(boardRenderCoordKey(unit.pos), unit);
+      }
+      const activeUnitIds = new Set();
+      let patchedCells = 0;
+      let patchedTokens = 0;
+      let reusedTokens = 0;
+
+      for (const cell of state.cells) {
+        const key = boardRenderCoordKey(cell.coord);
+        const entry = BOARD_DOM_CACHE.cells.get(key);
+        if (!entry) continue;
+        const unit = occupancy.get(key) || null;
+        const hqSide = hqSideAt(cell.coord);
+        const cellVisual = cellVisualIndex.get(key) || emptyCellVisual;
+        const flags = {
+          moveTarget: targetSets.move.has(key),
+          attackTarget: targetSets.attack.has(key),
+          abilityTarget: targetSets.ability.has(key),
+          buildTarget: targetSets.build.has(key),
+          spawnTarget: targetSets.spawn.has(key)
+        };
+        flags.tacticalTarget = flags.moveTarget || flags.attackTarget || flags.abilityTarget || flags.buildTarget || flags.spawnTarget;
+        const className = boardRenderCellClasses(cell, unit, hqSide, flags, displayedSelectedId, cellVisual);
+        const controlColor = cell.control ? factionMetaBySide(cell.control).color : "";
+        const title = boardRenderCellTitle(cell, hqSide, cellVisual);
+        const signature = [className, controlColor, title, unit ? unit.uid : ""].join("¦");
+        if (entry.cellSignature !== signature) {
+          entry.element.className = className;
+          entry.element.title = title;
+          if (controlColor) {
+            entry.element.style.setProperty("--cell-control-color", controlColor);
+            entry.element.style.boxShadow = `inset 0 0 0 3px ${controlColor}cc`;
+          } else {
+            entry.element.style.removeProperty("--cell-control-color");
+            entry.element.style.removeProperty("box-shadow");
+          }
+          entry.cellSignature = signature;
+          patchedCells += 1;
+        }
+
+        if (!unit) {
+          const stale = entry.element.querySelector(".unitToken");
+          if (stale) stale.remove();
+          entry.tokenUid = "";
+          continue;
+        }
+
+        const uid = String(unit.uid || "");
+        activeUnitIds.add(uid);
+        let token = BOARD_DOM_CACHE.unitNodes.get(uid);
+        if (!token) {
+          token = document.createElement("div");
+          BOARD_DOM_CACHE.unitNodes.set(uid, token);
+        } else {
+          reusedTokens += 1;
+        }
+        let tokenArtPath = "";
+        let tokenArtStatus = "";
+        if (typeof visualAssetTokenGraphicsEnabled === "function" && visualAssetTokenGraphicsEnabled() && typeof visualAssetTokenArtForUnit === "function") {
+          tokenArtPath = visualAssetTokenArtForUnit(unit) || "";
+          tokenArtStatus = tokenArtPath && typeof visualAssetTokenAssetStatus === "function" ? visualAssetTokenAssetStatus(tokenArtPath) : "";
+        }
+        const tokenSignature = boardRenderTokenSignature(unit, displayedSelectedId, tokenArtPath, tokenArtStatus);
+        if (BOARD_DOM_CACHE.unitSignatures.get(uid) !== tokenSignature) {
+          boardRenderPatchToken(token, unit, displayedSelectedId, tokenArtPath, tokenArtStatus);
+          BOARD_DOM_CACHE.unitSignatures.set(uid, tokenSignature);
+          patchedTokens += 1;
+        } else {
+          token.dataset.unitPos = Array.isArray(unit.pos) ? unit.pos.join(",") : "";
+        }
+        if (token.parentNode !== entry.element || token.nextSibling !== entry.coordLabel) entry.element.insertBefore(token, entry.coordLabel);
+        entry.tokenUid = uid;
+      }
+
+      for (const [uid, token] of [...BOARD_DOM_CACHE.unitNodes.entries()]) {
+        if (activeUnitIds.has(uid)) continue;
+        if (token && token.parentNode) token.remove();
+        BOARD_DOM_CACHE.unitNodes.delete(uid);
+        BOARD_DOM_CACHE.unitSignatures.delete(uid);
+      }
+
+      BOARD_DOM_CACHE.lastMetrics.renders += 1;
+      BOARD_DOM_CACHE.lastMetrics.patchedCells = patchedCells;
+      BOARD_DOM_CACHE.lastMetrics.patchedTokens = patchedTokens;
+      BOARD_DOM_CACHE.lastMetrics.reusedTokens = reusedTokens;
+      board.dataset.renderer = "incremental-f9o4c";
+      board.dataset.rendererPatches = `${patchedCells}:${patchedTokens}`;
     }
 
 
@@ -351,6 +675,12 @@ HP ${unit.currentHp}/${unit.maxHp} · DEF ${unit.currentDef} · ATT ${effectiveA
         return;
       }
       dock.classList.remove("isEmpty");
+      if (dock.dataset) dock.dataset.renderSignature = [
+        player,
+        state.turn || 0,
+        currentEnergy,
+        typeof missionUiRenderSignature === "function" ? missionUiRenderSignature(player) : "mission-ui-unavailable"
+      ].join("¦");
       const rows = tactics.map(tactic => {
         const targets = tactic.target === "none" ? [] : tacticTargets(player, tactic);
         const active = mode === "tactic" && pendingTacticId === tactic.id;
@@ -628,7 +958,19 @@ ${reason}`);
         </div>`;
     }
 
+    function renderHiddenHandCardSlot(side, card) {
+      const faction = state && state.factions ? state.factions[side] : "";
+      const blocked = typeof handCardBlocked === "function" && handCardBlocked(card);
+      const back = typeof cardBackVisualHtml === "function" ? cardBackVisualHtml(faction, { blocked }) : `<div class="handThumbEmpty"><strong>CARTA</strong><span>Coperta</span></div>`;
+      return `
+        <div class="debugHandSlot renderedHandSlot hiddenOpponentCard" aria-label="Carta avversaria coperta">
+          <div class="handRenderedCard hiddenOpponentCardFace">${back}</div>
+          <div class="handAction"><button type="button" disabled>${blocked ? "Bloccata" : "Coperta"}</button><div class="meta">Informazione privata</div></div>
+        </div>`;
+    }
+
     function renderHandCardSlotDebug(side, card) {
+      if (typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, card)) return renderHiddenHandCardSlot(side, card);
       if (missionCardHiddenFromViewer(side, card)) return renderHiddenMissionHandSlot();
       const action = typeof handCardActionState === "function"
         ? handCardActionState(side, card)
@@ -664,27 +1006,85 @@ ${reason}`);
       return `<div class="debugHandList renderedHandList">${hand.map(card => renderHandCardSlotDebug(side, card)).join("")}</div>`;
     }
 
-    function renderInGameHandThumbnails() {
-      if (typeof document === "undefined" || typeof renderArenaCardPreviewCanvas !== "function" || !state) return;
-      document.querySelectorAll("[data-hand-thumb-card-uid]").forEach(canvas => {
-        const uid = canvas.getAttribute("data-hand-thumb-card-uid");
-        const source = canvas.getAttribute("data-hand-thumb-source") || "hand";
-        const sideBox = canvas.closest("[data-hand-zone-side]");
-        const side = sideBox ? Number(sideBox.getAttribute("data-hand-zone-side")) : (state.currentPlayer || 1);
-        let card = null;
-        if (source === "starter") {
-          const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
-          card = starters.find(c => c && c.cardUid === uid) || null;
-        } else {
-          const hand = state.hand && state.hand[side] ? state.hand[side] : [];
-          card = hand.find(c => c && c.cardUid === uid) || null;
-        }
-        if (!card) return;
-        const thumbScale = Number(canvas.getAttribute("data-hand-thumb-scale") || 0.19);
-        renderArenaCardPreviewCanvas(canvas, card, { scale: Number.isFinite(thumbScale) && thumbScale > 0 ? thumbScale : 0.19 });
-        const wrap = canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard");
-        if (wrap) wrap.classList.add("thumbRendered");
+    function handThumbRequestFrame(callback) {
+      if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") return window.requestAnimationFrame(callback);
+      return setTimeout(callback, 16);
+    }
+
+    function handThumbCancelFrame(handle) {
+      if (!handle) return;
+      if (typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function") window.cancelAnimationFrame(handle);
+      else clearTimeout(handle);
+    }
+
+    function handThumbCanvasShouldRender(canvas) {
+      if (!canvas || !canvas.isConnected) return false;
+      if (typeof document === "undefined" || !document.body || !document.body.classList.contains("mobile-apk-m4")) return true;
+      const handDock = typeof canvas.closest === "function" ? canvas.closest(".handPrimaryDock") : null;
+      if (handDock && !document.body.classList.contains("mobile-panel-hand")) return false;
+      return true;
+    }
+
+    function requestInGameHandThumbnailRender() {
+      return renderInGameHandThumbnails({ onlyUnrendered:true });
+    }
+
+    function renderInGameHandThumbnails(options = {}) {
+      if (typeof document === "undefined" || typeof renderArenaCardPreviewCanvas !== "function" || !state) return false;
+
+      // F9O4c: la coda non viene più cancellata a ogni renderAll(). Nei turni bot rapidi
+      // una nuova mano può sostituire i nodi precedenti, ma i canvas ancora validi restano
+      // in coda e quelli nuovi vengono accodati senza affamare le carte successive.
+      const canvases = Array.from(document.querySelectorAll("[data-hand-thumb-card-uid]"))
+        .filter(canvas => handThumbCanvasShouldRender(canvas))
+        .filter(canvas => !options.onlyUnrendered || !canvas.dataset.thumbRendered);
+      canvases.sort((a, b) => {
+        const aMap = typeof a.closest === "function" && a.closest("#mapHandOverlay") ? 0 : 1;
+        const bMap = typeof b.closest === "function" && b.closest("#mapHandOverlay") ? 0 : 1;
+        return aMap - bMap;
       });
+      for (const canvas of canvases) {
+        if (HAND_THUMB_RENDER_QUEUE.queued.has(canvas)) continue;
+        HAND_THUMB_RENDER_QUEUE.queued.add(canvas);
+        HAND_THUMB_RENDER_QUEUE.pending.push(canvas);
+      }
+
+      const processFrame = () => {
+        HAND_THUMB_RENDER_QUEUE.frame = 0;
+        const mobile = typeof document !== "undefined" && document.body && document.body.classList.contains("mobile-apk-m4");
+        let budget = mobile ? 1 : 3;
+        while (budget > 0 && HAND_THUMB_RENDER_QUEUE.pending.length) {
+          const canvas = HAND_THUMB_RENDER_QUEUE.pending.shift();
+          HAND_THUMB_RENDER_QUEUE.queued.delete(canvas);
+          if (!handThumbCanvasShouldRender(canvas)) continue;
+          budget -= 1;
+          const uid = canvas.getAttribute("data-hand-thumb-card-uid");
+          const source = canvas.getAttribute("data-hand-thumb-source") || "hand";
+          const sideBox = typeof canvas.closest === "function" ? canvas.closest("[data-hand-zone-side]") : null;
+          const side = sideBox ? Number(sideBox.getAttribute("data-hand-zone-side")) : (state.currentPlayer || 1);
+          let card = null;
+          if (source === "starter") {
+            const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+            card = starters.find(c => c && c.cardUid === uid) || null;
+          } else {
+            const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+            card = hand.find(c => c && c.cardUid === uid) || null;
+          }
+          if (!card) continue;
+          const thumbScale = Number(canvas.getAttribute("data-hand-thumb-scale") || 0.19);
+          const rendered = renderArenaCardPreviewCanvas(canvas, card, { scale: Number.isFinite(thumbScale) && thumbScale > 0 ? thumbScale : 0.19 });
+          if (rendered) {
+            canvas.dataset.thumbRendered = "1";
+            HAND_THUMB_RENDER_QUEUE.renderedThisRun += 1;
+          }
+        }
+        if (HAND_THUMB_RENDER_QUEUE.pending.length) HAND_THUMB_RENDER_QUEUE.frame = handThumbRequestFrame(processFrame);
+      };
+
+      if (!HAND_THUMB_RENDER_QUEUE.frame && HAND_THUMB_RENDER_QUEUE.pending.length) {
+        HAND_THUMB_RENDER_QUEUE.frame = handThumbRequestFrame(processFrame);
+      }
+      return true;
     }
 
     function mapHandOverlayCardLabel(card) {
@@ -703,7 +1103,7 @@ ${reason}`);
       }
       const hand = state.hand && state.hand[side] ? state.hand[side] : [];
       const card = hand.find(item => item && item.cardUid === cardUid) || null;
-      return missionCardHiddenFromViewer(side, card) ? null : card;
+      return (typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, card)) || missionCardHiddenFromViewer(side, card) ? null : card;
     }
 
     function mapHandOverlayHoverEnabled() {
@@ -805,6 +1205,13 @@ ${reason}`);
         </button>`;
     }
 
+    function mapHandOverlayHiddenCardSlot(side, card) {
+      const faction = state && state.factions ? state.factions[side] : "";
+      const blocked = typeof handCardBlocked === "function" && handCardBlocked(card);
+      const back = typeof cardBackVisualHtml === "function" ? cardBackVisualHtml(faction, { compact:true, blocked }) : `<div class="handThumbEmpty"><strong>CARTA</strong><span>Coperta</span></div>`;
+      return `<button class="mapHandCardSlot hand unavailable hiddenOpponentCard" type="button" title="Carta avversaria coperta" disabled><div class="mapHandVisualCard hiddenOpponentCardFace">${back}</div></button>`;
+    }
+
     function mapHandOverlayStarterCardSlot(side, card) {
       if (!card) return "";
       const action = typeof starterCardActionState === "function"
@@ -823,6 +1230,7 @@ ${reason}`);
 
     function mapHandOverlayCardSlot(side, card) {
       if (!card) return "";
+      if (typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, card)) return mapHandOverlayHiddenCardSlot(side, card);
       if (missionCardHiddenFromViewer(side, card)) return mapHandOverlayHiddenMissionSlot();
       const action = typeof handCardActionState === "function"
         ? handCardActionState(side, card)
@@ -925,12 +1333,45 @@ ${reason}`);
       return true;
     }
 
+    function mapHandOverlayCardStateSignature(card) {
+      if (!card) return "";
+      const blocked = typeof handCardBlocked === "function" && handCardBlocked(card) ? 1 : 0;
+      const protectedCard = typeof isProtectedHandCard === "function" && isProtectedHandCard(card) ? 1 : 0;
+      return [card.cardUid || card.id || card.name || "card", card.cost || 0, blocked, protectedCard].join(":");
+    }
+
+    function mapHandOverlayBuildSignature(side, hand, starters, targeting, compactHand, disabled, counts) {
+      return [
+        side,
+        state && state.currentPlayer || 0,
+        state && state.turn || 0,
+        state && state.energy && state.energy[side] || 0,
+        mode || "idle",
+        botRunning ? 1 : 0,
+        targeting ? 1 : 0,
+        compactHand ? 1 : 0,
+        disabled ? 1 : 0,
+        pendingHandCardUid || "",
+        pendingPurchaseBlueprintId || "",
+        pendingBuildBlueprintId || "",
+        counts && counts.deck || 0,
+        counts && counts.hand || 0,
+        hand.map(mapHandOverlayCardStateSignature).join("|"),
+        starters.map(mapHandOverlayCardStateSignature).join("|"),
+        typeof missionUiRenderSignature === "function" ? missionUiRenderSignature(side) : "mission-ui-unavailable"
+      ].join("¦");
+    }
+
     function renderMapHandOverlay() {
       const overlay = $("mapHandOverlay");
       if (!overlay) return;
       if (!state || !state.cardDebug || !state.cardDebug.initialized) {
         if (typeof mapHandOverlayHideHoverPreview === "function") mapHandOverlayHideHoverPreview();
-        overlay.innerHTML = `<div class="mapHandOverlayEmpty">Avvia una partita per vedere la mano sulla mappa.</div>`;
+        const emptySignature = "empty";
+        if (overlay.dataset.renderSignature !== emptySignature || !overlay.firstElementChild) {
+          overlay.innerHTML = `<div class="mapHandOverlayEmpty">Avvia una partita per vedere la mano sulla mappa.</div>`;
+          overlay.dataset.renderSignature = emptySignature;
+        }
         overlay.classList.add("isEmpty");
         overlay.classList.remove("isTargeting");
         overlay.classList.remove("isMovementHidden");
@@ -941,7 +1382,7 @@ ${reason}`);
       if (!targeting && (mode === "idle" || !pendingHandCardUid)) MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
       overlay.classList.toggle("isTargeting", Boolean(targeting));
       overlay.classList.remove("isEmpty");
-      const side = state.currentPlayer || 1;
+      const side = typeof cardPresentationDisplaySide === "function" ? cardPresentationDisplaySide() : (state.currentPlayer || 1);
       if (MAP_HAND_OVERLAY_STATE.lastSide !== side) {
         MAP_HAND_OVERLAY_STATE.lastSide = side;
         MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
@@ -953,44 +1394,54 @@ ${reason}`);
       const hand = state.hand && state.hand[side] ? state.hand[side] : [];
       const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
       const isHuman = state.modes && state.modes[side] === "human";
-      const disabled = Boolean(state.winner) || !isHuman || botRunning;
+      const disabled = Boolean(state.winner) || !isHuman || botRunning || side !== state.currentPlayer;
       const counts = typeof cardZoneCountsForSide === "function" ? cardZoneCountsForSide(side) : { deck: 0, hand: hand.length, discard: 0 };
       const faction = state.factions ? state.factions[side] : "—";
       if (targeting && typeof mapHandOverlayHideHoverPreview === "function") mapHandOverlayHideHoverPreview();
       const compactHand = Boolean((MAP_HAND_OVERLAY_STATE.hiddenForMovement || MAP_HAND_OVERLAY_STATE.manuallyCollapsed) && !targeting);
+      const renderSignature = mapHandOverlayBuildSignature(side, hand, starters, targeting, compactHand, disabled, counts);
+
       if (compactHand) {
         overlay.classList.add("isMovementHidden");
-        overlay.innerHTML = `
-          <div class="mapHandOverlayCompact" data-hand-zone-side="${side}">
-            <button class="ghost mapHandShowBtn" type="button" onclick="mapHandOverlayShowHand()">Mostra mano</button>
-            <button class="danger mapHandEndTurnBtn compact" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
-          </div>`;
+        if (overlay.dataset.renderSignature !== renderSignature || !overlay.firstElementChild) {
+          overlay.innerHTML = `
+            <div class="mapHandOverlayCompact" data-hand-zone-side="${side}">
+              <button class="ghost mapHandShowBtn" type="button" onclick="mapHandOverlayShowHand()">Mostra mano</button>
+              <button class="danger mapHandEndTurnBtn compact" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
+            </div>`;
+          overlay.dataset.renderSignature = renderSignature;
+        }
         renderMapHandSelectionPreview();
         return;
       }
+
       overlay.classList.remove("isMovementHidden");
-      const startersHtml = starters.length ? starters.map(card => mapHandOverlayStarterCardSlot(side, card)).join("") : "";
-      const handHtml = hand.length ? hand.map(card => mapHandOverlayCardSlot(side, card)).join("") : "";
-      const cardsHtml = (startersHtml || handHtml)
-        ? `${startersHtml}${handHtml}`
-        : `<div class="mapHandOverlayEmpty">Mano vuota.</div>`;
-      overlay.innerHTML = `
-        <div class="mapHandOverlayInner" data-hand-zone-side="${side}">
-          <div class="mapHandOverlayHeader">
-            <strong>G${side} · ${escapeHtml(faction)}</strong>
-            <span>ENE ${state.energy && Number.isFinite(state.energy[side]) ? state.energy[side] : "—"} · Deck ${counts.deck} · Mano ${counts.hand} · Starter ${starters.length}</span>
-          </div>
-          <div class="mapHandOverlayCards" aria-label="Carte rapide del giocatore corrente">
-            ${cardsHtml}
-          </div>
-          <div class="mapHandOverlayActions">
-            <button class="danger mapHandEndTurnBtn" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
-            <button class="ghost mapHandMoveUnitsBtn" type="button" onclick="mapHandOverlayMoveUnits()"${disabled ? " disabled" : ""}>Muovi unità</button>
-            <button class="ghost mapHandCollapseBtn" type="button" onclick="mapHandOverlayCollapse()">Riduci mano</button>
-            ${typeof missionUiMapBadgeHtml === "function" ? missionUiMapBadgeHtml(side) : ""}
-          </div>
-        </div>`;
-      if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails();
+      const needsMarkup = overlay.dataset.renderSignature !== renderSignature || !overlay.firstElementChild;
+      if (needsMarkup) {
+        const startersHtml = starters.length ? starters.map(card => mapHandOverlayStarterCardSlot(side, card)).join("") : "";
+        const handHtml = hand.length ? hand.map(card => mapHandOverlayCardSlot(side, card)).join("") : "";
+        const cardsHtml = (startersHtml || handHtml)
+          ? `${startersHtml}${handHtml}`
+          : `<div class="mapHandOverlayEmpty">Mano vuota.</div>`;
+        overlay.innerHTML = `
+          <div class="mapHandOverlayInner" data-hand-zone-side="${side}">
+            <div class="mapHandOverlayHeader">
+              <strong>G${side} · ${escapeHtml(faction)}</strong>
+              <span>ENE ${state.energy && Number.isFinite(state.energy[side]) ? state.energy[side] : "—"} · Deck ${counts.deck} · Mano ${counts.hand} · Starter ${starters.length}</span>
+            </div>
+            <div class="mapHandOverlayCards" aria-label="Carte rapide del giocatore corrente">
+              ${cardsHtml}
+            </div>
+            <div class="mapHandOverlayActions">
+              <button class="danger mapHandEndTurnBtn" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
+              <button class="ghost mapHandMoveUnitsBtn" type="button" onclick="mapHandOverlayMoveUnits()"${disabled ? " disabled" : ""}>Muovi unità</button>
+              <button class="ghost mapHandCollapseBtn" type="button" onclick="mapHandOverlayCollapse()">Riduci mano</button>
+              ${typeof missionUiMapBadgeHtml === "function" ? missionUiMapBadgeHtml(side) : ""}
+            </div>
+          </div>`;
+        overlay.dataset.renderSignature = renderSignature;
+      }
+      if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails({ onlyUnrendered:!needsMarkup });
       if (typeof syncGameHandPreviewSelectionUi === "function") syncGameHandPreviewSelectionUi();
       renderMapHandSelectionPreview();
     }
@@ -1109,31 +1560,59 @@ ${reason}`);
         </div>`;
     }
 
+    function cardZonePanelRenderSignature() {
+      if (!state || !state.cardDebug || !state.cardDebug.initialized) return "empty";
+      const sideSignature = side => {
+        const hand = state.hand && state.hand[side] ? state.hand[side] : [];
+        const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
+        const deckCount = state.deck && state.deck[side] ? state.deck[side].length : 0;
+        const discardCount = state.discard && state.discard[side] ? state.discard[side].length : 0;
+        return [
+          side,
+          state.energy && state.energy[side] || 0,
+          deckCount,
+          discardCount,
+          hand.map(mapHandOverlayCardStateSignature).join("|"),
+          starters.map(mapHandOverlayCardStateSignature).join("|"),
+          typeof missionUiRenderSignature === "function" ? missionUiRenderSignature(side) : "mission-ui-unavailable"
+        ].join(":");
+      };
+      return [state.currentPlayer || 1, state.turn || 0, sideSignature(1), sideSignature(2)].join("¦");
+    }
+
     function renderCardZonePanel() {
       const panel = $("cardZonePanel");
       if (!panel) return;
 
       if (!state || !state.cardDebug || !state.cardDebug.initialized) {
-        panel.innerHTML = `
-          <div class="unitCard">
-            <h4>Mano / deck C2</h4>
-            <div class="meta">Fondazione carte non ancora inizializzata. Avvia una nuova partita.</div>
-          </div>`;
+        if (panel.dataset.renderSignature !== "empty" || !panel.firstElementChild) {
+          panel.innerHTML = `
+            <div class="unitCard">
+              <h4>Mano / deck C2</h4>
+              <div class="meta">Fondazione carte non ancora inizializzata. Avvia una nuova partita.</div>
+            </div>`;
+          panel.dataset.renderSignature = "empty";
+        }
         return;
       }
 
       const current = state.currentPlayer || 1;
       const other = current === 1 ? 2 : 1;
-      panel.innerHTML = `
-        ${renderHandStatusBanner()}
-        ${typeof missionUiDashboardHtml === "function" ? missionUiDashboardHtml(current) : ""}
-        ${handPreviewShellHtml()}
-        <div class="cardZoneGrid handScrollContent">
-          ${cardZoneDebugHtml(current)}
-          ${cardZoneDebugHtml(other)}
-        </div>`;
+      const renderSignature = cardZonePanelRenderSignature();
+      const needsMarkup = panel.dataset.renderSignature !== renderSignature || !panel.firstElementChild;
+      if (needsMarkup) {
+        panel.innerHTML = `
+          ${renderHandStatusBanner()}
+          ${typeof missionUiDashboardHtml === "function" ? missionUiDashboardHtml(current) : ""}
+          ${handPreviewShellHtml()}
+          <div class="cardZoneGrid handScrollContent">
+            ${cardZoneDebugHtml(current)}
+            ${cardZoneDebugHtml(other)}
+          </div>`;
+        panel.dataset.renderSignature = renderSignature;
+      }
       if (typeof gameCardPreviewEnsureDefaultHandCard === "function") gameCardPreviewEnsureDefaultHandCard(current);
-      if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails();
+      if (typeof renderInGameHandThumbnails === "function") renderInGameHandThumbnails({ onlyUnrendered:!needsMarkup });
       if (typeof renderInGameHandCardPreview === "function") renderInGameHandCardPreview();
     }
 

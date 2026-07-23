@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9O2 Interactive Map Camera Foundation.
-// Input diretto mouse/touch, zoom ancorato, pinch, pan limitato e API di focus
-// condivise fra camera desktop e APK-M4. Nessuna modifica al gameplay.
+// Arena Rubra – F9O4a Android Camera Performance Hotfix.
+// Input mouse/touch con frame coalescing, geometria viewport in cache, pinch/pan
+// limitato e API di focus condivise fra camera desktop e APK-M4. Nessuna modifica al gameplay.
 
 const CAMERA_INTERACTION_MIN_ZOOM = 0.72;
 const CAMERA_INTERACTION_MAX_ZOOM = 2.2;
@@ -18,7 +18,13 @@ const cameraInteractionState = {
   gesture: null,
   dragging: false,
   suppressClickUntil: 0,
-  lastInput: "none"
+  lastInput: "none",
+  viewportRect: null,
+  framePending: false,
+  frameToken: 0,
+  pendingApply: null,
+  wheelFinalizeTimer: null,
+  controlRefs: null
 };
 
 function cameraInteractionClampValue(value, min, max) {
@@ -68,10 +74,31 @@ function cameraInteractionTotalScale(model = cameraInteractionModel(), zoomOverr
   return Math.max(0.18, fit * zoom);
 }
 
-function cameraInteractionViewportCenter() {
+function cameraInteractionNormalizeRect(rect) {
+  if (!rect) return null;
+  const left = Number(rect.left) || 0;
+  const top = Number(rect.top) || 0;
+  const width = Math.max(0, Number(rect.width) || 0);
+  const height = Math.max(0, Number(rect.height) || 0);
+  return { left, top, width, height, right: left + width, bottom: top + height };
+}
+
+function cameraInteractionInvalidateGeometry() {
+  cameraInteractionState.viewportRect = null;
+}
+
+function cameraInteractionViewportRect(options = {}) {
+  if (!options.refresh && cameraInteractionState.viewportRect) return cameraInteractionState.viewportRect;
   const wrap = cameraInteractionWrap();
-  if (!wrap || typeof wrap.getBoundingClientRect !== "function") return { x: 0, y: 0, rect: null };
-  const rect = wrap.getBoundingClientRect();
+  if (!wrap || typeof wrap.getBoundingClientRect !== "function") return cameraInteractionState.viewportRect;
+  const rect = cameraInteractionNormalizeRect(wrap.getBoundingClientRect());
+  if (rect) cameraInteractionState.viewportRect = rect;
+  return rect;
+}
+
+function cameraInteractionViewportCenter(options = {}) {
+  const rect = cameraInteractionViewportRect(options);
+  if (!rect) return { x: 0, y: 0, rect: null };
   return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, rect };
 }
 
@@ -89,10 +116,10 @@ function cameraInteractionComputeZoomTranslation(anchor, viewportCenter, oldTran
   };
 }
 
-function cameraInteractionClampModel(model = cameraInteractionModel()) {
-  const wrap = cameraInteractionWrap();
-  if (!model || !wrap || typeof wrap.getBoundingClientRect !== "function") return model;
-  const rect = wrap.getBoundingClientRect();
+function cameraInteractionClampModel(model = cameraInteractionModel(), options = {}) {
+  if (!model) return model;
+  const rect = options.rect || cameraInteractionViewportRect({ refresh: options.refreshGeometry === true });
+  if (!rect) return model;
   const native = cameraInteractionNativeSize();
   const scale = cameraInteractionTotalScale(model);
   const visualW = native.width * scale;
@@ -105,16 +132,59 @@ function cameraInteractionClampModel(model = cameraInteractionModel()) {
   return model;
 }
 
+function cameraInteractionMergePendingApply(options = {}) {
+  const next = {
+    animate: options.animate === true,
+    transient: options.transient === true,
+    updateControls: options.updateControls !== false
+  };
+  const pending = cameraInteractionState.pendingApply;
+  if (!pending) {
+    cameraInteractionState.pendingApply = next;
+    return;
+  }
+  pending.animate = pending.animate || next.animate;
+  // Una richiesta finale (transient=false) prevale sempre sulle richieste di gesto.
+  pending.transient = pending.transient && next.transient;
+  pending.updateControls = pending.updateControls || next.updateControls;
+}
+
+function cameraInteractionFlushApplyFrame() {
+  cameraInteractionState.framePending = false;
+  const options = cameraInteractionState.pendingApply || { animate:false, transient:false, updateControls:true };
+  cameraInteractionState.pendingApply = null;
+  const model = cameraInteractionModel();
+  if (!model) return;
+
+  if (cameraInteractionIsMobile() && typeof applyApkM4Camera === "function") {
+    applyApkM4Camera({ skipClamp:true, skipLayoutSize:options.transient === true });
+  } else if (typeof applyBoardCamera === "function") {
+    applyBoardCamera({ animate:options.animate === true, skipLayoutSize:options.transient === true });
+  }
+  if (options.updateControls) cameraInteractionUpdateControls();
+}
+
+function cameraInteractionScheduleApply(options = {}) {
+  cameraInteractionMergePendingApply(options);
+  if (cameraInteractionState.framePending) return;
+  cameraInteractionState.framePending = true;
+  const token = ++cameraInteractionState.frameToken;
+  const run = () => {
+    if (token !== cameraInteractionState.frameToken) return;
+    cameraInteractionFlushApplyFrame();
+  };
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(run);
+  } else {
+    run();
+  }
+}
+
 function cameraInteractionApply(options = {}) {
   const model = cameraInteractionModel();
   if (!model) return;
-  cameraInteractionClampModel(model);
-  if (cameraInteractionIsMobile() && typeof applyApkM4Camera === "function") {
-    applyApkM4Camera();
-  } else if (typeof applyBoardCamera === "function") {
-    applyBoardCamera({ animate: options.animate === true });
-  }
-  cameraInteractionUpdateControls();
+  cameraInteractionClampModel(model, { refreshGeometry: options.refreshGeometry === true });
+  cameraInteractionScheduleApply(options);
 }
 
 function cameraInteractionSetZoom(nextZoom, anchor = null, options = {}) {
@@ -142,7 +212,11 @@ function cameraInteractionSetZoom(nextZoom, anchor = null, options = {}) {
   model.x = nextTranslation.x;
   model.y = nextTranslation.y;
   model.mode = "manual";
-  cameraInteractionApply({ animate: options.animate === true });
+  cameraInteractionApply({
+    animate: options.animate === true,
+    transient: options.transient === true,
+    updateControls: options.updateControls !== false
+  });
   return clampedZoom;
 }
 
@@ -158,7 +232,11 @@ function cameraInteractionPanBy(dx, dy, options = {}) {
   model.mode = "manual";
   model.x = (Number(model.x) || 0) + (Number(dx) || 0);
   model.y = (Number(model.y) || 0) + (Number(dy) || 0);
-  cameraInteractionApply({ animate: options.animate === true });
+  cameraInteractionApply({
+    animate: options.animate === true,
+    transient: options.transient === true,
+    updateControls: options.updateControls !== false
+  });
 }
 
 function cameraInteractionPointerPoint(event) {
@@ -233,6 +311,7 @@ function cameraInteractionHandlePointerDown(event) {
   const surface = cameraInteractionSurface();
   if (!surface) return;
   const point = cameraInteractionPointerPoint(event);
+  cameraInteractionViewportRect({ refresh:true });
   cameraInteractionState.lastInput = event.pointerType || "pointer";
   cameraInteractionState.pointers.set(event.pointerId, { id: event.pointerId, ...point });
   // Non acquisire subito il puntatore: la pointer capture al pointerdown
@@ -276,7 +355,7 @@ function cameraInteractionHandlePointerMove(event) {
     model.y = midpoint.y - center.y - pinch.nativeAnchor.y * newScale;
     model.mode = "manual";
     if (event.cancelable) event.preventDefault();
-    cameraInteractionApply({ animate: false });
+    cameraInteractionApply({ animate:false, transient:true, updateControls:false });
     return;
   }
 
@@ -294,7 +373,7 @@ function cameraInteractionHandlePointerMove(event) {
   model.x = gesture.originX + dxFromStart;
   model.y = gesture.originY + dyFromStart;
   gesture.last = point;
-  cameraInteractionApply({ animate: false });
+  cameraInteractionApply({ animate:false, transient:true, updateControls:false });
 }
 
 function cameraInteractionFinishPointer(event) {
@@ -314,7 +393,15 @@ function cameraInteractionFinishPointer(event) {
   cameraInteractionState.gesture = null;
   cameraInteractionState.dragging = false;
   cameraInteractionSetDraggingClass(false);
-  cameraInteractionApply({ animate: false });
+  cameraInteractionApply({ animate:false, transient:false, updateControls:true });
+}
+
+function cameraInteractionScheduleWheelFinalize() {
+  if (cameraInteractionState.wheelFinalizeTimer) clearTimeout(cameraInteractionState.wheelFinalizeTimer);
+  cameraInteractionState.wheelFinalizeTimer = setTimeout(() => {
+    cameraInteractionState.wheelFinalizeTimer = null;
+    cameraInteractionApply({ animate:false, transient:false, updateControls:true });
+  }, 110);
 }
 
 function cameraInteractionHandleWheel(event) {
@@ -323,7 +410,8 @@ function cameraInteractionHandleWheel(event) {
   if (event.cancelable) event.preventDefault();
   cameraInteractionState.lastInput = "wheel";
   const factor = Math.exp(-event.deltaY * CAMERA_INTERACTION_WHEEL_SENSITIVITY);
-  cameraInteractionZoomByFactor(factor, cameraInteractionPointerPoint(event), { animate: false });
+  cameraInteractionZoomByFactor(factor, cameraInteractionPointerPoint(event), { animate:false, transient:true, updateControls:false });
+  cameraInteractionScheduleWheelFinalize();
 }
 
 function cameraInteractionHandleClickCapture(event) {
@@ -355,16 +443,27 @@ function cameraInteractionFit() {
   cameraResetView({ animate: true });
 }
 
+function cameraInteractionControlRefs(options = {}) {
+  if (cameraInteractionState.controlRefs && !options.refresh) return cameraInteractionState.controlRefs;
+  if (typeof document === "undefined") return { label:null, controls:null, buttons:[] };
+  const label = document.getElementById("mapCameraZoomLabel");
+  const controls = document.getElementById("mapCameraControls");
+  const buttons = controls && typeof controls.querySelectorAll === "function"
+    ? Array.from(controls.querySelectorAll("button"))
+    : [];
+  cameraInteractionState.controlRefs = { label, controls, buttons };
+  return cameraInteractionState.controlRefs;
+}
+
 function cameraInteractionUpdateControls() {
   const model = cameraInteractionModel();
   const pct = Math.round(cameraInteractionTotalScale(model) * 100);
-  const label = typeof document !== "undefined" ? document.getElementById("mapCameraZoomLabel") : null;
-  if (label) label.textContent = `${pct}%`;
-  const controls = typeof document !== "undefined" ? document.getElementById("mapCameraControls") : null;
-  if (controls) {
-    controls.dataset.cameraLocked = cameraInteractionState.locked ? "1" : "0";
-    controls.querySelectorAll("button").forEach(button => { button.disabled = cameraInteractionState.locked; });
-  }
+  const refs = cameraInteractionControlRefs();
+  if (refs.label && refs.label.textContent !== `${pct}%`) refs.label.textContent = `${pct}%`;
+  if (refs.controls) refs.controls.dataset.cameraLocked = cameraInteractionState.locked ? "1" : "0";
+  refs.buttons.forEach(button => {
+    if (button.disabled !== cameraInteractionState.locked) button.disabled = cameraInteractionState.locked;
+  });
   if (typeof updateBoardCameraHud === "function") updateBoardCameraHud();
 }
 
@@ -433,7 +532,7 @@ function cameraFitCoords(items, options = {}) {
   const coords = cameraNormalizeCoordList(items);
   const model = cameraInteractionModel();
   const wrap = cameraInteractionWrap();
-  if (!coords.length || !model || !wrap || typeof wrap.getBoundingClientRect !== "function" || typeof boardPointForCoord !== "function") return false;
+  if (!coords.length || !model || !wrap || typeof boardPointForCoord !== "function") return false;
 
   if (cameraInteractionIsMobile() && typeof fitApkM4Board === "function") fitApkM4Board({ preserveCamera:true });
   else if (!cameraInteractionIsMobile() && typeof computeBoardFitScale === "function") model.fitScale = computeBoardFitScale();
@@ -447,7 +546,8 @@ function cameraFitCoords(items, options = {}) {
   const maxY = Math.max(...points.map(point => point.y)) + hexPad;
   const contentW = Math.max(hexPad * 2, maxX - minX);
   const contentH = Math.max(hexPad * 2, maxY - minY);
-  const rect = wrap.getBoundingClientRect();
+  const rect = cameraInteractionViewportRect({ refresh:true });
+  if (!rect) return false;
   const viewportMargin = Number.isFinite(options.viewportMargin) ? options.viewportMargin : (cameraInteractionIsMobile() ? 28 : 46);
   const availableW = Math.max(160, rect.width - viewportMargin * 2);
   const availableH = Math.max(140, rect.height - viewportMargin * 2);
@@ -503,6 +603,10 @@ function cameraResetForNewGame() {
   cameraInteractionState.gesture = null;
   cameraInteractionState.dragging = false;
   cameraInteractionState.suppressClickUntil = 0;
+  cameraInteractionState.pendingApply = null;
+  cameraInteractionState.framePending = false;
+  cameraInteractionState.frameToken += 1;
+  cameraInteractionInvalidateGeometry();
   cameraInteractionSetDraggingClass(false);
   if (typeof boardCamera !== "undefined" && boardCamera) {
     boardCamera.mode = "fit";
@@ -526,6 +630,10 @@ function cameraResetForNewGame() {
 function cameraLockInput(enabled) {
   cameraInteractionState.locked = Boolean(enabled);
   if (cameraInteractionState.locked) {
+    if (cameraInteractionState.wheelFinalizeTimer) {
+      clearTimeout(cameraInteractionState.wheelFinalizeTimer);
+      cameraInteractionState.wheelFinalizeTimer = null;
+    }
     cameraInteractionState.pointers.clear();
     cameraInteractionState.gesture = null;
     cameraInteractionState.dragging = false;
@@ -556,6 +664,7 @@ function cameraDiagnostics() {
     build: typeof buildInfoLabel === "function" ? buildInfoLabel() : "unknown",
     camera: snapshot,
     limits: { minZoom: CAMERA_INTERACTION_MIN_ZOOM, maxZoom: CAMERA_INTERACTION_MAX_ZOOM },
+    performance: { frameCoalescing:true, geometryCache:true, compositeTransform:true, gestureReducedEffects:true },
     api: ["cameraFocusHex", "cameraFocusUnit", "cameraFocusHQ", "cameraFitCoords", "cameraFitDeploymentTargets", "cameraSetZoom", "cameraResetView", "cameraLockInput"]
   };
 }
@@ -590,9 +699,20 @@ function initializeCameraInteraction() {
   bindButton("cameraFitBtn", cameraInteractionFit);
 
   if (typeof window !== "undefined") {
-    window.addEventListener("resize", () => cameraInteractionApply({ animate: false }), { passive: true });
-    window.addEventListener("orientationchange", () => setTimeout(() => cameraInteractionApply({ animate: false }), 160), { passive: true });
+    window.addEventListener("resize", () => {
+      cameraInteractionInvalidateGeometry();
+      cameraInteractionApply({ animate:false, refreshGeometry:true });
+    }, { passive:true });
+    window.addEventListener("orientationchange", () => setTimeout(() => {
+      cameraInteractionInvalidateGeometry();
+      cameraInteractionApply({ animate:false, refreshGeometry:true });
+    }, 160), { passive:true });
+    if (window.visualViewport && typeof window.visualViewport.addEventListener === "function") {
+      window.visualViewport.addEventListener("resize", () => cameraInteractionInvalidateGeometry(), { passive:true });
+    }
   }
+  cameraInteractionViewportRect({ refresh:true });
+  cameraInteractionControlRefs({ refresh:true });
   cameraInteractionUpdateControls();
 }
 

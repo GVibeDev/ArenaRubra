@@ -566,7 +566,8 @@ function overdrawToDiscard(side, card, source="pesca") {
   state.discard[side].push(card);
   recordAiOverdraw(side, card);
   if (typeof log === "function") {
-    log(`Mano piena (${maxHandSizeConfig()}): ${card.name || card.id} viene pescata ma va direttamente negli scarti.`, EventTypes.LOG_MESSAGE, {
+    const overdrawVisibleName = typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(side) && !(typeof cardPresentationCardIsPublic === "function" && cardPresentationCardIsPublic(card)) ? "una carta coperta" : (card.name || card.id);
+    log(`Mano piena (${maxHandSizeConfig()}): ${overdrawVisibleName} viene pescata ma va direttamente negli scarti.`, EventTypes.LOG_MESSAGE, {
       player: side,
       faction: state.factions && state.factions[side],
       cardUid: card.cardUid,
@@ -576,6 +577,10 @@ function overdrawToDiscard(side, card, source="pesca") {
       source: "C2-FINAL-A-overdraw-discard"
     });
   }
+  if (typeof emitGameEvent === "function" && typeof EventTypes !== "undefined" && EventTypes.CARD_DISCARDED) emitGameEvent({
+    type:EventTypes.CARD_DISCARDED,
+    data:{ player:side, faction:state.factions && state.factions[side], cardUid:card.cardUid, cardId:card.id, cardName:card.name, cardType:card.cardType, sourceType:card.sourceType, reason:"overdraw", public:false }
+  });
   return card;
 }
 
@@ -663,6 +668,12 @@ function discardCard(side, cardUid, options = {}) {
   card.zone = "discard";
   state.discard[side].push(card);
   syncCardDebugState();
+  if (options.reason !== "played_from_hand" && typeof emitGameEvent === "function" && typeof EventTypes !== "undefined" && EventTypes.CARD_DISCARDED) {
+    emitGameEvent({
+      type:EventTypes.CARD_DISCARDED,
+      data:{ player:side, faction:state.factions && state.factions[side], cardUid:card.cardUid, cardId:card.id, cardName:card.name, cardType:card.cardType, sourceType:card.sourceType, reason:options.reason || "discard", public:Boolean(options.public) }
+    });
+  }
   return card;
 }
 
@@ -696,9 +707,10 @@ function tickHandCardLocksAtEnd(side) {
     }
   }
   if (released > 0) {
-    log(`${playerName(side)} libera ${released} carta${released > 1 ? "e" : ""} dal blocco mano.`, EventTypes.LOG_MESSAGE, {
+    log(`${playerName(side)} libera ${released} carta${released > 1 ? "e" : ""} dal blocco mano.`, EventTypes.CARD_UNBLOCKED || EventTypes.LOG_MESSAGE, {
       player: side,
       faction: state.factions && state.factions[side],
+      count: released,
       released,
       source: "C2c-7a-hand-card-lock-tick"
     });
@@ -720,7 +732,8 @@ function moveHandCardBetweenPlayers(fromSide, toSide, cardUid, source="Furto car
   delete moved.c2c7aBlockedSource;
   state.hand[toSide].push(moved);
   syncCardDebugState();
-  log(`${playerName(toSide)} ruba ${moved.name} dalla mano di ${playerName(fromSide)} (${source}).`, EventTypes.CARD_STOLEN, {
+  const transferName = typeof cardPresentationCanRevealTransfer === "function" && !cardPresentationCanRevealTransfer(fromSide, toSide) ? "una carta coperta" : moved.name;
+  log(`${playerName(toSide)} ruba ${transferName} dalla mano di ${playerName(fromSide)} (${source}).`, EventTypes.CARD_STOLEN, {
     fromSide,
     toSide,
     fromFaction:state.factions && state.factions[fromSide],
@@ -836,7 +849,9 @@ function drawCardForTurn(side, options = {}) {
 
   const drawn = drawCards(side, drawCount);
   if (drawn.length) {
-    const names = drawn.map(card => card.name || card.id).join(", ");
+    const names = typeof cardPresentationVisibleCardsLabel === "function"
+      ? cardPresentationVisibleCardsLabel(side, drawn)
+      : drawn.map(card => card.name || card.id).join(", ");
     log(`${playerName(side)} pesca ${drawn.length} carta${drawn.length > 1 ? "e" : ""}: ${names}.`, EventTypes.LOG_MESSAGE, {
       player: side,
       faction: state.factions[side],
@@ -977,7 +992,8 @@ function recoverDeckForPlayer(side, options = {}) {
 
   const drawn = drawCards(side, drawCount, { source:"recupero_deck" });
   if (drawn.length) {
-    log(`${playerName(side)} pesca da recupero deck: ${drawn.map(c => c.name || c.id).join(", ")}.`, EventTypes.LOG_MESSAGE, {
+    const recoveryDrawLabel = typeof cardPresentationVisibleCardsLabel === "function" ? cardPresentationVisibleCardsLabel(side, drawn) : drawn.map(c => c.name || c.id).join(", ");
+    log(`${playerName(side)} pesca da recupero deck: ${recoveryDrawLabel}.`, EventTypes.LOG_MESSAGE, {
       player: side,
       faction: state.factions && state.factions[side],
       count: drawn.length,
@@ -1052,6 +1068,7 @@ function copyRandomEnemyHandCard(side) {
   copy.copiedFrom = enemy;
   state.hand[side].push(copy);
   syncCardDebugState();
-  log(`${playerName(side)} copia casualmente ${copy.name} dalla mano di ${playerName(enemy)}.`);
+  const copyVisibleName = typeof cardPresentationCanRevealTransfer === "function" && !cardPresentationCanRevealTransfer(enemy, side) ? "una carta coperta" : copy.name;
+  log(`${playerName(side)} copia casualmente ${copyVisibleName} dalla mano di ${playerName(enemy)}.`);
   return copy;
 }

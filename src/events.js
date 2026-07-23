@@ -30,6 +30,7 @@ const EventTypes = Object.freeze({
   CARD_DISCARDED: "CARD_DISCARDED",
   CARD_STOLEN: "CARD_STOLEN",
   CARD_BLOCKED: "CARD_BLOCKED",
+  CARD_UNBLOCKED: "CARD_UNBLOCKED",
 
   ABILITY_USED: "ABILITY_USED",
   TACTIC_USED: "TACTIC_USED",
@@ -95,6 +96,14 @@ function emitGameEvent(event) {
       try { missionTrackerHandleEvent(normalized); }
       catch (err) { console.warn("Arena Rubra F9N6 mission tracker update failed", err); }
     }
+
+    // F9O4d: gli eventi Missione invalidano esplicitamente le firme UI dopo
+    // l'aggiornamento del tracker. Il renderer resta incrementale, ma non può
+    // conservare markup con contatori, conferme o ricompense ormai superati.
+    if (typeof missionUiHandleGameEvent === "function") {
+      try { missionUiHandleGameEvent(normalized); }
+      catch (err) { console.warn("Arena Rubra F9O4d mission UI invalidation failed", err); }
+    }
   }
 
   if (typeof combatFeedbackEnqueueEvent === "function") {
@@ -105,6 +114,11 @@ function emitGameEvent(event) {
   if (typeof eventOverlayEnqueueGameEvent === "function") {
     try { eventOverlayEnqueueGameEvent(normalized); }
     catch (err) { console.warn("Arena Rubra F9O3 event overlay enqueue failed", err); }
+  }
+
+  if (typeof cardMotionEnqueueGameEvent === "function") {
+    try { cardMotionEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O4 card motion enqueue failed", err); }
   }
 
   return normalized;
