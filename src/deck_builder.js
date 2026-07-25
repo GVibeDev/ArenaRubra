@@ -360,7 +360,7 @@ function deckBuilderTypeLabel(card) {
   if (!card) return "—";
   if (card.sourceType === "mission") return card.missionClass === "desperate" ? "Missione · Disperata" : "Missione · Ordinaria";
   if (card.sourceType === "tactic") return `Tattica${card.category ? ` · ${card.category}` : ""}`;
-  return [card.unitType, card.weight].filter(Boolean).join(" · ") || card.cardType || "Carta";
+  return [card.unitType, card.unitClassLabel || card.weight].filter(Boolean).join(" · ") || card.cardType || "Carta";
 }
 
 function deckBuilderCardSort(a, b) {

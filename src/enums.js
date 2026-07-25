@@ -20,6 +20,15 @@ const UnitWeights = Object.freeze({
   BASE: "Base"
 });
 
+const UnitClasses = Object.freeze({
+  STARTER: "starter",
+  LIGHT: "light",
+  HEAVY: "heavy",
+  ELITE: "elite",
+  PIVOT: "pivot",
+  COMMANDER: "commander"
+});
+
 const FactionIds = Object.freeze({
   NEXUS: "Nexus",
   EXORDIUM: "Exordium",

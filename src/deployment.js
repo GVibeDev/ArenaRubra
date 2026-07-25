@@ -557,6 +557,9 @@
 
 
     function spawnUnit(bp, side, coord, options={}) {
+      if (!isCellEnterable(coord) || getUnitAt(coord)) return false;
+      const spawnTerrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+      if (spawnTerrain && spawnTerrain.blocksDeployment) return false;
       if (purchaseLimitReached(side, bp)) return false;
       const handCard = c2c6aPendingHandCardFor(side, bp);
       const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
@@ -632,7 +635,9 @@
       const buildSource = options.buildSource === "own_hq" ? "own_hq" : "unit";
       const side = buildSource === "own_hq" ? Number(options.side) : (builder && builder.side);
       const hqCell = buildSource === "own_hq" && typeof ownHqBuildCell === "function" ? ownHqBuildCell(side) : null;
-      if (!side || !bp || (buildSource === "unit" && !builder) || (buildSource === "own_hq" && (!hqCell || !sameCoord(coord, hqCell)))) return false;
+      if (!side || !bp || !isCellEnterable(coord) || getUnitAt(coord) || (buildSource === "unit" && !builder) || (buildSource === "own_hq" && (!hqCell || !sameCoord(coord, hqCell)))) return false;
+      const buildTerrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+      if (buildTerrain && buildTerrain.blocksDeployment) return false;
       const handCard = c2c6aPendingHandCardFor(side, bp);
       const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
       const costCard = handCard || starterCard;
@@ -712,12 +717,16 @@
     }
 
     function spawnCellsFor(player, bp=null) {
-      const enemyHq = getHq(enemyOf(player));
+      const enemyHqs = (typeof getEnemyPlayers === "function" ? getEnemyPlayers(player) : [enemyOf(player)])
+        .map(getHq)
+        .filter(Boolean);
       const seen = new Set();
       const cells = [];
       const addCell = (c) => {
         const key = coordKey(c);
-        if (!seen.has(key) && isCellEnterable(c) && !getUnitAt(c) && hexDistance(c, enemyHq.pos) > 1) {
+        const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(c) : null;
+        const farFromEnemyHq = enemyHqs.every(enemyHq => hexDistance(c, enemyHq.pos) > 1);
+        if (!seen.has(key) && isCellEnterable(c) && (!terrain || !terrain.blocksDeployment) && !getUnitAt(c) && farFromEnemyHq) {
           seen.add(key);
           cells.push(c);
         }

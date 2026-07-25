@@ -10,6 +10,8 @@ const ARENA_APP_SCREENS = Object.freeze({
   DECK_BUILDER: "deckBuilder",
   CARD_EDITOR: "cardEditor",
   CARD_POOL: "cardPool",
+  MAP_EDITOR: "mapEditor",
+  TUTORIAL: "tutorial",
   LAYOUT_LAB: "layoutLab",
   STATS: "stats",
   OPTIONS: "options",
@@ -41,6 +43,8 @@ function setAppScreen(screen) {
   const isDeckBuilder = next === ARENA_APP_SCREENS.DECK_BUILDER;
   const isCardEditor = next === ARENA_APP_SCREENS.CARD_EDITOR;
   const isCardPool = next === ARENA_APP_SCREENS.CARD_POOL;
+  const isMapEditor = next === ARENA_APP_SCREENS.MAP_EDITOR;
+  const isTutorial = next === ARENA_APP_SCREENS.TUTORIAL;
   const isLayoutLab = next === ARENA_APP_SCREENS.LAYOUT_LAB;
   const isPlaceholder = placeholderScreens.includes(next);
   const isGameLayoutLab = isLayoutLab && typeof menuLayoutCalibrationIsGameContext === "function" && menuLayoutCalibrationIsGameContext();
@@ -54,6 +58,8 @@ function setAppScreen(screen) {
   document.body.classList.toggle("app-screen-deck-builder", isDeckBuilder);
   document.body.classList.toggle("app-screen-card-editor", isCardEditor);
   document.body.classList.toggle("app-screen-card-pool", isCardPool);
+  document.body.classList.toggle("app-screen-map-editor", isMapEditor);
+  document.body.classList.toggle("app-screen-tutorial", isTutorial);
   document.body.classList.toggle("app-screen-layout-lab", isLayoutLab);
   document.body.classList.toggle("app-layout-lab-game-context", isGameLayoutLab);
   document.body.classList.toggle("app-screen-placeholder", isPlaceholder);
@@ -68,6 +74,8 @@ function setAppScreen(screen) {
   if (isDeckBuilder && typeof renderDeckBuilderScreen === "function") renderDeckBuilderScreen();
   if (isCardEditor && typeof renderCardEditorScreen === "function") renderCardEditorScreen();
   if (isCardPool && typeof renderCardPoolScreen === "function") renderCardPoolScreen();
+  if (isMapEditor && typeof renderMapEditor === "function") renderMapEditor();
+  if (isTutorial && typeof tutorialRuntimeRenderMenu === "function") tutorialRuntimeRenderMenu();
   if (isLayoutLab && typeof renderMenuLayoutCalibrationLab === "function") renderMenuLayoutCalibrationLab();
   if (!isGame && !isGameLayoutLab && typeof arenaPresentationResetForMenu === "function") {
     arenaPresentationResetForMenu({ music: true, restoreMap: true, fade: true });
@@ -160,8 +168,56 @@ function populateSetupCommanderSelectForSide(side) {
 }
 
 function refreshSetupCommanderSelects() {
-  populateSetupCommanderSelectForSide(1);
-  populateSetupCommanderSelectForSide(2);
+  [1, 2, 3, 4].forEach(populateSetupCommanderSelectForSide);
+}
+
+function setupSelectedMapDefinition() {
+  const mapId = readControlValue("setupMapName", "map1_starter");
+  return typeof getMapDefinitionById === "function" ? getMapDefinitionById(mapId) : null;
+}
+
+function setupActivePlayerCount() {
+  const definition = setupSelectedMapDefinition();
+  return Math.max(2, Math.min(4, Number(definition && definition.playerCount) || 2));
+}
+
+function refreshSetupMapSelector(preferredId = "") {
+  const select = typeof document !== "undefined" ? document.getElementById("setupMapName") : null;
+  if (!select || typeof getAvailableMapDefinitions !== "function") return;
+  const definitions = getAvailableMapDefinitions();
+  const previous = preferredId || select.value || "map1_starter";
+  select.innerHTML = definitions.map(definition => {
+    const custom = definition.official ? "" : " · CUSTOM";
+    return `<option value="${appEscapeHtml(definition.id)}">${appEscapeHtml(definition.name)} · ${definition.playerCount}G · ${definition.geometry.cells.length} celle · movimento ×${definition.movementMultiplier}${custom}</option>`;
+  }).join("");
+  select.value = definitions.some(definition => definition.id === previous) ? previous : "map1_starter";
+  refreshSetupForSelectedMap();
+}
+
+function refreshSetupForSelectedMap() {
+  const definition = setupSelectedMapDefinition();
+  if (!definition) return;
+  const count = Math.max(2, Math.min(4, Number(definition.playerCount) || 2));
+  [1, 2, 3, 4].forEach(side => {
+    const box = document.getElementById(`setupPlayer${side}Box`) || document.querySelectorAll(".setupPlayerBox")[side - 1];
+    if (box) box.hidden = side > count;
+  });
+  const initiative = document.getElementById("setupInitiativeMode");
+  if (initiative) {
+    const previous = initiative.value || "random";
+    initiative.innerHTML = `<option value="random">Casuale</option>${Array.from({ length: count }, (_, index) => `<option value="${index + 1}">Giocatore ${index + 1}</option>`).join("")}`;
+    initiative.value = previous === "random" || Number(previous) <= count ? previous : "random";
+  }
+  const heading = document.getElementById("setupMapHeading");
+  if (heading) heading.textContent = `Setup ${definition.name}`;
+  const meta = document.getElementById("setupMapMeta");
+  if (meta) {
+    const usage = typeof mapTerrainUsage === "function" ? mapTerrainUsage(definition) : {};
+    const special = Object.entries(usage).filter(([key]) => key !== "free").map(([key, value]) => `${key} ${value}`).join(" · ");
+    const lab = typeof mapEditorState !== "undefined" && mapEditorState && mapEditorState.labMapId === definition.id ? "MATCH LAB · " : "";
+    meta.textContent = `${lab}${definition.playerCount} giocatori FFA · ${definition.geometry.cells.length} celle · ${definition.strategicPoints.length} PS · movimento ×${definition.movementMultiplier}${special ? ` · ${special}` : " · terreno standard"}`;
+  }
+  refreshSetupDeckSelectors();
 }
 
 function setupSavedDeckEntriesForSide(side) {
@@ -245,13 +301,15 @@ function refreshSetupDeckSelectorForSide(side) {
 }
 
 function refreshSetupDeckSelectors() {
-  refreshSetupDeckSelectorForSide(1);
-  refreshSetupDeckSelectorForSide(2);
+  const count = setupActivePlayerCount();
+  [1, 2, 3, 4].forEach(side => {
+    if (side <= count) refreshSetupDeckSelectorForSide(side);
+  });
 }
 
 function validateSetupDeckSelectionsBeforeStart() {
   const issues = [];
-  [1, 2].forEach(side => {
+  Array.from({ length: setupActivePlayerCount() }, (_, index) => index + 1).forEach(side => {
     const info = setupDeckInfoForSide(side);
     if (info.mode !== "custom") return;
     if (!info.check || !info.check.ok) {
@@ -270,19 +328,27 @@ function validateSetupDeckSelectionsBeforeStart() {
 function syncSetupScreenFromLegacyControls() {
   writeControlValue("setupP1Faction", readControlValue("p1Faction", "Nexus"));
   writeControlValue("setupP2Faction", readControlValue("p2Faction", "Exordium"));
+  writeControlValue("setupP3Faction", readControlValue("setupP3Faction", "Liberti"));
+  writeControlValue("setupP4Faction", readControlValue("setupP4Faction", "Agathoi"));
   refreshSetupCommanderSelects();
   writeControlValue("setupP1Commander", readControlValue("p1Commander", ""));
   writeControlValue("setupP2Commander", readControlValue("p2Commander", ""));
   writeControlValue("setupP1Mode", readControlValue("p1Mode", "human"));
   writeControlValue("setupP2Mode", readControlValue("p2Mode", "bot"));
+  writeControlValue("setupP3Mode", readControlValue("setupP3Mode", "bot"));
+  writeControlValue("setupP4Mode", readControlValue("setupP4Mode", "bot"));
   writeControlValue("setupInitiativeMode", readControlValue("initiativeMode", "random"));
   writeControlValue("setupBotAiMode", readControlValue("botAiMode", "advanced"));
   writeControlValue("setupPacePreset", readControlValue("pacePreset", "standard"));
   writeControlValue("setupGameScaleMode", readControlValue("gameScaleMode", "large_scale"));
   writeControlValue("setupP1DeckMode", readControlValue("p1DeckMode", "template"));
   writeControlValue("setupP2DeckMode", readControlValue("p2DeckMode", "template"));
+  writeControlValue("setupP3DeckMode", readControlValue("setupP3DeckMode", "template"));
+  writeControlValue("setupP4DeckMode", readControlValue("setupP4DeckMode", "template"));
   writeControlValue("setupP1DeckSavedKey", readControlValue("p1DeckSavedKey", readControlValue("setupP1DeckSavedKey", "")));
   writeControlValue("setupP2DeckSavedKey", readControlValue("p2DeckSavedKey", readControlValue("setupP2DeckSavedKey", "")));
+  writeControlValue("setupP3DeckSavedKey", readControlValue("setupP3DeckSavedKey", ""));
+  writeControlValue("setupP4DeckSavedKey", readControlValue("setupP4DeckSavedKey", ""));
   refreshSetupDeckSelectors();
   const legacyAuto = document.getElementById("autoResignToggle");
   const setupAuto = document.getElementById("setupAutoResignToggle");
@@ -312,6 +378,7 @@ function syncLegacyControlsFromSetupScreen() {
 
 function openNewGameSetupScreen() {
   if (typeof refreshCommanderSelects === "function") refreshCommanderSelects();
+  refreshSetupMapSelector(typeof mapEditorState !== "undefined" && mapEditorState && mapEditorState.labMapId ? mapEditorState.labMapId : "");
   syncSetupScreenFromLegacyControls();
   setAppScreen(ARENA_APP_SCREENS.SETUP);
 }
@@ -322,8 +389,12 @@ function startGameFromSetupScreen() {
   if (!deckCheck.ok) return;
   syncLegacyControlsFromSetupScreen();
   const setupOverrides = {
-    gameScaleMode: readControlValue("setupGameScaleMode", "large_scale") === "tactical" ? "tactical" : "large_scale"
+    gameScaleMode: readControlValue("setupGameScaleMode", "large_scale") === "tactical" ? "tactical" : "large_scale",
+    mapId: readControlValue("setupMapName", "map1_starter")
   };
+  const labMapId = typeof mapEditorState !== "undefined" && mapEditorState ? mapEditorState.labMapId : null;
+  setupOverrides.mapLabMode = Boolean(labMapId && labMapId === setupOverrides.mapId);
+  setupOverrides.mapLabSourceId = setupOverrides.mapLabMode ? labMapId : null;
   setAppScreen(ARENA_APP_SCREENS.GAME);
   if (typeof newGame === "function") {
     try {
@@ -366,6 +437,12 @@ function startNewGameFromAppMenu() {
   openNewGameSetupScreen();
 }
 
+function openTutorialScreen() {
+  setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
+  if (typeof tutorialRuntimeRenderMenu === "function") tutorialRuntimeRenderMenu();
+}
+
+
 function resumeGameFromAppMenu() {
   if (typeof state === "undefined" || !state) {
     openNewGameSetupScreen();
@@ -398,6 +475,7 @@ function initializeArenaAppShell() {
   if (typeof initializeDeckBuilderScreen === "function") initializeDeckBuilderScreen();
   if (typeof initializeCardEditorScreen === "function") initializeCardEditorScreen();
   if (typeof initializeCardPoolScreen === "function") initializeCardPoolScreen();
+  if (typeof initializeMapEditorScreen === "function") initializeMapEditorScreen();
   if (typeof initializeMenuLayoutCalibrationLab === "function") initializeMenuLayoutCalibrationLab();
 
   document.querySelectorAll("[data-app-open-deck-builder]").forEach(deckBuilderBtn => {
@@ -427,6 +505,19 @@ function initializeArenaAppShell() {
     });
   });
 
+  document.querySelectorAll("[data-app-open-map-editor]").forEach(mapEditorBtn => {
+    if (mapEditorBtn.dataset.bound === "1") return;
+    mapEditorBtn.dataset.bound = "1";
+    mapEditorBtn.addEventListener("click", () => {
+      if (typeof openMapEditorScreen === "function") {
+        const preferred = typeof mapEditorState !== "undefined" && mapEditorState && mapEditorState.labMapId
+          ? mapEditorState.labMapId
+          : "map1_starter";
+        openMapEditorScreen(preferred);
+      }
+    });
+  });
+
   document.querySelectorAll("[data-app-open-layout-lab]").forEach(layoutLabBtn => {
     if (layoutLabBtn.dataset.bound === "1") return;
     layoutLabBtn.dataset.bound = "1";
@@ -446,6 +537,12 @@ function initializeArenaAppShell() {
   if (resumeBtn && resumeBtn.dataset.bound !== "1") {
     resumeBtn.dataset.bound = "1";
     resumeBtn.addEventListener("click", resumeGameFromAppMenu);
+  }
+
+  const tutorialBtn = document.getElementById("mainMenuTutorialBtn");
+  if (tutorialBtn && tutorialBtn.dataset.bound !== "1") {
+    tutorialBtn.dataset.bound = "1";
+    tutorialBtn.addEventListener("click", openTutorialScreen);
   }
 
   document.querySelectorAll("[data-app-placeholder-screen]").forEach(btn => {
@@ -472,7 +569,7 @@ function initializeArenaAppShell() {
     setupBackBtn.addEventListener("click", openMainMenu);
   }
 
-  [1, 2].forEach(side => {
+  [1, 2, 3, 4].forEach(side => {
     const factionSelect = document.getElementById(`setupP${side}Faction`);
     if (factionSelect && factionSelect.dataset.bound !== "1") {
       factionSelect.dataset.bound = "1";
@@ -514,7 +611,14 @@ function initializeArenaAppShell() {
   });
 
   refreshSetupCommanderSelects();
+  refreshSetupMapSelector();
   refreshSetupDeckSelectors();
+
+  const setupMapSelect = document.getElementById("setupMapName");
+  if (setupMapSelect && setupMapSelect.dataset.bound !== "1") {
+    setupMapSelect.dataset.bound = "1";
+    setupMapSelect.addEventListener("change", refreshSetupForSelectedMap);
+  }
 
   const topNewGame = document.getElementById("newGameBtn");
   if (topNewGame && topNewGame.dataset.appShellPatched !== "1") {

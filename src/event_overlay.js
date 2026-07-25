@@ -26,6 +26,7 @@ const NARRATIVE_EXPRESSION_SYMBOL = Object.freeze({
   neutral:"●", explain:"?", approve:"✓", warning:"!", stern:"◆"
 });
 const narrativePortraitSets = new Map();
+let narrativePortraitLoadToken = 0;
 let narrativeState = { messages:[], index:0, options:{}, open:false };
 let narrativeDom = null;
 
@@ -295,7 +296,7 @@ function eventOverlayDescriptorsForGameEvent(event) {
 
   if (type === "VICTORY") {
     const winner = Number(d.winner) || null;
-    const humanSides = typeof state !== "undefined" && state && state.modes ? [1,2].filter(side => state.modes[side] === "human") : [];
+    const humanSides = typeof state !== "undefined" && state && state.modes ? (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2]).filter(side => state.modes[side] === "human") : [];
     const localDefeat = Boolean(winner && humanSides.length === 1 && humanSides[0] !== winner);
     if (winner) out.push({ type, title:localDefeat ? "SCONFITTA" : "VITTORIA", message:`${eventOverlaySideLabel(winner, d.winnerFaction)} · ${d.winType || "partita conclusa"}`, icon:localDefeat ? "◆" : "✹", side:winner, priority:"critical", key:`victory:${winner}:${d.round}:${d.winType}` });
     else out.push({ type, title:"PAREGGIO", message:d.message || "Partita conclusa", icon:"＝", priority:"critical", key:`draw:${d.round}:${d.winType}` });
@@ -311,7 +312,7 @@ function eventOverlayRelevantForThreatCheck(type) {
 function eventOverlayEvaluateHqThreats(triggerEvent=null) {
   if (typeof state === "undefined" || !state || typeof getHq !== "function" || typeof hexDistance !== "function") return;
   const episodeMap = state.f9o3HqThreatEpisodes || (state.f9o3HqThreatEpisodes = {1:0,2:0});
-  for (const hqSide of [1,2]) {
+  for (const hqSide of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const hq = getHq(hqSide);
     if (!hq || !Array.isArray(hq.pos)) continue;
     const enemy = hqSide === 1 ? 2 : 1;
@@ -414,20 +415,62 @@ function narrativeEnsureDom() {
     root.dataset.f9o3Bound = "1";
     prev.addEventListener("click", narrativePrevious);
     repeat.addEventListener("click", narrativeRepeat);
-    close.addEventListener("click", narrativeClose);
+    close.addEventListener("click", () => narrativeClose("manual"));
     next.addEventListener("click", narrativeNext);
   }
   narrativeDom = { root, dialog, portrait, image, placeholder, symbol, expressionLabel, speaker, text, step, prev, repeat, close, next };
   return narrativeDom;
 }
 
-function narrativeResolvePortrait(message) {
-  if (!message) return null;
-  if (message.portraitSrc) return String(message.portraitSrc);
+function narrativeResolvePortraitCandidates(message) {
+  if (!message) return [];
+  const candidates = [];
+  if (message.portraitSrc) candidates.push(String(message.portraitSrc));
   const set = narrativePortraitSets.get(String(message.portraitSet || ""));
-  if (!set) return null;
-  const expression = NARRATIVE_EXPRESSIONS.includes(message.expression) ? message.expression : "neutral";
-  return set[expression] || set.neutral || null;
+  if (set) {
+    const expression = NARRATIVE_EXPRESSIONS.includes(message.expression) ? message.expression : "neutral";
+    if (set[expression]) candidates.push(String(set[expression]));
+    if (set.neutral) candidates.push(String(set.neutral));
+  }
+  return [...new Set(candidates.filter(Boolean))];
+}
+
+function narrativeResolvePortrait(message) {
+  return narrativeResolvePortraitCandidates(message)[0] || null;
+}
+
+function narrativeShowPortraitPlaceholder(dom, message) {
+  if (!dom) return false;
+  dom.image.removeAttribute("src");
+  dom.image.hidden = true;
+  dom.placeholder.hidden = false;
+  dom.symbol.textContent = NARRATIVE_EXPRESSION_SYMBOL[message.expression] || "●";
+  dom.expressionLabel.textContent = message.expression;
+  return true;
+}
+
+function narrativeLoadPortrait(dom, message) {
+  if (!dom || !message) return false;
+  const candidates = narrativeResolvePortraitCandidates(message);
+  const loadToken = String(++narrativePortraitLoadToken);
+  dom.image.dataset.portraitLoadToken = loadToken;
+  let index = 0;
+  const tryNext = () => {
+    if (dom.image.dataset.portraitLoadToken !== loadToken) return false;
+    const src = candidates[index++];
+    if (!src) return narrativeShowPortraitPlaceholder(dom, message);
+    dom.image.hidden = false;
+    dom.placeholder.hidden = true;
+    dom.image.src = src;
+    return true;
+  };
+  dom.image.onload = () => {
+    if (dom.image.dataset.portraitLoadToken !== loadToken) return;
+    dom.image.hidden = false;
+    dom.placeholder.hidden = true;
+  };
+  dom.image.onerror = () => tryNext();
+  return tryNext();
 }
 
 function narrativeNormalizeMessage(message, index=0) {
@@ -454,25 +497,24 @@ function narrativeRender() {
   const message = narrativeState.messages[narrativeState.index];
   if (!message) return false;
   dom.root.hidden = false;
+  const options = narrativeState.options || {};
+  dom.root.classList.toggle("isNonModal", options.nonModal === true);
+  dom.root.dataset.position = options.position === "top" ? "top" : "bottom";
+  dom.dialog.setAttribute("aria-modal", options.nonModal === true ? "false" : "true");
   dom.dialog.dataset.side = message.side;
   dom.dialog.dataset.expression = message.expression;
   dom.speaker.textContent = message.speaker;
   dom.text.textContent = message.text;
-  dom.step.textContent = `${narrativeState.index + 1}/${narrativeState.messages.length}`;
-  dom.prev.disabled = narrativeState.index <= 0;
-  dom.next.textContent = narrativeState.index >= narrativeState.messages.length - 1 ? "Fine" : "Avanti";
-  const src = narrativeResolvePortrait(message);
-  if (src) {
-    dom.image.src = src;
-    dom.image.hidden = false;
-    dom.placeholder.hidden = true;
-  } else {
-    dom.image.removeAttribute("src");
-    dom.image.hidden = true;
-    dom.placeholder.hidden = false;
-    dom.symbol.textContent = NARRATIVE_EXPRESSION_SYMBOL[message.expression] || "●";
-    dom.expressionLabel.textContent = message.expression;
-  }
+  dom.step.textContent = options.stepLabel || `${narrativeState.index + 1}/${narrativeState.messages.length}`;
+  dom.prev.hidden = options.showPrev === false;
+  dom.repeat.hidden = options.showRepeat === false;
+  dom.close.hidden = options.showClose === false;
+  dom.next.hidden = options.showNext === false;
+  dom.close.textContent = options.closeLabel || "Chiudi";
+  dom.prev.disabled = narrativeState.index <= 0 || options.disablePrev === true;
+  dom.next.disabled = options.disableNext === true;
+  dom.next.textContent = options.nextLabel || (narrativeState.index >= narrativeState.messages.length - 1 ? "Fine" : "Avanti");
+  narrativeLoadPortrait(dom, message);
   if (typeof narrativeState.options.onRender === "function") {
     try { narrativeState.options.onRender(message, narrativeState.index); }
     catch (err) { console.warn("Arena Rubra F9O3 narrative onRender failed", err); }
@@ -492,13 +534,13 @@ function narrativeOpen(messages, options={}) {
   return narrativeRender();
 }
 
-function narrativeClose() {
+function narrativeClose(reason="manual") {
   const dom = narrativeEnsureDom();
   const wasOpen = narrativeState.open;
   narrativeState.open = false;
   if (dom && dom.root) dom.root.hidden = true;
   if (wasOpen && narrativeState.options && typeof narrativeState.options.onClose === "function") {
-    try { narrativeState.options.onClose(narrativeState.index); }
+    try { narrativeState.options.onClose(narrativeState.index, reason); }
     catch (err) { console.warn("Arena Rubra F9O3 narrative onClose failed", err); }
   }
   return wasOpen;
@@ -506,7 +548,7 @@ function narrativeClose() {
 
 function narrativeNext() {
   if (!narrativeState.open) return false;
-  if (narrativeState.index >= narrativeState.messages.length - 1) return narrativeClose();
+  if (narrativeState.index >= narrativeState.messages.length - 1) return narrativeClose("complete");
   narrativeState.index += 1;
   return narrativeRender();
 }

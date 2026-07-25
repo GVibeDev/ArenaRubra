@@ -72,7 +72,7 @@ function cardPoolTypeLabel(card) {
   if (typeof cardRendererTypeText === "function") return cardRendererTypeText(card);
   if (card.sourceType === "mission") return card.missionClass === "desperate" ? "MISSIONE DISPERATA" : "MISSIONE";
   if (card.sourceType === "tactic") return card.category ? `TATTICA · ${card.category}` : "TATTICA";
-  return [card.unitType, card.weight].filter(Boolean).join(" ").toUpperCase() || "UNITÀ";
+  return [card.unitType, card.unitClassLabel || card.weight].filter(Boolean).join(" ").toUpperCase() || "UNITÀ";
 }
 
 function cardPoolCompare(a, b) {

@@ -53,7 +53,7 @@
       if (!state) return null;
       if (!state.c2c6b) state.c2c6b = {};
       if (!state.c2c6b.enemyDestroyedThisTurn) state.c2c6b.enemyDestroyedThisTurn = { 1:0, 2:0 };
-      for (const side of [1,2]) {
+      for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
         if (!Number.isFinite(state.c2c6b.enemyDestroyedThisTurn[side])) state.c2c6b.enemyDestroyedThisTurn[side] = 0;
       }
       return state.c2c6b;

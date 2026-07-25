@@ -37,24 +37,37 @@ function readDeckSetupForSide(side) {
   };
 }
 
+function readPlayerSetupValue(side, suffix, fallback) {
+  const setupEl = $(`setupP${side}${suffix}`);
+  const legacyEl = $(`p${side}${suffix}`);
+  return setupEl ? setupEl.value : (legacyEl ? legacyEl.value : fallback);
+}
+
 function readGameSetupFromDom() {
+  const mapId = $("setupMapName") ? $("setupMapName").value : "map1_starter";
+  const definition = typeof getMapDefinitionById === "function" ? getMapDefinitionById(mapId) : null;
+  const playerCount = Math.max(2, Math.min(4, Number(definition && definition.playerCount) || 2));
+  const playerIds = Array.from({ length: playerCount }, (_, index) => index + 1);
+  const factionFallbacks = { 1: "Nexus", 2: "Exordium", 3: "Liberti", 4: "Agathoi" };
+  const factions = {};
+  const selectedCommanders = {};
+  const selectedDecks = {};
+  const modes = {};
+  playerIds.forEach(side => {
+    factions[side] = readPlayerSetupValue(side, "Faction", factionFallbacks[side]);
+    selectedCommanders[side] = readPlayerSetupValue(side, "Commander", null);
+    selectedDecks[side] = readDeckSetupForSide(side);
+    modes[side] = readPlayerSetupValue(side, "Mode", side === 1 ? "human" : "bot");
+  });
   return {
-    factions: {
-      1: $("p1Faction").value,
-      2: $("p2Faction").value
-    },
-    selectedCommanders: {
-      1: $("p1Commander") ? $("p1Commander").value : null,
-      2: $("p2Commander") ? $("p2Commander").value : null
-    },
-    selectedDecks: {
-      1: readDeckSetupForSide(1),
-      2: readDeckSetupForSide(2)
-    },
-    modes: {
-      1: $("p1Mode").value,
-      2: $("p2Mode").value
-    },
+    mapId,
+    mapDefinition: definition,
+    playerCount,
+    playerIds,
+    factions,
+    selectedCommanders,
+    selectedDecks,
+    modes,
     autoResignEnabled: $("autoResignToggle") ? $("autoResignToggle").checked : true,
     aiMode: $("botAiMode") ? $("botAiMode").value : "advanced",
     pacePreset: $("pacePreset") ? $("pacePreset").value : "standard",
@@ -65,14 +78,46 @@ function readGameSetupFromDom() {
 function createInitialGameState(setup) {
   const factions = setup.factions;
   const firstPlayer = setup.firstPlayer;
+  const mapDefinition = mapRuntimeNormalizeDefinition(
+    setup.mapDefinition || getMapDefinitionById(setup.mapId || MAP_RUNTIME_DEFAULT_ID) || getMapDefinitionById(MAP_RUNTIME_DEFAULT_ID),
+    { imported: setup.mapDefinition && setup.mapDefinition.official !== true }
+  );
+  const playerIds = Array.from({ length: mapDefinition.playerCount }, (_, index) => index + 1);
+  const startIndex = Math.max(0, playerIds.indexOf(firstPlayer));
+  const turnOrder = [...playerIds.slice(startIndex), ...playerIds.slice(0, startIndex)];
+  const runtimeCells = mapDefinition.geometry.cells.map(cell => ({
+    ...mapRuntimeClone(cell),
+    key: coordKey(cell.coord),
+    ps: cell.cellRole === "strategic_point",
+    control: null
+  }));
 
-  return {
-    cells: generateMap(RADIUS),
+  const initialState = {
+    mapId: mapDefinition.id,
+    mapDefinition,
+    mapRuntime: {
+      schemaVersion: mapDefinition.schemaVersion,
+      mapRevision: mapDefinition.metadata.revision,
+      movementMultiplier: mapDefinition.movementMultiplier,
+      terrainUsage: mapTerrainUsage(mapDefinition)
+    },
+    mapLabMode: setup.mapLabMode === true,
+    mapLabSourceId: setup.mapLabSourceId || null,
+    cells: runtimeCells,
     units: [],
+    playerIds,
+    players: playerIds.map(id => ({
+      id,
+      faction: factions[id],
+      mode: setup.modes[id],
+      eliminated: false,
+      eliminatedAtTurn: null,
+      eliminationReason: null
+    })),
     factions,
     selectedCommanders: setup.selectedCommanders || {},
     selectedDecks: setup.selectedDecks || { 1: { mode: "template" }, 2: { mode: "template" } },
-    turnOrder: firstPlayer === 1 ? [1, 2] : [2, 1],
+    turnOrder,
     orderIndex: 0,
     currentPlayer: firstPlayer,
     turn: 1,
@@ -85,6 +130,7 @@ function createInitialGameState(setup) {
     playerEffects: { 1: [], 2: [] },
     c2c6b: { enemyDestroyedThisTurn: { 1: 0, 2: 0 } },
     mines: [],
+    initialHazards: mapRuntimeClone(mapDefinition.initialHazards || []),
     cellEffects: [],
     tacticCooldowns: { 1: {}, 2: {} },
     tacticUsedThisTurn: { 1: false, 2: false },
@@ -176,6 +222,85 @@ function createInitialGameState(setup) {
 
     matchId: createMatchId()
   };
+
+  const ensurePlayerValue = (container, side, fallbackFactory) => {
+    if (!container || typeof container !== "object") return;
+    if (container[side] === undefined) container[side] = fallbackFactory();
+  };
+  playerIds.forEach(side => {
+    ensurePlayerValue(initialState.energy, side, () => START_ENE);
+    ensurePlayerValue(initialState.turnsStarted, side, () => 0);
+    ensurePlayerValue(initialState.pressure, side, () => 0);
+    ensurePlayerValue(initialState.desperation, side, () => 0);
+    ensurePlayerValue(initialState.playerEffects, side, () => []);
+    ensurePlayerValue(initialState.c2c6b.enemyDestroyedThisTurn, side, () => 0);
+    ensurePlayerValue(initialState.tacticCooldowns, side, () => ({}));
+    ensurePlayerValue(initialState.tacticUsedThisTurn, side, () => false);
+    ensurePlayerValue(initialState.c2eBotHandTacticsUsedThisTurn, side, () => 0);
+    ensurePlayerValue(initialState.fabeotEconomyAbilityUsed, side, () => false);
+    ensurePlayerValue(initialState.fabeotConversionUsed, side, () => false);
+    ensurePlayerValue(initialState.energyLocked, side, () => 0);
+    ensurePlayerValue(initialState.handLocked, side, () => 0);
+    ensurePlayerValue(initialState.emergencyLoggedTurn, side, () => -1);
+    ensurePlayerValue(initialState.missions, side, () => null);
+    ensurePlayerValue(initialState.missionRewards, side, () => ({ cardCostSequence: null }));
+    [
+      "cyclesStarted", "recoveriesWithMission", "recoveriesWithoutMission", "missionLocksApplied",
+      "missionUnlocks", "missionsReady", "missionsPlayed", "secondOrLaterPlays", "rewardsResolved",
+      "aiMissionPlays", "aiMissionWaits", "targetQuotasWasted"
+    ].forEach(key => ensurePlayerValue(initialState.missionTelemetry[key], side, () => 0));
+    ensurePlayerValue(initialState.missionTelemetry.lastAiDecision, side, () => null);
+    [
+      "maxPressure", "turnsAt0PS", "turnsEnemyAt3PS", "goalSwitchCount", "cardsOverdrawn",
+      "deckRecoveries", "hazardsTriggered", "selfMineTriggers", "qgThreatTurns",
+      "qgBlockedOpportunities", "pressureEmergencyTurns", "recoveriesFrom0PS"
+    ].forEach(key => ensurePlayerValue(initialState.aiTelemetry[key], side, () => 0));
+    ensurePlayerValue(initialState.aiTelemetry.lastGoal, side, () => null);
+    ensurePlayerValue(initialState.aiTelemetry.lastGoalBeforeWin, side, () => null);
+    ensurePlayerValue(initialState.aiTelemetry.keyCardsOverdrawn, side, () => []);
+    ensurePlayerValue(initialState.aiTelemetry.wasAt0PS, side, () => false);
+    ["starterSpawned", "starterDestroyed", "tacticalCapBlocked"].forEach(key => ensurePlayerValue(initialState.f9n3Telemetry[key], side, () => ({
+      starter_infantry: 0, starter_vehicle: 0, starter_structure: 0
+    })));
+    ["starterEnergySpent", "hqDeployments", "hqBuilds"].forEach(key => ensurePlayerValue(initialState.f9n3Telemetry[key], side, () => 0));
+    ensurePlayerValue(initialState.deck, side, () => []);
+    ensurePlayerValue(initialState.hand, side, () => []);
+    ensurePlayerValue(initialState.discard, side, () => []);
+    ensurePlayerValue(initialState.starterCards, side, () => ({}));
+    ensurePlayerValue(initialState.cardDebug.deckSize, side, () => 0);
+    ensurePlayerValue(initialState.cardDebug.handSize, side, () => 0);
+    ensurePlayerValue(initialState.cardDebug.starterSlots, side, () => ({}));
+  });
+  const cellHazards = runtimeCells
+    .filter(cell => cell.initialHazard && cell.initialHazard.type)
+    .map(cell => ({ ...mapRuntimeClone(cell.initialHazard), coord: [...cell.coord] }));
+  initialState.initialHazards = [...initialState.initialHazards, ...cellHazards]
+    .filter((hazard, index, all) => all.findIndex(candidate =>
+      candidate.type === hazard.type
+      && sameCoord(candidate.coord, hazard.coord)
+    ) === index);
+  for (const hazard of cellHazards) {
+    if (hazard.type === "mine") {
+      initialState.mines.push({
+        owner: hazard.ownerPlayerId || 0,
+        coord: [...hazard.coord],
+        name: "Mina della mappa",
+        infantryDamage: Number(hazard.payload && hazard.payload.infantryDamage) || 1,
+        vehicleDamage: Number(hazard.payload && hazard.payload.vehicleDamage) || 3,
+        initialMapHazard: true
+      });
+    } else if (hazard.type === "trap") {
+      initialState.cellEffects.push({
+        kind: "cell_movement_trap",
+        owner: hazard.ownerPlayerId || 0,
+        coord: [...hazard.coord],
+        source: "Trappola della mappa",
+        turns: Number.isFinite(hazard.duration) ? hazard.duration : null,
+        initialMapHazard: true
+      });
+    }
+  }
+  return initialState;
 }
 
 function resetInteractionContext() {
@@ -214,7 +339,7 @@ function resetInteractionContext() {
         currentDef: 0,
         source: "QG v1.4.1 · cella occupabile",
         ability: null,
-        pos: [...HQ_POS[side]],
+        pos: [...(getMapHeadquarters(side, state.mapDefinition) || HQ_POS[side] || [0, 0, 0])],
         acted: true,
         movedThisTurn: false,
         abilityUsedThisTurn: false,

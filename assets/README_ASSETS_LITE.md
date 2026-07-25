@@ -21,3 +21,16 @@ Manifest dedicati:
 Accettate anche estensioni PNG/JPG/JPEG. In LITE viene usato un fallback procedurale.
 
 Manifest dorsi: `assets/cards/art/README_F9O4_CARD_BACKS.md`.
+
+
+## F9O7b — Ritratti narratori tutorial
+
+I binari restano esclusi dalla build LITE. Percorsi e fallback sono già registrati in `data/tutorial_scenarios.js`.
+
+- `assets/narrative/portraits/<fazione>/neutral.webp`
+- `assets/narrative/portraits/<fazione>/explain.webp`
+- `assets/narrative/portraits/<fazione>/approve.webp`
+- `assets/narrative/portraits/<fazione>/warning.webp`
+- `assets/narrative/portraits/<fazione>/stern.webp`
+
+Dettagli: `assets/narrative/portraits/README_F9O7B_NARRATOR_PORTRAITS.md`.

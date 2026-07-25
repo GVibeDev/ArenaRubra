@@ -1,0 +1,13 @@
+{
+  "scripts": 68,
+  "styles": 2,
+  "localReferences": 70,
+  "missing": [],
+  "duplicateScripts": [],
+  "duplicateStyles": [],
+  "jsFiles": 107,
+  "nodeTests": 39,
+  "browserTests": 19,
+  "pycacheDirs": 0,
+  "pycFiles": 0
+}

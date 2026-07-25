@@ -13,7 +13,7 @@ function ensureMissionTelemetry() {
   const numericMaps = ["cyclesStarted","recoveriesWithMission","recoveriesWithoutMission","missionLocksApplied","missionUnlocks","missionsReady","missionsPlayed","secondOrLaterPlays","rewardsResolved","aiMissionPlays","aiMissionWaits","targetQuotasWasted"];
   for (const key of numericMaps) {
     if (!t[key]) t[key] = {1:0,2:0};
-    for (const side of [1,2]) if (!Number.isFinite(t[key][side])) t[key][side] = 0;
+    for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) if (!Number.isFinite(t[key][side])) t[key][side] = 0;
   }
   if (!t.lastAiDecision) t.lastAiDecision = {1:null,2:null};
   if (!t.byMission || typeof t.byMission !== "object") t.byMission = {};
@@ -148,7 +148,7 @@ function createMissionRuntime(side, definition=null) {
 function initializeMissionTrackerForGame() {
   if (!state) return null;
   state.missions = state.missions || { 1:null, 2:null };
-  for (const side of [1,2]) {
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const card = missionCardForSide(side);
     const id = card && (card.missionId || card.sourceId || String(card.id || "").replace(/^MISSION:/, ""));
     const definition = missionDefinitionById(id);
@@ -406,7 +406,7 @@ function missionEvaluateSide(side, reason="manual", context={}) {
 
 function missionEvaluateAll(reason="manual", context={}) {
   if (!state || !state.missions) return null;
-  for (const side of [1,2]) missionEvaluateSide(side, reason, context);
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) missionEvaluateSide(side, reason, context);
   return state.missions;
 }
 
@@ -494,7 +494,7 @@ function missionTrackerHandleEvent(event) {
     const d = event.data || {};
     const actor = missionEventActor(event);
 
-    for (const side of [1,2]) {
+    for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
       const runtime = missionRuntime(side);
       if (!runtime || !runtime.active || runtime.played) continue;
       const enemy = missionEnemy(side);

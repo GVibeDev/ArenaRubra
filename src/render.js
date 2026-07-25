@@ -176,13 +176,36 @@ const MAP_HAND_OVERLAY_STATE = {
       BOARD_DOM_CACHE.unitSignatures.clear();
       BOARD_DOM_CACHE.delegatedClick = boardRenderHandleDelegatedClick;
 
+      const advancedMap = state.mapId && state.mapId !== "map1_starter";
+      const rawPoints = state.cells.map(cell => {
+        const q = cell.coord[0];
+        const r = cell.coord[2];
+        return {
+          x: HEX_SIZE * Math.sqrt(3) * (q + r / 2),
+          y: HEX_SIZE * 1.5 * r
+        };
+      });
+      const minX = rawPoints.length ? Math.min(...rawPoints.map(point => point.x)) : 0;
+      const maxX = rawPoints.length ? Math.max(...rawPoints.map(point => point.x)) : 0;
+      const minY = rawPoints.length ? Math.min(...rawPoints.map(point => point.y)) : 0;
+      const maxY = rawPoints.length ? Math.max(...rawPoints.map(point => point.y)) : 0;
+      const dynamicCenterX = advancedMap ? 70 - minX : CENTER_X;
+      const dynamicCenterY = advancedMap ? 70 - minY : CENTER_Y;
+      const nativeWidth = advancedMap ? Math.ceil(maxX - minX + 140) : 920;
+      const nativeHeight = advancedMap ? Math.ceil(maxY - minY + 140) : 780;
+      board.style.width = `${nativeWidth}px`;
+      board.style.height = `${nativeHeight}px`;
+      document.documentElement.style.setProperty("--board-native-width", `${nativeWidth}px`);
+      document.documentElement.style.setProperty("--board-native-height", `${nativeHeight}px`);
+      board.dataset.mapId = state.mapId || "map1_starter";
+
       const fragment = document.createDocumentFragment();
       for (const cell of state.cells) {
         const [x, y, z] = cell.coord;
         const q = x;
         const r = z;
-        const left = CENTER_X + HEX_SIZE * Math.sqrt(3) * (q + r / 2);
-        const top = CENTER_Y + HEX_SIZE * 1.5 * r;
+        const left = dynamicCenterX + HEX_SIZE * Math.sqrt(3) * (q + r / 2);
+        const top = dynamicCenterY + HEX_SIZE * 1.5 * r;
         const element = document.createElement("button");
         element.type = "button";
         element.className = "hex";
@@ -292,6 +315,10 @@ const MAP_HAND_OVERLAY_STATE = {
 
     function boardRenderCellClasses(cell, unit, hqSide, flags, displayedSelectedId, visual) {
       const classes = ["hex"];
+      const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(cell.coord) : null;
+      if (terrain && terrain.visualClass) classes.push(terrain.visualClass);
+      if (terrain && terrain.blocksMovement) classes.push("terrainBlocksMovement");
+      if (cell.initialHazard && cell.initialHazard.type) classes.push(`initialHazard-${cell.initialHazard.type}`);
       if (cell.ps) classes.push("ps", "cellObjective");
       if (cell.ps && visual.psLocked) classes.push("psLocked");
       if (visual.blocked) classes.push("cellBlocked");
@@ -322,6 +349,13 @@ const MAP_HAND_OVERLAY_STATE = {
 
     function boardRenderCellTitle(cell, hqSide, visual) {
       const notes = [];
+      const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(cell.coord) : null;
+      if (terrain && terrain.id !== "free") {
+        const defense = terrain.defenseModifier ? ` · DEF ${terrain.defenseModifier > 0 ? "+" : ""}${terrain.defenseModifier}` : "";
+        const movement = terrain.blocksMovement ? " · invalicabile" : terrain.movementCost > 1 ? ` · costo movimento ${terrain.movementCost}` : "";
+        notes.push(`${terrain.name}${defense}${movement}`);
+      }
+      if (cell.initialHazard) notes.push(`Pericolo iniziale: ${cell.initialHazard.type}`);
       if (cell.ps) notes.push(visual.psLocked ? "Punto Strategico bloccato" : "Punto Strategico");
       if (hqSide) notes.push(`QG ${playerName(hqSide)} · cella obiettivo`);
       if (visual.summary) notes.push(visual.summary);
@@ -336,6 +370,8 @@ const MAP_HAND_OVERLAY_STATE = {
         unit.faction,
         unit.type,
         unit.weight,
+        unit.unitClass || "",
+        unit.tokenClass || "",
         unit.customRuntime === true ? 1 : 0,
         displayedSelectedId && unit.uid === displayedSelectedId ? 1 : 0,
         unit.acted && unit.type !== "QG" ? 1 : 0,
@@ -344,7 +380,7 @@ const MAP_HAND_OVERLAY_STATE = {
         effectiveThorns(unit) || 0,
         unit.currentHp,
         unit.maxHp,
-        unit.currentDef,
+        typeof getEffectiveDefense === "function" ? getEffectiveDefense(unit) : unit.currentDef,
         effectiveAtt(unit),
         unitStatusSummary(unit),
         unitIcon(unit),
@@ -356,7 +392,7 @@ const MAP_HAND_OVERLAY_STATE = {
 
 
     function boardRenderPatchToken(token, unit, displayedSelectedId, tokenArtPath, tokenArtStatus) {
-      const tokenClasses = ["unitToken", `faction-${factionMeta(unit.faction).key}`, tokenTypeClass(unit), tokenWeightClass(unit)].filter(Boolean);
+      const tokenClasses = ["unitToken", `faction-${factionMeta(unit.faction).key}`, tokenTypeClass(unit), tokenWeightClass(unit), tokenTaxonomyClass(unit)].filter(Boolean);
       if (unit.customRuntime === true) tokenClasses.push("is-custom");
       if (displayedSelectedId && unit.uid === displayedSelectedId) tokenClasses.push("is-selected");
       if (unit.acted && unit.type !== "QG") tokenClasses.push("acted");
@@ -372,13 +408,18 @@ const MAP_HAND_OVERLAY_STATE = {
       token.className = tokenClasses.join(" ");
       token.dataset.unitUid = String(unit.uid || "");
       token.dataset.unitPos = Array.isArray(unit.pos) ? unit.pos.join(",") : "";
+      token.dataset.unitClass = String(unit.unitClass || "");
+      token.dataset.tokenClass = String(unit.tokenClass || unit.unitClass || "");
       if (tokenArtPath) token.dataset.tokenArt = tokenArtPath;
       else delete token.dataset.tokenArt;
       const customBadge = unit.customRuntime === true ? `<span class="tokenCustomBadge" title="Custom runtime">C</span>` : "";
       const selectionCues = displayedSelectedId && unit.uid === displayedSelectedId
         ? `<span class="tokenSelectionHalo" aria-hidden="true"></span><span class="tokenActiveArrow" aria-hidden="true"></span>`
         : "";
-      token.innerHTML = `<span class="tokenFactionBase" aria-hidden="true"></span><span class="symbol">${unitIcon(unit)}</span>${unitOverlay(unit)}${customBadge}<span class="mini statMini"><span class="statNum statHp">${unit.currentHp}</span><span class="statNum statDef">${unit.currentDef}</span><span class="statNum statAtt">${effectiveAtt(unit)}</span></span>${selectionCues}`;
+      const displayedDefense = typeof getEffectiveDefense === "function" ? getEffectiveDefense(unit) : unit.currentDef;
+      const terrainModifier = typeof getTerrainDefenseModifier === "function" ? getTerrainDefenseModifier(unit) : 0;
+      const terrainBadge = terrainModifier ? `<span class="terrainBadge" title="Modificatore DEF del terreno">${terrainModifier > 0 ? "+" : ""}${terrainModifier}</span>` : "";
+      token.innerHTML = `<span class="tokenFactionBase" aria-hidden="true"></span><span class="symbol">${unitIcon(unit)}</span>${unitOverlay(unit)}${customBadge}<span class="mini statMini"><span class="statNum statHp">${unit.currentHp}</span><span class="statNum statDef">${displayedDefense}</span><span class="statNum statAtt">${effectiveAtt(unit)}</span></span>${terrainBadge}${selectionCues}`;
       if (tokenArtPath) {
         const art = document.createElement("span");
         art.className = "tokenArt";
@@ -415,7 +456,9 @@ const MAP_HAND_OVERLAY_STATE = {
       const emptyCellVisual = { psLocked:false, blocked:false, kinds:new Set(), summary:"" };
       const occupancy = new Map();
       for (const unit of Array.isArray(state.units) ? state.units : []) {
-        if (unit && unit.alive && Array.isArray(unit.pos)) occupancy.set(boardRenderCoordKey(unit.pos), unit);
+        // F9O5b: il QG resta una pseudo-unità logica per regole, vittoria e costruzione,
+        // ma la sua casella-obiettivo non deve produrre un token, una silhouette o statistiche 0/0/0.
+        if (unit && unit.alive && unit.type !== "QG" && Array.isArray(unit.pos)) occupancy.set(boardRenderCoordKey(unit.pos), unit);
       }
       const activeUnitIds = new Set();
       let patchedCells = 0;
@@ -513,6 +556,11 @@ const MAP_HAND_OVERLAY_STATE = {
       const hq2 = getHq(2);
       const field1 = combatUnits(1).length;
       const field2 = combatUnits(2).length;
+      const multiplayerSummary = (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2]).map(side => {
+        const player = typeof getPlayerById === "function" ? getPlayerById(side) : null;
+        const eliminated = player && player.eliminated ? " · ELIMINATO" : "";
+        return `<span class="pill${eliminated ? " bad" : ""}">G${side} ${escapeHtml(state.factions[side])} · ${state.energy[side]} ENE · ${countControlledPS(side)} PS · ${combatUnits(side).length} unità${eliminated}</span>`;
+      }).join("");
       $("p1Title").textContent = playerName(1);
       $("p2Title").textContent = playerName(2);
       $("p1Title").className = `faction-${factionMetaBySide(1).key}-text`;
@@ -521,6 +569,8 @@ const MAP_HAND_OVERLAY_STATE = {
       $("p2Score").textContent = `QG: ${hqOccupancyText(2)} · ENE: ${state.energy[2]} · PS: ${countControlledPS(2)} · Pressione: ${state.pressure[2]}/${PRESSURE_WIN} · Campo: ${field2}`;
       $("turnInfo").innerHTML = `
         <h4>Round ${state.turn} <span>${currentName}</span></h4>
+        <div class="stats f9qPlayerStandings">${multiplayerSummary}</div>
+        <div class="meta">Mappa: ${escapeHtml(state.mapDefinition ? state.mapDefinition.name : "MAP1")} · ${state.cells.length} celle · movimento ×${state.mapDefinition ? state.mapDefinition.movementMultiplier : 1}${state.mapLabMode ? " · MATCH LAB" : ""}</div>
         <div class="meta">Giocatore corrente: ${currentMode} · AI bot: ${state.aiMode === "advanced" ? "Avanzata" : "Base"} · Ritmo: ${paceLabel()} · ENE disponibili: ${state.energy[state.currentPlayer]} · PS presidiati: ${countControlledPS(state.currentPlayer)}</div>
         <div class="meta">Effetti economici: ${economicEffectsSummary(state.currentPlayer)}</div>
         <div class="meta">Dottrina fazione: ${doctrineSummary(state.currentPlayer)}</div>
@@ -554,12 +604,14 @@ const MAP_HAND_OVERLAY_STATE = {
         const isHumanTurn = state.modes[state.currentPlayer] === "human";
         const canCommand = isHumanTurn && selected.side === state.currentPlayer && selected.type !== "QG" && !selected.acted && selected.alive && !state.winner;
         const moveBtn = document.createElement("button");
+        moveBtn.dataset.unitAction = "move";
         moveBtn.textContent = mode === "move" ? "Annulla movimento" : `Muovi di ${movementRangeFor(selected)} cella${movementRangeFor(selected) > 1 ? "e" : ""}`;
         moveBtn.disabled = !canCommand || !canMove(selected) || movableCells(selected).length === 0;
         moveBtn.addEventListener("click", () => toggleMoveMode());
         actions.appendChild(moveBtn);
 
         const abilityBtn = document.createElement("button");
+        abilityBtn.dataset.unitAction = "ability";
         const ab = selected.ability;
         abilityBtn.textContent = ab ? `Abilità: ${ab.name}${ab.cost ? ` (${ab.cost} ENE)` : ""}` : "Nessuna abilità";
         abilityBtn.disabled = !canCommand || !ab || ab.passive || !canUseAbility(selected, ab) || abilityTargets(selected, ab).length === 0;
@@ -568,12 +620,14 @@ const MAP_HAND_OVERLAY_STATE = {
 
         const structure = structureBlueprintFor(selected.side);
         const buildBtn = document.createElement("button");
+        buildBtn.dataset.unitAction = "build";
         buildBtn.textContent = structure ? `Costruisci: ${structure.name} (${effectiveBlueprintCost(selected.side, structure)} ENE)` : "Struttura non disponibile";
         buildBtn.disabled = !canCommand || !canBuildStructures(selected) || !structure || state.energy[selected.side] < effectiveBlueprintCost(selected.side, structure) || purchaseLimitReached(selected.side, structure) || buildableCells(selected).length === 0;
         buildBtn.addEventListener("click", () => toggleBuildMode(selected));
         actions.appendChild(buildBtn);
 
         const passBtn = document.createElement("button");
+        passBtn.dataset.unitAction = "pass";
         passBtn.className = "ghost";
         passBtn.textContent = "Passa azione unità";
         passBtn.disabled = !canCommand;
@@ -654,6 +708,21 @@ const MAP_HAND_OVERLAY_STATE = {
       return true;
     }
 
+    function mapCollapsedHandControlsHtml(disabled = false) {
+      const overlay = $("mapHandOverlay");
+      const collapsed = Boolean(
+        overlay &&
+        overlay.classList.contains("isMovementHidden") &&
+        !overlay.classList.contains("isTargeting")
+      );
+      if (!collapsed) return "";
+      return `
+        <div class="mapCollapsedHandControls" data-collapsed-hand-controls="true" aria-label="Comandi Mano ridotta">
+          <button class="ghost mapHandShowBtn" type="button" onclick="mapHandOverlayShowHand()">Mostra mano</button>
+          <button class="danger mapHandEndTurnBtn compact" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
+        </div>`;
+    }
+
     function renderMapActionDock() {
       const dock = $("mapActionDock");
       if (!dock) return;
@@ -716,7 +785,8 @@ ${reason}`);
           <div class="mapActionDockList">
             ${rows}
           </div>
-        </div>`;
+        </div>
+        ${mapCollapsedHandControlsHtml(disabledGlobal)}`;
     }
 
 
@@ -1044,10 +1114,12 @@ ${reason}`);
     }
 
     function handThumbPrewarmPublicBotCards() {
+      // Frozen F9O4e guard marker: state.modes[1] !== "bot" || state.modes[2] !== "bot"
       if (!state || !state.modes || typeof cardRendererPrewarmHandThumbnail !== "function") return 0;
-      if (state.modes[1] !== "bot" || state.modes[2] !== "bot") return 0;
+      const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+      if (!playerIds.every(side => state.modes[side] === "bot")) return 0;
       let requested = 0;
-      for (const side of [1, 2]) {
+      for (const side of playerIds) {
         const starters = state.starterCards && state.starterCards[side] ? Object.values(state.starterCards[side]).filter(Boolean) : [];
         const hand = state.hand && state.hand[side] ? state.hand[side].filter(card => {
           if (!card) return false;
@@ -1327,6 +1399,11 @@ ${reason}`);
       if (!state || !cardUid) return false;
       const card = mapHandOverlayCardByUid(side, cardUid, source);
       if (!card) return false;
+      const tutorialCardAction = { side:Number(side) || 0, cardId:String(card.id || ""), cardUid:String(card.cardUid || cardUid || ""), source:String(source || "hand") };
+      if (typeof tutorialRuntimeGateAction === "function") {
+        const gate = tutorialRuntimeGateAction("card_selected", tutorialCardAction);
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       if (card.sourceType === "mission" || card.cardType === "mission" || card.deckRole === "mission") {
         MAP_HAND_OVERLAY_STATE.hiddenForMovement = false;
         MAP_HAND_OVERLAY_STATE.hiddenForTarget = false;
@@ -1350,6 +1427,7 @@ ${reason}`);
       MAP_HAND_OVERLAY_STATE.hiddenForTarget = Boolean(accepted && (mode === "spawn" || mode === "build" || mode === "tactic"));
       renderMapHandOverlay();
       renderMapHandSelectionPreview();
+      if (accepted && typeof tutorialRuntimeNotifyAction === "function") tutorialRuntimeNotifyAction("card_selected", tutorialCardAction);
       return accepted;
     }
 
@@ -1434,12 +1512,9 @@ ${reason}`);
 
       if (compactHand) {
         overlay.classList.add("isMovementHidden");
-        if (overlay.dataset.renderSignature !== renderSignature || !overlay.firstElementChild) {
-          overlay.innerHTML = `
-            <div class="mapHandOverlayCompact" data-hand-zone-side="${side}">
-              <button class="ghost mapHandShowBtn" type="button" onclick="mapHandOverlayShowHand()">Mostra mano</button>
-              <button class="danger mapHandEndTurnBtn compact" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
-            </div>`;
+        overlay.setAttribute("aria-hidden", "true");
+        if (overlay.dataset.renderSignature !== renderSignature || overlay.firstElementChild) {
+          overlay.replaceChildren();
           overlay.dataset.renderSignature = renderSignature;
         }
         renderMapHandSelectionPreview();
@@ -1447,6 +1522,7 @@ ${reason}`);
       }
 
       overlay.classList.remove("isMovementHidden");
+      overlay.removeAttribute("aria-hidden");
       const needsMarkup = overlay.dataset.renderSignature !== renderSignature || !overlay.firstElementChild;
       if (needsMarkup) {
         const startersHtml = starters.length ? starters.map(card => mapHandOverlayStarterCardSlot(side, card)).join("") : "";
@@ -1574,8 +1650,7 @@ ${reason}`);
           </div>
           ${renderDeckRecoveryControl()}
           <div class="handStatusGrid">
-            ${handBannerPlayerSummary(1)}
-            ${handBannerPlayerSummary(2)}
+            ${(typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2]).map(handBannerPlayerSummary).join("")}
           </div>
         </div>`;
     }
@@ -1628,7 +1703,7 @@ ${reason}`);
       }
 
       const current = state.currentPlayer || 1;
-      const other = current === 1 ? 2 : 1;
+      const orderedPlayers = [current, ...(typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2]).filter(side => side !== current)];
       const renderSignature = cardZonePanelRenderSignature();
       const needsMarkup = panel.dataset.renderSignature !== renderSignature || !panel.firstElementChild;
       if (needsMarkup) {
@@ -1637,8 +1712,7 @@ ${reason}`);
           ${typeof missionUiDashboardHtml === "function" ? missionUiDashboardHtml(current) : ""}
           ${handPreviewShellHtml()}
           <div class="cardZoneGrid handScrollContent">
-            ${cardZoneDebugHtml(current)}
-            ${cardZoneDebugHtml(other)}
+            ${orderedPlayers.map(cardZoneDebugHtml).join("")}
           </div>`;
         panel.dataset.renderSignature = renderSignature;
       }
@@ -1800,6 +1874,12 @@ ${reason}`);
       return "";
     }
 
+
+
+    function tokenTaxonomyClass(unit) {
+      const cls = String(unit && (unit.tokenClass || unit.unitClass) || "").toLowerCase();
+      return cls ? `token-class-${cls.replace(/[^a-z0-9_-]+/g, "-")}` : "";
+    }
 
 
     function tokenWeightClass(unit) {

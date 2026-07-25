@@ -422,6 +422,9 @@
       remaining -= structureDefBlock;
       const dynamicBlock = options.status ? 0 : Math.min(dynamicDefenseBonus(target, options.attacker || null, options), remaining);
       remaining -= dynamicBlock;
+      const terrainModifier = options.status || typeof getTerrainDefenseModifier !== "function" ? 0 : getTerrainDefenseModifier(target);
+      const terrainBlock = terrainModifier > 0 ? Math.min(terrainModifier, remaining) : 0;
+      remaining -= terrainBlock;
 
       // C2c-2a: danno normale non perforante.
       // Se il bersaglio ha ancora DEF attuale, il danno normale consuma solo DEF.
@@ -429,8 +432,9 @@
       let defLoss = 0;
       let hpLoss = 0;
       let overflowLost = 0;
-      if (target.currentDef > 0) {
-        defLoss = Math.min(target.currentDef, remaining);
+      const effectiveCurrentDef = Math.max(0, target.currentDef + Math.min(0, terrainModifier));
+      if (effectiveCurrentDef > 0) {
+        defLoss = Math.min(effectiveCurrentDef, remaining);
         target.currentDef -= defLoss;
         overflowLost = Math.max(0, remaining - defLoss);
       } else {
@@ -441,8 +445,9 @@
       const auraText = auraBlock ? `, -${auraBlock} bloccato da aura DEF` : "";
       const structureText = structureDefBlock ? `, -${structureDefBlock} bloccato da struttura Agathoi` : "";
       const dynamicText = dynamicBlock ? `, -${dynamicBlock} bloccato da bonus condizionale` : "";
+      const terrainText = terrainBlock ? `, -${terrainBlock} bloccato dal terreno difensivo` : (terrainModifier < 0 ? `, DEF ${terrainModifier} da terreno scoperto` : "");
       const overflowText = overflowLost ? `, ${overflowLost} danno non perforante perso` : "";
-      log(`${target.name} subisce ${amount} da ${source}: -${defLoss} DEF, -${hpLoss} HP${auraText}${structureText}${dynamicText}${overflowText}.`, EventTypes.UNIT_DAMAGED, {
+      log(`${target.name} subisce ${amount} da ${source}: -${defLoss} DEF, -${hpLoss} HP${auraText}${structureText}${dynamicText}${terrainText}${overflowText}.`, EventTypes.UNIT_DAMAGED, {
         targetId: target.uid,
         targetName: target.name,
         targetSide: target.side,
@@ -456,6 +461,8 @@
         auraBlock,
         structureDefBlock,
         dynamicBlock,
+        terrainModifier,
+        terrainBlock,
         overflowLost,
         directHp: false,
         noOverflow: true

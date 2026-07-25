@@ -1,0 +1,38 @@
+{
+  "build": "C2-STABLE-1-F9O7e-APK-M4c",
+  "package": "arena_rubra_C2_STABLE_1_F9O7e_APK_M4c_lesson_3_agathoi_LITE",
+  "baseline": "C2-STABLE-1-F9O7d-APK-M4c",
+  "date": "2026-07-25",
+  "variant": "LITE",
+  "files": 581,
+  "bytes": 4398195,
+  "extensions": {
+    ".css": 2,
+    ".html": 2,
+    ".js": 111,
+    ".json": 13,
+    ".log": 2,
+    ".md": 208,
+    ".py": 23,
+    ".txt": 189,
+    "<none>": 31
+  },
+  "checks": {
+    "javascriptSyntax": "111/111 PASS",
+    "nodeTests": "43/43 PASS",
+    "targetedBrowserTests": "7/7 PASS",
+    "lesson1Playthrough": "PASS",
+    "lesson2Playthrough": "PASS",
+    "lesson3Playthrough": "PASS",
+    "lesson3CheckpointResume": "PASS",
+    "precheck": "PASS",
+    "pageErrors": 0,
+    "unexpectedConsoleErrors": 0
+  },
+  "playableTutorialLessons": [
+    "lesson-1-exordium",
+    "lesson-2-nexus",
+    "lesson-3-agathoi"
+  ],
+  "manualValidationRequired": true
+}

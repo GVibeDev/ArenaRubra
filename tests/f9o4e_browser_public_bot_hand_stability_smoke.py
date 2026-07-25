@@ -119,7 +119,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert setup["build"] in {"C2-STABLE-1-F9O4f-APK-M4c","C2-STABLE-1-F9O4e-APK-M4c"}, setup
+assert setup["build"] in {"C2-STABLE-1-F9O4f-APK-M4c","C2-STABLE-1-F9O4e-APK-M4c","C2-STABLE-1-F9O5-APK-M4c","C2-STABLE-1-F9O5a-APK-M4c", "C2-STABLE-1-F9O5b-APK-M4c", "C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c"}, setup
 assert initial["side"] == "1" and initial["canvases"] == 5 and initial["ready"] == 5, initial
 assert initial["hidden"] >= 1 and initial["hiddenCanvases"] == 0, initial
 assert initial["cache"]["cached"] >= 10, initial

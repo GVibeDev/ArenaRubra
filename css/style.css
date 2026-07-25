@@ -7070,3 +7070,692 @@ html[data-card-motion="reduced"] .cardMotionStage { animation-duration:.09s !imp
 body.mobile-apk-m4.mobile-panel-layout-pending #boardVisualStack {
   pointer-events: none;
 }
+
+/* =====================================================
+   F9O5a — Token Motion & Dynamic FX / SFX Evaluation
+   ===================================================== */
+.arenaTokenFxToggle,
+.arenaSfxToggle {
+  min-width: 92px;
+  white-space: nowrap;
+}
+.arenaSfxVolumeLabel { min-width: 150px; }
+.arenaTokenFxToggle.isOff,
+.arenaSfxToggle.isOff { opacity: .62; }
+
+.tokenFxProjectile,
+.tokenFxBurst,
+.tokenFxAbilityPulse,
+.tokenFxDeathGhost {
+  position: absolute;
+  z-index: 112;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  --fx-primary: #e9f3ff;
+  --fx-secondary: #7ab9ff;
+  --token-fx-duration: 300ms;
+}
+
+.fx-profile-ballistic_light { --fx-primary:#ffe6a3; --fx-secondary:#f2a544; }
+.fx-profile-ballistic_heavy { --fx-primary:#fff0c7; --fx-secondary:#e46d3c; }
+.fx-profile-energy { --fx-primary:#a9ecff; --fx-secondary:#4e8cff; }
+.fx-profile-organic { --fx-primary:#c8ff9b; --fx-secondary:#5ab86d; }
+.fx-profile-occult { --fx-primary:#efb4ff; --fx-secondary:#8a4fb0; }
+.fx-profile-structure { --fx-primary:#ffd99a; --fx-secondary:#ba5e3f; }
+.fx-profile-support { --fx-primary:#b8fff0; --fx-secondary:#59c9a8; }
+.fx-profile-melee { --fx-primary:#ffe0bd; --fx-secondary:#d84d42; }
+
+.tokenFxProjectile {
+  height: 3px;
+  margin-top: -1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent 0%, var(--fx-secondary) 14%, var(--fx-primary) 52%, transparent 100%);
+  box-shadow: 0 0 7px var(--fx-secondary), 0 0 2px #fff;
+  opacity: 0;
+  overflow: visible;
+  animation: tokenFxProjectileTravel var(--token-fx-duration) linear both;
+  will-change: clip-path, opacity, filter;
+}
+.tokenFxProjectile::before {
+  content:"";
+  position:absolute;
+  right:0;
+  top:50%;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--fx-primary);
+  box-shadow:0 0 12px var(--fx-secondary);
+  transform:translate(50%,-50%);
+}
+@keyframes tokenFxProjectileTravel {
+  0% { opacity:0; clip-path:inset(0 100% 0 0); filter:brightness(1); }
+  16% { opacity:1; }
+  70% { opacity:1; clip-path:inset(0 0 0 0); filter:brightness(1.5); }
+  100% { opacity:0; clip-path:inset(0 0 0 82%); filter:brightness(.8); }
+}
+
+.tokenFxBurst {
+  width:10px;
+  height:10px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle, #fff 0 12%, var(--fx-primary) 13% 34%, transparent 66%);
+  box-shadow:0 0 12px var(--fx-secondary);
+  animation:tokenFxBurstCore var(--token-fx-duration) ease-out both;
+}
+.tokenFxBurst i {
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:4px;
+  height:4px;
+  margin:-2px;
+  border-radius:50%;
+  background:var(--fx-primary);
+  box-shadow:0 0 6px var(--fx-secondary);
+  transform:rotate(var(--fx-angle)) translateX(0);
+  animation:tokenFxParticle var(--token-fx-duration) ease-out both;
+}
+.tokenFxBurst.tokenFx-bleed { --fx-primary:#ff8795; --fx-secondary:#a92038; }
+.tokenFxBurst.tokenFx-destruction {
+  width:20px;
+  height:20px;
+  background:radial-gradient(circle, #fff 0 7%, var(--fx-primary) 8% 26%, var(--fx-secondary) 27% 43%, transparent 70%);
+}
+@keyframes tokenFxBurstCore {
+  0% { opacity:0; transform:translate(-50%,-50%) scale(.25); }
+  24% { opacity:1; transform:translate(-50%,-50%) scale(1.5); }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(2.5); }
+}
+@keyframes tokenFxParticle {
+  0% { opacity:0; transform:rotate(var(--fx-angle)) translateX(0) scale(.5); }
+  18% { opacity:1; }
+  100% { opacity:0; transform:rotate(var(--fx-angle)) translateX(var(--fx-distance)) scale(.1); }
+}
+
+.tokenFxAbilityPulse {
+  width:46px;
+  height:46px;
+  transform:translate(-50%,-50%);
+  border:3px solid var(--fx-primary);
+  border-radius:50%;
+  box-shadow:0 0 13px var(--fx-secondary), inset 0 0 12px var(--fx-secondary);
+  animation:tokenFxAbilityPulse var(--token-fx-duration) ease-out both;
+}
+.tokenFxAbilityPulse.is-target {
+  border-style:dashed;
+  animation-delay:55ms;
+}
+@keyframes tokenFxAbilityPulse {
+  0% { opacity:0; transform:translate(-50%,-50%) scale(.35) rotate(0deg); }
+  25% { opacity:1; }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(1.65) rotate(70deg); }
+}
+
+.tokenFxDeathGhost {
+  width:54px;
+  height:54px;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  animation:tokenFxDeathGhost var(--token-fx-duration) cubic-bezier(.17,.68,.25,1) both;
+  filter:drop-shadow(0 0 7px var(--fx-secondary));
+}
+.tokenFxDeathGhost .tokenArt,
+.tokenFxDeathGhost .tokenFactionBase,
+.tokenFxDeathGhost .symbol {
+  position:absolute;
+  inset:4px;
+  width:auto;
+  height:auto;
+  border-radius:12px;
+}
+.tokenFxDeathGhost .mini,
+.tokenFxDeathGhost .tokenSelectionHalo,
+.tokenFxDeathGhost .tokenActiveArrow,
+.tokenFxDeathGhost .pivotOverlay,
+.tokenFxDeathGhost .tokenCustomBadge { display:none !important; }
+.tokenFxDeathMark { font-size:34px; color:var(--fx-primary); text-shadow:0 0 14px var(--fx-secondary); }
+@keyframes tokenFxDeathGhost {
+  0% { opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0); filter:brightness(1); }
+  25% { opacity:1; transform:translate(-50%,-58%) scale(1.15) rotate(-4deg); filter:brightness(1.8); }
+  100% { opacity:0; transform:translate(-50%,-100%) scale(.25) rotate(18deg); filter:brightness(2.2) blur(2px); }
+}
+
+.unitToken.token-fx-recoil .tokenArt,
+.unitToken.token-fx-recoil .symbol {
+  animation:tokenFxRecoil var(--token-fx-duration, 260ms) cubic-bezier(.2,.72,.25,1) both;
+}
+@keyframes tokenFxRecoil {
+  0%,100% { transform:translate(0,0) scale(1); }
+  28% { transform:translate(-2px,1px) scale(.97); }
+  58% { transform:translate(2px,-1px) scale(1.04); }
+}
+
+html[data-token-fx-mode="off"] .tokenFxProjectile,
+html[data-token-fx-mode="off"] .tokenFxBurst,
+html[data-token-fx-mode="off"] .tokenFxAbilityPulse,
+html[data-token-fx-mode="off"] .tokenFxDeathGhost { display:none !important; }
+
+html[data-token-fx-mode="reduced"] .tokenFxProjectile { height:2px; box-shadow:0 0 3px var(--fx-secondary); }
+html[data-token-fx-mode="reduced"] .tokenFxAbilityPulse { width:34px; height:34px; border-width:2px; }
+html[data-token-fx-mode="reduced"] .tokenFxBurst i:nth-child(n+3) { display:none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tokenFxProjectile,
+  .tokenFxBurst,
+  .tokenFxAbilityPulse,
+  .tokenFxDeathGhost,
+  .unitToken.token-fx-recoil .tokenArt,
+  .unitToken.token-fx-recoil .symbol { animation-duration:110ms !important; }
+}
+
+body.mobile-apk-m4 .arenaTokenFxToggle,
+body.mobile-apk-m4 .arenaSfxToggle { min-width:72px; font-size:10px; padding-inline:6px; }
+body.mobile-apk-m4 .arenaSfxVolumeLabel { display:none; }
+
+/* =====================================================
+   F9O6 — Tutorial Runtime Foundation
+   ===================================================== */
+body.app-screen-tutorial .tutorialScreen { display:block; }
+.tutorialScreen { min-height:100vh; position:relative; overflow:auto; }
+.tutorialScreenCard { position:relative; z-index:2; width:min(1180px,94vw); margin:clamp(18px,4vh,54px) auto; padding:clamp(18px,3vw,34px); border:1px solid rgba(255,255,255,.15); border-radius:20px; background:rgba(8,12,18,.94); box-shadow:0 24px 80px rgba(0,0,0,.55); }
+.tutorialLessonGrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; margin:18px 0; }
+.tutorialLessonCard { display:grid; gap:8px; min-height:170px; padding:14px; border:1px solid rgba(255,255,255,.13); border-radius:14px; background:rgba(255,255,255,.035); }
+.tutorialLessonCard h3 { margin:0; color:var(--theme-highlight,#e5c76b); }
+.tutorialLessonCard p { margin:0; color:var(--muted); font-size:.82rem; line-height:1.42; }
+
+.tutorialLessonCardActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:4px;
+}
+.tutorialLessonCardActions button{
+  flex:1 1 88px;
+}
+
+.tutorialLessonMeta { display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; }
+.tutorialLessonMeta span { padding:4px 7px; border:1px solid rgba(255,255,255,.15); border-radius:999px; font-size:.68rem; }
+.tutorialMenuActions { display:flex; flex-wrap:wrap; gap:9px; }
+.tutorialRuntimeStatus { min-height:24px; margin-top:10px; color:var(--muted); font-size:.78rem; }
+
+.tutorialSpotlightRoot { position:fixed; inset:0; z-index:94; pointer-events:none; overflow:hidden; }
+.tutorialSpotlightRoot[hidden] { display:none !important; }
+.tutorialSpotlightHole { position:fixed; border:3px solid var(--theme-highlight,#f1cb63); border-radius:14px; box-shadow:0 0 0 9999px rgba(0,0,0,.76),0 0 0 6px rgba(241,203,99,.18),0 0 32px rgba(241,203,99,.46); transition:left 120ms ease,top 120ms ease,width 120ms ease,height 120ms ease; pointer-events:none; }
+.tutorialSpotlightRoot[data-mode="informative"] .tutorialSpotlightHole { box-shadow:0 0 0 9999px rgba(0,0,0,.64),0 0 0 5px rgba(241,203,99,.14),0 0 26px rgba(241,203,99,.38); }
+.tutorialSpotlightHint { position:fixed; max-width:min(360px,80vw); padding:8px 11px; border:1px solid rgba(241,203,99,.65); border-radius:10px; background:rgba(10,12,16,.94); color:#fff3c6; font-size:12px; box-shadow:0 8px 28px rgba(0,0,0,.4); pointer-events:none; opacity:0; transform:translateY(5px); transition:opacity 120ms ease,transform 120ms ease; }
+.tutorialSpotlightHint.isVisible { opacity:1; transform:none; }
+.tutorialSpotlightArrow { position:fixed; width:20px; height:20px; border-left:3px solid var(--theme-highlight,#f1cb63); border-top:3px solid var(--theme-highlight,#f1cb63); transform:rotate(45deg); filter:drop-shadow(0 2px 5px rgba(0,0,0,.7)); pointer-events:none; animation:tutorialArrowPulse 700ms ease-in-out infinite alternate; }
+@keyframes tutorialArrowPulse { from{opacity:.6; transform:translateY(4px) rotate(45deg)} to{opacity:1; transform:translateY(-2px) rotate(45deg)} }
+.narrativeOverlayRoot.isNonModal { pointer-events:none; background:none; }
+.narrativeOverlayRoot.isNonModal .narrativeDialog { pointer-events:auto; }
+.narrativeOverlayRoot[data-position="top"] { align-items:start; background:linear-gradient(to bottom,rgba(0,0,0,.34),transparent 70%); }
+.narrativeOverlayRoot.isNonModal[data-position="top"] { background:none; }
+body.tutorial-runtime-active [data-game-action], body.tutorial-runtime-active .mapHandCardSlot, body.tutorial-runtime-active .hex, body.tutorial-runtime-active .unitToken { touch-action:manipulation; }
+@media (max-width:760px){ .tutorialScreenCard{width:96vw;margin:8px auto;padding:13px}.tutorialLessonGrid{grid-template-columns:1fr 1fr}.tutorialLessonCard{min-height:145px;padding:10px}.tutorialSpotlightHole{border-radius:10px}.tutorialSpotlightHint{font-size:10px} }
+@media (max-width:520px){ .tutorialLessonGrid{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){ .tutorialSpotlightArrow{animation:none}.tutorialSpotlightHole{transition:none} }
+
+
+/* F9O7d — Collapsed Hand Controls Reflow
+   Solo con Mano ridotta: i comandi passano sotto il dock abilità di fazione,
+   sul lato sinistro della mappa. La Mano aperta conserva il layout F9O7c. */
+.mapHandOverlay.isMovementHidden {
+  display: none;
+}
+.mapCollapsedHandControls {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+  min-width: 118px;
+  padding: 9px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(12,16,24,.48), rgba(7,10,16,.70));
+  box-shadow: 0 14px 42px rgba(0,0,0,.32);
+  backdrop-filter: blur(7px);
+  pointer-events: auto;
+}
+.mapCollapsedHandControls .mapHandShowBtn,
+.mapCollapsedHandControls .mapHandEndTurnBtn.compact {
+  width: 100%;
+  min-height: 38px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+}
+body.mobile-apk-m4 .mapCollapsedHandControls {
+  min-width: 0;
+  padding: 7px;
+  margin-top: 6px;
+  border-radius: 13px;
+  backdrop-filter: none;
+}
+body.mobile-apk-m4 .mapCollapsedHandControls .mapHandShowBtn,
+body.mobile-apk-m4 .mapCollapsedHandControls .mapHandEndTurnBtn.compact {
+  min-height: 36px;
+  font-size: 9.5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/* F9O7f — Tutorial card-preview prominence
+   Le anteprime hover restano sopra lo scrim dello spotlight in tutte le lezioni.
+   La vignetta narrativa conserva priorità visiva (z-index 96). */
+body.tutorial-runtime-active .mapHandSelectionPreview.isVisible.hoverPreview {
+  z-index: 95;
+  opacity: 1;
+  filter: none;
+  isolation: isolate;
+}
+body.tutorial-runtime-active .mapHandSelectionPreview.isVisible.hoverPreview .mapHandSelectionPreviewInner {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 20px 64px rgba(0,0,0,.64), 0 0 0 2px rgba(241,203,99,.22);
+}
+/* F9Q2/F9Q3 · terreni statici e Map & Terrain Lab */
+.setupMapMeta {
+  margin-top: .4rem;
+  color: var(--muted, #b9ada1);
+  font-size: .78rem;
+  line-height: 1.35;
+}
+
+.mapEditorScreen {
+  overflow: auto;
+  padding: clamp(12px, 2vw, 28px);
+}
+
+.mapEditorCard {
+  position: relative;
+  z-index: 1;
+  width: min(1760px, 100%);
+  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+  padding: 18px;
+  border: 1px solid rgba(230, 184, 116, .34);
+  border-radius: 18px;
+  background: rgba(18, 13, 12, .96);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .58);
+}
+
+.mapEditorHeader,
+.mapEditorHeaderActions,
+.mapEditorInline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mapEditorHeader {
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.mapEditorHeader h2,
+.mapEditorHeader p {
+  margin: 0 0 6px;
+}
+
+.mapEditorHeaderActions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.mapEditorWorkspace {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(500px, 1fr) minmax(230px, 310px);
+  gap: 14px;
+  min-height: 720px;
+}
+
+.mapEditorSidebar,
+.mapEditorValidationPanel,
+.mapEditorCanvasPanel {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .035);
+}
+
+.mapEditorSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mapEditorSidebar label,
+.mapEditorSidebar legend {
+  color: #e6c18a;
+  font-size: .78rem;
+  font-weight: 750;
+  letter-spacing: .035em;
+}
+
+.mapEditorSidebar select,
+.mapEditorSidebar input {
+  width: 100%;
+}
+
+.mapEditorSidebar fieldset {
+  margin: 7px 0;
+  padding: 10px;
+  border: 1px solid rgba(230, 184, 116, .23);
+  border-radius: 10px;
+}
+
+.mapEditorInline > select {
+  flex: 1;
+}
+
+.mapEditorToolGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mapEditorToolGrid .isActive {
+  border-color: #f0c069;
+  color: #ffdb98;
+  background: rgba(185, 81, 38, .35);
+}
+
+.mapEditorCanvasPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.mapEditorCanvasHelp {
+  margin-bottom: 8px;
+  color: #c9b9a6;
+  font-size: .8rem;
+}
+
+.mapEditorCanvasViewport {
+  position: relative;
+  flex: 1;
+  min-height: 650px;
+  overflow: hidden;
+  border: 1px solid rgba(230, 184, 116, .24);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(130, 54, 27, .24), transparent 50%),
+    linear-gradient(145deg, #1c1512, #0d0b0b);
+  touch-action: none;
+}
+
+#mapEditorCanvas {
+  width: 100%;
+  height: 100%;
+  min-height: 650px;
+  cursor: grab;
+  user-select: none;
+}
+
+#mapEditorCanvas:active {
+  cursor: grabbing;
+}
+
+.mapEditorHex polygon {
+  fill: #51382b;
+  stroke: rgba(244, 213, 163, .28);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+  transition: fill .12s, stroke .12s;
+}
+
+.mapEditorHex text {
+  pointer-events: none;
+  fill: rgba(255, 244, 220, .78);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mapEditorHex:hover polygon,
+.mapEditorHex:focus polygon,
+.mapEditorHex.isSelected polygon {
+  stroke: #ffd17f;
+  stroke-width: 3;
+}
+
+.mapEditorHex.terrain-obstacle polygon,
+.cell.terrain-obstacle {
+  background-color: #211d1b;
+  fill: #211d1b;
+  background-image: repeating-linear-gradient(135deg, transparent 0 7px, rgba(0, 0, 0, .32) 7px 11px);
+}
+
+.mapEditorHex.terrain-difficult polygon,
+.cell.terrain-difficult {
+  background-color: #634728;
+  fill: #634728;
+  background-image: radial-gradient(circle, rgba(255, 214, 132, .16) 0 2px, transparent 3px);
+  background-size: 10px 10px;
+}
+
+.mapEditorHex.terrain-defensive polygon,
+.cell.terrain-defensive {
+  background-color: #28483c;
+  fill: #28483c;
+  box-shadow: inset 0 0 0 2px rgba(105, 215, 162, .2);
+}
+
+.mapEditorHex.terrain-exposed polygon,
+.cell.terrain-exposed {
+  background-color: #6c302c;
+  fill: #6c302c;
+  box-shadow: inset 0 0 18px rgba(255, 111, 86, .24);
+}
+
+.mapEditorHex.isHeadquarters polygon {
+  stroke: #f1b74f;
+  stroke-width: 3;
+}
+
+.mapEditorHex.isStrategicPoint polygon {
+  stroke: #71c8ff;
+  stroke-width: 2.5;
+}
+
+.mapEditorHazardLabel {
+  fill: #ff6d6d !important;
+  font-size: 8px !important;
+}
+
+.mapEditorValidationPanel {
+  overflow: auto;
+}
+
+.mapEditorValidationPanel h3 {
+  margin: 4px 0 10px;
+}
+
+.mapEditorValidationPanel ol {
+  max-height: 300px;
+  overflow: auto;
+  padding-left: 1.35rem;
+  font-size: .78rem;
+}
+
+.mapEditorValidationPanel li {
+  margin-bottom: 7px;
+}
+
+.mapEditorValidationPanel li.error {
+  color: #ff9790;
+}
+
+.mapEditorValidationPanel li.warning {
+  color: #ffd07a;
+}
+
+.mapEditorValidationSummary {
+  margin-bottom: 10px;
+  padding: 9px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.mapEditorValidationSummary.isValid {
+  color: #a8ecc5;
+  background: rgba(38, 142, 86, .18);
+}
+
+.mapEditorValidationSummary.isInvalid {
+  color: #ffaaa4;
+  background: rgba(188, 55, 45, .2);
+}
+
+#mapEditorTerrainLegend > div {
+  display: grid;
+  grid-template-columns: 22px 72px 1fr;
+  gap: 7px;
+  align-items: start;
+  margin-bottom: 8px;
+  font-size: .72rem;
+}
+
+#mapEditorTerrainLegend small {
+  color: #b8aba0;
+}
+
+.mapEditorSelection {
+  display: grid;
+  gap: 3px;
+  margin-top: auto;
+  padding: 9px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .2);
+  font-size: .75rem;
+}
+
+.terrainBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  margin-left: .25rem;
+  padding: .08rem .3rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: .65rem;
+  font-weight: 800;
+}
+
+#board .hex.terrain-obstacle {
+  background:
+    repeating-linear-gradient(135deg, rgba(0, 0, 0, .46) 0 7px, rgba(96, 86, 79, .34) 7px 11px),
+    #211d1b;
+  filter: saturate(.65);
+  cursor: not-allowed;
+}
+
+#board .hex.terrain-difficult {
+  background:
+    radial-gradient(circle at 30% 35%, rgba(255, 221, 155, .22) 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 65%, rgba(255, 221, 155, .16) 0 2px, transparent 3px),
+    #634728;
+}
+
+#board .hex.terrain-defensive {
+  background: radial-gradient(circle, rgba(95, 218, 161, .2), transparent 62%), #28483c;
+  outline: 2px solid rgba(105, 215, 162, .28);
+}
+
+#board .hex.terrain-exposed {
+  background: radial-gradient(circle, rgba(255, 126, 94, .24), transparent 65%), #6c302c;
+  outline: 2px dashed rgba(255, 143, 112, .35);
+}
+
+#board .hex.initialHazard-mine::after,
+#board .hex.initialHazard-trap::after {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 2;
+  color: #ff8a78;
+  font-size: 10px;
+  font-weight: 900;
+  text-shadow: 0 1px 2px #000;
+}
+
+#board .hex.initialHazard-mine::after {
+  content: "M";
+}
+
+#board .hex.initialHazard-trap::after {
+  content: "T";
+}
+
+.mapEditorSidebar textarea {
+  width: 100%;
+  min-height: 4.4rem;
+  resize: vertical;
+}
+
+.mapEditorComponentPanel {
+  display: grid;
+  gap: 8px;
+}
+
+.mapEditorComponentGrid {
+  display: grid;
+  grid-template-columns: minmax(76px, 1fr) minmax(70px, .85fr);
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.mapEditorHex.isSymmetryPreview polygon {
+  stroke: #ffe08a;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 5px rgba(255, 190, 70, .75));
+}
+
+.mapEditorValidationPanel li.editorWarning {
+  color: #ffd58d;
+}
+
+#board .hex.hq3 {
+  --hq-accent: #7dcf8b;
+}
+
+#board .hex.hq4 {
+  --hq-accent: #c897ef;
+}
+
+#board .hex.controlledSide3 {
+  box-shadow: inset 0 0 0 3px rgba(78, 183, 102, .8);
+}
+
+#board .hex.controlledSide4 {
+  box-shadow: inset 0 0 0 3px rgba(167, 102, 214, .8);
+}
+
+@media (max-width: 1100px) {
+  .mapEditorWorkspace {
+    grid-template-columns: minmax(210px, 260px) 1fr;
+  }
+  .mapEditorValidationPanel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .mapEditorHeader {
+    display: block;
+  }
+  .mapEditorHeaderActions {
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+  .mapEditorWorkspace {
+    grid-template-columns: 1fr;
+  }
+  .mapEditorCanvasViewport,
+  #mapEditorCanvas {
+    min-height: 480px;
+  }
+}

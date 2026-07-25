@@ -8,9 +8,9 @@ const ok = (value, message) => { assert.ok(value, message); checks += 1; };
 const read = file => fs.readFileSync(path.join(ROOT, file), "utf8");
 
 const build = read("src/build_info.js");
-ok(build.includes('C2-STABLE-1-F9O4f-APK-M4c') || build.includes('C2-STABLE-1-F9O4e-APK-M4c'), "metadata F9O4e o successiva");
-ok(build.includes('logicBaseline: "C2-STABLE-1-F9O4e-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4d-APK-M4c"'), "baseline F9O4d/F9O4e");
-ok(build.includes("Real Art Thumbnail Cache Finalization Hotfix") || build.includes("Public Bot Card Thumbnail Stability Hotfix"), "nome build F9O4e o successiva");
+ok(build.includes("C2-STABLE-1-F9O7g-APK-M4c") || build.includes("C2-STABLE-1-F9O7e-APK-M4c") || build.includes('C2-STABLE-1-F9O6-APK-M4c') || build.includes('C2-STABLE-1-F9O5b-APK-M4c') || build.includes('C2-STABLE-1-F9O5a-APK-M4c') || build.includes('C2-STABLE-1-F9O5-APK-M4c') || build.includes('C2-STABLE-1-F9O4f-APK-M4c') || build.includes('C2-STABLE-1-F9O4e-APK-M4c'), "metadata F9O4e o successiva");
+ok(build.includes('logicBaseline: "C2-STABLE-1-F9O7f-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O7e-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O7d-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O7c-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O7b-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O6-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O5b-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O5-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4f-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4e-APK-M4c"') || build.includes('logicBaseline: "C2-STABLE-1-F9O4d-APK-M4c"'), "baseline F9O4d/F9O4e");
+ok(build.includes("Lezione 5 Fabeot") || build.includes("Lezione 4 Liberti") || build.includes("Lezione 3 Agathoi") || build.includes("Comandi Mano ridotta sotto le abilità di fazione") || build.includes("Tutorial UI State & Resume Hotfix") || build.includes("Lezione 1 Exordium") || build.includes("Tutorial Runtime Foundation") || build.includes("HQ Empty Objective Visual Hotfix") || build.includes("Token Motion & SFX Evaluation") || build.includes("Miniature Taxonomy & Asset Completion") || build.includes("Real Art Thumbnail Cache Finalization Hotfix") || build.includes("Public Bot Card Thumbnail Stability Hotfix"), "nome build F9O4e o successiva");
 
 const config = read("data/cards_base.js");
 ok(config.includes("publicBotHandThumbnailCacheF9O4e: true"), "flag cache miniature pubbliche");

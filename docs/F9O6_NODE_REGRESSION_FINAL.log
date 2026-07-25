@@ -1,0 +1,184 @@
+=== f9n10_builtin_decks_smoke.js ===
+F9N10 built-in decks smoke: 13/13 validi · 10 preset Missione · Tafos 30+1 OK
+=== f9n10_mission_ai_smoke.js ===
+F9N10 Mission AI smoke: gioco/wait, acquisti, abilità, movimento e tattiche OK
+=== f9n10_recovery_cycle_smoke.js ===
+F9N10 recovery/cycle smoke: Missione+4, lock/unlock, secondo completamento e recupero legacy OK
+=== f9n10_runtime_integration_smoke.js ===
+F9N10 runtime integration smoke: 29/29 OK
+=== f9n1_card_editor_schema_smoke.js ===
+{
+  "ok": true,
+  "tests": 11
+}
+=== f9n1_custom_tactics_smoke.js ===
+{
+  "ok": true,
+  "tests": 12,
+  "events": 4,
+  "logs": 4,
+  "discarded": 2
+}
+=== f9n3_game_scale_hq_smoke.js ===
+F9N3 game scale/HQ smoke: 14/14 OK
+=== f9n3a_mode_cap_reliability_smoke.js ===
+F9N3a mode/cap reliability smoke: 20/20 OK
+=== f9n4_mission_contract_smoke.js ===
+F9N4 mission data/deck/asset smoke: 15 Missioni + contratto 29+1 OK
+=== f9n5_opening_protection_smoke.js ===
+F9N5 opening hand/protection smoke: 36/36 OK
+=== f9n6_mission_progress_tracker_smoke.js ===
+F9N6 mission tracker smoke: 92/92 OK
+=== f9n7_mission_ui_smoke.js ===
+F9N7a mission UI smoke: 14/14 OK
+=== f9n7a_visibility_hud_smoke.js ===
+F9N7a visibility/HUD smoke: 18/18 OK
+=== f9n8_ordinary_missions_smoke.js ===
+F9N8 ordinary missions smoke: 36/36 OK
+=== f9n8_runtime_integration_smoke.js ===
+F9N8 runtime integration smoke: 28/28 OK
+=== f9n9_desperate_missions_smoke.js ===
+F9N9 desperate missions smoke: 41/41 OK
+=== f9n9_runtime_integration_smoke.js ===
+F9N9 runtime integration smoke: 28/28 OK
+=== f9o1_presentation_runtime_smoke.js ===
+F9O1 presentation runtime smoke: 13/13 OK
+=== f9o1_theme_audio_integration_smoke.js ===
+F9O1 theme/audio integration smoke: 73/73 OK
+=== f9o1a_live_layout_calibration_smoke.js ===
+F9O1a live layout calibration smoke: 20/20 OK
+=== f9o1b_music_controls_smoke.js ===
+F9O1b music controls smoke: 31/31 OK
+=== f9o2_camera_interaction_smoke.js ===
+F9O2 camera interaction smoke: 60/60
+=== f9o2b_camera_autonomy_inspection_smoke.js ===
+F9O2b camera autonomy/inspection smoke: 25/25
+=== f9o2c_bot_camera_freeze_smoke.js ===
+F9O2c bot camera freeze smoke: 21/21
+=== f9o2d_token_layering_active_cues_smoke.js ===
+F9O2d token layering & active cues smoke: 32/32
+=== f9o2e_mission_build_cap_smoke.js ===
+F9O2e mission/build/cap smoke: 24/24 OK
+=== f9o3_event_narrative_overlay_smoke.js ===
+F9O3 event/narrative overlay smoke: 38/38 OK
+=== f9o4_hidden_hand_card_backs_motion_smoke.js ===
+F9O4 hidden hand/card backs/motion smoke: 44/44 OK
+=== f9o4a_android_camera_performance_smoke.js ===
+F9O4a Android camera performance smoke: 20/20 OK
+=== f9o4b_incremental_dom_renderer_smoke.js ===
+F9O4b incremental DOM renderer smoke: 21/21 OK
+=== f9o4c_android_render_stability_smoke.js ===
+F9O4c Android render stability smoke: 26/26 OK
+=== f9o4d_mission_render_signature_smoke.js ===
+F9O4d mission render signature smoke: 14/14 OK
+=== f9o4e_public_bot_card_thumbnail_stability_smoke.js ===
+F9O4e public bot card thumbnail stability smoke: 20/20 OK
+=== f9o4f_real_art_thumbnail_cache_finalization_smoke.js ===
+F9O4f real art thumbnail cache finalization smoke: 20/20 OK
+=== f9o5_miniature_taxonomy_asset_completion_smoke.js ===
+F9O5 miniature taxonomy & asset completion smoke: OK
+{
+  "audit": {
+    "schema": "arena-rubra-unit-taxonomy-f9o5-v1",
+    "total": 96,
+    "counts": {
+      "starter": 15,
+      "light": 15,
+      "heavy": 31,
+      "elite": 20,
+      "pivot": 5,
+      "commander": 10
+    },
+    "starterRoles": {
+      "starter_infantry": 5,
+      "starter_vehicle": 5,
+      "starter_structure": 5
+    },
+    "errors": [],
+    "warnings": [],
+    "ok": true
+  },
+  "exLucisSpia": 1,
+  "cospSpia": 1,
+  "sampleCandidates": [
+    "assets/tokens/nexus/units/nxc1f07.webp",
+    "assets/tokens/nexus/structure/starter.webp",
+    "assets/tokens/nexus/starter.webp",
+    "assets/tokens/nexus/structure/light.webp",
+    "assets/tokens/nexus/light.webp",
+    "assets/tokens/nexus/structure.webp",
+    "assets/tokens/nexus/infantry.webp"
+  ]
+}
+=== f9o5a_token_motion_sfx_evaluation_smoke.js ===
+F9O5a token motion & SFX evaluation smoke: OK
+{
+  "audit": {
+    "schema": "arena-rubra-token-fx-f9o5a-v1",
+    "total": 96,
+    "counts": {
+      "energy": 2,
+      "support": 19,
+      "ballistic_heavy": 24,
+      "occult": 16,
+      "structure": 9,
+      "ballistic_light": 1,
+      "melee": 6,
+      "organic": 19
+    },
+    "errors": [],
+    "ok": true
+  },
+  "fx": {
+    "mode": "off",
+    "effectiveMode": "off",
+    "queue": 0,
+    "active": 0,
+    "rendered": 0,
+    "dropped": 0,
+    "lastError": ""
+  },
+  "sfx": {
+    "enabled": false,
+    "volumePercent": 27,
+    "unlocked": false,
+    "activeVoices": 0,
+    "played": 0,
+    "dropped": 0,
+    "lastError": "",
+    "assetRegistry": {
+      "attack": [
+        "assets/audio/sfx/attack.ogg",
+        "assets/audio/sfx/attack.mp3"
+      ],
+      "impact": [
+        "assets/audio/sfx/impact.ogg",
+        "assets/audio/sfx/impact.mp3"
+      ],
+      "destruction": [
+        "assets/audio/sfx/destruction.ogg",
+        "assets/audio/sfx/destruction.mp3"
+      ],
+      "ability": [
+        "assets/audio/sfx/ability.ogg",
+        "assets/audio/sfx/ability.mp3"
+      ]
+    }
+  }
+}
+=== f9o5b_hq_empty_objective_visual_hotfix_smoke.js ===
+F9O5b HQ empty objective visual hotfix smoke: 9/9 OK
+=== f9o6_tutorial_runtime_foundation_smoke.js ===
+{
+  "ok": true,
+  "checks": 32,
+  "audit": {
+    "ok": true,
+    "lessons": 5,
+    "scenarios": 1,
+    "portraitSets": 5,
+    "errors": [],
+    "warnings": []
+  }
+}
+NODE_RESULT=38/38

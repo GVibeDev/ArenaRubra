@@ -824,7 +824,7 @@ function cardRendererLocalizedUnitType(card) {
   const cardType = String(card.cardType || "").toLowerCase();
   const deckRole = String(card.deckRole || "").toLowerCase();
   const unitTypeRaw = String(card.unitType || "").trim();
-  const weightRaw = String(card.weight || "").trim();
+  const weightRaw = String(card.unitClassLabel || card.weight || "").trim();
   const typeMap = {
     comandante: "COMANDANTE",
     fanteria: "FANTERIA",
@@ -1393,13 +1393,16 @@ function gameCardPreviewCardFromUnit(unit) {
     sourceId: unit.id || unit.name || "preview",
     sourceType: "unit",
     cardType: unit.type === "Comandante" ? "commander" : "unit",
-    deckRole: unit.weight === "Pivot" ? "pivot" : (unit.weight === "Elite" ? "elite" : "base"),
+    deckRole: unit.unitClass === "pivot" || unit.weight === "Pivot" ? "pivot" : (unit.unitClass === "elite" || unit.weight === "Elite" ? "elite" : "base"),
     starterRole: null,
     faction: unit.faction,
     name: unit.name,
     cost: unit.cost,
     unitType: unit.type,
     weight: unit.weight,
+    unitClass: unit.unitClass || null,
+    unitClassLabel: unit.unitClassLabel || null,
+    traits: Array.isArray(unit.traits) ? [...unit.traits] : [],
     blueprintId: unit.id || null,
     tacticId: null
   };

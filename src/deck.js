@@ -352,14 +352,12 @@ function deckRuntimeValidationSummary() {
       sides: {}
     };
   }
+  const runtimeSides = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
   return {
     version: typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG.version : "unknown",
     mode: typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG.mode : "unknown",
     initialized: true,
-    sides: {
-      1: deckRuntimeValidationForSide(1),
-      2: deckRuntimeValidationForSide(2)
-    }
+    sides: Object.fromEntries(runtimeSides.map(side => [side, deckRuntimeValidationForSide(side)]))
   };
 }
 
@@ -471,13 +469,14 @@ function initializeCardZonesForGame() {
   if (!state) return null;
 
   const catalog = buildCardCatalog();
+  const runtimeSides = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
   state.cardCatalog = catalog;
-  state.deck = { 1: [], 2: [] };
-  state.hand = { 1: [], 2: [] };
-  state.discard = { 1: [], 2: [] };
-  state.starterCards = { 1: {}, 2: {} };
+  state.deck = Object.fromEntries(runtimeSides.map(side => [side, []]));
+  state.hand = Object.fromEntries(runtimeSides.map(side => [side, []]));
+  state.discard = Object.fromEntries(runtimeSides.map(side => [side, []]));
+  state.starterCards = Object.fromEntries(runtimeSides.map(side => [side, {}]));
 
-  for (const side of [1, 2]) {
+  for (const side of runtimeSides) {
     const zones = initializeCardZonesForPlayer(side, catalog);
     state.deck[side] = zones.deck;
     state.hand[side] = zones.hand;
@@ -490,25 +489,24 @@ function initializeCardZonesForGame() {
     mode: typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG.mode : "draw_lifecycle_foundation",
     initialized: true,
     catalogSize: catalog.length,
-    deckSize: { 1: state.deck[1].length, 2: state.deck[2].length },
-    handSize: { 1: state.hand[1].length, 2: state.hand[2].length },
+    deckSize: Object.fromEntries(runtimeSides.map(side => [side, state.deck[side].length])),
+    handSize: Object.fromEntries(runtimeSides.map(side => [side, state.hand[side].length])),
     selectedCommanders: state.selectedCommanders ? { ...state.selectedCommanders } : {},
-    selectedDecks: state.selectedDecks ? { 1: { ...(state.selectedDecks[1] || {}) }, 2: { ...(state.selectedDecks[2] || {}) } } : {},
-    customMatchLab: Boolean([1, 2].some(side => [...(state.deck[side] || []), ...(state.hand[side] || [])].some(card => card && card.customMatchLabRuntime))),
-    customRuntimeCards: {
-      1: [...(state.deck[1] || []), ...(state.hand[1] || [])].filter(card => card && card.custom === true).length,
-      2: [...(state.deck[2] || []), ...(state.hand[2] || [])].filter(card => card && card.custom === true).length
-    },
-    openingHand: {
-      1: openingHandContractSummary(state.hand[1]),
-      2: openingHandContractSummary(state.hand[2])
-    },
+    selectedDecks: state.selectedDecks
+      ? Object.fromEntries(runtimeSides.map(side => [side, { ...(state.selectedDecks[side] || {}) }]))
+      : {},
+    customMatchLab: Boolean(runtimeSides.some(side => [...(state.deck[side] || []), ...(state.hand[side] || [])].some(card => card && card.customMatchLabRuntime))),
+    customRuntimeCards: Object.fromEntries(runtimeSides.map(side => [
+      side,
+      [...(state.deck[side] || []), ...(state.hand[side] || [])].filter(card => card && card.custom === true).length
+    ])),
+    openingHand: Object.fromEntries(runtimeSides.map(side => [side, openingHandContractSummary(state.hand[side])])),
     runtimeDeckShuffled: shouldShuffleRuntimeDeckAfterInitialHand(),
     runtimeDeckShuffleMode: shouldShuffleRuntimeDeckAfterInitialHand() ? "after_initial_hand" : "off",
-    starterSlots: {
-      1: Object.fromEntries(Object.entries(state.starterCards[1]).map(([k, v]) => [k, v ? v.name : null])),
-      2: Object.fromEntries(Object.entries(state.starterCards[2]).map(([k, v]) => [k, v ? v.name : null]))
-    },
+    starterSlots: Object.fromEntries(runtimeSides.map(side => [
+      side,
+      Object.fromEntries(Object.entries(state.starterCards[side]).map(([key, value]) => [key, value ? value.name : null]))
+    ])),
     deckSanity: typeof deckSanitySummary === "function" ? deckSanitySummary(catalog) : null,
     deckRuntimeValidation: null
   };
@@ -516,12 +514,10 @@ function initializeCardZonesForGame() {
 
   if (shouldShuffleRuntimeDeckAfterInitialHand() && typeof log === "function") {
     const eventType = typeof EventTypes !== "undefined" && EventTypes.LOG_MESSAGE ? EventTypes.LOG_MESSAGE : "LOG_MESSAGE";
-    log(`Runtime deck shuffled: G1 ${state.deck[1].length} carte, G2 ${state.deck[2].length} carte. Mano iniziale controllata mantenuta.`, eventType, {
+    log(`Runtime deck shuffled: ${runtimeSides.map(side => `G${side} ${state.deck[side].length} carte`).join(", ")}. Mano iniziale controllata mantenuta.`, eventType, {
       source: "C2c-6a-fix2-runtime-deck-shuffle",
-      g1Deck: state.deck[1].length,
-      g2Deck: state.deck[2].length,
-      g1Hand: state.hand[1].length,
-      g2Hand: state.hand[2].length
+      deckSizes: Object.fromEntries(runtimeSides.map(side => [side, state.deck[side].length])),
+      handSizes: Object.fromEntries(runtimeSides.map(side => [side, state.hand[side].length]))
     });
   }
 
@@ -798,20 +794,12 @@ function cardZoneCounts(side) {
 function syncCardDebugState() {
   if (!state || !state.cardDebug) return null;
 
+  const runtimeSides = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
   state.cardDebug.mode = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG.mode : state.cardDebug.mode;
   state.cardDebug.catalogSize = state.cardCatalog ? state.cardCatalog.length : 0;
-  state.cardDebug.deckSize = {
-    1: state.deck && state.deck[1] ? state.deck[1].length : 0,
-    2: state.deck && state.deck[2] ? state.deck[2].length : 0
-  };
-  state.cardDebug.handSize = {
-    1: state.hand && state.hand[1] ? state.hand[1].length : 0,
-    2: state.hand && state.hand[2] ? state.hand[2].length : 0
-  };
-  state.cardDebug.discardSize = {
-    1: state.discard && state.discard[1] ? state.discard[1].length : 0,
-    2: state.discard && state.discard[2] ? state.discard[2].length : 0
-  };
+  state.cardDebug.deckSize = Object.fromEntries(runtimeSides.map(side => [side, state.deck && state.deck[side] ? state.deck[side].length : 0]));
+  state.cardDebug.handSize = Object.fromEntries(runtimeSides.map(side => [side, state.hand && state.hand[side] ? state.hand[side].length : 0]));
+  state.cardDebug.discardSize = Object.fromEntries(runtimeSides.map(side => [side, state.discard && state.discard[side] ? state.discard[side].length : 0]));
   state.cardDebug.deckSanity = typeof deckSanitySummary === "function" ? deckSanitySummary(state.cardCatalog || null) : null;
   state.cardDebug.deckRuntimeValidation = typeof deckRuntimeValidationSummary === "function" ? deckRuntimeValidationSummary() : null;
   state.cardDebug.lastSync = new Date().toISOString();
@@ -1021,25 +1009,14 @@ function recoverCurrentPlayerDeck() {
 function cardZoneDebugSummary() {
   if (!state || !state.cardDebug) return null;
   syncCardDebugState();
+  const runtimeSides = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
   return {
     config: typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : null,
     cardDebug: state.cardDebug,
-    hand: {
-      1: (state.hand[1] || []).map(card => card.name),
-      2: (state.hand[2] || []).map(card => card.name)
-    },
-    discard: {
-      1: (state.discard[1] || []).map(card => card.name),
-      2: (state.discard[2] || []).map(card => card.name)
-    },
-    deckSize: {
-      1: (state.deck[1] || []).length,
-      2: (state.deck[2] || []).length
-    },
-    discardSize: {
-      1: (state.discard[1] || []).length,
-      2: (state.discard[2] || []).length
-    },
+    hand: Object.fromEntries(runtimeSides.map(side => [side, (state.hand[side] || []).map(card => card.name)])),
+    discard: Object.fromEntries(runtimeSides.map(side => [side, (state.discard[side] || []).map(card => card.name)])),
+    deckSize: Object.fromEntries(runtimeSides.map(side => [side, (state.deck[side] || []).length])),
+    discardSize: Object.fromEntries(runtimeSides.map(side => [side, (state.discard[side] || []).length])),
     deckSanity: state.cardDebug.deckSanity || null
   };
 }

@@ -21,7 +21,7 @@ const cardMotionPreferenceState = { reduced:false, loaded:false };
 
 function cardPresentationHumanSides() {
   if (typeof state === "undefined" || !state || !state.modes) return [];
-  return [1, 2].filter(side => state.modes[side] === "human");
+  return (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2]).filter(side => state.modes[side] === "human");
 }
 
 function cardPresentationViewerSide() {

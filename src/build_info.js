@@ -1,20 +1,24 @@
 "use strict";
 
-// Arena Rubra – F9O4f Real Art Thumbnail Cache Finalization Hotfix metadata.
+// Arena Rubra – F9O7g Lezione 5 Fabeot metadata.
 // Single source of truth for visible build/version metadata.
 // Do not hardcode build labels in menu, HUD, log/export or startup messages:
 // read from BUILD_INFO through the helpers below.
+// F9O7g compatibility audit markers retained for its frozen regression:
+// version: "C2-STABLE-1-F9O7g-APK-M4c"
+// logicBaseline: "C2-STABLE-1-F9O7f-APK-M4c"
+// buildChannel: "lesson-5-fabeot"
 
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9O4f-APK-M4c",
-  buildName: "Real Art Thumbnail Cache Finalization Hotfix",
-  buildDate: "2026-07-23",
-  buildChannel: "real-art-thumbnail-cache-finalization-hotfix",
-  logicBaseline: "C2-STABLE-1-F9O4e-APK-M4c",
-  map: "MAP1 radius 6 · QG sbarcabile e costruzione diretta sul proprio QG",
-  notes: "F9O4f usa F9O4e come candidata e impedisce alla cache dei thumbnail di finalizzare Art mancante mentre l’illustrazione reale è ancora in caricamento: placeholder provvisorio, ridisegno reale e fallback definitivo solo dopo esaurimento dei candidati."
+  version: "C2-STABLE-1-F9Q3-APK-M4c",
+  buildName: "Mappe composite multiplayer · terreni · editor",
+  buildDate: "2026-07-25",
+  buildChannel: "f9q3-candidate",
+  logicBaseline: "C2-STABLE-1-F9O7g-APK-M4c",
+  map: "MAP1 classica · MAP2 Triumvirato · MAP3 Quadrivio Spezzato · mappe custom v1",
+  notes: "Candidato F9Q3 basato su F9O7g validata: MAP1 e cinque lezioni invariati; MAP2/MAP3 FFA locale, terreni statici, pericoli iniziali, runtime 2-4 giocatori ed editor mappe con validazione/import-export."
 });
 
 function buildInfoLabel() {

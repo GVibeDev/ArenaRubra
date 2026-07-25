@@ -326,6 +326,14 @@ function updateApkM4StatusStrip() {
     return;
   }
   const p = state.currentPlayer || 1;
+  const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+  if (playerIds.length > 2) {
+    const current = typeof playerName === "function" ? playerName(p) : `G${p}`;
+    const ps = playerIds.map(side => `G${side}:${typeof countControlledPS === "function" ? countControlledPS(side) : 0}`).join(" Â· ");
+    const pressure = playerIds.map(side => `G${side}:${state.pressure ? state.pressure[side] || 0 : 0}`).join(" Â· ");
+    el.textContent = `R${state.turn || 0} Â· ${current} Â· ENE ${state.energy ? state.energy[p] : 0} Â· PS ${ps} Â· PR ${pressure}`;
+    return;
+  }
   const p1Ps = typeof countControlledPS === "function" ? countControlledPS(1) : 0;
   const p2Ps = typeof countControlledPS === "function" ? countControlledPS(2) : 0;
   const p1 = state.factions && state.factions[1] ? state.factions[1] : "G1";

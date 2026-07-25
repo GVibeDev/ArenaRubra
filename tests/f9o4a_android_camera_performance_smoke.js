@@ -43,7 +43,7 @@ ok(mobile.includes("skipLayoutSize"),"fast path mobile senza layout size");
 ok(css.includes("translate3d(var(--board-camera-x"),"transform composito translate3d");
 ok(css.includes("#boardWrap.cameraDragging .mapBgLayer::after"),"blend ridotto durante gesto");
 ok(css.includes("animation-play-state: paused"),"animazioni interne sospese durante gesto");
-ok(build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4e-APK-M4c") || build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c") || build.includes("C2-STABLE-1-F9O4a-APK-M4c"),"metadata F9O4a");
+ok(build.includes("C2-STABLE-1-F9O7g-APK-M4c") || build.includes("C2-STABLE-1-F9O7e-APK-M4c") || build.includes("C2-STABLE-1-F9O6-APK-M4c") || build.includes("C2-STABLE-1-F9O5b-APK-M4c") || build.includes("C2-STABLE-1-F9O5a-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4e-APK-M4c") || build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c") || build.includes("C2-STABLE-1-F9O4a-APK-M4c"),"metadata F9O4a");
 ok(config.includes("cameraFrameCoalescingF9O4a: true"),"flag frame coalescing");
 ok(config.includes("cameraGeometryCacheF9O4a: true"),"flag geometry cache");
 ok(precheck.includes("contratto prestazioni camera Android"),"precheck F9O4a");

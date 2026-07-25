@@ -47,12 +47,31 @@ function endTurn() {
         state.orderIndex += 1;
       }
       state.currentPlayer = state.turnOrder[state.orderIndex];
+      if (typeof isPlayerEliminated === "function" && isPlayerEliminated(state.currentPlayer)) {
+        log(`G${state.currentPlayer} eliminato: turno saltato.`, EventTypes.LOG_MESSAGE, {
+          player: state.currentPlayer,
+          round: state.turn,
+          source: "F9Q-turn-skip"
+        });
+        endTurn();
+        return;
+      }
       startTurn(state.currentPlayer, false);
       renderAll();
       maybeRunBot();
     }
 
 function startTurn(player, first=false) {
+      if (typeof isPlayerEliminated === "function" && isPlayerEliminated(player)) {
+        const next = typeof getNextActivePlayerId === "function" ? getNextActivePlayerId(player) : null;
+        if (next && next !== player) {
+          state.currentPlayer = next;
+          state.orderIndex = Math.max(0, state.turnOrder.indexOf(next));
+          return startTurn(next, first);
+        }
+        checkVictory();
+        return;
+      }
       if (typeof missionUiResetSelectionForTurn === "function") missionUiResetSelectionForTurn();
       tickPsLocksAtStart(player);
       if (typeof tickCellEffectsAtStart === "function") tickCellEffectsAtStart(player);

@@ -14,7 +14,7 @@
 // B4b – Rules/access helpers
 // =====================================================
 
-function getSelectedUnit() { return state.units.find(u => u.uid === selectedId && u.alive && u.pos) || null; }
+function getSelectedUnit() { return state && Array.isArray(state.units) ? state.units.find(u => u.uid === selectedId && u.alive && u.pos) || null : null; }
     function getCellAt(coord) { return state.cells.find(c => sameCoord(c.coord, coord)) || null; }
     function isFieldUnit(u) { return Boolean(u && u.alive === true && u.currentHp > 0 && Array.isArray(u.pos) && u.type !== "QG"); }
     function getUnitAt(coord) { return state.units.find(u => isFieldUnit(u) && sameCoord(u.pos, coord)) || null; }
@@ -24,11 +24,32 @@ function getSelectedUnit() { return state.units.find(u => u.uid === selectedId &
     function hasAnyCombatUnits(side) { return combatUnits(side).length > 0; }
     function structureBlueprintFor(side) { return BLUEPRINTS.find(u => u.faction === state.factions[side] && u.type === "Struttura") || null; }
     function blueprintById(id, faction) { return BLUEPRINTS.find(u => u.id === id && u.faction === faction) || null; }
-    function enemyOf(side) { return side === 1 ? 2 : 1; }
+    function enemyOf(side) {
+      const enemies = typeof getEnemyPlayers === "function" ? getEnemyPlayers(side) : (side === 1 ? [2] : [1]);
+      if (!enemies.length) return side === 1 ? 2 : 1;
+      if (enemies.length === 1) return enemies[0];
+      if (typeof selectAiTargetPlayer === "function") return selectAiTargetPlayer(side, { reason: "enemyOf-adapter" });
+      const ownHq = getHq(side);
+      return enemies
+        .map(enemy => {
+          const enemyHq = getHq(enemy);
+          return {
+            enemy,
+            distance: ownHq && enemyHq ? hexDistance(ownHq.pos, enemyHq.pos) : Infinity,
+            ps: countControlledPS(enemy),
+            pressure: state.pressure[enemy] || 0
+          };
+        })
+        .sort((a, b) => a.distance - b.distance || b.ps - a.ps || b.pressure - a.pressure || a.enemy - b.enemy)[0].enemy;
+    }
     function factionMeta(faction) { return FACTIONS[faction] || FACTIONS.Nexus; }
     function factionMetaBySide(side) { return factionMeta(state.factions[side]); }
     function playerName(side) { return `G${side} ${state.factions[side]}`; }
-    function effectiveLife(u) { return u.currentHp + u.currentDef; }  function isInsideMap(coord) { return state.cells.some(c => sameCoord(c.coord, coord)); }
+    function effectiveLife(u) {
+      const defense = typeof getEffectiveDefense === "function" ? getEffectiveDefense(u) : u.currentDef;
+      return u.currentHp + defense;
+    }
+    function isInsideMap(coord) { return state.cells.some(c => sameCoord(c.coord, coord)); }
 
 
 // =====================================================
@@ -228,3 +249,142 @@ function checkVictory() {
         }
       }
     }
+
+// =====================================================
+// F9Q1/F9Q2 - adattatori multiplayer FFA.
+// Le dichiarazioni seguenti sostituiscono gli omonimi legacy a due giocatori
+// senza alterare il percorso dati MAP1.
+// =====================================================
+
+function resolveEndOfRound() {
+  updateControlFromOccupants();
+  if (state.turn >= pressureStartRound()) {
+    const activePlayers = typeof getActivePlayers === "function" ? getActivePlayers() : [1, 2];
+    const standings = activePlayers
+      .map(player => ({ player, ps: countControlledPS(player) }))
+      .sort((a, b) => b.ps - a.ps || a.player - b.player);
+    const leader = standings[0];
+    const tied = standings.length > 1 && standings[1].ps === leader.ps;
+    if (!tied && leader) {
+      const previous = state.pressure[leader.player] || 0;
+      state.pressure[leader.player] = previous + 1;
+      log(`Pressione Strategica: ${playerName(leader.player)} guida con ${leader.ps} PS e sale a ${state.pressure[leader.player]}/${PRESSURE_WIN}.`, EventTypes.PRESSURE_CHANGED, {
+        player: leader.player,
+        faction: state.factions[leader.player],
+        previous,
+        current: state.pressure[leader.player],
+        delta: 1,
+        limit: PRESSURE_WIN,
+        controlledPs: leader.ps,
+        standings,
+        round: state.turn
+      });
+    } else {
+      log(`Pressione Strategica: parità al comando (${standings.map(entry => `G${entry.player}:${entry.ps}`).join(" · ")}), nessuno avanza.`);
+    }
+    const pressureWinner = standings.find(entry => state.pressure[entry.player] >= PRESSURE_WIN);
+    if (pressureWinner) {
+      setWinner(`Vittoria ${playerName(pressureWinner.player)} per dominio operativo: Pressione Strategica ${state.pressure[pressureWinner.player]}/${PRESSURE_WIN}.`, {
+        winner: pressureWinner.player,
+        type: "pressione"
+      });
+    }
+  }
+  if (!state.winner && state.turn >= MAX_ROUND) resolveRoundLimit();
+}
+
+function resolveRoundLimit() {
+  const activePlayers = typeof getActivePlayers === "function" ? getActivePlayers() : [1, 2];
+  const ranked = activePlayers.map(player => ({
+    player,
+    ps: countControlledPS(player),
+    units: combatUnits(player).length,
+    ene: state.energy[player]
+  })).sort((a, b) => b.ps - a.ps || b.units - a.units || b.ene - a.ene || a.player - b.player);
+  const first = ranked[0];
+  const second = ranked[1];
+  const winner = first && (!second || first.ps !== second.ps || first.units !== second.units || first.ene !== second.ene)
+    ? first.player
+    : null;
+  let reason = "";
+  if (winner && (!second || first.ps !== second.ps)) reason = `più PS controllati (${first.ps})`;
+  else if (winner && first.units !== second.units) reason = `più unità in campo (${first.units})`;
+  else if (winner) reason = `più ENE non spesa (${first.ene})`;
+  if (winner) setWinner(`Vittoria ${playerName(winner)} allo spareggio del round ${MAX_ROUND}: ${reason}.`, { winner, type: "spareggio" });
+  else setWinner(`Pareggio tecnico al round ${MAX_ROUND}: PS, unità ed ENE sono equivalenti.`, { winner: null, type: "pareggio" });
+}
+
+function eliminatePlayer(player, conqueror = null, reason = "eliminazione") {
+  if (!state || state.winner || (typeof isPlayerEliminated === "function" && isPlayerEliminated(player))) return false;
+  const record = Array.isArray(state.players) ? state.players.find(entry => Number(entry.id) === Number(player)) : null;
+  if (record) {
+    record.eliminated = true;
+    record.eliminatedAtTurn = state.turn;
+    record.eliminationReason = reason;
+  }
+  combatUnits(player).forEach(unit => {
+    unit.alive = false;
+    unit.acted = true;
+    unit.pos = null;
+  });
+  log(`${playerName(player)} è eliminato${conqueror ? ` da ${playerName(conqueror)}` : ""} (${reason}).`, EventTypes.LOG_MESSAGE, {
+    player,
+    conqueror,
+    reason,
+    round: state.turn
+  });
+  const survivors = typeof getActivePlayers === "function" ? getActivePlayers() : [];
+  if (survivors.length === 1) {
+    const winner = survivors[0];
+    setWinner(`Vittoria ${playerName(winner)}: ultimo giocatore attivo sulla mappa.`, {
+      winner,
+      type: reason === "concessione" ? "concessione" : "eliminazione"
+    });
+  }
+  return true;
+}
+
+function maybeAutoResign(player) {
+  if (!state || state.winner || !state.autoResignEnabled) return;
+  if (state.modes[player] !== "bot" || state.turn < AUTO_RESIGN_ROUND || (typeof isPlayerEliminated === "function" && isPlayerEliminated(player))) return;
+  const enemy = enemyOf(player);
+  const ownUnits = combatUnits(player);
+  const enemyUnits = typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemy);
+  const enemyHq = getHq(enemy);
+  const noReach = !enemyHq || ownUnits.length === 0 || ownUnits.every(unit => hexDistance(unit.pos, enemyHq.pos) > 3);
+  const enemyPsLead = Math.max(0, ...(typeof getEnemyPlayers === "function" ? getEnemyPlayers(player) : [enemy]).map(id => countControlledPS(id)));
+  const hopeless = countControlledPS(player) === 0 && enemyPsLead >= 2 && ownUnits.length * 2 < Math.max(enemyUnits.length, 1) && noReach;
+  state.desperation[player] = hopeless ? (state.desperation[player] || 0) + 1 : 0;
+  if (state.desperation[player] >= AUTO_RESIGN_STREAK) eliminatePlayer(player, enemy, "resa_tecnica");
+}
+
+function concedeMatch(player) {
+  if (!state || state.winner) return;
+  eliminatePlayer(player, enemyOf(player), "concessione");
+  renderAll();
+}
+
+function inferWinnerSide(message) {
+  if (!state) return null;
+  for (const player of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2])) {
+    if (message.includes(`Vittoria ${playerName(player)}`)) return player;
+  }
+  return null;
+}
+
+function checkVictory() {
+  if (state.winner) return;
+  const activePlayers = typeof getActivePlayers === "function" ? getActivePlayers() : [1, 2];
+  for (const defender of activePlayers) {
+    const hq = getHq(defender);
+    const occupant = hq ? getUnitAt(hq.pos) : null;
+    if (occupant && occupant.side !== defender && countControlledPS(occupant.side) >= 1) {
+      eliminatePlayer(defender, occupant.side, "qg");
+    }
+  }
+  const survivors = typeof getActivePlayers === "function" ? getActivePlayers() : activePlayers;
+  if (!state.winner && survivors.length === 1) {
+    const winner = survivors[0];
+    setWinner(`Vittoria ${playerName(winner)}: ultimo giocatore attivo sulla mappa.`, { winner, type: "eliminazione" });
+  }
+}

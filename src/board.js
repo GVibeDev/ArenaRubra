@@ -86,8 +86,13 @@ function agathoiStructureAdjacencyDefBonus(unit) {
     }
 
 function hqSideAt(coord) {
-      if (sameCoord(coord, HQ_POS[1])) return 1;
-      if (sameCoord(coord, HQ_POS[2])) return 2;
+      const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+      for (const playerId of playerIds) {
+        const hqCoord = typeof getMapHeadquarters === "function"
+          ? getMapHeadquarters(playerId, state && state.mapDefinition)
+          : HQ_POS[playerId];
+        if (hqCoord && sameCoord(coord, hqCoord)) return playerId;
+      }
       return null;
     }
 
@@ -139,11 +144,15 @@ function isCellBlockedByEffect(coord) {
 }
 
 function isCellEnterable(coord) {
-  return isInsideMap(coord) && !isCellBlockedByEffect(coord);
+  if (!isInsideMap(coord) || isCellBlockedByEffect(coord)) return false;
+  const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+  return !terrain || (!terrain.blocksMovement && !terrain.blocksOccupation);
 }
 
 function isCellValidForTerrainTactic(coord, effectKind) {
   if (!coord || !getCellAt(coord) || getUnitAt(coord)) return false;
+  const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+  if (terrain && (terrain.blocksDeployment || terrain.blocksOccupation)) return false;
   if (isCellBlockedByEffect(coord) && effectKind !== "temporary_block_cell") return false;
   if (hqSideAt(coord)) return false;
   if (effectKind === "temporary_block_cell") {

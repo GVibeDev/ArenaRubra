@@ -5,6 +5,15 @@
 // Questa fondazione genera un catalogo carte dai blueprint/tattiche esistenti.
 // Modalità passiva: non sostituisce ancora mercato o tattiche attuali.
 
+
+const CARD_STARTER_ROLE_FALLBACK_F9O5 = Object.freeze({
+  NX2B01:"starter_infantry", NX3B01:"starter_vehicle", NXC1F07:"starter_structure",
+  EX1B01:"starter_infantry", EXC1F04:"starter_vehicle", EX4B02:"starter_structure",
+  LX2B01:"starter_infantry", LX3B02:"starter_vehicle", LX4B01:"starter_structure",
+  AG1B01:"starter_infantry", AG2B01:"starter_vehicle", AG4B01:"starter_structure",
+  FB1B01:"starter_infantry", FB2B01:"starter_vehicle", FB4B01:"starter_structure"
+});
+
 function normalizeCardString(value) {
   return String(value || "").trim();
 }
@@ -39,26 +48,26 @@ function cardTypeForBlueprint(bp) {
   return "unit";
 }
 
-function starterRoleForBlueprint(bp) {
+function cardStarterRoleForBlueprint(bp) {
   if (!bp || bp.type === "QG") return null;
-  if (bp.type === "Fanteria" && isLightBlueprint(bp)) return "starter_infantry";
-  if (bp.type === "Veicolo" && isLightBlueprint(bp)) return "starter_vehicle";
-  if (bp.type === "Struttura" && bp.weight !== "Pivot") return "starter_structure";
-  return null;
+  if (bp.starterRole) return bp.starterRole;
+  if (typeof UNIT_STARTER_ROLE_BY_ID_F9O5 !== "undefined" && UNIT_STARTER_ROLE_BY_ID_F9O5[bp.id]) return UNIT_STARTER_ROLE_BY_ID_F9O5[bp.id];
+  return CARD_STARTER_ROLE_FALLBACK_F9O5[bp.id] || null;
 }
 
 function deckRoleForBlueprint(bp) {
   if (!bp || bp.type === "QG") return null;
-  if (bp.type === "Comandante") return "commander";
-  if (bp.weight === "Pivot") return "pivot";
-  if (isEliteBlueprint(bp)) return "elite";
-  if (isHeavyBlueprint(bp)) return "heavy";
+  const cls = String(bp.unitClass || "").toLowerCase();
+  if (cls === "commander" || bp.type === "Comandante") return "commander";
+  if (cls === "pivot" || bp.weight === "Pivot") return "pivot";
+  if (cls === "elite" || isEliteBlueprint(bp)) return "elite";
+  if (cls === "heavy" || isHeavyBlueprint(bp)) return "heavy";
   return "base";
 }
 
 function buildUnitCardFromBlueprint(bp) {
   const deckRole = deckRoleForBlueprint(bp);
-  const starterRole = starterRoleForBlueprint(bp);
+  const starterRole = cardStarterRoleForBlueprint(bp);
   return {
     id: `UNIT:${bp.id}`,
     sourceId: bp.id,
@@ -71,6 +80,14 @@ function buildUnitCardFromBlueprint(bp) {
     cost: bp.cost,
     unitType: bp.type,
     weight: bp.weight,
+    unitClass: bp.unitClass || null,
+    unitClassLabel: bp.unitClassLabel || null,
+    traits: Array.isArray(bp.traits) ? [...bp.traits] : [],
+    tokenClass: bp.tokenClass || null,
+    tokenAssetId: bp.tokenAssetId || null,
+    tokenVariant: Number.isFinite(bp.tokenVariant) ? bp.tokenVariant : 1,
+    tokenFallbackClass: bp.tokenFallbackClass || null,
+    tokenAnimationProfile: bp.tokenAnimationProfile || null,
     blueprintId: bp.id,
     tacticId: null,
     passiveOnly: true
@@ -223,7 +240,7 @@ function deckStarterExclusionIdsForFaction(faction, catalog = null) {
     const candidates = list
       .filter(card => card.starterRole === role)
       .sort((a, b) => (a.cost - b.cost) || String(a.name || "").localeCompare(String(b.name || "")));
-    if (candidates[0]) ids.add(candidates[0].id);
+    for (const candidate of candidates) ids.add(candidate.id);
   }
   return ids;
 }

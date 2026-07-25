@@ -1,0 +1,70 @@
+ARENA RUBRA — F9O7a TEST REPORT
+Build: C2-STABLE-1-F9O7a-APK-M4c
+Nome: Lezione 1 Exordium
+Baseline validata: C2-STABLE-1-F9O6-APK-M4c
+Data audit: 24 luglio 2026
+
+AUDIT SCENARIO
+- Lezioni pianificate: 5/5.
+- Scenari giocabili: 1.
+- Scenario F9O7a: lesson-1-exordium.
+- Passi: 29.
+- Checkpoint: 2.
+- Mano iniziale: Il Tribuno + Legionario Pesante.
+- Starter: disattivati.
+- Ritmo: Rapida/Competitive.
+- Scala: Tattica.
+- Errori audit: 0.
+- Warning audit: 0.
+- Testi giocatore con termini metatecnici vietati: 0.
+
+TEST AUTOMATICI FINALI
+- Sintassi JavaScript: 107/107 file validi.
+- Suite Node: 39/39 superate.
+- Suite browser/Python: 19/19 superate, eseguite integralmente in gruppi e singolarmente dove necessario per il limite temporale del comando aggregato.
+- Script HTML: 68 riferimenti verificati.
+- Fogli CSS HTML: 2 riferimenti verificati.
+- Script duplicati: 0.
+- Fogli CSS duplicati: 0.
+
+TEST END-TO-END LEZIONE 1
+- Avvio scenario e precheck: OK.
+- Lettura carta e overlay Mano: OK.
+- Schieramento Il Tribuno: OK.
+- Comparsa Fante Robot: OK.
+- Fine turno e risposta Nexus scriptata: OK.
+- Schieramento Legionario Pesante: OK.
+- Attacco del Tribuno e consumo DEF: OK.
+- Abilità Colpo Pesante: OK.
+- Distruzione Fante Robot: OK.
+- Comparsa Mech Pesante: OK.
+- Consegna e uso Missile EMP: OK.
+- Missile EMP: DEF 3→1 e ATT 3→2: OK.
+- Attacco del Tribuno sulla DEF residua: OK.
+- Contrattacco scriptato del Mech indebolito: OK.
+- Distruzione Mech Pesante: OK.
+- Vignetta conclusiva e salvataggio completamento: OK.
+- Page errors: 0.
+- Console errors inattesi: 0.
+
+TEST CHECKPOINT
+- Salvataggio al checkpoint: OK.
+- Uscita e ripresa scenario: OK.
+- Ripristino giocatore/turno/ENE/mano/unità: OK.
+- Ripristino HP/DEF/ATT/posizione/stato azione: OK.
+- Bot sospeso dopo la ripresa: OK.
+- QG senza token/statistiche fantasma: OK.
+
+CORREZIONE FUNZIONALE RILEVATA
+- EXTAC03 usa effectKind damage_and_permanent_attack_debuff.
+- Il calcolo storico del danno riconosceva damage_and_permanent_att_debuff.
+- F9O7a riconosce entrambe le varianti.
+- Esito verificato: Missile EMP applica sia 2 danni sia -1 ATT permanente.
+
+LIMITI DEL TEST AUTOMATICO
+- I ritratti definitivi non sono inclusi nella LITE.
+- Touch, pinch, posizionamento vignette e prestazioni richiedono prova APK reale.
+- I testi sono funzionalmente completi ma restano revisionabili dall’autore.
+
+ESITO
+Candidata F9O7a pronta per test manuale. Non dichiarare validata prima della prova dell’autore.

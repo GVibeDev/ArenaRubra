@@ -17,7 +17,7 @@ function ensureMissionRewardState() {
   }
   if (!state.missionRewards[1]) state.missionRewards[1] = { cardCostSequence:null };
   if (!state.missionRewards[2]) state.missionRewards[2] = { cardCostSequence:null };
-  for (const side of [1,2]) {
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const rewardState = state.missionRewards[side];
     if (!Number.isFinite(rewardState.repeatAttacksRemaining)) rewardState.repeatAttacksRemaining = 0;
     if (!Number.isFinite(rewardState.repeatAttacksGranted)) rewardState.repeatAttacksGranted = 0;
@@ -728,7 +728,7 @@ function missionCleanupEndOfRound(round) {
       for (const status of removed) if (typeof log === "function") log(`Scudo Fasico della Missione termina su ${unit.name} a fine round.`);
     }
   }
-  for (const side of [1,2]) {
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const rewardState = missionRewardStateForSide(side);
     if (rewardState && rewardState.repeatAttacksRound === round) {
       const wasted = rewardState.repeatAttacksRemaining || 0;

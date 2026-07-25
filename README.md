@@ -1,88 +1,64 @@
-# Arena Rubra — C2-STABLE-1-F9O4f-APK-M4c
+# Arena Rubra — C2-STABLE-1-F9Q3-APK-M4c
 
-## F9O4f — Real Art Thumbnail Cache Finalization Hotfix
+Baseline validata: `C2-STABLE-1-F9O7g-APK-M4c`.
 
-Micro-patch della candidata F9O4e. Corregge i thumbnail pubblici che potevano congelare `Art mancante` anche quando l’illustrazione reale esisteva ed era visibile nelle altre finestre. Il placeholder resta provvisorio finché i candidati reali sono in caricamento; diventa definitivo soltanto dopo il fallimento di tutti i candidati reali. La cache continua a stabilizzare Starter, Comandante e Missione nei match bot-vs-bot senza caricare le carte coperte.
+Questa candidata completa F9Q1–F9Q3 con una fondazione dati per mappe composite, partite locali tutti-contro-tutti da 2 a 4 giocatori, terreni statici e un editor di mappe separato. Le cinque lezioni tutorial, compresa Lezione 5 Fabeot, restano disponibili e forzano la MAP1 storica.
 
-# Arena Rubra — C2-STABLE-1-F9O4e-APK-M4c
+## Mappe integrate
 
-## Public Bot Card Thumbnail Stability Hotfix
+| ID | Nome | Giocatori | Celle | Movimento | Contenuto |
+|---|---|---:|---:|---:|---|
+| `map1_starter` | Campo Starter | 2 | 127 | ×1 | MAP1 storica, 3 PS, nessun terreno o pericolo |
+| `map2_triumvirate` | Triumvirato Rubro | 3 | 229 | ×2 | doppio esagono, 4 PS, terreni e 3 pericoli iniziali |
+| `map3_quadrivium` | Quadrivio Spezzato | 4 | 265 | ×3 | triplo esagono, 5 PS, terreni e 4 pericoli iniziali |
 
-F9O4e usa la F9O4d validata come baseline. Corregge lo sfarfallio osservato nella mano durante le partite bot-vs-bot, limitato alle carte pubbliche: tre Starter, Comandante e Missione. I dorsi delle carte ordinarie coperte erano già stabili e non vengono modificati.
+Il setup adatta automaticamente numero di giocatori, fazioni, comandanti, deck, controllo umano/bot e iniziativa alla mappa scelta. I turni sono circolari, i giocatori eliminati vengono saltati e l’ultimo giocatore attivo vince.
 
-### Correzioni F9O4e
+## Terreni
 
-- Cache bitmap persistente delle miniature carta già completamente renderizzate.
-- Ripristino sincrono della miniatura quando la mano rapida o il pannello Mano ricreano il canvas.
-- Precaricamento controllato delle sole carte pubbliche per entrambi i bot.
-- Nessun caricamento art/cornice per le carte ordinarie coperte.
-- Cache visuale basata sull'identità grafica della carta, non sul singolo nodo DOM.
-- Limite LRU di 40 miniature per contenere la memoria.
-- Compatibilità con renderer incrementale F9O4c, firme Missione F9O4d, Android, browser e Windows.
-- Nessuna modifica a gameplay, IA, Missioni, privacy, camera, animazioni carta o asset.
+- `free`: costo movimento 1, nessun modificatore;
+- `obstacle`: invalicabile, non occupabile, non utilizzabile per deployment o costruzione;
+- `difficult`: costo ingresso 2;
+- `defensive`: +1 DEF derivata finché l’unità occupa la cella;
+- `exposed`: −1 DEF derivata, minimo 0.
 
-## Cronologia F9O4d
+QG e PS sono ruoli di cella separati dal terreno. Trappole e mine iniziali sono pericoli separati e non cambiano il catalogo carte.
 
-F9O4d usa F9O4c come baseline tecnica e ne conserva renderer DOM incrementale, camera composita, fallback WebView e code thumbnail limitate. Corregge una regressione condivisa da Android, browser ed EXE Windows: le firme della mano e del pannello carte non includevano lo stato completo delle Missioni e potevano lasciare visibili contatori o comandi superati.
+## Editor mappe
 
-### Correzioni F9O4d
+Dal menu principale apri **Editor mappe e terreni**. Sono disponibili:
 
-- Firma Missione deterministica con obiettivi, valori correnti/target, serie, soddisfazione e completamento.
-- Inclusi stato `ready`, `readyCount`, ciclo, blocco recupero, carta bloccata e Missione giocata/rivelata.
-- Inclusi conferma di gioco/rivelazione e revisione UI.
-- Incluse scelte di ricompensa pendenti e selezioni effettuate.
-- Invalidazione esplicita delle firme sugli eventi Missione, recupero deck, blocco e sblocco carta.
-- Mano rapida, badge Missione, dashboard Mano e dock Azioni si riallineano nello stesso `renderAll()`.
-- Il markup Missione usa un controllo di giocabilità in modalità render puro: non rivaluta o altera contatori durante la costruzione del DOM; il controllo definitivo resta al click e alla conferma.
-- Nessuna modifica a gameplay, Missioni, soglie, ricompense, IA, camera o asset.
+- modelli esagono singolo, doppio, triplo e vuoto;
+- strumenti cella, terreno, ruolo e pericolo;
+- simmetria, pan, zoom, adatta, annulla e ripeti;
+- validazione live di coordinate, connettività, QG, PS, deployment e terreni;
+- salvataggio locale in `arenaRubra.maps.v1`;
+- import/export JSON con schema versione 1;
+- duplicazione protetta delle mappe integrate e avvio nel Match Lab.
 
-## Cronologia F9O4c
+Le mappe integrate non possono essere sovrascritte o eliminate.
 
-## Android Render Stability Hotfix
+## Compatibilità
 
-Baseline validata conservata: **F9O4a — Android Camera Performance Hotfix**.
+- MAP1 mantiene 127 celle, QG `[-6,0,6]` / `[6,0,-6]`, PS storici e movimento ×1.
+- Lezioni 1–5, checkpoint, resume e scenario deterministico Fabeot sono invariati.
+- Le anteprime carte restano sopra lo scrim tutorial.
+- Costi, statistiche, cap, effetti carte e bilanciamento ordinario non sono stati modificati.
+- La build è LITE: conserva manifest e fallback, senza i binari multimediali del pacchetto FULL.
 
-**F9O4b non è una baseline valida.** Il test APK ha rilevato sparizione di menu e celle, asset carta incompleti durante i caricamenti e blocchi frequenti all’apertura dei bottom menu. F9O4c è una micro-patch correttiva: conserva l’obiettivo del renderer incrementale, ma rimuove i punti incompatibili o troppo aggressivi emersi sulla WebView Android del dispositivo di stress test.
+## Verifica
 
-### Correzioni F9O4c
+Tutti i 122 file JavaScript del pacchetto superano il controllo sintattico e tutte le 50 suite Node sono verdi. Il collaudo interattivo ha verificato MAP2, MAP3, preflight pulito, resume di MAP3, editor, salvataggio custom, annulla/ripeti, passaggio al Match Lab e progressione all-bot di MAP3 fino al round 10.
 
-- fallback DOM quando `Element.replaceChildren()` non è disponibile;
-- autoripristino delle 127 celle se il board o la cache DOM risultano incompleti;
-- rimozione del `contain: layout style` introdotto da F9O4b sul board e sulle singole celle;
-- miniature delle mani distribuite su più frame: massimo 1 canvas per frame su mobile e 3 su desktop;
-- coda miniature persistente, non cancellata da ogni nuovo `renderAll()`;
-- fallback testuale della carta visibile finché gli asset del canvas non sono caricati o definitivamente esauriti;
-- prosecuzione automatica fra art preferita e fallback anche se il vecchio canvas è stato sostituito;
-- callback asincrone protette da una generazione del canvas, così un asset vecchio non ridisegna una carta nuova;
-- markup di mano e overlay ricostruito solo quando cambia la relativa firma dati;
-- apertura e chiusura dei menu mobile accorpate: una sola misura geometrica e un solo fit dopo che il bottom sheet si è stabilizzato;
-- nessuno scorrimento animato durante l’apertura dei pannelli.
+Dettagli:
 
-La camera mantiene tutte le ottimizzazioni validate di F9O4a: `requestAnimationFrame`, geometria in cache, transform composito ed effetti ridotti durante pan e pinch.
-
-### Diagnostica
-
-```js
-boardRenderDiagnostics()
-```
-
-Campi principali:
-
-- `fullBuilds`: ricostruzioni complete dello scheletro;
-- `renders`: render della mappa richiesti;
-- `patchedCells`: celle realmente riscritte nell’ultimo render;
-- `patchedTokens`: token realmente aggiornati nell’ultimo render;
-- `reusedTokens`: token esistenti riutilizzati;
-- `skeletonRepairs`: autoripristini del board.
-
-### Test APK prioritari
-
-1. Avvio e caricamento: menu e 127 celle non devono sparire.
-2. Pan e zoom: nessuna regressione rispetto a F9O4a.
-3. Aprire e chiudere ripetutamente Mano, Azioni, Log e Opzioni.
-4. Partita bot contro bot: osservare la mano in overlay durante pescate e giocate rapide.
-5. Le miniature possono mostrare temporaneamente il fallback testuale, ma non devono diventare vuote.
-6. Movimento, attacco, cura, DEF, stati, sbarco e distruzione devono aggiornarsi senza token fantasma.
-7. Partita affollata e almeno 15 round.
-
-Build **LITE**: gli asset binari devono essere reinseriti dal deploy FULL tramite il manifest e i fallback esistenti.
+- `docs/F9Q1_MAP_DATA_FOUNDATION.md`
+- `docs/F9Q2_MULTIPLAYER_TERRAIN_RUNTIME.md`
+- `docs/F9Q3_MAP_EDITOR.md`
+- `docs/F9Q3_TEST_REPORT.txt`
+- `docs/F9Q3_MANUAL_TEST_CHECKLIST.md`
+- `docs/F9Q3_ANDROID_TOUCH_CHECKLIST.md`
+- `docs/F9Q3_TWO_PLAYER_ASSUMPTION_AUDIT.md`
+- `docs/F9Q3_MODIFIED_FILES.txt`
+- `docs/F9Q3_CHANGELOG.md`
+- `docs/F9Q3_KNOWN_LIMITS.md`

@@ -24,7 +24,8 @@ function vehicleMoveRange() { return currentPace().vehicleMove || 1; }
         + (unit.c1fMoveBonus ? unit.c1fMoveBonus : 0)
         + (unit.c2c5bMoveBonus ? unit.c2c5bMoveBonus : 0);
       if (unit.c2c5bDoubleMove) range *= 2;
-      return Math.max(0, range);
+      const mapMultiplier = typeof getMapMovementMultiplier === "function" ? getMapMovementMultiplier() : 1;
+      return Math.max(0, range * mapMultiplier);
     }
 
 function toggleMoveMode() {
@@ -65,21 +66,16 @@ function isMoveTarget(coord) {
 function movableCells(unit) {
       if (!canMove(unit) || !unit.pos || unit.type === "Struttura" || unit.type === "QG") return [];
       const range = movementRangeFor(unit);
-      if (range <= 1) return neighbors(unit.pos).filter(c => isCellEnterable(c) && !getUnitAt(c));
-      const results = [];
-      const seen = new Set([coordKey(unit.pos)]);
-      const frontier = [{ coord: unit.pos, dist: 0 }];
-      while (frontier.length) {
-        const cur = frontier.shift();
-        if (cur.dist >= range) continue;
-        for (const n of neighbors(cur.coord)) {
-          const key = coordKey(n);
-          if (seen.has(key) || !isCellEnterable(n)) continue;
-          seen.add(key);
-          if (getUnitAt(n)) continue;
-          results.push(n);
-          frontier.push({ coord:n, dist:cur.dist + 1 });
-        }
+      if (range <= 0) return [];
+      if (typeof mapReachableCells === "function" && state.mapDefinition) {
+        const occupiedKeys = new Set(
+          state.cells
+            .filter(cell => (getUnitAt(cell.coord) && !sameCoord(cell.coord, unit.pos)) || isCellBlockedByEffect(cell.coord))
+            .map(cell => coordKey(cell.coord))
+        );
+        return mapReachableCells(state.mapDefinition, unit.pos, range, { occupiedKeys })
+          .map(entry => entry.coord)
+          .filter(isCellEnterable);
       }
-      return results;
+      return neighbors(unit.pos).filter(coord => isCellEnterable(coord) && !getUnitAt(coord));
     }

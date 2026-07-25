@@ -1,0 +1,46 @@
+ARENA RUBRA — F9O7b TEST REPORT
+Build candidata: C2-STABLE-1-F9O7b-APK-M4c
+Sorgente immediata: C2-STABLE-1-F9O7a-APK-M4c
+Data: 24 luglio 2026
+
+SCOPO
+Correzione della sincronizzazione fra passi tutorial e stato dell'interfaccia, senza modificare gameplay, carte, statistiche o sequenza didattica della Lezione 1 Exordium.
+
+RISULTATI AUTOMATICI
+- Controllo sintattico JavaScript: 108/108 file validi.
+- Test Node/regressione: 40/40 superati.
+- Test browser Chromium/Playwright: 20/20 superati.
+- Errori pagina inattesi nei test F9O7b: 0.
+- Errori console inattesi nei test F9O7b: 0.
+
+CASI F9O7b COPERTI
+- Il passo «Riduci la Mano» riapre prima la Mano se era già ridotta.
+- Il passo «Mostra Mano» viene predisposto con Mano ridotta.
+- Selezione e gioco di carte partono con Mano aperta.
+- Targeting, unità, attacchi e abilità partono con Mano ridotta.
+- Il playthrough completo della Lezione 1, compresi Colpo Pesante e Missile EMP, resta completabile.
+- Uscita e ripresa ripuliscono selezione, targeting, pannelli e stato transitorio.
+- Timer e callback della sessione precedente non modificano la sessione ripresa.
+- Alla ripresa compaiono una sola vignetta e un solo spotlight coerenti con il checkpoint.
+- I cinque narratori espongono cinque path standardizzati per le espressioni.
+- Ritratto mancante: frame richiesto -> neutral -> placeholder procedurale.
+- Un bersaglio obbligatorio non risolto non lascia l'interfaccia bloccata.
+
+REGRESSIONI STORICHE
+La suite storica è stata aggiornata per riconoscere F9O7b come build successiva e F9O7a come baseline logica immediata. Tutti i controlli su Missioni, camera, mano bot, renderer, miniature, audio e tutorial precedenti risultano superati.
+
+ASSET NARRATORI
+La build è LITE. I 25 file WebP non sono inclusi. Percorso previsto:
+assets/narrative/portraits/<fazione>/<espressione>.webp
+Fazioni: exordium, nexus, agathoi, liberti, fabeot.
+Espressioni: neutral, explain, approve, warning, stern.
+
+TEST MANUALI ANCORA NECESSARI
+- Android reale in landscape.
+- Tap dopo pan e pinch.
+- Visibilità del pannello abilità con Mano ridotta.
+- Uscita/ripresa ripetuta in punti diversi della lezione.
+- Resa visiva dei ritratti definitivi e fallback con file mancanti.
+
+VERDETTO
+Candidata tecnicamente pronta per test manuale. Non dichiarare F9O7b validata prima della prova dell'autore su browser/APK reale.

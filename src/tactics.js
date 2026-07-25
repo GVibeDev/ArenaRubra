@@ -508,7 +508,7 @@ function handTacticDamageAmount(card, target) {
   if (c.effectKind === "damage_structure") return 4;
   if (c.effectKind === "demolition_charge") return 5;
   if (c.effectKind === "damage_and_cleanse_buffs") return 2;
-  if (c.effectKind === "damage_and_permanent_att_debuff") return 2;
+  if (c.effectKind === "damage_and_permanent_att_debuff" || c.effectKind === "damage_and_permanent_attack_debuff") return 2;
   if (c.effectKind === "damage_and_bleed") return 1;
   if (c.tacticId === "NXTAC02") return 4;
   if (c.tacticId === "NXTAC01") return 2;

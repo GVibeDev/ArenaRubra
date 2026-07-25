@@ -1,0 +1,53 @@
+ARENA RUBRA — F9O7c TEST REPORT
+Build: C2-STABLE-1-F9O7c-APK-M4c
+Milestone: Lezione 2 Nexus · Starter e rete di sbarco
+Baseline logica: C2-STABLE-1-F9O7b-APK-M4c
+Data: 24 luglio 2026
+Stato: CANDIDATA DA VALIDARE MANUALMENTE
+
+CONTENUTO VERIFICATO
+- Lezione 1 Exordium conservata e completabile.
+- Lezione 2 Nexus disponibile dal menu tutorial multi-lezione.
+- 29 passi guidati e 3 checkpoint.
+- Riserva Starter Nexus: Droide di Sicurezza, Quad Ricognitore, Barriera Armata.
+- Movimento Fanteria seguito da costruzione nello stesso turno.
+- Barriera Armata usata come nodo avanzato della rete di sbarco.
+- Veicolo ordinario: ingresso esausto, attesa del turno e movimento di 2 celle in Rapida.
+- Mech Leggero: Avanguardia e movimento immediato dopo lo sbarco.
+- Ripresa della Lezione 2 dal checkpoint della rete avanzata.
+- Rientro deterministico del turno al Nexus nei passaggi guidati.
+- Menu con Avvia/Riprendi separati per Lezione 1 e Lezione 2.
+
+AUDIT DATI TUTORIAL
+- Piano lezioni: 5
+- Scenari giocabili: 2
+- Set ritratti predisposti: 5
+- Errori audit: 0
+- Avvisi audit: 0
+
+VERIFICHE AUTOMATICHE FINALI
+- Sintassi JavaScript: 109/109 file validi.
+- Test Node/regressione: 41/41 superati.
+- Test browser Chromium/Playwright: 21/21 superati.
+- Test Python compilati: 21/21.
+- Errori pagina nei playthrough tutorial: 0.
+- Errori console inattesi nei playthrough tutorial: 0.
+
+PLAYTHROUGH BROWSER SPECIFICI
+- Lezione 1 Exordium completa: PASS.
+- F9O7b stato Mano e ripresa con UI sporca: PASS.
+- Lezione 2 Nexus completa: PASS.
+- Checkpoint/ripresa Lezione 2: PASS.
+- Controllo finale PS centrale: Nexus, occupante Mech Leggero.
+- Riserva Starter ancora presente a fine lezione.
+
+NOTE DI IMPLEMENTAZIONE
+- Selezionare un’unità pronta attiva già il movimento. La Lezione 2 non chiede di premere nuovamente Muovi, perché il pulsante è un interruttore e annullerebbe la modalità già attiva.
+- Dopo costruzione o movimento conclusivo il motore può avanzare automaticamente il turno; lo scenario usa passaggi deterministici per restituire l’iniziativa al Nexus.
+- La build è LITE: non include i binari dei ritratti, ma conserva manifest e fallback.
+
+VERIFICA MANUALE ANCORA NECESSARIA
+- Android landscape reale: tap, pan, pinch, spotlight e vignette.
+- Leggibilità e assenza di sovrapposizioni con la Mano.
+- Uscita/rientro volontario nei tre checkpoint.
+- Fluidità APK e resa dei futuri ritratti Nexus.

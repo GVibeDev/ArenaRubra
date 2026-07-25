@@ -1,0 +1,40 @@
+Arena Rubra C2-STABLE-1-F9Q3-APK-M4c
+Rapporto di collaudo della candidata
+Data: 2026-07-25
+
+BASELINE
+- F9O7g LITE validata.
+- SHA-256 baseline: 3B68B87CA4A57A15A4AF804103594BF93C59A8235BB1F9F006397387DFFF9F56
+
+AUTOMAZIONE
+- Controllo sintattico dei 122 file JavaScript del pacchetto: PASS.
+- Suite Node: 50/50 PASS.
+- Regressione F9N/F9O/F9O7, incluse tutte le cinque lezioni: PASS.
+- F9Q1 map data foundation: PASS.
+- F9Q2 multiplayer e terreni: PASS.
+- F9Q3 editor mappe: PASS.
+- MAP1, MAP2 e MAP3: validazione senza errori e senza warning.
+
+COLLAUDO INTERATTIVO
+- Setup mostra tre mappe e adatta giocatori/iniziativa: PASS.
+- MAP2: 229 celle, G1-G3, movimento ×2, 19 celle speciali, 3 pericoli iniziali: PASS.
+- MAP2 preflight runtime: 0 problemi, 0 warning.
+- MAP3: 265 celle, G1-G4, movimento ×3, 26 celle speciali, 4 pericoli iniziali: PASS.
+- MAP3 preflight runtime: 0 problemi, 0 warning.
+- Resume partita MAP3: ID e 265 celle ripristinati.
+- Editor MAP1/MAP2: conteggi e validazione live corretti.
+- Modello doppio: 229 celle e validazione live.
+- Applicazione terreno ostacolo: PASS.
+- Annulla/ripeti: PASS.
+- Salvataggio mappa custom: PASS.
+- Passaggio Editor -> Match Lab con mappa custom selezionata: PASS.
+- MAP3 all-bot: progressione osservata dal round 1 al round 10, quattro partecipanti attivi, preflight sempre pulito: PASS del soak breve.
+
+REGRESSIONI PROTETTE
+- MAP1 storica: 127 celle, QG e PS invariati.
+- Lezioni tutorial 1-5, checkpoint e resume invariati.
+- Anteprime carte sopra lo scrim mantenute.
+- Nessuna modifica a statistiche, costi, cap, carte o bilanciamento fuori dagli adattatori necessari al tutorial/map runtime.
+
+GATE TECNICI DELLA CANDIDATA: PASS
+Validazione definitiva non dichiarata: completamento naturale del soak tutti-bot e checklist Android su dispositivo reale restano verifiche di promozione.

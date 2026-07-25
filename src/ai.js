@@ -24,6 +24,38 @@
 
 function advancedAiEnabled() { return state && state.aiMode === "advanced"; }
 
+function selectAiTargetPlayer(player, options = {}) {
+  const enemies = typeof getEnemyPlayers === "function" ? getEnemyPlayers(player) : [player === 1 ? 2 : 1];
+  if (enemies.length <= 1) return enemies[0] || null;
+  const ownHq = getHq(player);
+  const scored = enemies.map(enemy => {
+    const enemyHq = getHq(enemy);
+    const enemyUnits = combatUnits(enemy);
+    const proximityThreat = ownHq
+      ? enemyUnits.reduce((sum, unit) => sum + Math.max(0, 7 - hexDistance(unit.pos, ownHq.pos)), 0)
+      : 0;
+    const hqDistance = ownHq && enemyHq ? hexDistance(ownHq.pos, enemyHq.pos) : 99;
+    const score = proximityThreat * 5
+      + countControlledPS(enemy) * 12
+      + (state.pressure[enemy] || 0) * 10
+      + enemyUnits.length * 2
+      + Math.max(0, 18 - hqDistance)
+      - enemy * 0.001;
+    return { enemy, score, proximityThreat, hqDistance };
+  }).sort((a, b) => b.score - a.score || a.enemy - b.enemy);
+  const selected = scored[0] ? scored[0].enemy : enemies[0];
+  if (state && state.aiTelemetry) {
+    if (!state.aiTelemetry.f9qTargetSelection) state.aiTelemetry.f9qTargetSelection = {};
+    state.aiTelemetry.f9qTargetSelection[player] = {
+      selected,
+      candidates: scored.map(entry => ({ ...entry })),
+      round: state.turn,
+      reason: options.reason || "neutral-threat-score"
+    };
+  }
+  return selected;
+}
+
 function controlledPsCells(player) { return state.cells.filter(c => c.ps && c.control === player); }
 
 function centerPsCell() { return state.cells.find(c => c.ps && sameCoord(c.coord, CENTER_PS_COORD)) || null; }
@@ -70,7 +102,10 @@ function homePsDutyActive(player, status=strategicStatus(player)) {
 
 function alliesNear(coord, player, range=1) { return combatUnits(player).filter(u => hexDistance(u.pos, coord) <= range); }
 
-function enemiesNear(coord, player, range=1) { return combatUnits(enemyOf(player)).filter(u => hexDistance(u.pos, coord) <= range); }
+function enemiesNear(coord, player, range=1) {
+  const enemies = typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemyOf(player));
+  return enemies.filter(u => hexDistance(u.pos, coord) <= range);
+}
 
 function commanderOf(player) { return combatUnits(player).find(u => u.type === "Comandante") || null; }
 
@@ -82,7 +117,8 @@ function unitIsGarrisoningPs(unit) {
 
 function threatenedOwnHqUnits(player) {
       const hq = getHq(player);
-      return combatUnits(enemyOf(player)).filter(e => hexDistance(e.pos, hq.pos) <= QG_THREAT_RANGE);
+      const enemies = typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemyOf(player));
+      return enemies.filter(e => hexDistance(e.pos, hq.pos) <= QG_THREAT_RANGE);
     }
 
 function commanderThreatLevel(commander) {
@@ -2903,6 +2939,7 @@ function hashString(s) {
 
 async function maybeRunBot() {
       if (!state || state.winner || botRunning) return;
+      if (typeof tutorialRuntimeShouldPauseBot === "function" && tutorialRuntimeShouldPauseBot()) return;
       if (state.modes[state.currentPlayer] === "bot") await runBotTurn();
     }
 
@@ -3045,6 +3082,18 @@ async function runBotTurn() {
       try {
         renderAll();
         await sleep(220);
+        if (typeof getEnemyPlayers === "function" && getEnemyPlayers(player).length > 1) {
+          const targetPlayer = selectAiTargetPlayer(player, { reason: "turn-start" });
+          const diagnostic = state.aiTelemetry && state.aiTelemetry.f9qTargetSelection
+            ? state.aiTelemetry.f9qTargetSelection[player]
+            : null;
+          log(`AI FFA G${player}: bersaglio operativo G${targetPlayer}, selezione neutrale per minaccia/PS/pressione/distanza.`, EventTypes.LOG_MESSAGE, {
+            player,
+            targetPlayer,
+            diagnostic,
+            source: "F9Q-ai-target-selection"
+          });
+        }
         log(`${playerName(player)} è controllato dal bot.`);
         if (typeof canRecoverDeck === "function" && typeof recoverDeckForPlayer === "function") {
           const recovery = canRecoverDeck(player);

@@ -866,7 +866,7 @@ const BUILTIN_DECK_EXPORT = Object.freeze({
         "UNIT:FBC1HA02",
         "UNIT:FBC1F05",
         "UNIT:FBC1F01",
-        "UNIT:FBC1F01",
+        "UNIT:FBC1F02",
         "UNIT:FBC1F06",
         "UNIT:FBC1F07",
         "TACTIC:FABTAC10"
@@ -940,7 +940,7 @@ const BUILTIN_DECK_EXPORT = Object.freeze({
         "UNIT:FBC1F06",
         "UNIT:FBC1F01",
         "UNIT:FBC1HA01",
-        "UNIT:FBC1F01"
+        "UNIT:FBC1F03"
       ],
       "builtIn": true,
       "immutable": true,

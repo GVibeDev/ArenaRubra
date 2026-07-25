@@ -121,6 +121,21 @@ function emitGameEvent(event) {
     catch (err) { console.warn("Arena Rubra F9O4 card motion enqueue failed", err); }
   }
 
+  if (typeof tokenFxEnqueueGameEvent === "function") {
+    try { tokenFxEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O5a token FX enqueue failed", err); }
+  }
+
+  if (typeof arenaSfxEnqueueGameEvent === "function") {
+    try { arenaSfxEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O5a SFX enqueue failed", err); }
+  }
+
+  if (typeof tutorialRuntimeHandleGameEvent === "function") {
+    try { tutorialRuntimeHandleGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O6 tutorial event handling failed", err); }
+  }
+
   return normalized;
 }
 

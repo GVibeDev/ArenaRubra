@@ -46,6 +46,13 @@
           <output data-arena-music-volume-output>65%</output>
         </label>
         <button class="ghost arenaCardMotionToggle" type="button" data-arena-card-motion-toggle aria-pressed="false">Carte animate ON</button>
+        <button class="ghost arenaTokenFxToggle" type="button" data-arena-token-fx-toggle aria-pressed="true">FX token ON</button>
+        <button class="ghost arenaSfxToggle" type="button" data-arena-sfx-toggle aria-pressed="true">SFX ON</button>
+        <label class="arenaMusicVolumeLabel arenaSfxVolumeLabel">
+          <span>Volume SFX</span>
+          <input type="range" min="0" max="100" step="1" value="38" data-arena-sfx-volume aria-label="Volume effetti sonori">
+          <output data-arena-sfx-volume-output>38%</output>
+        </label>
       </section>
       <div class="mainMenuActions mainMenuActionsF9K7" aria-label="Azioni principali Arena Rubra">
         <section class="mainMenuActionGroup mainMenuActionGroupPlay" aria-label="Gioca">
@@ -53,13 +60,15 @@
           <p>Avvio partita, ripresa sessione e Custom Match Lab.</p>
           <button class="primary" id="mainMenuNewGameBtn" type="button">Nuova partita / Custom Match</button>
           <button class="ghost" id="mainMenuResumeBtn" type="button">Riprendi schermata partita</button>
+          <button class="ghost" id="mainMenuTutorialBtn" type="button">Tutorial · 5 lezioni</button>
         </section>
         <section class="mainMenuActionGroup mainMenuActionGroupLab" aria-label="Laboratorio carte e deck">
           <h2>Laboratorio</h2>
-          <p>Crea carte, costruisci deck e controlla il pool completo.</p>
+          <p>Crea carte, costruisci deck, controlla il pool completo e progetta mappe locali.</p>
           <button class="ghost" data-app-open-card-editor type="button">Crea carta custom</button>
           <button class="ghost" data-app-open-deck-builder type="button">Costruisci deck</button>
           <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
+          <button class="ghost" data-app-open-map-editor type="button">Editor mappe e terreni</button>
         </section>
         <section class="mainMenuActionGroup mainMenuActionGroupDebug" aria-label="Debug export e informazioni">
           <h2>Debug / Export</h2>
@@ -74,11 +83,28 @@
     </div>
   </section>
 
+  <section id="tutorialScreen" class="appScreen tutorialScreen" data-app-screen-panel="tutorial" aria-label="Tutorial Arena Rubra">
+    <div class="mainMenuBackdrop"></div>
+    <div class="tutorialScreenCard">
+      <div class="mainMenuKicker">Accademia di Arena Rubra</div>
+      <h2>Tutorial in cinque lezioni</h2>
+      <p class="setupIntro">Cinque lezioni progressive insegnano le regole fondamentali attraverso brevi scenari guidati. Sono disponibili Exordium per combattimento e tattiche, Nexus per Starter, tipi di unità, rete di sbarco e Avanguardia, e Agathoi per Spine, Contrattacco, fortificazione e difesa del Punto Strategico.</p>
+      <div id="tutorialLessonGrid" class="tutorialLessonGrid"></div>
+      <div class="tutorialMenuActions">
+        <button class="primary" id="tutorialRuntimeDemoBtn" type="button">Avvia Lezione 1</button>
+        <button class="ghost" id="tutorialResumeBtn" type="button">Riprendi Lezione 1</button>
+        <button class="ghost" id="tutorialResetProgressBtn" type="button">Azzera progressi tutorial</button>
+        <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
+      </div>
+      <div id="tutorialRuntimeStatus" class="tutorialRuntimeStatus" aria-live="polite"></div>
+    </div>
+  </section>
+
   <section id="setupScreen" class="appScreen setupScreen" data-app-screen-panel="setup" aria-label="Setup nuova partita Arena Rubra">
     <div class="mainMenuBackdrop"></div>
     <div class="setupScreenCard">
       <div class="mainMenuKicker">Nuova partita</div>
-      <h2>Setup Starter MAP1</h2>
+      <h2 id="setupMapHeading">Setup Starter MAP1</h2>
       <p class="setupIntro">F9K7 separa identità giocatore, deck runtime e regole partita. I deck custom restano nel Custom Match Lab: nessuna modifica a gameplay, AI o bilanciamento.</p>
 
       <div class="setupScreenGrid">
@@ -157,6 +183,82 @@
             <div class="setupDeckInfo" id="setupP2DeckInfo">Deck automatico Starter.</div>
           </div>
         </section>
+
+        <section class="setupSideBox setupPlayerBox" id="setupPlayer3Box" hidden>
+          <div class="setupSideHeader">
+            <h3>Giocatore 3</h3>
+            <span class="setupDeckBadge" id="setupP3DeckBadge">Deck Starter</span>
+          </div>
+          <div class="setupPlayerSubsection">
+            <h4>Identità</h4>
+            <div class="setupFieldGrid">
+              <label for="setupP3Faction">Fazione</label>
+              <select id="setupP3Faction">
+                <option value="Liberti">Liberti</option>
+                <option value="Nexus">Nexus</option>
+                <option value="Exordium">Exordium</option>
+                <option value="Agathoi">Agathoi</option>
+                <option value="Fabeot">Fabeot</option>
+              </select>
+              <label for="setupP3Commander">Comandante</label>
+              <select id="setupP3Commander"></select>
+              <label for="setupP3Mode">Controllo</label>
+              <select id="setupP3Mode">
+                <option value="bot">Bot</option>
+                <option value="human">Umano</option>
+              </select>
+            </div>
+          </div>
+          <div class="setupPlayerSubsection setupDeckRuntimeBox">
+            <h4>Deck runtime</h4>
+            <label for="setupP3DeckMode">Modalità deck</label>
+            <select id="setupP3DeckMode">
+              <option value="template" selected>Deck automatico Starter</option>
+              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+            </select>
+            <label for="setupP3DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <select id="setupP3DeckSavedKey" class="setupDeckSavedSelect"></select>
+            <div class="setupDeckInfo" id="setupP3DeckInfo">Deck automatico Starter.</div>
+          </div>
+        </section>
+
+        <section class="setupSideBox setupPlayerBox" id="setupPlayer4Box" hidden>
+          <div class="setupSideHeader">
+            <h3>Giocatore 4</h3>
+            <span class="setupDeckBadge" id="setupP4DeckBadge">Deck Starter</span>
+          </div>
+          <div class="setupPlayerSubsection">
+            <h4>Identità</h4>
+            <div class="setupFieldGrid">
+              <label for="setupP4Faction">Fazione</label>
+              <select id="setupP4Faction">
+                <option value="Agathoi">Agathoi</option>
+                <option value="Nexus">Nexus</option>
+                <option value="Exordium">Exordium</option>
+                <option value="Liberti">Liberti</option>
+                <option value="Fabeot">Fabeot</option>
+              </select>
+              <label for="setupP4Commander">Comandante</label>
+              <select id="setupP4Commander"></select>
+              <label for="setupP4Mode">Controllo</label>
+              <select id="setupP4Mode">
+                <option value="bot">Bot</option>
+                <option value="human">Umano</option>
+              </select>
+            </div>
+          </div>
+          <div class="setupPlayerSubsection setupDeckRuntimeBox">
+            <h4>Deck runtime</h4>
+            <label for="setupP4DeckMode">Modalità deck</label>
+            <select id="setupP4DeckMode">
+              <option value="template" selected>Deck automatico Starter</option>
+              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+            </select>
+            <label for="setupP4DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <select id="setupP4DeckSavedKey" class="setupDeckSavedSelect"></select>
+            <div class="setupDeckInfo" id="setupP4DeckInfo">Deck automatico Starter.</div>
+          </div>
+        </section>
       </div>
 
       <section class="setupMatchBox">
@@ -186,9 +288,10 @@
           </div>
           <div>
             <label for="setupMapName">Mappa</label>
-            <select id="setupMapName" disabled>
+            <select id="setupMapName" aria-describedby="setupMapMeta">
               <option>Starter MAP1 · radius 6</option>
             </select>
+            <div id="setupMapMeta" class="setupMapMeta"></div>
           </div>
           <div>
             <label for="setupBotAiMode">AI dei bot</label>
@@ -208,6 +311,128 @@
         <button class="primary" id="setupStartGameBtn" type="button">Avvia partita</button>
       </div>
       <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9O2d-APK-M4c</span> · <span id="setupBuildName">Token Layering & Active Unit Cues</span></p>
+    </div>
+  </section>
+
+  <section id="mapEditorScreen" class="appScreen mapEditorScreen" data-app-screen-panel="mapEditor" aria-label="Editor mappe Arena Rubra">
+    <div class="mainMenuBackdrop"></div>
+    <div class="mapEditorCard">
+      <header class="mapEditorHeader">
+        <div>
+          <div class="mainMenuKicker">F9Q3 · Map & Terrain Lab</div>
+          <h2>Editor mappe</h2>
+          <p>Modifica copie locali delle mappe integrate oppure crea una geometria nuova. Le mappe integrate restano protette.</p>
+        </div>
+        <div class="mapEditorHeaderActions">
+          <button class="ghost" id="mapEditorUndoBtn" type="button">Annulla</button>
+          <button class="ghost" id="mapEditorRedoBtn" type="button">Ripeti</button>
+          <button class="ghost" id="mapEditorFitBtn" type="button">Adatta</button>
+          <button class="ghost" id="mapEditorExportBtn" type="button">Esporta JSON</button>
+          <button class="ghost" id="mapEditorImportBtn" type="button">Importa JSON</button>
+          <input id="mapEditorImportFile" type="file" accept="application/json,.json" hidden>
+          <button class="primary" id="mapEditorSaveBtn" type="button">Salva mappa</button>
+          <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
+        </div>
+      </header>
+      <div class="mapEditorWorkspace">
+        <aside class="mapEditorSidebar">
+          <label for="mapEditorMapSelect">Mappa / progetto</label>
+          <select id="mapEditorMapSelect"></select>
+          <label for="mapEditorTemplateSelect">Nuova da modello</label>
+          <div class="mapEditorInline">
+            <select id="mapEditorTemplateSelect">
+              <option value="single">Esagono singolo</option>
+              <option value="double">Doppio esagono</option>
+              <option value="triple">Triplo esagono</option>
+              <option value="empty">Vuota</option>
+            </select>
+            <button class="ghost" id="mapEditorNewBtn" type="button">Crea</button>
+          </div>
+          <label for="mapEditorNameInput">Nome</label>
+          <input id="mapEditorNameInput" type="text" maxlength="72">
+          <label for="mapEditorDescriptionInput">Descrizione</label>
+          <textarea id="mapEditorDescriptionInput" rows="3" maxlength="500"></textarea>
+          <label for="mapEditorTagsInput">Tag <span class="help">(separati da virgola)</span></label>
+          <input id="mapEditorTagsInput" type="text" maxlength="240">
+          <label for="mapEditorPlayerCount">Giocatori</label>
+          <select id="mapEditorPlayerCount">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+          <label for="mapEditorMovementMultiplier">Moltiplicatore movimento</label>
+          <select id="mapEditorMovementMultiplier">
+            <option value="1">×1</option>
+            <option value="2">×2</option>
+            <option value="3">×3</option>
+          </select>
+          <fieldset class="mapEditorComponentPanel">
+            <legend>Componente esagonale</legend>
+            <label for="mapEditorComponentSelect">Componente</label>
+            <select id="mapEditorComponentSelect"></select>
+            <div class="mapEditorComponentGrid">
+              <label for="mapEditorComponentRadius">Raggio</label>
+              <input id="mapEditorComponentRadius" type="number" min="1" max="12" step="1">
+              <label for="mapEditorComponentOriginX">Origine X</label>
+              <input id="mapEditorComponentOriginX" type="number" min="-30" max="30" step="1">
+              <label for="mapEditorComponentOriginY">Origine Y</label>
+              <input id="mapEditorComponentOriginY" type="number" min="-30" max="30" step="1">
+              <label for="mapEditorComponentOriginZ">Origine Z</label>
+              <input id="mapEditorComponentOriginZ" type="number" readonly>
+              <label for="mapEditorComponentRotation">Rotazione</label>
+              <select id="mapEditorComponentRotation">
+                <option value="0">0°</option>
+                <option value="60">60°</option>
+                <option value="120">120°</option>
+                <option value="180">180°</option>
+                <option value="240">240°</option>
+                <option value="300">300°</option>
+              </select>
+            </div>
+            <button class="ghost" id="mapEditorNormalizeComponentsBtn" type="button">Rigenera e unisci celle</button>
+          </fieldset>
+          <fieldset>
+            <legend>Strumento</legend>
+            <div class="mapEditorToolGrid" id="mapEditorToolGrid">
+              <button class="ghost isActive" type="button" data-map-tool="inspect">Ispeziona</button>
+              <button class="ghost" type="button" data-map-tool="cell">Cella</button>
+              <button class="ghost" type="button" data-map-tool="terrain">Terreno</button>
+              <button class="ghost" type="button" data-map-tool="role">Ruolo</button>
+              <button class="ghost" type="button" data-map-tool="hazard">Pericolo</button>
+            </div>
+          </fieldset>
+          <div id="mapEditorToolOptions"></div>
+          <fieldset>
+            <legend>Simmetria</legend>
+            <select id="mapEditorSymmetry">
+              <option value="none">Nessuna</option>
+              <option value="hq">Rispetto ai QG</option>
+              <option value="rotate3">Replica radiale 3 settori</option>
+              <option value="rotate4">Replica radiale 4 QG</option>
+              <option value="mirror">Specchio</option>
+              <option value="rotate2">Rotazione 180°</option>
+              <option value="rotate60">Rotazione 60°</option>
+            </select>
+            <p class="help">Passa sopra una cella per vedere l’anteprima delle repliche; clicca per applicarle con un solo Undo.</p>
+          </fieldset>
+          <button class="primary" id="mapEditorLabBtn" type="button">Avvia nel Match Lab</button>
+          <button class="danger" id="mapEditorDeleteBtn" type="button">Elimina mappa custom</button>
+          <div id="mapEditorSelection" class="mapEditorSelection"></div>
+        </aside>
+        <main class="mapEditorCanvasPanel">
+          <div class="mapEditorCanvasHelp">Trascina per spostare · rotella per zoom · clicca una cella per applicare lo strumento.</div>
+          <div id="mapEditorCanvasViewport" class="mapEditorCanvasViewport">
+            <svg id="mapEditorCanvas" viewBox="0 0 1200 800" role="img" aria-label="Anteprima modificabile della mappa"></svg>
+          </div>
+        </main>
+        <aside class="mapEditorValidationPanel">
+          <h3>Validazione live</h3>
+          <div id="mapEditorValidationSummary"></div>
+          <ol id="mapEditorValidationList"></ol>
+          <h3>Legenda</h3>
+          <div id="mapEditorTerrainLegend"></div>
+        </aside>
+      </div>
     </div>
   </section>
 
@@ -822,6 +1047,8 @@
           <output data-arena-music-volume-output>65%</output>
         </label>
         <button class="ghost arenaCardMotionToggle compact" type="button" data-arena-card-motion-toggle aria-pressed="false">Carte animate ON</button>
+        <button class="ghost arenaTokenFxToggle compact" type="button" data-arena-token-fx-toggle aria-pressed="true">FX token ON</button>
+        <button class="ghost arenaSfxToggle compact" type="button" data-arena-sfx-toggle aria-pressed="true">SFX ON</button>
       </section>
       <button class="danger topBarBtn" id="endTurnBtn" type="button">Fine turno</button>
     </div>
@@ -1118,16 +1345,22 @@
 <script src="src/visual_assets.js"></script>
 <script src="src/enums.js"></script>
 <script src="src/hex.js"></script>
+<script src="data/terrain_registry.js"></script>
+<script src="data/map_definitions.js"></script>
+<script src="src/map_runtime.js"></script>
 <script src="src/events.js"></script>
 <script src="src/board.js"></script>
 <script src="src/ai.js"></script>
 <script src="data/factions.js"></script>
 <script src="data/units_base.js"></script>
+<script src="data/unit_taxonomy.js"></script>
+<script src="data/token_fx_profiles.js"></script>
 <script src="data/tactics_base.js"></script>
   <script src="data/tactics_cards_c2.js"></script>
 <script src="data/missions_base.js"></script>
 <script src="data/builtin_decks.js"></script>
 <script src="data/cards_base.js"></script>
+<script src="data/tutorial_scenarios.js"></script>
 <script src="src/state.js"></script>
 <script src="src/missions.js"></script>
 <script src="src/mission_ui.js"></script>
@@ -1142,6 +1375,7 @@
 <script src="src/deck_builder.js"></script>
 <script src="src/card_editor.js"></script>
 <script src="src/card_pool.js"></script>
+<script src="src/map_editor.js"></script>
 <script src="src/rules.js"></script>
 <script src="src/economy.js"></script>
 <script src="src/statuses.js"></script>
@@ -1156,7 +1390,10 @@
 <script src="src/stats.js"></script>
 <script src="src/render.js"></script>
 <script src="src/combat_feedback.js"></script>
+<script src="src/token_fx.js"></script>
+<script src="src/sfx_manager.js"></script>
 <script src="src/event_overlay.js"></script>
+<script src="src/tutorial_runtime.js"></script>
 <script src="src/main.js"></script>
 <script src="src/game.js"></script>
 <script src="src/turns.js"></script>

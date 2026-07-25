@@ -1,0 +1,12 @@
+CHECK MANUALE F9O5a
+
+1. Avvia una partita umano vs bot con Token ON.
+2. Verifica attacco: movimento del token + tracciante, senza spostamento camera.
+3. Verifica impatto su DEF e HP: burst leggibile, numeri F9N2 ancora visibili.
+4. Distruggi fanteria, veicolo e struttura: ghost/burst, poi rimozione normale.
+5. Usa un'abilità con bersaglio: impulso su lanciatore e bersaglio.
+6. Cicla FX token ON -> RIDOTTI -> OFF e ricarica la pagina per verificare persistenza.
+7. Testa SFX ON/OFF e volume. Il primo suono richiede un gesto utente per sbloccare Web Audio.
+8. Bot vs bot per almeno 4 turni: niente cacofonia, freeze o accumulo di effetti.
+9. Android: pan/pinch durante effetti; nessuna variazione camera o perdita token.
+10. Movimento ridotto di sistema: durata minima e pochi elementi.

@@ -1,0 +1,1336 @@
+=== f9n2_browser_feedback_smoke.py ===
+{
+  "ok": true,
+  "base": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "hasFeedback": true,
+    "hasEvent": true,
+    "hasOverlay": true
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "remainingFloats": 0,
+  "debug": {
+    "queued": 0,
+    "running": false,
+    "activeSlots": {}
+  }
+}
+=== f9n6_browser_tracker_smoke.py ===
+{
+  "ok": true,
+  "errors": [],
+  "result": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "active": true,
+    "missionId": "NXMSN01",
+    "objectiveCount": 3,
+    "streak": 2,
+    "completed": true,
+    "ready": false,
+    "precheckOk": false,
+    "precheckRendererOk": true,
+    "precheckProblems": [
+      "Runtime deck C2-FINAL-C2 G1: carte conteggiate runtime 31/30."
+    ],
+    "eventTypes": {
+      "progress": "MISSION_PROGRESS_CHANGED",
+      "ready": "MISSION_READY",
+      "checkpoint": "MISSION_CHECKPOINT"
+    },
+    "missionEvents": 6
+  }
+}
+=== f9o2b_browser_smoke.py ===
+{
+  "ok": true,
+  "cameraStable": {
+    "x": 137,
+    "y": -91,
+    "zoom": 1.3,
+    "mode": "focus"
+  },
+  "inspection": {
+    "inspected": "u1",
+    "selectedId": "ai-selection",
+    "mode": "ability",
+    "pendingHandCardUid": "ai-card"
+  },
+  "manualStable": {
+    "x": 55,
+    "y": 66,
+    "zoom": 1.25,
+    "mode": "manual"
+  },
+  "deploymentFit": {
+    "ok": true,
+    "x": 0,
+    "y": 0,
+    "zoom": 1.0578121924010762,
+    "mode": "deployment-fit"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o2c_browser_smoke.py ===
+{
+  "ok": true,
+  "initialStable": {
+    "fitScale": 0.4973,
+    "zoom": 1.684,
+    "x": 18,
+    "y": -52,
+    "mode": "manual"
+  },
+  "manualStable": {
+    "fitScale": 0.4973,
+    "zoom": 1.25,
+    "x": 18,
+    "y": -45.43375,
+    "mode": "manual"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o2d_browser_smoke.py ===
+{
+  "ok": true,
+  "styles": {
+    "readyBase": 0.22,
+    "actedBase": 0.22,
+    "readyArt": 0.96,
+    "actedArt": 0.5,
+    "actedShell": 1,
+    "actedShellFilter": "none",
+    "fallbackBase": 0.55,
+    "haloDisplay": "block",
+    "haloAnimation": "tokenActiveHaloPulse",
+    "haloPointer": "none",
+    "arrowDisplay": "block",
+    "arrowAnimation": "tokenActiveArrowBob",
+    "arrowPointer": "none",
+    "statOpacity": 1
+  },
+  "reducedMotion": {
+    "halo": "none",
+    "arrow": "none",
+    "haloPointer": "none",
+    "arrowPointer": "none"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o2e_browser_smoke.py ===
+{
+  "ok": true,
+  "before": {
+    "rows": 3,
+    "ready": true,
+    "playDisabled": false,
+    "display": "grid"
+  },
+  "after": {
+    "confirm": true,
+    "buttons": [
+      "Annulla",
+      "Conferma"
+    ]
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o3_browser_overlay_smoke.py ===
+{
+  "ok": true,
+  "start": {
+    "hidden": false,
+    "opacity": "0.497594",
+    "transform": "matrix(0.990213, 0, 0, 0.990213, 0, 56.1129)",
+    "title": "INIZIO TURNO"
+  },
+  "middle": {
+    "hidden": false,
+    "opacity": 1,
+    "transform": "matrix(1, 0, 0, 1, 0, 0)"
+  },
+  "narrative1": {
+    "hidden": false,
+    "speaker": "Istruttore Nexus",
+    "text": "Osserva la mappa.",
+    "symbol": "●",
+    "step": "1/2"
+  },
+  "narrative2": {
+    "text": "Il QG è minacciato.",
+    "symbol": "!",
+    "side": "right",
+    "step": "2/2"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o4_browser_smoke.py ===
+{
+  "ok": true,
+  "privacy": {
+    "viewer": 1,
+    "display": 1,
+    "botOrdinaryHidden": true,
+    "missionPublic": true,
+    "commanderPublic": true,
+    "humanVisible": true,
+    "exoCandidates": [
+      "assets/cards/art/exordium/exoback.webp",
+      "assets/cards/art/exordium/exoback.png",
+      "assets/cards/art/exordium/exoback.jpg",
+      "assets/cards/art/exordium/exoback.jpeg",
+      "assets/cards/frames/exordium_back.png"
+    ],
+    "hiddenName": "una carta coperta",
+    "hiddenList": "1 carta coperta"
+  },
+  "back": {
+    "src": "assets/cards/art/exordium/exoback.webp",
+    "candidates": "assets/cards/art/exordium/exoback.webp|assets/cards/art/exordium/exoback.png|assets/cards/art/exordium/exoback.jpg|assets/cards/art/exordium/exoback.jpeg|assets/cards/frames/exordium_back.png",
+    "blocked": true,
+    "fallback": true,
+    "text": "\n    \n    ExordiumARENA RUBRA\n    ⊘\n  "
+  },
+  "hiddenDraw": {
+    "hidden": false,
+    "text": "\n    \n    ExordiumARENA RUBRA\n    \n  Carta pescata",
+    "hasBack": true
+  },
+  "publicPlay": {
+    "hidden": false,
+    "text": "\n    GIOCATA\n    Segreta\n    Exordium\n  Segreta giocata",
+    "face": true
+  },
+  "manualReduced": {
+    "reduced": true,
+    "text": "Carte animate RIDOTTE",
+    "dataset": "reduced",
+    "persisted": true
+  },
+  "missionDedupe": true,
+  "reducedMotion": {
+    "animation": "arenaCardMotionReduced",
+    "duration": "0.09s",
+    "text": "\n    \n    ExordiumARENA RUBRA\n    ⊘\n  2 carta/e bloccata/e"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o4b_browser_incremental_dom_smoke.py ===
+{
+  "ok": true,
+  "first": {
+    "generation": 1,
+    "cells": 3,
+    "unitNodes": 1,
+    "fullBuilds": 1,
+    "renders": 1,
+    "patchedCells": 3,
+    "patchedTokens": 1,
+    "reusedTokens": 0,
+    "skeletonRepairs": 1
+  },
+  "unchanged": {
+    "sameCells": true,
+    "sameToken": true,
+    "diag": {
+      "generation": 1,
+      "cells": 3,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 2,
+      "patchedCells": 0,
+      "patchedTokens": 0,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "hpUpdate": {
+    "sameToken": true,
+    "hp": "1",
+    "diag": {
+      "generation": 1,
+      "cells": 3,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 3,
+      "patchedCells": 0,
+      "patchedTokens": 1,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "moved": {
+    "sameToken": true,
+    "parent": "1,-1,0",
+    "diag": {
+      "generation": 1,
+      "cells": 3,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 4,
+      "patchedCells": 2,
+      "patchedTokens": 0,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "targeting": {
+    "target": true,
+    "diag": {
+      "generation": 1,
+      "cells": 3,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 5,
+      "patchedCells": 1,
+      "patchedTokens": 0,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "delegated": {
+    "clicks": [
+      "1,-1,0"
+    ]
+  },
+  "removed": {
+    "tokens": 0,
+    "diag": {
+      "generation": 1,
+      "cells": 3,
+      "unitNodes": 0,
+      "fullBuilds": 1,
+      "renders": 6,
+      "patchedCells": 1,
+      "patchedTokens": 0,
+      "reusedTokens": 0,
+      "skeletonRepairs": 1
+    }
+  },
+  "rebuilt": {
+    "count": 4,
+    "diag": {
+      "generation": 2,
+      "cells": 4,
+      "unitNodes": 0,
+      "fullBuilds": 2,
+      "renders": 7,
+      "patchedCells": 4,
+      "patchedTokens": 0,
+      "reusedTokens": 0,
+      "skeletonRepairs": 2
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o4b_full_app_renderer_smoke.py ===
+{
+  "ok": true,
+  "base": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "preOk": true,
+    "problems": []
+  },
+  "started": {
+    "cells": 127,
+    "marker": "incremental-f9o4c",
+    "diag": {
+      "generation": 1,
+      "cells": 127,
+      "unitNodes": 0,
+      "fullBuilds": 1,
+      "renders": 1,
+      "patchedCells": 127,
+      "patchedTokens": 0,
+      "reusedTokens": 0,
+      "skeletonRepairs": 1
+    },
+    "units": 2
+  },
+  "injected": {
+    "uid": "NXC1F01_1_1",
+    "token": true,
+    "parent": "0,0,0",
+    "diag": {
+      "generation": 1,
+      "cells": 127,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 2,
+      "patchedCells": 1,
+      "patchedTokens": 1,
+      "reusedTokens": 0,
+      "skeletonRepairs": 1
+    }
+  },
+  "updated": {
+    "same": true,
+    "hp": "1",
+    "diag": {
+      "generation": 1,
+      "cells": 127,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 4,
+      "patchedCells": 0,
+      "patchedTokens": 1,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "moved": {
+    "same": true,
+    "parent": "1,-1,0",
+    "diag": {
+      "generation": 1,
+      "cells": 127,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 5,
+      "patchedCells": 2,
+      "patchedTokens": 0,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "delegatedMove": {
+    "target": "2,-2,0",
+    "pos": "2,-2,0",
+    "sameToken": true,
+    "diag": {
+      "generation": 1,
+      "cells": 127,
+      "unitNodes": 1,
+      "fullBuilds": 1,
+      "renders": 8,
+      "patchedCells": 7,
+      "patchedTokens": 0,
+      "reusedTokens": 1,
+      "skeletonRepairs": 1
+    }
+  },
+  "post": {
+    "ok": true,
+    "problems": []
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "ignoredBaselineConsoleErrors": 1
+}
+=== f9o4c_browser_android_stability_smoke.py ===
+{
+  "ok": true,
+  "base": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "pre": {
+      "ok": true,
+      "source": "f9o4c-browser-base",
+      "at": "2026-07-24T16:16:35.919Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 96",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 59",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 170",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 59/59.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 30, capacità legale 52, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 30, capacità legale 48, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 30, capacità legale 47, overflow debug 0.",
+        "F9O5 tassonomia unità: 96 blueprint · starter 15, light 15, heavy 31, elite 20, pivot 5, commander 10.",
+        "F9O5a profili FX/SFX: 96 blueprint · energy 2, support 19, ballistic_heavy 24, occult 16, structure 9, ballistic_light 1, melee 6, organic 19.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "F9O6 tutorial: 5 lezioni pianificate · 1 scenario tecnico · 5 set ritratti.",
+        "F9O6: runtime data-driven, spotlight semantico, eventi, checkpoint e pausa bot disponibili.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9N10: 13 deck integrati, 10 preset Missione; Tafos Lithos 30+Missione.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    },
+    "replaceChildren": "undefined",
+    "mobile": true,
+    "gameBar": true
+  },
+  "started": {
+    "cells": 127,
+    "marker": "incremental-f9o4c",
+    "diag": {
+      "generation": 1,
+      "cells": 127,
+      "unitNodes": 0,
+      "fullBuilds": 1,
+      "renders": 1,
+      "patchedCells": 127,
+      "patchedTokens": 0,
+      "reusedTokens": 0,
+      "skeletonRepairs": 1
+    },
+    "menuButtons": 6,
+    "overlay": true,
+    "handCanvases": 20
+  },
+  "repaired": {
+    "before": 126,
+    "after": 127,
+    "diag": {
+      "generation": 2,
+      "cells": 127,
+      "unitNodes": 0,
+      "fullBuilds": 2,
+      "renders": 2,
+      "patchedCells": 127,
+      "patchedTokens": 0,
+      "reusedTokens": 0,
+      "skeletonRepairs": 2
+    }
+  },
+  "panels": {
+    "cells": 127,
+    "gameBar": true,
+    "buttons": 6,
+    "handOpen": true,
+    "pending": false,
+    "handPanel": true,
+    "actionsPanel": true,
+    "logPanel": true,
+    "setupPanel": true,
+    "overlay": true
+  },
+  "fallback": {
+    "pendingDisplay": "grid",
+    "readyDisplay": "none"
+  },
+  "imageFallback": [
+    {
+      "group": "fallback",
+      "status": "loaded",
+      "src": "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%222%22 height=%222%22%3E%3Crect width=%222%22 height=%222%22/%3E%3C/svg%3E"
+    },
+    {
+      "group": "exhausted",
+      "status": "settled-error",
+      "src": "data:image/png;base64,broken-b"
+    }
+  ],
+  "post": {
+    "ok": true,
+    "problems": []
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "ignoredBaselineConsoleErrors": 4
+}
+=== f9o4d_browser_mission_visibility_smoke.py ===
+{
+  "ok": true,
+  "before": {
+    "sig": "mission¦1¦NXMSN01¦ordinary¦1¦tracking¦0¦0¦0¦0¦0¦0¦0¦0¦¦o1~0~2~0~0~0~0 / 2|o2~0~3~0~0~0~0 / 3|o3~0~8~0~0~0~0 / 8¦0¦0¦0¦0¦none",
+    "text": "Civiltà AlgoritmicaIN CORSO\n○1. Controlla 2 PS0 / 2\n○2. Costruisci 3 strutture0 / 3\n○3. Accumula 8 ENE0 / 8\nObiettivi incompletiGioca"
+  },
+  "ready": {
+    "sig": "mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~0~1~1~2 / 2|o2~3~3~0~1~1~3 / 3|o3~8~8~0~1~1~8 / 8¦0¦0¦0¦1¦none",
+    "text": "Civiltà AlgoritmicaPRONTA\n✓1. Controlla 2 PS2 / 2\n✓2. Costruisci 3 strutture3 / 3\n✓3. Accumula 8 ENE8 / 8\nMissione ordinaria prontaGioca",
+    "cleared": [
+      "",
+      "",
+      ""
+    ]
+  },
+  "pending": {
+    "sig": "mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~0~1~1~2 / 2|o2~3~3~0~1~1~3 / 3|o3~8~8~0~1~1~8 / 8¦1¦0¦1¦2¦none",
+    "confirm": true,
+    "text": "Civiltà AlgoritmicaPRONTA\n✓1. Controlla 2 PS2 / 2\n✓2. Costruisci 3 strutture3 / 3\n✓3. Accumula 8 ENE8 / 8\nGiocare “Civiltà Algoritmica”?AnnullaConferma"
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o4d_full_app_mission_render_smoke.py ===
+{
+  "ok": true,
+  "initial": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "handSig": "1¦1¦1¦3¦idle¦0¦0¦0¦0¦¦¦¦25¦6¦mission-f9o4d-full:0:0:1|UNIT_NXCMD01_1_hand_1:4:0:1|UNIT_NXC1F06_1_hand_2:2:0:0|UNIT_NXC1F01_1_hand_3:2:0:0|UNIT_NXC1F02_1_hand_4:2:0:0|UNIT_NX4B03_1_hand_5:3:0:0¦UNIT_NX2B01_1_starter_1:1:0:0|UNIT_NX3B01_1_starter_1:1:0:0|UNIT_NXC1F07_1_starter_1:2:0:0¦mission¦1¦NXMSN01¦ordinary¦1¦tracking¦0¦0¦0¦0¦0¦0¦0¦0¦¦o1~0~2~0~0~0~Non valutato|o2~0~3~0~0~0~Non valutato|o3~0~1~0~0~0~Non valutato¦0¦0¦0¦3¦none",
+    "panelSig": "1¦1¦1:3:25:0:mission-f9o4d-full:0:0:1|UNIT_NXCMD01_1_hand_1:4:0:1|UNIT_NXC1F06_1_hand_2:2:0:0|UNIT_NXC1F01_1_hand_3:2:0:0|UNIT_NXC1F02_1_hand_4:2:0:0|UNIT_NX4B03_1_hand_5:3:0:0:UNIT_NX2B01_1_starter_1:1:0:0|UNIT_NX3B01_1_starter_1:1:0:0|UNIT_NXC1F07_1_starter_1:2:0:0:mission¦1¦NXMSN01¦ordinary¦1¦tracking¦0¦0¦0¦0¦0¦0¦0¦0¦¦o1~0~2~0~0~0~Non valutato|o2~0~3~0~0~0~Non valutato|o3~0~1~0~0~0~Non valutato¦0¦0¦0¦3¦none¦2:3:25:0:UNIT_EX0B00_2_hand_1:4:0:1|UNIT_EX2B01_2_hand_2:1:0:0|UNIT_EXC1F05_2_hand_3:2:0:0|UNIT_EX2B03_2_hand_4:3:0:0|UNIT_EXC1F02_2_hand_5:3:0:0:UNIT_EX1B01_2_starter_1:1:0:0|UNIT_EXC1F04_2_starter_1:1:0:0|UNIT_EX4B02_2_starter_1:2:0:0:mission-absent¦2¦0¦0¦0¦3¦none",
+    "dockSig": "1¦1¦3¦mission¦1¦NXMSN01¦ordinary¦1¦tracking¦0¦0¦0¦0¦0¦0¦0¦0¦¦o1~0~2~0~0~0~Non valutato|o2~0~3~0~0~0~Non valutato|o3~0~1~0~0~0~Non valutato¦0¦0¦0¦3¦none",
+    "panelText": "\n          \n        \n          \n            Mano / deck C2\n            Round 1 · turno: G1 Nexus · pesca 1/turno · cap mano 10 · recupero 5 ENE → 3 carte · catalogo 170\n          \n          \n          \n            \n        \n          G1 · Nexus\n          Comandante: Avatex\n          \n            Deck 25\n            Mano 6\n            Scarti 0\n            Depot 3 ENE\n            Income 3\n          \n        \n            \n        \n          G2 · Exordium\n          Comandante: Varran\n          \n            Deck 25\n            Mano 5\n            Scarti 0\n            Depot 3 ENE\n            Income 3\n          \n        \n          \n        \n          \n    \n      \n        MissioniF9N10 · Missioni su cicli multipli, recupero protetto e gestione IA.\n        Copia diagnostica\n      \n      \n        \n    \n      \n        \n          G1 · Missione ordinaria · ciclo 1\n          Civiltà Algoritmica\n        \n        IN CORSO\n      \n      \n        \n    \n      1\n      \n        \n          Controlla almeno 2 PS a un checkpoint di inizio turno personale.\n          INCOMPLETO\n        \n        0 · serie 0/1\n        Non valutato\n      \n    \n    \n      2\n      \n        \n          Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG.\n          INCOMPLETO\n        \n        0 / 3\n        Non valutato\n      \n    \n    \n      3\n      \n        \n          Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano.\n          INCOMPLETO\n        \n        0 / 1\n        Non valutato\n      \n    \n      \n      Ricompensa: Gioca 1 carta a costo 0, poi gioca 2 carte con costo ridotto di 1 ENE.\n      \n        Il tracker sta verificando gli obiettivi.\n        Gioca MissioneObiettivi non tutti completati\n      \n    \n        \n      \n        G2Nessuna MissioneFACOLTATIVA\n        Il deck è composto da 30 carte ordinarie.\n      \n      \n      \n    \n          \n        \n          \n            \n              \n            \n            \n              Nexus · Unità · UNIT:NXCMD01\n              \n    \n      Carta selezionata Avatex\n      Ruolo Comandante\n      Tipo COMANDANTE\n      ENE 4\n      HP 4\n      DEF 3\n      ATT 4\n    \n    Comandante Nexus orientato a presidio PS e controllo territoriale. Protocollo di Presidio: Bersaglia una unità Nexus alleata su PS o adiacente a PS: recupera +1 DEF. Se Nexus controlla quel PS, ottiene anche +1 ATT fino al prossimo attacco. Costo 1 ENE, CD2.\n    \n            \n          \n        \n          \n            \n        \n          G1 NexusNexus\n          Starter fuori deck\n          \n        \n          \n        \n          \n        \n          Fanteria\n          \n            \n            \n              Droide di Sicurezza\n              Fanteria\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Pronto\n          \n        \n        \n          \n        \n          Veicolo\n          \n            \n            \n              Quad Ricognitore\n              Veicolo\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Pronto\n          \n        \n        \n          \n        \n          Struttura\n          \n            \n            \n              Barriera Armata\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci starter\n            Pronto\n          \n        \n        \n          Carte in mano\n          \n        \n          \n        \n          \n          \n            \n            \n              Civiltà Algoritmica\n              Missione\n            \n          \n          \n            0 ENE\n            MISSIONE\n            \n          \n        \n          \n            Mostra progressiPROTETTA\n            IN CORSO · Obiettivi non tutti completati\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Avatex\n              Comandante\n            \n          \n          \n            4 ENE\n            COM.\n            \n          \n        \n          \n            Gioca cartaPROTETTA\n            ENE insufficiente\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Barriera Difensiva\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Fante Robot\n              Fanteria\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Gioca carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Drone Geniere\n              Fanteria\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Gioca carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Bunker\n              Struttura\n            \n          \n          \n            3 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci carta\n            Pronto\n          \n        \n        \n            \n        \n          G2 ExordiumExordium\n          Starter fuori deck\n          \n        \n          \n        \n          \n        \n          Fanteria\n          \n            \n            \n              Guardia di Aurex\n              Fanteria\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Non è il turno\n          \n        \n        \n          \n        \n          Veicolo\n          \n            \n            \n              Cursor\n              Veicolo\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Non è il turno\n          \n        \n        \n          \n        \n          Struttura\n          \n            \n            \n              Bastione Armato\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci starter\n            Non è il turno\n          \n        \n        \n          Carte in mano\n          \n        \n          \n        \n          \n          \n            \n            \n              Varran\n              Comandante\n            \n          \n          \n            4 ENE\n            COM.\n            \n          \n        \n          \n            Gioca cartaPROTETTA\n            Non è il turno\n          \n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          ",
+    "dockText": "\n        \n          \n            \n              Azioni · Nexus\n              G1\n            \n            \n              3 ENE\n              +3 prossimo turno\n            \n          \n          \n    Civiltà AlgoritmicaIN CORSO\n    ○1. Controlla almeno 2 PS a un checkpoint di inizio turno personale.0 · serie 0/1○2. Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG.0 / 3○3. Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano.0 / 1\n    Obiettivi non tutti completatiGioca\n  \n          \n            \n          \n            Ricalcolo Strategico\n            2 ENE · CD 2 · no bersagli\n            Mira\n          \n          \n            Protocollo di Blocco\n            1 ENE · CD 2 · no bersagli\n            Mira\n          \n          \n        ",
+    "ready": false
+  },
+  "ready": {
+    "handSig": "1¦1¦1¦8¦idle¦0¦0¦0¦0¦¦¦¦25¦6¦mission-f9o4d-full:0:0:1|UNIT_NXCMD01_1_hand_1:4:0:1|UNIT_NXC1F06_1_hand_2:2:0:0|UNIT_NXC1F01_1_hand_3:2:0:0|UNIT_NXC1F02_1_hand_4:2:0:0|UNIT_NX4B03_1_hand_5:3:0:0¦UNIT_NX2B01_1_starter_1:1:0:0|UNIT_NX3B01_1_starter_1:1:0:0|UNIT_NXC1F07_1_starter_1:2:0:0¦mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~1~1~1~2 / 2 · serie 1/1|o2~3~3~0~1~1~3 / 3|o3~8 ENE / 6 carte~8 ENE / 6 carte~0~1~1~8 ENE / 6 carte¦0¦0¦0¦8¦none",
+    "panelSig": "1¦1¦1:8:25:0:mission-f9o4d-full:0:0:1|UNIT_NXCMD01_1_hand_1:4:0:1|UNIT_NXC1F06_1_hand_2:2:0:0|UNIT_NXC1F01_1_hand_3:2:0:0|UNIT_NXC1F02_1_hand_4:2:0:0|UNIT_NX4B03_1_hand_5:3:0:0:UNIT_NX2B01_1_starter_1:1:0:0|UNIT_NX3B01_1_starter_1:1:0:0|UNIT_NXC1F07_1_starter_1:2:0:0:mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~1~1~1~2 / 2 · serie 1/1|o2~3~3~0~1~1~3 / 3|o3~8 ENE / 6 carte~8 ENE / 6 carte~0~1~1~8 ENE / 6 carte¦0¦0¦0¦8¦none¦2:3:25:0:UNIT_EX0B00_2_hand_1:4:0:1|UNIT_EX2B01_2_hand_2:1:0:0|UNIT_EXC1F05_2_hand_3:2:0:0|UNIT_EX2B03_2_hand_4:3:0:0|UNIT_EXC1F02_2_hand_5:3:0:0:UNIT_EX1B01_2_starter_1:1:0:0|UNIT_EXC1F04_2_starter_1:1:0:0|UNIT_EX4B02_2_starter_1:2:0:0:mission-absent¦2¦0¦0¦0¦8¦none",
+    "dockSig": "1¦1¦8¦mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~1~1~1~2 / 2 · serie 1/1|o2~3~3~0~1~1~3 / 3|o3~8 ENE / 6 carte~8 ENE / 6 carte~0~1~1~8 ENE / 6 carte¦0¦0¦0¦8¦none",
+    "panelText": "\n          \n        \n          \n            Mano / deck C2\n            Round 1 · turno: G1 Nexus · pesca 1/turno · cap mano 10 · recupero 5 ENE → 3 carte · catalogo 170\n          \n          \n          \n            \n        \n          G1 · Nexus\n          Comandante: Avatex\n          \n            Deck 25\n            Mano 6\n            Scarti 0\n            Depot 8 ENE\n            Income 5\n          \n        \n            \n        \n          G2 · Exordium\n          Comandante: Varran\n          \n            Deck 25\n            Mano 5\n            Scarti 0\n            Depot 3 ENE\n            Income 3\n          \n        \n          \n        \n          \n    \n      \n        MissioniF9N10 · Missioni su cicli multipli, recupero protetto e gestione IA.\n        Copia diagnostica\n      \n      \n        \n    \n      \n        \n          G1 · Missione ordinaria · ciclo 1\n          Civiltà Algoritmica\n        \n        PRONTA\n      \n      \n        \n    \n      1\n      \n        \n          Controlla almeno 2 PS a un checkpoint di inizio turno personale.\n          COMPLETATO\n        \n        2 · serie 1/1\n        2 / 2 · serie 1/1\n      \n    \n    \n      2\n      \n        \n          Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG.\n          COMPLETATO\n        \n        3 / 3\n        3 / 3\n      \n    \n    \n      3\n      \n        \n          Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano.\n          COMPLETATO\n        \n        8 ENE / 6 carte / 8 ENE / 6 carte\n        8 ENE / 6 carte\n      \n    \n      \n      Ricompensa: Gioca 1 carta a costo 0, poi gioca 2 carte con costo ridotto di 1 ENE.\n      \n        Le condizioni necessarie risultano soddisfatte.\n        Gioca MissioneMissione ordinaria pronta\n      \n    \n        \n      \n        G2Nessuna MissioneFACOLTATIVA\n        Il deck è composto da 30 carte ordinarie.\n      \n      \n      \n    \n          \n        \n          \n            \n              \n            \n            \n              Nexus · Unità · UNIT:NXCMD01\n              \n    \n      Carta selezionata Avatex\n      Ruolo Comandante\n      Tipo COMANDANTE\n      ENE 4\n      HP 4\n      DEF 3\n      ATT 4\n    \n    Comandante Nexus orientato a presidio PS e controllo territoriale. Protocollo di Presidio: Bersaglia una unità Nexus alleata su PS o adiacente a PS: recupera +1 DEF. Se Nexus controlla quel PS, ottiene anche +1 ATT fino al prossimo attacco. Costo 1 ENE, CD2.\n    \n            \n          \n        \n          \n            \n        \n          G1 NexusNexus\n          Starter fuori deck\n          \n        \n          \n        \n          \n        \n          Fanteria\n          \n            \n            \n              Droide di Sicurezza\n              Fanteria\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Pronto\n          \n        \n        \n          \n        \n          Veicolo\n          \n            \n            \n              Quad Ricognitore\n              Veicolo\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Pronto\n          \n        \n        \n          \n        \n          Struttura\n          \n            \n            \n              Barriera Armata\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci starter\n            Pronto\n          \n        \n        \n          Carte in mano\n          \n        \n          \n        \n          \n          \n            \n            \n              Civiltà Algoritmica\n              Missione\n            \n          \n          \n            0 ENE\n            MISSIONE\n            \n          \n        \n          \n            Gioca MissionePROTETTA\n            PRONTA · Missione ordinaria pronta\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Avatex\n              Comandante\n            \n          \n          \n            4 ENE\n            COM.\n            \n          \n        \n          \n            Gioca cartaPROTETTA\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Barriera Difensiva\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Fante Robot\n              Fanteria\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Gioca carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Drone Geniere\n              Fanteria\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Gioca carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Bunker\n              Struttura\n            \n          \n          \n            3 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci carta\n            Pronto\n          \n        \n        \n            \n        \n          G2 ExordiumExordium\n          Starter fuori deck\n          \n        \n          \n        \n          \n        \n          Fanteria\n          \n            \n            \n              Guardia di Aurex\n              Fanteria\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Non è il turno\n          \n        \n        \n          \n        \n          Veicolo\n          \n            \n            \n              Cursor\n              Veicolo\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Non è il turno\n          \n        \n        \n          \n        \n          Struttura\n          \n            \n            \n              Bastione Armato\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci starter\n            Non è il turno\n          \n        \n        \n          Carte in mano\n          \n        \n          \n        \n          \n          \n            \n            \n              Varran\n              Comandante\n            \n          \n          \n            4 ENE\n            COM.\n            \n          \n        \n          \n            Gioca cartaPROTETTA\n            Non è il turno\n          \n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          ",
+    "dockText": "\n        \n          \n            \n              Azioni · Nexus\n              G1\n            \n            \n              8 ENE\n              +5 prossimo turno\n            \n          \n          \n    Civiltà AlgoritmicaPRONTA\n    ✓1. Controlla almeno 2 PS a un checkpoint di inizio turno personale.2 · serie 1/1✓2. Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG.3 / 3✓3. Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano.8 ENE / 6 carte / 8 ENE / 6 carte\n    Missione ordinaria prontaGioca\n  \n          \n            \n          \n            Ricalcolo Strategico\n            2 ENE · CD 2 · no bersagli\n            Mira\n          \n          \n            Protocollo di Blocco\n            1 ENE · CD 2 · no bersagli\n            Mira\n          \n          \n        ",
+    "ready": true,
+    "values": [
+      "2 · serie 1/1",
+      "3 / 3",
+      "8 ENE / 6 carte / 8 ENE / 6 carte"
+    ]
+  },
+  "pending": {
+    "requested": true,
+    "handSig": "1¦1¦1¦8¦idle¦0¦0¦0¦0¦¦¦¦25¦6¦mission-f9o4d-full:0:0:1|UNIT_NXCMD01_1_hand_1:4:0:1|UNIT_NXC1F06_1_hand_2:2:0:0|UNIT_NXC1F01_1_hand_3:2:0:0|UNIT_NXC1F02_1_hand_4:2:0:0|UNIT_NX4B03_1_hand_5:3:0:0¦UNIT_NX2B01_1_starter_1:1:0:0|UNIT_NX3B01_1_starter_1:1:0:0|UNIT_NXC1F07_1_starter_1:2:0:0¦mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~1~1~1~2 / 2|o2~3~3~0~1~1~3 / 3|o3~8 ENE / 6 carte~8 ENE / 6 carte~0~1~1~8 ENE / 6 carte¦1¦0¦1¦9¦none",
+    "panelSig": "1¦1¦1:8:25:0:mission-f9o4d-full:0:0:1|UNIT_NXCMD01_1_hand_1:4:0:1|UNIT_NXC1F06_1_hand_2:2:0:0|UNIT_NXC1F01_1_hand_3:2:0:0|UNIT_NXC1F02_1_hand_4:2:0:0|UNIT_NX4B03_1_hand_5:3:0:0:UNIT_NX2B01_1_starter_1:1:0:0|UNIT_NX3B01_1_starter_1:1:0:0|UNIT_NXC1F07_1_starter_1:2:0:0:mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~1~1~1~2 / 2|o2~3~3~0~1~1~3 / 3|o3~8 ENE / 6 carte~8 ENE / 6 carte~0~1~1~8 ENE / 6 carte¦1¦0¦1¦9¦none¦2:3:25:0:UNIT_EX0B00_2_hand_1:4:0:1|UNIT_EX2B01_2_hand_2:1:0:0|UNIT_EXC1F05_2_hand_3:2:0:0|UNIT_EX2B03_2_hand_4:3:0:0|UNIT_EXC1F02_2_hand_5:3:0:0:UNIT_EX1B01_2_starter_1:1:0:0|UNIT_EXC1F04_2_starter_1:1:0:0|UNIT_EX4B02_2_starter_1:2:0:0:mission-absent¦2¦1¦0¦1¦9¦none",
+    "dockSig": "1¦1¦8¦mission¦1¦NXMSN01¦ordinary¦1¦ready¦0¦0¦0¦1¦3¦0¦0¦0¦¦o1~2~2~1~1~1~2 / 2|o2~3~3~0~1~1~3 / 3|o3~8 ENE / 6 carte~8 ENE / 6 carte~0~1~1~8 ENE / 6 carte¦1¦0¦1¦9¦none",
+    "panelConfirm": true,
+    "dockConfirm": true,
+    "panelText": "\n          \n        \n          \n            Mano / deck C2\n            Round 1 · turno: G1 Nexus · pesca 1/turno · cap mano 10 · recupero 5 ENE → 3 carte · catalogo 170\n          \n          \n          \n            \n        \n          G1 · Nexus\n          Comandante: Avatex\n          \n            Deck 25\n            Mano 6\n            Scarti 0\n            Depot 8 ENE\n            Income 5\n          \n        \n            \n        \n          G2 · Exordium\n          Comandante: Varran\n          \n            Deck 25\n            Mano 5\n            Scarti 0\n            Depot 3 ENE\n            Income 3\n          \n        \n          \n        \n          \n    \n      \n        MissioniF9N10 · Missioni su cicli multipli, recupero protetto e gestione IA.\n        Copia diagnostica\n      \n      \n        \n    \n      \n        \n          G1 · Missione ordinaria · ciclo 1\n          Civiltà Algoritmica\n        \n        PRONTA\n      \n      \n        \n    \n      1\n      \n        \n          Controlla almeno 2 PS a un checkpoint di inizio turno personale.\n          COMPLETATO\n        \n        2 · serie 1/1\n        2 / 2\n      \n    \n    \n      2\n      \n        \n          Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG.\n          COMPLETATO\n        \n        3 / 3\n        3 / 3\n      \n    \n    \n      3\n      \n        \n          Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano.\n          COMPLETATO\n        \n        8 ENE / 6 carte / 8 ENE / 6 carte\n        8 ENE / 6 carte\n      \n    \n      \n      Ricompensa: Gioca 1 carta a costo 0, poi gioca 2 carte con costo ridotto di 1 ENE.\n      \n        Le condizioni necessarie risultano soddisfatte.\n        Confermi il gioco di “Civiltà Algoritmica”? La carta andrà negli scarti e la ricompensa sarà applicata.AnnullaConferma Missione\n      \n    \n        \n      \n        G2Nessuna MissioneFACOLTATIVA\n        Il deck è composto da 30 carte ordinarie.\n      \n      \n      \n    \n          \n        \n          \n            \n              \n            \n            \n              Nexus · Unità · UNIT:NXCMD01\n              \n    \n      Carta selezionata Avatex\n      Ruolo Comandante\n      Tipo COMANDANTE\n      ENE 4\n      HP 4\n      DEF 3\n      ATT 4\n    \n    Comandante Nexus orientato a presidio PS e controllo territoriale. Protocollo di Presidio: Bersaglia una unità Nexus alleata su PS o adiacente a PS: recupera +1 DEF. Se Nexus controlla quel PS, ottiene anche +1 ATT fino al prossimo attacco. Costo 1 ENE, CD2.\n    \n            \n          \n        \n          \n            \n        \n          G1 NexusNexus\n          Starter fuori deck\n          \n        \n          \n        \n          \n        \n          Fanteria\n          \n            \n            \n              Droide di Sicurezza\n              Fanteria\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Pronto\n          \n        \n        \n          \n        \n          Veicolo\n          \n            \n            \n              Quad Ricognitore\n              Veicolo\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Pronto\n          \n        \n        \n          \n        \n          Struttura\n          \n            \n            \n              Barriera Armata\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci starter\n            Pronto\n          \n        \n        \n          Carte in mano\n          \n        \n          \n        \n          \n          \n            \n            \n              Civiltà Algoritmica\n              Missione\n            \n          \n          \n            0 ENE\n            MISSIONE\n            \n          \n        \n          \n            Gioca MissionePROTETTA\n            PRONTA · Missione ordinaria pronta\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Avatex\n              Comandante\n            \n          \n          \n            4 ENE\n            COM.\n            \n          \n        \n          \n            Gioca cartaPROTETTA\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Barriera Difensiva\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Fante Robot\n              Fanteria\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Gioca carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Drone Geniere\n              Fanteria\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Gioca carta\n            Pronto\n          \n        \n        \n          \n        \n          \n          \n            \n            \n              Bunker\n              Struttura\n            \n          \n          \n            3 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci carta\n            Pronto\n          \n        \n        \n            \n        \n          G2 ExordiumExordium\n          Starter fuori deck\n          \n        \n          \n        \n          \n        \n          Fanteria\n          \n            \n            \n              Guardia di Aurex\n              Fanteria\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Non è il turno\n          \n        \n        \n          \n        \n          Veicolo\n          \n            \n            \n              Cursor\n              Veicolo\n            \n          \n          \n            1 ENE\n            UNITÀ\n            \n          \n        \n          \n            Piazza starter\n            Non è il turno\n          \n        \n        \n          \n        \n          Struttura\n          \n            \n            \n              Bastione Armato\n              Struttura\n            \n          \n          \n            2 ENE\n            UNITÀ\n            \n          \n        \n          \n            Costruisci starter\n            Non è il turno\n          \n        \n        \n          Carte in mano\n          \n        \n          \n        \n          \n          \n            \n            \n              Varran\n              Comandante\n            \n          \n          \n            4 ENE\n            COM.\n            \n          \n        \n          \n            Gioca cartaPROTETTA\n            Non è il turno\n          \n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          \n    \n    ExordiumARENA RUBRA\n    \n  \n          CopertaInformazione privata\n        \n        \n          ",
+    "dockText": "\n        \n          \n            \n              Azioni · Nexus\n              G1\n            \n            \n              8 ENE\n              +5 prossimo turno\n            \n          \n          \n    Civiltà AlgoritmicaPRONTA\n    ✓1. Controlla almeno 2 PS a un checkpoint di inizio turno personale.2 · serie 1/1✓2. Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG.3 / 3✓3. Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano.8 ENE / 6 carte / 8 ENE / 6 carte\n    Giocare “Civiltà Algoritmica”?AnnullaConferma\n  \n          \n            \n          \n            Ricalcolo Strategico\n            2 ENE · CD 2 · no bersagli\n            Mira\n          \n          \n            Protocollo di Blocco\n            1 ENE · CD 2 · no bersagli\n            Mira\n          \n          \n        "
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "ignoredBaselineConsoleErrors": 1
+}
+=== f9o4e_browser_public_bot_hand_stability_smoke.py ===
+{
+  "ok": true,
+  "setup": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "hand1": 5,
+    "hand2": 5
+  },
+  "initial": {
+    "side": "1",
+    "canvases": 5,
+    "ready": 5,
+    "hidden": 3,
+    "hiddenCanvases": 0,
+    "cache": {
+      "cached": 10,
+      "final": 10,
+      "provisional": 0,
+      "realArt": 0,
+      "placeholderArt": 0,
+      "prewarming": 0,
+      "limit": 40
+    }
+  },
+  "repeated": [
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    },
+    {
+      "replaced": true,
+      "count": 5,
+      "ready": 5
+    }
+  ],
+  "switched": {
+    "side": "2",
+    "canvases": 5,
+    "ready": 5,
+    "cache": {
+      "cached": 10,
+      "final": 10,
+      "provisional": 0,
+      "realArt": 0,
+      "placeholderArt": 0,
+      "prewarming": 0,
+      "limit": 40
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "ignoredBaselineConsoleErrors": 1
+}
+=== f9o4f_browser_real_art_cache_race_smoke.py ===
+{
+  "result": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "pendingReady": false,
+    "pendingState": {
+      "ready": false,
+      "artSource": "placeholder",
+      "realArtState": "pending",
+      "placeholderState": "loaded",
+      "frameState": "loaded"
+    },
+    "pendingDiagnostics": {
+      "cached": 1,
+      "final": 0,
+      "provisional": 1,
+      "realArt": 0,
+      "placeholderArt": 1,
+      "prewarming": 0,
+      "limit": 40
+    },
+    "pendingRestore": {
+      "result": "pending",
+      "renderState": "pending",
+      "artState": "placeholder",
+      "rendered": false,
+      "final": "0"
+    },
+    "realReady": true,
+    "realState": {
+      "ready": true,
+      "artSource": "real",
+      "realArtState": "loaded",
+      "placeholderState": "loaded",
+      "frameState": "loaded"
+    },
+    "realDiagnostics": {
+      "cached": 1,
+      "final": 1,
+      "provisional": 0,
+      "realArt": 1,
+      "placeholderArt": 0,
+      "prewarming": 0,
+      "limit": 40
+    },
+    "realRestore": {
+      "result": "ready",
+      "renderState": "ready",
+      "artState": "real",
+      "rendered": true,
+      "final": "1"
+    },
+    "fallbackReady": true,
+    "fallbackState": {
+      "ready": true,
+      "artSource": "placeholder",
+      "realArtState": "error",
+      "placeholderState": "loaded",
+      "frameState": "loaded"
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o5a_browser_token_fx_smoke.py ===
+{
+  "ok": true,
+  "result": {
+    "attack": {
+      "projectiles": 1,
+      "recoil": true
+    },
+    "impact": 1,
+    "ability": 2,
+    "destruction": {
+      "ghosts": 1,
+      "bursts": 1
+    },
+    "beforeMode": "on",
+    "afterMode": "reduced",
+    "sfxEnabled": true,
+    "fxDiag": {
+      "mode": "reduced",
+      "effectiveMode": "reduced",
+      "queue": 0,
+      "active": 4,
+      "rendered": 5,
+      "dropped": 0,
+      "lastError": ""
+    },
+    "sfxDiag": {
+      "enabled": true,
+      "volumePercent": 38,
+      "unlocked": true,
+      "activeVoices": 1,
+      "played": 1,
+      "dropped": 0,
+      "lastError": "",
+      "assetRegistry": {
+        "attack": [
+          "assets/audio/sfx/attack.ogg",
+          "assets/audio/sfx/attack.mp3"
+        ],
+        "impact": [
+          "assets/audio/sfx/impact.ogg",
+          "assets/audio/sfx/impact.mp3"
+        ],
+        "destruction": [
+          "assets/audio/sfx/destruction.ogg",
+          "assets/audio/sfx/destruction.mp3"
+        ],
+        "ability": [
+          "assets/audio/sfx/ability.ogg",
+          "assets/audio/sfx/ability.mp3"
+        ]
+      }
+    },
+    "remainingFx": 0
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o5a_browser_token_fx_smoke.py (rerun after batch timeout) ===
+{
+  "ok": true,
+  "result": {
+    "attack": {
+      "projectiles": 1,
+      "recoil": true
+    },
+    "impact": 1,
+    "ability": 2,
+    "destruction": {
+      "ghosts": 1,
+      "bursts": 1
+    },
+    "beforeMode": "on",
+    "afterMode": "reduced",
+    "sfxEnabled": true,
+    "fxDiag": {
+      "mode": "reduced",
+      "effectiveMode": "reduced",
+      "queue": 0,
+      "active": 4,
+      "rendered": 5,
+      "dropped": 0,
+      "lastError": ""
+    },
+    "sfxDiag": {
+      "enabled": true,
+      "volumePercent": 38,
+      "unlocked": true,
+      "activeVoices": 1,
+      "played": 1,
+      "dropped": 0,
+      "lastError": "",
+      "assetRegistry": {
+        "attack": [
+          "assets/audio/sfx/attack.ogg",
+          "assets/audio/sfx/attack.mp3"
+        ],
+        "impact": [
+          "assets/audio/sfx/impact.ogg",
+          "assets/audio/sfx/impact.mp3"
+        ],
+        "destruction": [
+          "assets/audio/sfx/destruction.ogg",
+          "assets/audio/sfx/destruction.mp3"
+        ],
+        "ability": [
+          "assets/audio/sfx/ability.ogg",
+          "assets/audio/sfx/ability.mp3"
+        ]
+      }
+    },
+    "remainingFx": 0
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+=== f9o6_browser_tutorial_runtime_smoke.py (rerun after batch timeout) ===
+{
+  "ok": true,
+  "initial": {
+    "build": "C2-STABLE-1-F9O6-APK-M4c",
+    "audit": {
+      "ok": true,
+      "lessons": 5,
+      "scenarios": 1,
+      "portraitSets": 5,
+      "errors": [],
+      "warnings": []
+    },
+    "menuButton": true,
+    "runtimeApi": "function",
+    "precheck": {
+      "ok": true,
+      "source": "f9o6-browser-initial",
+      "at": "2026-07-24T16:17:14.824Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 96",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 59",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 170",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 59/59.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 30, capacità legale 52, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 30, capacità legale 48, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 30, capacità legale 47, overflow debug 0.",
+        "F9O5 tassonomia unità: 96 blueprint · starter 15, light 15, heavy 31, elite 20, pivot 5, commander 10.",
+        "F9O5a profili FX/SFX: 96 blueprint · energy 2, support 19, ballistic_heavy 24, occult 16, structure 9, ballistic_light 1, melee 6, organic 19.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "F9O6 tutorial: 5 lezioni pianificate · 1 scenario tecnico · 5 set ritratti.",
+        "F9O6: runtime data-driven, spotlight semantico, eventi, checkpoint e pausa bot disponibili.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9N10: 13 deck integrati, 10 preset Missione; Tafos Lithos 30+Missione.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    }
+  },
+  "started": true,
+  "welcome": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 0,
+      "stepId": "welcome",
+      "stepMode": "informative",
+      "targetResolved": false,
+      "allowedTargets": 0,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 0,
+        "completed": false,
+        "lastStepId": null,
+        "updatedAt": "2026-07-24T16:17:14.972Z"
+      },
+      "lastAction": null
+    },
+    "narrative": {
+      "open": true,
+      "index": 0,
+      "count": 1,
+      "current": {
+        "id": "narrative-1",
+        "speaker": "Narratore Exordium",
+        "text": "Questa è una demo tecnica del nuovo runtime tutorial. Ogni passo è descritto da dati e può controllare vignetta, spotlight, input ed evento di completamento.",
+        "portraitSet": "tutorial-exordium",
+        "portraitSrc": null,
+        "expression": "explain",
+        "side": "left",
+        "focus": null,
+        "highlight": [],
+        "allowedActions": [],
+        "metadata": {}
+      },
+      "portraitSets": [
+        "tutorial-placeholder",
+        "tutorial-exordium",
+        "tutorial-nexus",
+        "tutorial-agathoi",
+        "tutorial-liberti",
+        "tutorial-fabeot"
+      ],
+      "expressions": [
+        "neutral",
+        "explain",
+        "approve",
+        "warning",
+        "stern"
+      ],
+      "domReady": true
+    },
+    "pace": "competitive",
+    "scale": "tactical",
+    "tutorialMode": true,
+    "botPaused": true,
+    "hand": [
+      "UNIT:EXC1F01",
+      "UNIT:EX1B04"
+    ],
+    "starters": 0,
+    "logicalQgs": 2,
+    "hqCells": [
+      {
+        "key": "-6,0,6",
+        "tokens": 0,
+        "stats": 0
+      },
+      {
+        "key": "6,0,-6",
+        "tokens": 0,
+        "stats": 0
+      }
+    ]
+  },
+  "hqStep": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 1,
+      "stepId": "hq-objective",
+      "stepMode": "informative",
+      "targetResolved": true,
+      "allowedTargets": 1,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 0,
+        "completed": false,
+        "lastStepId": null,
+        "updatedAt": "2026-07-24T16:17:14.972Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "next",
+        "stepId": "welcome",
+        "at": 1784909835491
+      }
+    },
+    "spotlightHidden": false,
+    "targetClass": "hex hq hq1 cellObjective",
+    "hole": {
+      "left": 597.1945190429688,
+      "top": 471.42498779296875,
+      "width": 17.54998779296875,
+      "height": 20.1500244140625,
+      "right": 614.7445068359375,
+      "bottom": 491.57501220703125
+    }
+  },
+  "collapseStep": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 2,
+      "stepId": "collapse-hand",
+      "stepMode": "locked",
+      "targetResolved": true,
+      "allowedTargets": 1,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 0,
+        "completed": false,
+        "lastStepId": null,
+        "updatedAt": "2026-07-24T16:17:14.972Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "next",
+        "stepId": "hq-objective",
+        "at": 1784909835879
+      }
+    },
+    "target": "ghost mapHandCollapseBtn",
+    "allowed": 1
+  },
+  "showStep": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 3,
+      "stepId": "show-hand",
+      "stepMode": "locked",
+      "targetResolved": true,
+      "allowedTargets": 1,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 0,
+        "completed": false,
+        "lastStepId": null,
+        "updatedAt": "2026-07-24T16:17:14.972Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "click",
+        "stepId": "collapse-hand",
+        "at": 1784909836162
+      }
+    },
+    "compact": true
+  },
+  "cardStep": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 4,
+      "stepId": "select-tribune-card",
+      "stepMode": "locked",
+      "targetResolved": true,
+      "allowedTargets": 1,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 0,
+        "completed": false,
+        "lastStepId": null,
+        "updatedAt": "2026-07-24T16:17:14.972Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "click",
+        "stepId": "show-hand",
+        "at": 1784909836471
+      }
+    },
+    "targetUid": "UNIT_EXC1F01_1_hand_1",
+    "visible": true
+  },
+  "deployReady": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 5,
+      "stepId": "deploy-tribune",
+      "stepMode": "locked",
+      "targetResolved": true,
+      "allowedTargets": 4,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 5,
+        "completed": false,
+        "lastStepId": "select-tribune-card",
+        "updatedAt": "2026-07-24T16:17:16.851Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "click",
+        "stepId": "select-tribune-card",
+        "at": 1784909836851
+      }
+    },
+    "spawnTargets": 4,
+    "allowed": 4,
+    "pending": "UNIT_EXC1F01_1_hand_1"
+  },
+  "unitStep": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 6,
+      "stepId": "select-runtime-unit",
+      "stepMode": "locked",
+      "targetResolved": true,
+      "allowedTargets": 1,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 5,
+        "completed": false,
+        "lastStepId": "select-tribune-card",
+        "updatedAt": "2026-07-24T16:17:16.851Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "event:UNIT_SPAWNED",
+        "stepId": "deploy-tribune",
+        "at": 1784909837295
+      }
+    },
+    "tribunes": 1,
+    "token": true
+  },
+  "centralStep": {
+    "diag": {
+      "active": true,
+      "scenarioId": "f9o6-runtime-demo",
+      "stepIndex": 7,
+      "stepId": "central-ps",
+      "stepMode": "guided",
+      "targetResolved": true,
+      "allowedTargets": 1,
+      "botPaused": true,
+      "progress": {
+        "scenarioId": "f9o6-runtime-demo",
+        "nextStepIndex": 5,
+        "completed": false,
+        "lastStepId": "select-tribune-card",
+        "updatedAt": "2026-07-24T16:17:16.851Z"
+      },
+      "lastAction": {
+        "kind": "complete",
+        "source": "click",
+        "stepId": "select-runtime-unit",
+        "at": 1784909837870
+      }
+    },
+    "progress": {
+      "scenarioId": "f9o6-runtime-demo",
+      "nextStepIndex": 5,
+      "completed": false,
+      "lastStepId": "select-tribune-card",
+      "updatedAt": "2026-07-24T16:17:16.851Z"
+    },
+    "targetKey": "0,0,0"
+  },
+  "completeStep": {
+    "active": true,
+    "scenarioId": "f9o6-runtime-demo",
+    "stepIndex": 8,
+    "stepId": "complete",
+    "stepMode": "informative",
+    "targetResolved": false,
+    "allowedTargets": 0,
+    "botPaused": true,
+    "progress": {
+      "scenarioId": "f9o6-runtime-demo",
+      "nextStepIndex": 8,
+      "completed": false,
+      "lastStepId": "central-ps",
+      "updatedAt": "2026-07-24T16:17:18.271Z"
+    },
+    "lastAction": {
+      "kind": "complete",
+      "source": "click",
+      "stepId": "central-ps",
+      "at": 1784909838271
+    }
+  },
+  "finished": {
+    "active": false,
+    "progress": {
+      "scenarioId": "f9o6-runtime-demo",
+      "nextStepIndex": 9,
+      "completed": true,
+      "lastStepId": "complete",
+      "updatedAt": "2026-07-24T16:17:18.444Z"
+    },
+    "screen": "tutorial",
+    "post": {
+      "ok": true,
+      "source": "f9o6-browser-post",
+      "at": "2026-07-24T16:17:19.864Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 96",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 59",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 170",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 59/59.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 30, capacità legale 49, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 30, capacità legale 52, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 30, capacità legale 48, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 30, capacità legale 47, overflow debug 0.",
+        "Deck C2-FINAL-C2 G1: 0",
+        "Deck C2-FINAL-C2 G2: 0",
+        "Mano C2-FINAL-C2 G1: 1",
+        "Mano C2-FINAL-C2 G2: 0",
+        "F9N5 mano iniziale G1: Comandante + 4 ordinarie.",
+        "F9N5 mano iniziale G2: Comandante + 4 ordinarie.",
+        "Runtime deck shuffle C2c-6a-fix2: after_initial_hand.",
+        "F9O6 scenario tutorial f9o6-runtime-demo: validazione deck competitivo esclusa per setup deterministico.",
+        "F9O5 tassonomia unità: 96 blueprint · starter 15, light 15, heavy 31, elite 20, pivot 5, commander 10.",
+        "F9O5a profili FX/SFX: 96 blueprint · energy 2, support 19, ballistic_heavy 24, occult 16, structure 9, ballistic_light 1, melee 6, organic 19.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "F9O6 tutorial: 5 lezioni pianificate · 1 scenario tecnico · 5 set ritratti.",
+        "F9O6: runtime data-driven, spotlight semantico, eventi, checkpoint e pausa bot disponibili.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9N10: 13 deck integrati, 10 preset Missione; Tafos Lithos 30+Missione.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+}
+BROWSER_RESULT=17/17 (15 passed in full batch; final 2 rerun individually after overall shell timeout)

@@ -204,7 +204,7 @@ function runPrecheck(options = {}) {
         info.push(`Mano C2-FINAL-C2 G1: ${state.hand && state.hand[1] ? state.hand[1].length : 0}`);
         info.push(`Mano C2-FINAL-C2 G2: ${state.hand && state.hand[2] ? state.hand[2].length : 0}`);
         if (state.cardDebug.openingHand) {
-          for (const side of [1, 2]) {
+          for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2])) {
             const opening = state.cardDebug.openingHand[side];
             if (!opening || opening.ok !== true) problems.push(`F9N5 mano iniziale G${side}: contratto non valido.`);
             else info.push(`F9N5 mano iniziale G${side}: ${opening.missionCopies ? "Missione + " : ""}Comandante + ${opening.ordinaryCopies} ordinarie.`);
@@ -215,9 +215,11 @@ function runPrecheck(options = {}) {
         if (state.cardDebug && Object.prototype.hasOwnProperty.call(state.cardDebug, "runtimeDeckShuffled")) {
           info.push(`Runtime deck shuffle C2c-6a-fix2: ${state.cardDebug.runtimeDeckShuffleMode || (state.cardDebug.runtimeDeckShuffled ? "after_initial_hand" : "off")}.`);
         }
-        if (typeof deckRuntimeValidationSummary === "function") {
+        if (state.tutorialMode === true) {
+          info.push(`F9O6 scenario tutorial ${state.tutorialScenarioId || "custom"}: validazione deck competitivo esclusa per setup deterministico.`);
+        } else if (typeof deckRuntimeValidationSummary === "function") {
           const runtime = deckRuntimeValidationSummary();
-          for (const side of [1, 2]) {
+          for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2])) {
             const r = runtime.sides && runtime.sides[side];
             if (!r) continue;
             info.push(`Runtime deck C2-FINAL-C2 G${side}: totale ${r.totalCards}/${r.targetSize}, deck ${r.zoneCounts.deck}, mano ${r.zoneCounts.hand}, scarti ${r.zoneCounts.discard}, overflow ${r.debugOverflowCopies}, ok ${r.ok}.`);
@@ -276,6 +278,129 @@ function runPrecheck(options = {}) {
       if (Array.isArray(bp.passives)) {
         for (const passive of bp.passives) precheckAbility(passive, bp, problems, warnings);
       }
+    }
+
+    if (typeof unitTaxonomyAuditF9O5 === "function") {
+      const taxonomyAudit = unitTaxonomyAuditF9O5(blueprints);
+      info.push(`F9O5 tassonomia unità: ${taxonomyAudit.total} blueprint · ${Object.entries(taxonomyAudit.counts).map(([key,value]) => `${key} ${value}`).join(", ")}.`);
+      for (const error of taxonomyAudit.errors || []) problems.push(`F9O5: ${error}`);
+      for (const warning of taxonomyAudit.warnings || []) warnings.push(`F9O5: ${warning}`);
+    }
+
+    if (typeof tokenFxProfileAuditF9O5a === "function") {
+      const fxAudit = tokenFxProfileAuditF9O5a(blueprints);
+      info.push(`F9O5a profili FX/SFX: ${fxAudit.total} blueprint · ${Object.entries(fxAudit.counts).map(([key,value]) => `${key} ${value}`).join(", ")}.`);
+      for (const error of fxAudit.errors || []) problems.push(`F9O5a: ${error}`);
+    } else {
+      warnings.push("F9O5a: audit profili FX/SFX non disponibile.");
+    }
+
+    if (typeof CARD_CATALOG_CONFIG !== "undefined") {
+      const requiredF9O5aFlags = [
+        "tokenFxProfilesF9O5a",
+        "dynamicTokenFxLayerF9O5a",
+        "tokenFxReducedOffModesF9O5a",
+        "synthesizedSfxRuntimeF9O5a",
+        "persistentSfxControlsF9O5a",
+        "noWebGlMigrationF9O5a"
+      ];
+      for (const flag of requiredF9O5aFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O5a: feature flag mancante o disattivato: ${flag}.`);
+      }
+      info.push("F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.");
+
+      const requiredF9O6Flags = [
+        "hqObjectiveTokenSuppressionF9O5b",
+        "dataDrivenTutorialRuntimeF9O6",
+        "semanticTutorialSpotlightF9O6",
+        "tutorialNarrativePortraitsF9O6",
+        "tutorialInputModesF9O6",
+        "tutorialEventCompletionF9O6",
+        "tutorialCheckpointStorageF9O6",
+        "tutorialBotPauseF9O6",
+        "tutorialStatsExclusionF9O6"
+      ];
+      for (const flag of requiredF9O6Flags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O6: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7aFlags = [
+        "tutorialLessonOneExordiumF9O7a",
+        "tutorialScenarioCommandsF9O7a",
+        "tutorialCheckpointSnapshotF9O7a",
+        "tutorialPlayerTextGameplayOnlyF9O7a"
+      ];
+      for (const flag of requiredF9O7aFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7a: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7bFlags = [
+        "tutorialUiStateContractF9O7b",
+        "tutorialResumeSynchronizationF9O7b",
+        "tutorialAsyncSessionGuardF9O7b",
+        "tutorialPortraitFallbackF9O7b"
+      ];
+      for (const flag of requiredF9O7bFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7b: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7cFlags = [
+        "tutorialLessonTwoNexusF9O7c",
+        "tutorialStarterReserveF9O7c",
+        "tutorialDeploymentNetworkF9O7c",
+        "tutorialVanguardComparisonF9O7c",
+        "tutorialMultiLessonMenuF9O7c"
+      ];
+      for (const flag of requiredF9O7cFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7c: feature flag mancante o disattivato: ${flag}.`);
+      }
+      if (CARD_CATALOG_CONFIG.collapsedHandControlsReflowF9O7d !== true) {
+        problems.push("F9O7d: reflow dei comandi Mano ridotta mancante o disattivato.");
+      }
+      const requiredF9O7eFlags = [
+        "tutorialLessonThreeAgathoiF9O7e",
+        "tutorialDefenseChoiceF9O7e",
+        "tutorialThornsCounterattackF9O7e",
+        "tutorialFortificationWavesF9O7e"
+      ];
+      for (const flag of requiredF9O7eFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7e: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7fFlags = [
+        "tutorialLessonFourLibertiF9O7f",
+        "tutorialCardChoiceGateF9O7f",
+        "tutorialHoverPreviewAboveSpotlightF9O7f",
+        "tutorialBleedSuperiorityCoordinationF9O7f"
+      ];
+      for (const flag of requiredF9O7fFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7f: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7gFlags = [
+        "tutorialLessonFiveFabeotF9O7g",
+        "tutorialFabeotMarkVulnerabilityF9O7g",
+        "tutorialHandEnergyDisruptionF9O7g",
+        "tutorialConversionResumeF9O7g"
+      ];
+      for (const flag of requiredF9O7gFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7g: feature flag mancante o disattivato: ${flag}.`);
+      }
+    }
+
+    if (typeof tutorialScenarioAuditF9O6 === "function") {
+      const tutorialAudit = tutorialScenarioAuditF9O6();
+      info.push(`Tutorial: ${tutorialAudit.lessons} lezioni pianificate · ${tutorialAudit.scenarios} lezioni giocabili · ${tutorialAudit.portraitSets} set ritratti.`);
+      for (const error of tutorialAudit.errors || []) problems.push(`F9O6: ${error}`);
+      for (const warning of tutorialAudit.warnings || []) warnings.push(`F9O6: ${warning}`);
+    } else {
+      problems.push("F9O6: audit scenari tutorial non disponibile.");
+    }
+    if (typeof tutorialRuntimeStartScenario !== "function" || typeof tutorialRuntimeHandleGameEvent !== "function" || typeof tutorialRuntimeShouldPauseBot !== "function") {
+      problems.push("F9O6: API runtime tutorial incompleta.");
+    } else {
+      info.push("F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.");
+      info.push("F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.");
+      info.push("F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.");
+      info.push("F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.");
+      info.push("F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.");
+      info.push("F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.");
+      info.push("F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.");
     }
 
     // C2a deck tactic checks.
@@ -463,12 +588,17 @@ function runPrecheck(options = {}) {
   };
 
   window.__arenaRubraLastPrecheck = report;
+  if (typeof document !== "undefined" && document.documentElement) {
+    document.documentElement.dataset.arenaPrecheckOk = String(report.ok);
+    document.documentElement.dataset.arenaPrecheckProblems = JSON.stringify(problems);
+    document.documentElement.dataset.arenaPrecheckWarnings = JSON.stringify(warnings);
+  }
 
   if (!quiet || problems.length || warnings.length) {
     const msg = `Precheck Arena Rubra: ${report.ok ? "OK" : "PROBLEMI"} · problemi ${problems.length}, warning ${warnings.length}.`;
     if (typeof console !== "undefined") {
-      if (problems.length) console.error(msg, report);
-      else if (warnings.length) console.warn(msg, report);
+      if (problems.length) console.error(msg, JSON.stringify({ problems, warnings }));
+      else if (warnings.length) console.warn(msg, JSON.stringify({ warnings }));
       else console.info(msg, report);
     }
     if (typeof log === "function" && (problems.length || warnings.length)) {

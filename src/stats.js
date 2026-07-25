@@ -25,11 +25,26 @@ function loadMatchStats() {
 
     function recordMatchResult() {
       if (!state || state.matchRecorded) return;
+      if (state.tutorialMode === true || state.mapLabMode === true) {
+        state.matchRecorded = true;
+        if (typeof log === "function") log(
+          state.mapLabMode ? "Partita Match Lab esclusa da statistiche competitive e storico." : "Partita tutorial esclusa da statistiche e storico.",
+          EventTypes.LOG_MESSAGE,
+          {
+            source: state.mapLabMode ? "F9Q3-map-lab-stats-exclusion" : "F9O6-tutorial-stats-exclusion",
+            tutorialScenarioId: state.tutorialScenarioId || null,
+            mapId: state.mapId || null
+          }
+        );
+        return;
+      }
       state.matchRecorded = true;
       updateControlFromOccupants();
       const winner = state.winnerSide;
       const p1Faction = state.factions[1];
       const p2Faction = state.factions[2];
+      const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+      const losingPlayerIds = winner ? playerIds.filter(side => side !== winner) : [];
       const record = {
         id: state.matchId,
         at: new Date().toISOString(),
@@ -37,12 +52,32 @@ function loadMatchStats() {
         p2Faction,
         p1Mode: state.modes[1],
         p2Mode: state.modes[2],
+        playerIds: [...playerIds],
+        playerCount: playerIds.length,
+        players: Object.fromEntries(playerIds.map(side => [side, {
+          faction: state.factions[side],
+          mode: state.modes[side],
+          commander: commanderLogLabel(side),
+          eliminated: typeof isPlayerEliminated === "function" ? isPlayerEliminated(side) : false,
+          ps: countControlledPS(side),
+          pressure: state.pressure[side] || 0,
+          units: combatUnits(side).length,
+          energy: state.energy[side] || 0
+        }])),
+        mapId: state.mapId || "map1_starter",
+        mapName: state.mapDefinition ? state.mapDefinition.name : "Starter MAP1",
+        mapRevision: state.mapDefinition && state.mapDefinition.metadata ? state.mapDefinition.metadata.revision : 1,
+        mapSchemaVersion: state.mapDefinition ? state.mapDefinition.schemaVersion : 1,
+        mapCellCount: Array.isArray(state.cells) ? state.cells.length : 0,
+        terrainUsage: typeof mapTerrainUsage === "function" ? mapTerrainUsage(state.mapDefinition) : { free: 127 },
+        movementMultiplier: state.mapDefinition ? state.mapDefinition.movementMultiplier : 1,
         aiMode: state.aiMode,
         pacePreset: state.pacePreset,
         gameScaleMode: state.gameScaleMode || "large_scale",
         winnerSide: winner,
         winnerFaction: winner ? state.factions[winner] : "Pareggio",
-        loserFaction: winner ? state.factions[enemyOf(winner)] : "Pareggio",
+        loserFaction: winner && losingPlayerIds.length ? state.factions[losingPlayerIds[0]] : "Pareggio",
+        loserFactions: losingPlayerIds.map(side => state.factions[side]),
         winType: state.winType || "altro",
         round: state.turn,
         logLines: state.logSeq,
@@ -100,10 +135,11 @@ function loadMatchStats() {
       const stats = state && state.matchStats ? currentMatchStatsObject() : null;
       const current = stats && stats.current ? stats.current : {};
       const final = stats && stats.final ? stats.final : current;
-      const selectedDecks = state && state.selectedDecks ? {
-        1: { ...(state.selectedDecks[1] || {}) },
-        2: { ...(state.selectedDecks[2] || {}) }
-      } : { 1:{ mode:"template" }, 2:{ mode:"template" } };
+      const playerIds = record.playerIds || (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2]);
+      const selectedDecks = Object.fromEntries(playerIds.map(side => [
+        side,
+        state && state.selectedDecks ? { ...(state.selectedDecks[side] || {}) } : { mode:"template" }
+      ]));
       return {
         id: record.id || (state && state.matchId) || "",
         at: record.at || new Date().toISOString(),
@@ -120,7 +156,16 @@ function loadMatchStats() {
         pacePreset: record.pacePreset,
         gameScaleMode: record.gameScaleMode || "large_scale",
         f9n3Telemetry: record.f9n3Telemetry || null,
-        map: typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.map : "Starter MAP1 radius 6",
+        map: record.mapName || (typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.map : "Starter MAP1 radius 6"),
+        mapId: record.mapId || "map1_starter",
+        mapName: record.mapName || "Starter MAP1",
+        mapRevision: record.mapRevision || 1,
+        mapSchemaVersion: record.mapSchemaVersion || 1,
+        mapCellCount: record.mapCellCount || 127,
+        terrainUsage: record.terrainUsage || { free: 127 },
+        movementMultiplier: record.movementMultiplier || 1,
+        playerIds,
+        playerCount: record.playerCount || 2,
         winnerSide: record.winnerSide,
         winnerFaction: record.winnerFaction,
         loserFaction: record.loserFaction,
@@ -133,7 +178,9 @@ function loadMatchStats() {
         energy: final && final.energy ? final.energy : { 1: record.ene1, 2: record.ene2 },
         units: final && final.units ? final.units : { 1: record.units1, 2: record.units2 },
         totals: stats && stats.totals ? { ...stats.totals } : {},
-        players: stats && stats.players ? { 1:{ ...stats.players[1] }, 2:{ ...stats.players[2] } } : {},
+        players: stats && stats.players
+          ? Object.fromEntries(playerIds.map(side => [side, { ...(stats.players[side] || {}) }]))
+          : {},
         topTactics: stats ? Object.entries(stats.tactics || {}).sort((a,b)=>Number(b[1]||0)-Number(a[1]||0)).slice(0,8) : [],
         topAbilities: stats ? Object.entries(stats.abilities || {}).sort((a,b)=>Number(b[1]||0)-Number(a[1]||0)).slice(0,8) : [],
         message: record.message || ""
@@ -216,6 +263,7 @@ function matchLogHeaderText() {
   if (!state) return "Arena Rubra – nessuna partita attiva";
   if (typeof updateControlFromOccupants === "function") updateControlFromOccupants();
   const winnerSide = state.winnerSide || "";
+  const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
   const lines = [
     "ARENA RUBRA – MATCH LOG",
     `Build: ${currentBuildVersionLabel()}`,
@@ -227,15 +275,14 @@ function matchLogHeaderText() {
     `GameScaleMode: ${state.gameScaleMode || "large_scale"}`,
     `F9N3Telemetry: ${state.f9n3Telemetry ? JSON.stringify(state.f9n3Telemetry) : "{}"}`,
     `AiMode: ${state.aiMode || ""}`,
-    `P1: ${state.factions && state.factions[1] ? state.factions[1] : ""} · Commander: ${commanderLogLabel(1)} · Mode: ${state.modes && state.modes[1] ? state.modes[1] : ""}`,
-    `P2: ${state.factions && state.factions[2] ? state.factions[2] : ""} · Commander: ${commanderLogLabel(2)} · Mode: ${state.modes && state.modes[2] ? state.modes[2] : ""}`,
+    ...playerIds.map(side => `P${side}: ${state.factions && state.factions[side] ? state.factions[side] : ""} · Commander: ${commanderLogLabel(side)} · Mode: ${state.modes && state.modes[side] ? state.modes[side] : ""}`),
     `WinnerSide: ${winnerSide}`,
     `WinnerFaction: ${winnerSide && state.factions ? state.factions[winnerSide] : ""}`,
     `WinType: ${state.winType || ""}`,
-    `FinalPS: P1 ${typeof countControlledPS === "function" ? countControlledPS(1) : "?"} / P2 ${typeof countControlledPS === "function" ? countControlledPS(2) : "?"}`,
-    `FinalPressure: P1 ${state.pressure ? state.pressure[1] || 0 : 0} / P2 ${state.pressure ? state.pressure[2] || 0 : 0}`,
-    `FinalENE: P1 ${state.energy ? state.energy[1] || 0 : 0} / P2 ${state.energy ? state.energy[2] || 0 : 0}`,
-    `FinalUnits: P1 ${typeof combatUnits === "function" ? combatUnits(1).length : "?"} / P2 ${typeof combatUnits === "function" ? combatUnits(2).length : "?"}`,
+    `FinalPS: ${playerIds.map(side => `P${side} ${typeof countControlledPS === "function" ? countControlledPS(side) : "?"}`).join(" / ")}`,
+    `FinalPressure: ${playerIds.map(side => `P${side} ${state.pressure ? state.pressure[side] || 0 : 0}`).join(" / ")}`,
+    `FinalENE: ${playerIds.map(side => `P${side} ${state.energy ? state.energy[side] || 0 : 0}`).join(" / ")}`,
+    `FinalUnits: ${playerIds.map(side => `P${side} ${typeof combatUnits === "function" ? combatUnits(side).length : "?"}`).join(" / ")}`,
     `EventCount: ${Array.isArray(state.events) ? state.events.length : 0}`,
     `EventSeqMax: ${state.eventSeq || 0}`,
     "",
@@ -271,10 +318,12 @@ async function copyCurrentMatchLogTxt() {
 function exportCurrentMatchLogTxt() {
   const text = currentMatchLogTxt();
   const version = safeFilenamePart(currentBuildVersionLabel());
-  const p1 = state && state.factions ? safeFilenamePart(state.factions[1]) : "P1";
-  const p2 = state && state.factions ? safeFilenamePart(state.factions[2]) : "P2";
+  const playerIds = state && typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+  const matchup = state && state.factions
+    ? playerIds.map(side => safeFilenamePart(state.factions[side] || `P${side}`)).join("_vs_")
+    : "P1_vs_P2";
   const round = state ? state.turn || 0 : 0;
-  const filename = `arena_rubra_${version}_${p1}_vs_${p2}_R${round}.txt`;
+  const filename = `arena_rubra_${version}_${matchup}_R${round}.txt`;
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -326,7 +375,7 @@ function f9fEmptyPlayerStats() {
 
 function f9fSideKey(side) {
   const n = Number(side);
-  return n === 1 || n === 2 ? String(n) : null;
+  return Number.isInteger(n) && n >= 1 && n <= 4 ? String(n) : null;
 }
 
 function f9fPlayerBucket(stats, side) {
@@ -370,6 +419,8 @@ function f9fAbilityBucket(stats, nameOrKind) {
 function initializeMatchStats() {
   if (!state) return null;
   const build = typeof buildInfoExportMeta === "function" ? buildInfoExportMeta() : { version: currentBuildVersionLabel() };
+  const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+  const valueByPlayer = getter => Object.fromEntries(playerIds.map(side => [side, getter(side)]));
   state.matchStats = {
     schemaVersion: "F9F-1",
     source: "typed-events",
@@ -378,13 +429,21 @@ function initializeMatchStats() {
     matchId: state.matchId || "",
     build,
     setup: {
-      map: build.map || "Starter MAP1 radius 6",
+      map: state.mapDefinition ? state.mapDefinition.name : (build.map || "Starter MAP1 radius 6"),
+      mapId: state.mapId || "map1_starter",
+      mapName: state.mapDefinition ? state.mapDefinition.name : "Starter MAP1",
+      mapSchemaVersion: state.mapDefinition ? state.mapDefinition.schemaVersion : 1,
+      mapRevision: state.mapDefinition && state.mapDefinition.metadata ? state.mapDefinition.metadata.revision : 1,
+      mapCellCount: Array.isArray(state.cells) ? state.cells.length : 0,
+      terrainUsage: typeof mapTerrainUsage === "function" ? mapTerrainUsage(state.mapDefinition) : { free: 127 },
+      movementMultiplier: state.mapDefinition ? state.mapDefinition.movementMultiplier : 1,
+      playerIds: [...playerIds],
       radius: typeof RADIUS !== "undefined" ? RADIUS : null,
       pacePreset: state.pacePreset || "",
       aiMode: state.aiMode || "",
-      factions: { 1: state.factions ? state.factions[1] : "", 2: state.factions ? state.factions[2] : "" },
-      modes: { 1: state.modes ? state.modes[1] : "", 2: state.modes ? state.modes[2] : "" },
-      commanders: { 1: commanderLogLabel(1), 2: commanderLogLabel(2) },
+      factions: valueByPlayer(side => state.factions ? state.factions[side] : ""),
+      modes: valueByPlayer(side => state.modes ? state.modes[side] : ""),
+      commanders: valueByPlayer(side => commanderLogLabel(side)),
       firstPlayer: state.currentPlayer || null
     },
     current: {},
@@ -392,7 +451,7 @@ function initializeMatchStats() {
     eventSeqMax: state.eventSeq || 0,
     eventCount: 0,
     eventCounts: {},
-    players: { 1: f9fEmptyPlayerStats(), 2: f9fEmptyPlayerStats() },
+    players: valueByPlayer(() => f9fEmptyPlayerStats()),
     totals: {
       moves: 0,
       movedCells: 0,
@@ -445,6 +504,8 @@ function refreshMatchStatsSnapshot() {
   const ps2 = typeof countControlledPS === "function" ? countControlledPS(2) : 0;
   const units1 = typeof combatUnits === "function" ? combatUnits(1).length : 0;
   const units2 = typeof combatUnits === "function" ? combatUnits(2).length : 0;
+  const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+  const valueByPlayer = getter => Object.fromEntries(playerIds.map(side => [side, getter(side)]));
   stats.updatedAt = new Date().toISOString();
   stats.eventSeqMax = state.eventSeq || 0;
   stats.eventCount = Array.isArray(state.events) ? state.events.length : stats.eventCount || 0;
@@ -454,11 +515,12 @@ function refreshMatchStatsSnapshot() {
     winnerSide: state.winnerSide || null,
     winnerFaction: state.winnerSide && state.factions ? state.factions[state.winnerSide] : "",
     winType: state.winType || "",
-    ps: { 1: ps1, 2: ps2 },
-    pressure: { 1: state.pressure ? state.pressure[1] || 0 : 0, 2: state.pressure ? state.pressure[2] || 0 : 0 },
-    energy: { 1: state.energy ? state.energy[1] || 0 : 0, 2: state.energy ? state.energy[2] || 0 : 0 },
-    units: { 1: units1, 2: units2 },
-    cards: { 1: f9fReadCardZoneCounts(1), 2: f9fReadCardZoneCounts(2) }
+    ps: valueByPlayer(side => typeof countControlledPS === "function" ? countControlledPS(side) : 0),
+    pressure: valueByPlayer(side => state.pressure ? state.pressure[side] || 0 : 0),
+    energy: valueByPlayer(side => state.energy ? state.energy[side] || 0 : 0),
+    units: valueByPlayer(side => typeof combatUnits === "function" ? combatUnits(side).length : 0),
+    cards: valueByPlayer(side => f9fReadCardZoneCounts(side)),
+    eliminated: valueByPlayer(side => typeof isPlayerEliminated === "function" ? isPlayerEliminated(side) : false)
   };
   if (state.winnerSide && !stats.final) {
     stats.final = { ...stats.current, finishedAt: new Date().toISOString() };
@@ -479,7 +541,8 @@ function updateMatchStatsFromEvent(event) {
   switch (type) {
     case EventTypes.GAME_STARTED: {
       stats.setup.firstPlayer = data.firstPlayer || stats.setup.firstPlayer;
-      stats.setup.factions = { 1: data.faction1 || stats.setup.factions[1], 2: data.faction2 || stats.setup.factions[2] };
+      if (data.faction1) stats.setup.factions[1] = data.faction1;
+      if (data.faction2) stats.setup.factions[2] = data.faction2;
       break;
     }
     case EventTypes.TURN_STARTED: {
@@ -656,10 +719,12 @@ function currentMatchReportText() {
   if (!state) return "Arena Rubra – nessuna partita attiva";
   const stats = currentMatchStatsObject();
   const c = stats.current || {};
-  const p1 = stats.players && stats.players[1] ? stats.players[1] : f9fEmptyPlayerStats();
-  const p2 = stats.players && stats.players[2] ? stats.players[2] : f9fEmptyPlayerStats();
-  const avgAtt1 = p1.attacks ? (p1.attackAmountTotal / p1.attacks).toFixed(2) : "0";
-  const avgAtt2 = p2.attacks ? (p2.attackAmountTotal / p2.attacks).toFixed(2) : "0";
+  const playerIds = stats.setup && Array.isArray(stats.setup.playerIds) ? stats.setup.playerIds : [1, 2];
+  const playerStats = Object.fromEntries(playerIds.map(side => [
+    side,
+    stats.players && stats.players[side] ? stats.players[side] : f9fEmptyPlayerStats()
+  ]));
+  const values = getter => playerIds.map(side => `G${side} ${getter(side)}`).join(" / ");
   const topTactics = topEntries(stats.tactics, 6).map(([k,v]) => `${k}: ${v}`).join("; ") || "—";
   const topAbilities = topEntries(stats.abilities, 6).map(([k,v]) => `${k}: ${v}`).join("; ") || "—";
   const lines = [
@@ -667,28 +732,28 @@ function currentMatchReportText() {
     `Build: ${stats.build && stats.build.version ? stats.build.version : currentBuildVersionLabel()}`,
     `MatchId: ${stats.matchId || ""}`,
     `Round: ${c.round || 0}`,
-    `Setup: ${stats.setup.factions[1]} (${stats.setup.modes[1]}) vs ${stats.setup.factions[2]} (${stats.setup.modes[2]}) · ${stats.setup.pacePreset} · ${stats.setup.map}`,
-    `Comandanti: G1 ${stats.setup.commanders[1] || "—"} / G2 ${stats.setup.commanders[2] || "—"}`,
+    `Setup: ${playerIds.map(side => `${stats.setup.factions[side]} (${stats.setup.modes[side]})`).join(" vs ")} · ${stats.setup.pacePreset} · ${stats.setup.map}`,
+    `Comandanti: ${values(side => stats.setup.commanders[side] || "—")}`,
     `Vincitore: ${c.winnerFaction || "—"} · Tipo: ${c.winType || "—"}`,
-    `PS: G1 ${c.ps ? c.ps[1] : 0} / G2 ${c.ps ? c.ps[2] : 0}`,
-    `Pressione: G1 ${c.pressure ? c.pressure[1] : 0} / G2 ${c.pressure ? c.pressure[2] : 0}`,
-    `ENE finale: G1 ${c.energy ? c.energy[1] : 0} / G2 ${c.energy ? c.energy[2] : 0}`,
-    `Unità finali: G1 ${c.units ? c.units[1] : 0} / G2 ${c.units ? c.units[2] : 0}`,
+    `PS: ${values(side => c.ps ? c.ps[side] : 0)}`,
+    `Pressione: ${values(side => c.pressure ? c.pressure[side] : 0)}`,
+    `ENE finale: ${values(side => c.energy ? c.energy[side] : 0)}`,
+    `Unità finali: ${values(side => c.units ? c.units[side] : 0)}`,
     `Eventi: ${stats.eventCount} · Seq max: ${stats.eventSeqMax}`,
     "",
     "AZIONI",
-    `Movimenti: G1 ${p1.moves} (${p1.movedCells} celle) / G2 ${p2.moves} (${p2.movedCells} celle)`,
-    `Attacchi: G1 ${p1.attacks} (ATT medio ${avgAtt1}) / G2 ${p2.attacks} (ATT medio ${avgAtt2})`,
-    `Abilità: G1 ${p1.abilitiesUsed} / G2 ${p2.abilitiesUsed}`,
-    `Tattiche: G1 ${p1.tacticsUsed} / G2 ${p2.tacticsUsed}`,
-    `Spawn unità: G1 ${p1.unitsSpawned} / G2 ${p2.unitsSpawned}`,
-    `Strutture costruite: G1 ${p1.structuresBuilt} / G2 ${p2.structuresBuilt}`,
+    `Movimenti: ${values(side => `${playerStats[side].moves} (${playerStats[side].movedCells} celle)`)}`,
+    `Attacchi: ${values(side => `${playerStats[side].attacks} (ATT medio ${playerStats[side].attacks ? (playerStats[side].attackAmountTotal / playerStats[side].attacks).toFixed(2) : "0"})`)}`,
+    `Abilità: ${values(side => playerStats[side].abilitiesUsed)}`,
+    `Tattiche: ${values(side => playerStats[side].tacticsUsed)}`,
+    `Spawn unità: ${values(side => playerStats[side].unitsSpawned)}`,
+    `Strutture costruite: ${values(side => playerStats[side].structuresBuilt)}`,
     "",
     "COMBATTIMENTO",
     `Danno a DEF: ${stats.totals.damageToDef}`,
     `Danno a HP: ${stats.totals.damageToHp}`,
     `Unità distrutte: ${stats.totals.unitsDestroyed}`,
-    `Perdite: G1 ${p1.unitsLost} / G2 ${p2.unitsLost}`,
+    `Perdite: ${values(side => playerStats[side].unitsLost)}`,
     "",
     "TOP EVENTI",
     `Tattiche: ${topTactics}`,
@@ -711,8 +776,11 @@ function renderCurrentMatchStatsPanel() {
   }
   const stats = currentMatchStatsObject();
   const c = stats.current || {};
-  const p1 = stats.players && stats.players[1] ? stats.players[1] : f9fEmptyPlayerStats();
-  const p2 = stats.players && stats.players[2] ? stats.players[2] : f9fEmptyPlayerStats();
+  const playerIds = stats.setup && Array.isArray(stats.setup.playerIds) ? stats.setup.playerIds : [1, 2];
+  const playerRows = playerIds.map(side => {
+    const player = stats.players && stats.players[side] ? stats.players[side] : f9fEmptyPlayerStats();
+    return `<tr><td>G${side}</td><td>${f9fEscapeHtml(stats.setup.factions[side])}</td><td>${c.ps ? c.ps[side] : 0}</td><td>${c.pressure ? c.pressure[side] : 0}</td><td>${c.energy ? c.energy[side] : 0}</td><td>${c.units ? c.units[side] : 0}</td><td>${player.moves}</td><td>${player.attacks}</td><td>${player.abilitiesUsed}</td><td>${player.tacticsUsed}</td><td>${player.unitsLost}</td></tr>`;
+  }).join("");
   const eventRows = topEntries(stats.eventCounts, 8).map(([k,v]) => `<tr><td>${f9fEscapeHtml(k)}</td><td>${v}</td></tr>`).join("");
   panel.innerHTML = `
     <div class="statGrid">
@@ -725,10 +793,7 @@ function renderCurrentMatchStatsPanel() {
     </div>
     <div class="miniTable"><table>
       <thead><tr><th>G</th><th>Fazione</th><th>PS</th><th>Press.</th><th>ENE</th><th>Unità</th><th>Move</th><th>Atk</th><th>Abil.</th><th>Tatt.</th><th>Perdite</th></tr></thead>
-      <tbody>
-        <tr><td>G1</td><td>${f9fEscapeHtml(stats.setup.factions[1])}</td><td>${c.ps ? c.ps[1] : 0}</td><td>${c.pressure ? c.pressure[1] : 0}</td><td>${c.energy ? c.energy[1] : 0}</td><td>${c.units ? c.units[1] : 0}</td><td>${p1.moves}</td><td>${p1.attacks}</td><td>${p1.abilitiesUsed}</td><td>${p1.tacticsUsed}</td><td>${p1.unitsLost}</td></tr>
-        <tr><td>G2</td><td>${f9fEscapeHtml(stats.setup.factions[2])}</td><td>${c.ps ? c.ps[2] : 0}</td><td>${c.pressure ? c.pressure[2] : 0}</td><td>${c.energy ? c.energy[2] : 0}</td><td>${c.units ? c.units[2] : 0}</td><td>${p2.moves}</td><td>${p2.attacks}</td><td>${p2.abilitiesUsed}</td><td>${p2.tacticsUsed}</td><td>${p2.unitsLost}</td></tr>
-      </tbody>
+      <tbody>${playerRows}</tbody>
     </table></div>
     <details>
       <summary>Conteggio eventi</summary>
