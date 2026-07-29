@@ -42,7 +42,8 @@ const ABILITY_HANDLERS = Object.freeze({
           kind: ab.statusKind,
           value: ab.value || 0,
           turns: ab.turns || 1,
-          source: ab.name
+          source: ab.name,
+          casterSide: user.side
         });
       },
       incomeSwing(user, target, ab) {
@@ -52,15 +53,18 @@ const ABILITY_HANDLERS = Object.freeze({
           minIncome: ab.minIncome ?? 0,
           turns: ab.turns || 1,
           timing: ab.timing || "afterIncome",
-          source: ab.name
+          source: ab.name,
+          casterSide: user.side
         });
-        addPlayerEffect(enemyOf(user.side), {
+        const enemySide = affectedPlayerForAbility(user, target, { ...ab, affects:"enemy" });
+        addPlayerEffect(enemySide, {
           kind: "income_delta",
           value: ab.enemyValue || -1,
           minIncome: ab.minIncome ?? 0,
           turns: ab.turns || 1,
           timing: ab.timing || "afterIncome",
-          source: ab.name
+          source: ab.name,
+          casterSide: user.side
         });
       },
       costDelta(user, target, ab) {
@@ -72,7 +76,8 @@ const ABILITY_HANDLERS = Object.freeze({
           turns: ab.turns || 1,
           timing: ab.timing || "endTurn",
           filterSpec: ab.filterSpec || "all",
-          source: ab.name
+          source: ab.name,
+          casterSide: user.side
         });
       },
       incomeDelta(user, target, ab) {
@@ -83,7 +88,8 @@ const ABILITY_HANDLERS = Object.freeze({
           minIncome: ab.minIncome ?? 0,
           turns: ab.turns || 1,
           timing: ab.timing || "afterIncome",
-          source: ab.name
+          source: ab.name,
+          casterSide: user.side
         });
       },
       psLock(user, target, ab) {
@@ -136,7 +142,8 @@ const ABILITY_HANDLERS = Object.freeze({
           turns:ab.turns || 1,
           timing:ab.timing || "endTurn",
           filterSpec:ab.filterSpec || "nonStructure",
-          source:ab.name
+          source:ab.name,
+          casterSide:user.side
         });
       },
 
@@ -195,7 +202,8 @@ const ABILITY_HANDLERS = Object.freeze({
           turns:1,
           timing:ab.timing || "endTurn",
           filterSpec:"nexusHandUnit",
-          source:ab.name
+          source:ab.name,
+          casterSide:user.side
         });
       },
       varranOrder(user, target, ab) {
@@ -249,7 +257,8 @@ const ABILITY_HANDLERS = Object.freeze({
         applyStatus(target, { kind:"counterattack", value:1, turns:1, owner:user.side, source:ab.name });
       },
       compromisedLogistics(user, target, ab) {
-        const enemy = enemyOf(user.side);
+        const enemy = typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side);
+        if (!enemy) { log(`${ab.name}: bersaglio giocatore assente.`); return; }
         const drawn = typeof drawCards === "function" ? drawCards(enemy, 1, { source:ab.name }) : [];
         const card = drawn && drawn[0] ? drawn[0] : null;
         if (!card) {
@@ -257,11 +266,13 @@ const ABILITY_HANDLERS = Object.freeze({
           return;
         }
         if (card.zone !== "hand") {
-          log(`${ab.name}: ${card.name} non entra in mano a ${playerName(enemy)} e non può essere rubata.`);
+          const visibleDrawName = typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(enemy, card) : card.name;
+          log(`${ab.name}: ${visibleDrawName} non entra in mano a ${playerName(enemy)} e non può essere rubata.`);
           return;
         }
         if (!c2finalc2CanStealDrawnCombatUnit(card)) {
-          log(`${ab.name}: ${playerName(enemy)} pesca ${card.name}, ma non è fanteria/veicolo rubabile.`);
+          const visibleDrawName = typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(enemy, card) : card.name;
+          log(`${ab.name}: ${playerName(enemy)} pesca ${visibleDrawName}, ma la carta non è fanteria/veicolo rubabile.`);
           return;
         }
         c2finalc2StealDrawnCardToFabeot(user.side, enemy, card, ab.name);
@@ -365,7 +376,7 @@ const ABILITY_HANDLERS = Object.freeze({
           log(`${ab.name} fallisce: bersaglio non valido.`);
           return;
         }
-        const splash = combatUnits(enemyOf(user.side))
+        const splash = (typeof enemyCombatUnits === "function" ? enemyCombatUnits(user.side) : combatUnits(enemyOf(user.side)))
           .filter(e => e.uid !== target.uid && e.alive && areAdjacent(e.pos, target.pos))
           .filter(e => typeof isAbilityUntargetableTo !== "function" || !isAbilityUntargetableTo(e, user.side))
           .slice(0, 2);
@@ -395,10 +406,11 @@ const ABILITY_HANDLERS = Object.freeze({
       },
       copyRandomEnemyHandCard(user, target, ab) {
         if (typeof copyRandomEnemyHandCard !== "function") return;
-        copyRandomEnemyHandCard(user.side);
+        copyRandomEnemyHandCard(user.side, typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side));
       },
       lockEnemyEnergy(user, target, ab) {
-        const enemy = enemyOf(user.side);
+        const enemy = typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side);
+        if (!enemy) { log(`${ab.name}: bersaglio giocatore assente.`); return; }
         state.energyLocked[enemy] = Math.max(state.energyLocked[enemy] || 0, 1);
         log(`${playerName(enemy)} non potrà spendere ENE per 1 turno.`);
         if ((state.energy[enemy] || 0) === 0) {
@@ -423,6 +435,18 @@ const ABILITY_HANDLERS = Object.freeze({
         log(`${user.name} duplica ${target.ability.name} di ${target.name}.`);
         handler(user, target, copied);
       },
+      f9s1DoubleMove(user, target, ab) { f9s1aAbilityHandler("f9s1DoubleMove", user, target, ab); },
+      f9s1RepairHpDef(user, target, ab) { f9s1aAbilityHandler("f9s1RepairHpDef", user, target, ab); },
+      f9s1CellBarrage(user, target, ab) { f9s1aAbilityHandler("f9s1CellBarrage", user, target, ab); },
+      f9s1HealInfantry(user, target, ab) { f9s1aAbilityHandler("f9s1HealInfantry", user, target, ab); },
+      f9s1CellMortar(user, target, ab) { f9s1aAbilityHandler("f9s1CellMortar", user, target, ab); },
+      f9s1Assassinate(user, target, ab) { f9s1aAbilityHandler("f9s1Assassinate", user, target, ab); },
+      f9s1Heal(user, target, ab) { f9s1aAbilityHandler("f9s1Heal", user, target, ab); },
+      f9s1NextAttackIgnoreDefense(user, target, ab) { f9s1aAbilityHandler("f9s1NextAttackIgnoreDefense", user, target, ab); },
+      f9s1bAdjacentMoveLock(user, target, ab) { f9s1bAbilityHandler("f9s1bAdjacentMoveLock", user, target, ab); },
+      f9s1bLineSuppression(user, target, ab) { f9s1bAbilityHandler("f9s1bLineSuppression", user, target, ab); },
+      f9s1bCrash(user, target, ab) { f9s1bAbilityHandler("f9s1bCrash", user, target, ab); },
+      f9s1bErkos(user, target, ab) { f9s1bAbilityHandler("f9s1bErkos", user, target, ab); },
       convertEnemy(user, target, ab) {
         convertEnemyUnit(user, target, ab);
       }
@@ -457,15 +481,17 @@ const ABILITY_HANDLERS = Object.freeze({
         moved.overdrawDiscarded = true;
         moved.overdrawSource = source;
         state.discard[toSide].push(moved);
-        log(`${source}: ${playerName(toSide)} ruba ${moved.name}, ma la mano è piena: la carta va negli scarti Fabeot.`);
+        const visibleName = typeof cardPresentationCanRevealTransfer === "function" && !cardPresentationCanRevealTransfer(fromSide, toSide) ? "una carta coperta" : moved.name;
+        log(`${source}: ${playerName(toSide)} ruba ${visibleName}, ma la mano è piena: la carta va negli scarti Fabeot.`);
       } else {
         state.hand[toSide].push(moved);
-        log(`${source}: ${playerName(toSide)} ruba ${moved.name} appena pescata da ${playerName(fromSide)}.`);
+        const visibleName = typeof cardPresentationCanRevealTransfer === "function" && !cardPresentationCanRevealTransfer(fromSide, toSide) ? "una carta coperta" : moved.name;
+        log(`${source}: ${playerName(toSide)} ruba ${visibleName} appena pescata da ${playerName(fromSide)}.`);
       }
       if (typeof syncCardDebugState === "function") syncCardDebugState();
       if (typeof emitGameEvent === "function" && typeof EventTypes !== "undefined" && EventTypes.CARD_STOLEN) emitGameEvent({
         type:EventTypes.CARD_STOLEN,
-        data:{ fromSide, toSide, fromFaction:state.factions && state.factions[fromSide], toFaction:state.factions && state.factions[toSide], cardUid:moved.cardUid, cardName:moved.name, source, destination:moved.zone }
+        data:{ fromSide, toSide, fromFaction:state.factions && state.factions[fromSide], toFaction:state.factions && state.factions[toSide], cardUid:moved.cardUid, cardId:moved.id, cardName:moved.name, source, destination:moved.zone, overdrawDiscarded:Boolean(moved.overdrawDiscarded) }
       });
       return moved;
     }
@@ -561,7 +587,7 @@ const ABILITY_HANDLERS = Object.freeze({
 
 
     function bestDeceptivePositioningVictim(user) {
-      return combatUnits(enemyOf(user.side))
+      return (typeof enemyCombatUnits === "function" ? enemyCombatUnits(user.side) : combatUnits(enemyOf(user.side)))
         .filter(e => areAdjacent(user.pos, e.pos) && e.currentDef > 0 && !isUntargetableTo(e, user.side))
         .map(e => ({ unit:e, score:(e.currentDef * 3) + effectiveLife(e) + (isOnPS(e) ? 2 : 0) + (e.type === "Comandante" ? 2 : 0) }))
         .sort((a,b) => b.score - a.score)[0]?.unit || null;
@@ -618,7 +644,7 @@ const ABILITY_HANDLERS = Object.freeze({
         const tags = Array.isArray(unit.tags) ? unit.tags : [];
         const hasVisionTag = tags.includes("vision") || (unit.ability && unit.ability.tag === "vision");
         if (!hasVisionTag) return false;
-        const range = unit.ability && Number.isFinite(unit.ability.range) ? unit.ability.range : 2;
+        const range = Number.isFinite(unit.visionRange) ? unit.visionRange : (unit.ability && Number.isFinite(unit.ability.range) ? unit.ability.range : 2);
         return hexDistance(unit.pos, target.pos) <= range;
       });
     }
@@ -636,6 +662,7 @@ const ABILITY_HANDLERS = Object.freeze({
 
     function targetLabel(target) {
       if (!target) return "bersaglio";
+      if (typeof isPlayerTargetToken === "function" && isPlayerTargetToken(target)) return typeof playerName === "function" ? playerName(target.side) : (target.name || `Giocatore ${target.side}`);
       if (target.name) return target.name;
       const coord = target.coord || target.pos;
       if (coord) return `PS [${coord.join(",")}]`;
@@ -646,6 +673,7 @@ const ABILITY_HANDLERS = Object.freeze({
 
     function abilityLogTarget(user, target, ab) {
       if (!user || !ab) return targetLabel(target);
+      if (typeof isPlayerTargetToken === "function" && isPlayerTargetToken(target)) return playerName(target.side);
       if (ab.affects === "enemy") return playerName(enemyOf(user.side));
       if (ab.affects === "self") return playerName(user.side);
       return targetLabel(target);
@@ -655,6 +683,7 @@ const ABILITY_HANDLERS = Object.freeze({
 
     function useAbility(user, target, ab) {
       if (!canUseAbility(user, ab) || !target || target.type === "QG") return;
+      if (ab.kind === "f9s1DoubleMove" && user.movedThisTurn) { log(`${ab.name} deve essere usata prima del movimento.`); return; }
       if (target.side && target.side !== user.side && hasStatus(target, "enemy_effect_immune")) { log(`${target.name} ignora ${ab.name}: immune a effetti nemici.`); return; }
       const handler = ABILITY_HANDLERS[ab.kind];
       if (!handler) {
@@ -695,6 +724,10 @@ const ABILITY_HANDLERS = Object.freeze({
 
 
     function shouldEndAfterAbility(unit) {
+      if (unit && unit.f9s1aKeepActionAfterAbility) {
+        unit.f9s1aKeepActionAfterAbility = false;
+        return false;
+      }
       if (unit && unit.c2finalc2ReadyAfterAbility) {
         unit.c2finalc2ReadyAfterAbility = false;
         return false;
@@ -721,6 +754,11 @@ const ABILITY_HANDLERS = Object.freeze({
 
     function abilityTargets(unit, ab) {
       if (!ab || !canUseAbility(unit, ab)) return [];
+      if (typeof abilityRequiresPlayerTarget === "function" && abilityRequiresPlayerTarget(ab)) {
+        return typeof eligiblePlayerTargets === "function" ? eligiblePlayerTargets(unit.side, { kind:ab.kind, ability:ab, unit }) : [];
+      }
+      if (ab.target === "cell_group") return typeof f9s1aAbilityCellGroupTargets === "function" ? f9s1aAbilityCellGroupTargets(unit, ab) : [];
+      if (ab.target === "cell_line") return typeof f9s1bAbilityLineTargets === "function" ? f9s1bAbilityLineTargets(unit, ab) : [];
       if (ab.target === "cell_ps" || ab.kind === "psLock") {
         return state.cells.filter(c => c.ps && !isPsLocked(c.coord) && hexDistance(unit.pos, c.coord) <= (ab.range || 0))
           .map(c => ({ ...c, pos:c.coord, type:"PS", name:`Punto Strategico [${c.coord.join(",")}]` }));
@@ -729,12 +767,16 @@ const ABILITY_HANDLERS = Object.freeze({
         return state.cells.filter(c => hexDistance(unit.pos, c.coord) <= (ab.range || 0) && !getUnitAt(c.coord))
           .map(c => ({ ...c, pos:c.coord, type:"Cella", name:`Cella libera [${c.coord.join(",")}]` }));
       }
-      if (ab.target === "self") return [unit];
+      if (ab.target === "self") {
+        if (ab.kind === "f9s1DoubleMove" && unit.movedThisTurn) return [];
+        return [unit];
+      }
+      const enemies = typeof enemyCombatUnits === "function" ? enemyCombatUnits(unit.side) : combatUnits(enemyOf(unit.side));
       const candidates = ab.target === "ally"
         ? combatUnits(unit.side)
         : (ab.target === "any"
-          ? [...combatUnits(unit.side), ...combatUnits(enemyOf(unit.side))]
-          : combatUnits(enemyOf(unit.side)));
+          ? [...combatUnits(unit.side), ...enemies]
+          : enemies);
       return candidates.filter(t => {
         if (t.type === "QG") return false;
         if (ab.kind === "nexusPsPresidium") return t.side === unit.side && t.faction === "Nexus" && hexDistance(unit.pos, t.pos) <= (ab.range || 0) && state.cells.some(c => c.ps && t.pos && hexDistance(t.pos, c.coord) <= 1);
@@ -745,6 +787,13 @@ const ABILITY_HANDLERS = Object.freeze({
         if (ab.kind === "agathoiShroud") return t.side === unit.side && t.type !== "Struttura" && isAdjacentToAgathoiStructure(t);
         if (hexDistance(unit.pos, t.pos) > ab.range) return false;
         if (!abilityFilterMatchesTarget(ab.filter, t)) return false;
+        if ((ab.excludeSelf || ["f9s1RepairHpDef","f9s1HealInfantry"].includes(ab.kind)) && t.uid === unit.uid) return false;
+        if (ab.kind === "f9s1RepairHpDef" && t.currentHp >= t.maxHp && t.currentDef >= t.maxDef) return false;
+        if ((ab.kind === "f9s1HealInfantry" || ab.kind === "f9s1Heal") && t.currentHp >= t.maxHp) return false;
+        if (ab.kind === "f9s1Assassinate") {
+          const unique = t.type === "Comandante" || t.role === "commander" || t.weight === "Pivot" || t.deckRole === "pivot";
+          if (!(t.type === "Fanteria" || t.type === "Veicolo") || unique || (t.currentDef || 0) > 2) return false;
+        }
         if (ab.kind === "heal" && t.currentHp >= t.maxHp) return false;
         if (ab.kind === "armor" && t.currentDef >= t.maxDef) return false;
         if (ab.kind === "armorThorns" && t.currentDef >= t.maxDef && hasStatus(t, "thorns")) return false;

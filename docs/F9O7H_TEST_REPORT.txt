@@ -1,0 +1,33 @@
+ARENA RUBRA — F9O7h TUTORIAL GUIDANCE & ADAPTIVE FRAMING
+Build: C2-STABLE-1-F9O7h-APK-M4c
+Baseline: C2-STABLE-1-F9Q3c1-APK-M4c
+
+RISULTATI AUTOMATICI
+- File JavaScript controllati: 132
+- Errori sintattici: 0
+- Suite Node: 57/57 superate
+- Smoke statico F9O7h: 15/15
+- Smoke Chromium desktop dedicato: superato
+- Smoke Chromium mobile 844x390: superato
+
+REGRESSIONE LEZIONI
+- Lezione 1 Exordium: completata, 30 passi visitati, 0 errori pagina/console
+- Lezione 2 Nexus: completata, 31 passi visitati, 0 errori pagina/console
+- Lezione 3 Agathoi: completata, 25 passi visitati, 0 errori pagina/console
+- Lezione 4 Liberti: completata, 20 passi visitati, preview z95 sopra spotlight z94, 0 errori pagina/console
+- Lezione 5 Fabeot: completata, 23 passi visitati, resume verificato, preview z95 sopra spotlight z94, 0 errori pagina/console
+
+CONTROLLI SPECIFICI
+- Pulsazione del pulsante Avanti: OK
+- Pulsazione di carte, celle, unità e pulsanti richiesti: OK
+- Ripristino dell’attenzione dopo sostituzione nodo DOM: OK
+- Anteprima carta non oscurata: OK
+- Safe viewport desktop: OK
+- Safe viewport mobile landscape: OK
+- Bersaglio non coperto dalla vignetta nel passo di sbarco: OK
+- Reduced motion previsto nel CSS: OK
+
+LIMITI
+- Non sostituisce il collaudo APK Android reale.
+- La percezione della velocità/intensità del richiamo pulsante deve essere validata dall’utente.
+- La patch non affronta il rallentamento con molte unità né la durata delle partite a quattro giocatori.

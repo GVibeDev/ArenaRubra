@@ -1,0 +1,79 @@
+ARENA RUBRA — F9Q3a TEST REPORT
+Build: C2-STABLE-1-F9Q3a-APK-M4c
+Baseline: C2-STABLE-1-F9Q3-APK-M4c
+
+AUTOMAZIONE NODE
+- Suite eseguite: 53
+- Superate: 53
+- Fallite: 0
+- Include tutte le suite storiche F9N/F9O/F9Q e le tre nuove suite F9Q3a.
+
+CONTROLLO SINTATTICO
+- File JavaScript controllati con `node --check`: 127
+- Errori: 0
+
+NUOVE SUITE
+1. tests/f9q3a_dynamic_board_geometry_smoke.js
+   - geometria MAP1 e mappa custom da 383 celle;
+   - dimensioni native e origine render;
+   - clamp simmetrico sui quattro bordi;
+   - fit/focus e fallback storico.
+
+2. tests/f9q3a_local_data_vault_smoke.js
+   - backend OPFS simulato;
+   - directory dedicata;
+   - migrazione carte, deck, mappe, statistiche e impostazioni;
+   - backup pre-migrazione unico;
+   - artwork Blob;
+   - persistenza dopo riavvio simulato;
+   - restore e mirror di compatibilità.
+
+3. tests/f9q3a_main_menu_smoke.js
+   - gerarchia e comandi principali;
+   - pulsanti futuri realmente disattivi;
+   - strumenti sviluppatore nascosti;
+   - breakpoint e requisiti touch/accessibilità.
+
+VERIFICA CHROMIUM HEADLESS
+Menu testato a:
+- 1920 × 1080
+- 1366 × 768
+- 1024 × 600
+- 800 × 600
+- 844 × 390
+- 390 × 844
+
+Esito:
+- nessuna sovrapposizione dei pannelli;
+- scroll disponibile dove necessario;
+- pulsanti futuri disattivi;
+- Calibration Lab nascosto;
+- nessuna eccezione runtime rilevata.
+
+CAMERA — FIXTURE CUSTOM
+Fixture: tests/fixtures/custom_double_ms0cunhu.json
+- celle: 383
+- geometria nativa calcolata: 1214 × 1256
+
+Desktop 1366 × 768:
+- bordo alto e basso raggiungibili al margine configurato;
+- nessuna eccezione runtime.
+
+Mobile landscape 844 × 390, zoom di stress 3×:
+- bordo sinistro: 17,80 px circa;
+- bordo alto: 18,00 px circa;
+- bordo destro: 17,80 px circa;
+- bordo basso: 18,00 px circa;
+- nessuna eccezione runtime.
+
+Mobile portrait 390 × 844, zoom di stress 3×:
+- bordo sinistro: 18,02 px circa;
+- bordo alto: 17,82 px circa;
+- bordo destro: 18,02 px circa;
+- bordo basso: 17,82 px circa;
+- nessuna eccezione runtime.
+
+LIMITI DEL COLLAUDO
+- OPFS è stato verificato tramite backend compatibile simulato in Node; nell'ambiente Chromium headless con origine opaca non era disponibile.
+- Non è stato eseguito un test su APK/WebView Android reale.
+- Touch fisico, persistenza OPFS del wrapper e prestazioni su telefono richiedono validazione manuale dell'autore.

@@ -583,6 +583,163 @@ function cardRendererLayoutFor(card, kind) {
 
 const cardRendererImageCache = Object.create(null);
 
+// F9O4e: cache bitmap delle miniature pubbliche della mano.
+// Evita che Starter, Comandante e Missione tornino al fallback quando il DOM
+// della mano viene ricostruito durante i turni bot rapidi.
+const CARD_RENDERER_HAND_THUMB_CACHE_LIMIT = 40;
+const cardRendererHandThumbCache = new Map();
+const cardRendererHandThumbPrewarm = new Map();
+
+function cardRendererHandThumbVisualKey(card) {
+  if (!card) return "";
+  const art = card && card.customArt && card.customArt.dataUrl ? String(card.customArt.dataUrl) : "";
+  const artToken = art ? `${art.length}:${art.slice(0, 24)}:${art.slice(-24)}` : "";
+  let assetToken = "";
+  try {
+    const paths = cardRendererPreviewAssetPaths(card);
+    assetToken = `${(paths.art || []).join(",")}::${(paths.frame || []).join(",")}`;
+  } catch (_) {}
+  return [
+    card.id || card.sourceId || card.name || "card",
+    card.id || "",
+    card.sourceId || "",
+    card.name || "",
+    card.faction || "",
+    card.sourceType || "",
+    card.cardType || "",
+    card.deckRole || "",
+    Number.isFinite(Number(card.cost)) ? Number(card.cost) : "",
+    Number.isFinite(Number(card.hp)) ? Number(card.hp) : "",
+    Number.isFinite(Number(card.maxHp)) ? Number(card.maxHp) : "",
+    Number.isFinite(Number(card.att)) ? Number(card.att) : "",
+    Number.isFinite(Number(card.def)) ? Number(card.def) : "",
+    card.effectText || card.description || card.text || "",
+    artToken,
+    assetToken
+  ].join("¦");
+}
+
+function cardRendererHandThumbCacheableCanvas(canvas) {
+  if (!canvas) return false;
+  if (canvas.dataset && canvas.dataset.handThumbPrewarm === "1") return true;
+  return Boolean(canvas.classList && canvas.classList.contains("handCardThumbCanvas"));
+}
+
+function cardRendererHandThumbQualityRank(ready, artSource) {
+  if (artSource === "real") return ready ? 40 : 30;
+  if (artSource === "placeholder") return ready ? 20 : 10;
+  return ready ? 5 : 0;
+}
+
+function cardRendererStoreHandThumbnailSnapshot(canvas, card, options = {}) {
+  if (!canvas || !card || !cardRendererHandThumbCacheableCanvas(canvas)) return false;
+  if (typeof document === "undefined" || typeof document.createElement !== "function") return false;
+  if (!canvas.width || !canvas.height || typeof canvas.getContext !== "function") return false;
+  const key = cardRendererHandThumbVisualKey(card);
+  if (!key) return false;
+  const ready = options.ready === true;
+  const artSource = String(options.artSource || "pending");
+  const qualityRank = cardRendererHandThumbQualityRank(ready, artSource);
+  try {
+    const snapshot = document.createElement("canvas");
+    snapshot.width = canvas.width;
+    snapshot.height = canvas.height;
+    const ctx = snapshot.getContext("2d");
+    if (!ctx || typeof ctx.drawImage !== "function") return false;
+    ctx.drawImage(canvas, 0, 0);
+    const previous = cardRendererHandThumbCache.get(key);
+    const largerOrEqual = !previous || (snapshot.width * snapshot.height) >= (previous.canvas.width * previous.canvas.height);
+    const previousRank = previous && Number.isFinite(previous.qualityRank) ? previous.qualityRank : cardRendererHandThumbQualityRank(Boolean(previous && previous.ready), previous && previous.artSource);
+    // F9O4f: una bitmap provvisoria (placeholder mentre l'arte reale è ancora
+    // pendente) non può mai sostituire uno snapshot definitivo. A parità di
+    // finalizzazione prevale la sorgente grafica migliore e poi la risoluzione.
+    const shouldReplace = !previous
+      || (ready && !previous.ready)
+      || (ready === Boolean(previous.ready) && (qualityRank > previousRank || (qualityRank === previousRank && largerOrEqual)));
+    if (shouldReplace) {
+      cardRendererHandThumbCache.delete(key);
+      cardRendererHandThumbCache.set(key, { canvas:snapshot, ready, artSource, qualityRank, storedAt:Date.now() });
+      while (cardRendererHandThumbCache.size > CARD_RENDERER_HAND_THUMB_CACHE_LIMIT) {
+        const oldest = cardRendererHandThumbCache.keys().next().value;
+        cardRendererHandThumbCache.delete(oldest);
+      }
+    }
+    canvas.__arenaHandThumbCacheKey = key;
+    if (ready) {
+      cardRendererHandThumbPrewarm.delete(key);
+      const current = cardRendererHandThumbCache.get(key);
+      if (current && typeof document.querySelectorAll === "function") {
+        document.querySelectorAll(".handCardThumbCanvas").forEach(target => {
+          if (!target || target === canvas || target.__arenaHandThumbCacheKey !== key) return;
+          cardRendererRestoreHandThumbnailSnapshot(target, card);
+        });
+      }
+    }
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function cardRendererRestoreHandThumbnailSnapshot(canvas, card) {
+  if (!canvas || !card || typeof canvas.getContext !== "function") return false;
+  const key = cardRendererHandThumbVisualKey(card);
+  const entry = key ? cardRendererHandThumbCache.get(key) : null;
+  if (!entry || !entry.canvas) return false;
+  try {
+    const ctx = canvas.getContext("2d");
+    if (!ctx || typeof ctx.drawImage !== "function") return false;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(entry.canvas, 0, 0, canvas.width, canvas.height);
+    canvas.__arenaHandThumbCacheKey = key;
+    canvas.dataset.thumbCacheRestored = "1";
+    canvas.dataset.cardRenderState = entry.ready ? "ready" : "pending";
+    canvas.dataset.cardArtState = entry.artSource || (entry.ready ? "final" : "pending");
+    canvas.dataset.thumbSnapshotFinal = entry.ready ? "1" : "0";
+    if (entry.ready) canvas.dataset.thumbRendered = "1";
+    else if (typeof canvas.removeAttribute === "function") canvas.removeAttribute("data-thumb-rendered");
+    const wrap = typeof canvas.closest === "function"
+      ? (canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard"))
+      : null;
+    // Anche uno snapshot provvisorio evita il flash, ma non viene marcato come
+    // render definitivo e quindi resta eleggibile per il ridisegno reale.
+    if (wrap && wrap.classList) wrap.classList.add("thumbRendered");
+    cardRendererHandThumbCache.delete(key);
+    cardRendererHandThumbCache.set(key, entry);
+    return entry.ready ? "ready" : "pending";
+  } catch (_) {
+    return false;
+  }
+}
+
+function cardRendererPrewarmHandThumbnail(card) {
+  if (!card || typeof document === "undefined" || typeof document.createElement !== "function") return false;
+  const key = cardRendererHandThumbVisualKey(card);
+  if (!key || cardRendererHandThumbCache.has(key) || cardRendererHandThumbPrewarm.has(key)) return false;
+  const canvas = document.createElement("canvas");
+  canvas.width = 215;
+  canvas.height = 323;
+  canvas.dataset.handThumbPrewarm = "1";
+  cardRendererHandThumbPrewarm.set(key, canvas);
+  const rendered = renderArenaCardPreviewCanvas(canvas, card, { scale:0.21 });
+  if (!rendered) cardRendererHandThumbPrewarm.delete(key);
+  return Boolean(rendered);
+}
+
+function cardRendererHandThumbCacheDiagnostics() {
+  const entries = Array.from(cardRendererHandThumbCache.values());
+  return {
+    cached: entries.length,
+    final: entries.filter(entry => entry && entry.ready).length,
+    provisional: entries.filter(entry => entry && !entry.ready).length,
+    realArt: entries.filter(entry => entry && entry.artSource === "real").length,
+    placeholderArt: entries.filter(entry => entry && entry.artSource === "placeholder").length,
+    prewarming: cardRendererHandThumbPrewarm.size,
+    limit: CARD_RENDERER_HAND_THUMB_CACHE_LIMIT
+  };
+}
+
 function cardRendererSelectCard(cardId, source = "") {
   CARD_RENDERER_STATE.selectedCardId = String(cardId || "");
   CARD_RENDERER_STATE.selectedSource = String(source || "");
@@ -667,7 +824,7 @@ function cardRendererLocalizedUnitType(card) {
   const cardType = String(card.cardType || "").toLowerCase();
   const deckRole = String(card.deckRole || "").toLowerCase();
   const unitTypeRaw = String(card.unitType || "").trim();
-  const weightRaw = String(card.weight || "").trim();
+  const weightRaw = String(card.unitClassLabel || card.weight || "").trim();
   const typeMap = {
     comandante: "COMANDANTE",
     fanteria: "FANTERIA",
@@ -775,14 +932,14 @@ function cardRendererLoadImage(src, onDone) {
     if (!entry) return;
     entry.status = "loaded";
     const listeners = entry.listeners.splice(0);
-    listeners.forEach(fn => { try { fn(); } catch (_) {} });
+    listeners.forEach(fn => { try { fn("loaded", src); } catch (_) {} });
   };
   img.onerror = () => {
     const entry = cardRendererImageCache[src];
     if (!entry) return;
     entry.status = "error";
     const listeners = entry.listeners.splice(0);
-    listeners.forEach(fn => { try { fn(); } catch (_) {} });
+    listeners.forEach(fn => { try { fn("error", src); } catch (_) {} });
   };
   img.src = src;
   return null;
@@ -795,16 +952,115 @@ function cardRendererLoadFirstAvailableImage(paths, onDone) {
     const cached = cardRendererImageCache[src];
     if (cached && cached.status === "loaded") return cached.img;
   }
-  for (const src of list) {
+
+  const firstCandidateIndex = list.findIndex(src => {
     const cached = cardRendererImageCache[src];
-    if (cached && cached.status === "loading") {
-      if (typeof onDone === "function") cached.listeners.push(onDone);
-      return null;
+    return !cached || cached.status !== "error";
+  });
+  if (firstCandidateIndex < 0) return null;
+  const src = list[firstCandidateIndex];
+  const cached = cardRendererImageCache[src];
+  const listener = status => {
+    if (status === "error") {
+      // Prosegue con il candidato successivo anche se il canvas che aveva richiesto
+      // l'immagine è già stato sostituito da un render successivo.
+      cardRendererLoadFirstAvailableImage(list, onDone);
+      // L'ultimo errore deve provocare un ridisegno conclusivo: senza questo segnale
+      // il canvas può restare per sempre nello stato "in caricamento" nelle build LITE.
+      const exhausted = list.every(path => cardRendererImageCache[path] && cardRendererImageCache[path].status === "error");
+      if (exhausted && typeof onDone === "function") onDone("settled-error", src);
+      return;
     }
+    if (typeof onDone === "function") onDone(status, src);
+  };
+  if (cached && cached.status === "loading") {
+    cached.listeners.push(listener);
+    return null;
   }
-  const next = list.find(src => !cardRendererImageCache[src] || cardRendererImageCache[src].status !== "error");
-  if (!next) return null;
-  return cardRendererLoadImage(next, onDone);
+  return cardRendererLoadImage(src, listener);
+}
+
+function cardRendererImagePathsState(paths) {
+  const list = Array.isArray(paths) ? paths.filter(Boolean) : [paths].filter(Boolean);
+  if (!list.length) return "empty";
+  if (list.some(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "loaded")) return "loaded";
+  if (list.every(src => cardRendererImageCache[src] && cardRendererImageCache[src].status === "error")) return "error";
+  return "pending";
+}
+
+function cardRendererImagePathsSettled(paths) {
+  return cardRendererImagePathsState(paths) !== "pending";
+}
+
+function cardRendererPreviewAssetPaths(card) {
+  const embeddedArtPath = card && card.customArt && card.customArt.dataUrl ? card.customArt.dataUrl : "";
+  const realArtPaths = embeddedArtPath
+    ? [embeddedArtPath]
+    : (typeof cardAssetArtCandidatePathsFor === "function" ? cardAssetArtCandidatePathsFor(card) : (typeof cardAssetArtPathFor === "function" ? [cardAssetArtPathFor(card)] : []));
+  const placeholderPath = typeof cardAssetEntryFor === "function" ? (cardAssetEntryFor(card).placeholderPath || "") : "";
+  const framePath = typeof cardAssetFramePathFor === "function" ? cardAssetFramePathFor(card) : "";
+  const placeholder = placeholderPath ? [placeholderPath] : [];
+  return {
+    realArt: realArtPaths.filter(Boolean),
+    placeholder,
+    // Compatibilità diagnostica con i consumer precedenti.
+    art: [...realArtPaths, ...placeholder].filter(Boolean),
+    frame: framePath ? [framePath] : []
+  };
+}
+
+function cardRendererPreviewAssetState(card) {
+  if (!card) return {
+    ready: true,
+    artSource: "none",
+    realArtState: "empty",
+    placeholderState: "empty",
+    frameState: "empty"
+  };
+  const paths = cardRendererPreviewAssetPaths(card);
+  const realArtState = cardRendererImagePathsState(paths.realArt);
+  const placeholderState = cardRendererImagePathsState(paths.placeholder);
+  const frameState = cardRendererImagePathsState(paths.frame);
+  const realLoaded = realArtState === "loaded";
+  const realExhausted = realArtState === "error" || realArtState === "empty";
+  const placeholderSettled = placeholderState !== "pending";
+  const frameSettled = frameState !== "pending";
+  let artSource = "pending";
+  if (realLoaded) artSource = "real";
+  else if (realExhausted && placeholderState === "loaded") artSource = "placeholder";
+  else if (realExhausted && placeholderSettled) artSource = "none";
+  else if (placeholderState === "loaded") artSource = "placeholder"; // solo provvisorio
+  const artSettled = realLoaded || (realExhausted && placeholderSettled);
+  return {
+    ready: artSettled && frameSettled,
+    artSource,
+    realArtState,
+    placeholderState,
+    frameState
+  };
+}
+
+function cardRendererPreviewAssetsSettled(card) {
+  return cardRendererPreviewAssetState(card).ready;
+}
+
+function cardRendererSyncCanvasReadyState(canvas, card) {
+  if (!canvas) return false;
+  const assetState = cardRendererPreviewAssetState(card);
+  const ready = assetState.ready;
+  canvas.dataset.cardRenderState = ready ? "ready" : "pending";
+  canvas.dataset.cardArtState = assetState.artSource;
+  canvas.dataset.cardRealArtState = assetState.realArtState;
+  canvas.dataset.cardPlaceholderState = assetState.placeholderState;
+  if (ready) canvas.dataset.thumbRendered = "1";
+  else if (typeof canvas.removeAttribute === "function") canvas.removeAttribute("data-thumb-rendered");
+  const wrap = typeof canvas.closest === "function"
+    ? (canvas.closest(".handRenderedCard") || canvas.closest(".mapHandVisualCard"))
+    : null;
+  const cachedVisual = canvas.dataset && canvas.dataset.thumbCacheRestored === "1";
+  if (wrap && wrap.classList) wrap.classList.toggle("thumbRendered", ready || cachedVisual);
+  cardRendererStoreHandThumbnailSnapshot(canvas, card, { ready, artSource:assetState.artSource });
+  return ready;
 }
 
 function cardRendererSetStatFont(ctx, size) {
@@ -916,7 +1172,7 @@ function cardRendererDrawArtArea(ctx, card, layout, redraw) {
   const customTransform = embeddedArtPath ? (card.customArtTransform || card.customArt.transform || {}) : {};
   const transform = { ...baseTransform, ...customTransform };
   const artImg = cardRendererLoadFirstAvailableImage(artPaths, redraw);
-  const placeholderImg = cardRendererLoadFirstAvailableImage([placeholderPath], redraw);
+  const placeholderImg = artImg ? null : cardRendererLoadFirstAvailableImage([placeholderPath], redraw);
   const img = artImg || placeholderImg;
   if (img && img.width && img.height) {
     const zoom = Number.isFinite(transform.zoom) ? transform.zoom : 1;
@@ -998,11 +1254,25 @@ function cardRendererDrawStats(ctx, card, layout, style) {
   ctx.textAlign = "left";
 }
 
-function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
+function cardRendererScheduleCanvasRedraw(canvas, card, options, generation) {
+  const isPrewarmCanvas = Boolean(canvas && canvas.dataset && canvas.dataset.handThumbPrewarm === "1");
+  if (!canvas || (!canvas.isConnected && !isPrewarmCanvas) || canvas.__arenaCardRenderGeneration !== generation) return;
+  if (canvas.__arenaCardRedrawPending) return;
+  canvas.__arenaCardRedrawPending = true;
+  const schedule = typeof window !== "undefined" && typeof window.requestAnimationFrame === "function"
+    ? window.requestAnimationFrame.bind(window)
+    : callback => setTimeout(callback, 16);
+  schedule(() => {
+    canvas.__arenaCardRedrawPending = false;
+    const stillPrewarm = Boolean(canvas.dataset && canvas.dataset.handThumbPrewarm === "1");
+    if ((!canvas.isConnected && !stillPrewarm) || canvas.__arenaCardRenderGeneration !== generation) return;
+    cardRendererDrawPreviewCanvas(canvas, card, options, generation);
+  });
+}
+
+function cardRendererDrawPreviewCanvas(canvas, card, options, generation) {
   if (!canvas || typeof canvas.getContext !== "function") return false;
-  const redraw = () => {
-    if (canvas.isConnected) renderArenaCardPreviewCanvas(canvas, card, options);
-  };
+  const redraw = () => cardRendererScheduleCanvasRedraw(canvas, card, options, generation);
   const ctx = canvas.getContext("2d");
   const kind = typeof cardAssetKind === "function" ? cardAssetKind(card) : (cardRendererUsesTacticLayout(card) ? "tactic" : "unit");
   const layout = cardRendererLayoutFor(card, kind);
@@ -1012,8 +1282,8 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
   const scale = Number.isFinite(options.scale) && options.scale > 0 ? options.scale : 1;
   const renderW = Math.max(1, Math.round(virtualW * scale));
   const renderH = Math.max(1, Math.round(virtualH * scale));
-  canvas.width = renderW;
-  canvas.height = renderH;
+  if (canvas.width !== renderW) canvas.width = renderW;
+  if (canvas.height !== renderH) canvas.height = renderH;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, renderW, renderH);
   ctx.save();
@@ -1029,6 +1299,7 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
     cardRendererSetFont(ctx, 24, "400", "system-ui, sans-serif");
     ctx.fillText("Deck Builder · anteprima renderer F9I1", virtualW / 2, virtualH / 2 + 26);
     ctx.restore();
+    cardRendererSyncCanvasReadyState(canvas, card);
     return true;
   }
 
@@ -1062,7 +1333,16 @@ function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
 
   cardRendererDrawStats(ctx, card, layout, style);
   ctx.restore();
+  cardRendererSyncCanvasReadyState(canvas, card);
   return true;
+}
+
+function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
+  if (!canvas || typeof canvas.getContext !== "function") return false;
+  const generation = (Number(canvas.__arenaCardRenderGeneration) || 0) + 1;
+  canvas.__arenaCardRenderGeneration = generation;
+  canvas.__arenaCardRedrawPending = false;
+  return cardRendererDrawPreviewCanvas(canvas, card, options, generation);
 }
 
 function cardRendererCatalogCardById(cardId) {
@@ -1097,6 +1377,7 @@ function gameCardPreviewCardByUid(side, cardUid) {
   const hand = state.hand && state.hand[side] ? state.hand[side] : [];
   const inHand = hand.find(card => card && card.cardUid === cardUid);
   if (inHand) {
+    if (typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, inHand)) return null;
     if (typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, inHand)) return null;
     return inHand;
   }
@@ -1112,13 +1393,16 @@ function gameCardPreviewCardFromUnit(unit) {
     sourceId: unit.id || unit.name || "preview",
     sourceType: "unit",
     cardType: unit.type === "Comandante" ? "commander" : "unit",
-    deckRole: unit.weight === "Pivot" ? "pivot" : (unit.weight === "Elite" ? "elite" : "base"),
+    deckRole: unit.unitClass === "pivot" || unit.weight === "Pivot" ? "pivot" : (unit.unitClass === "elite" || unit.weight === "Elite" ? "elite" : "base"),
     starterRole: null,
     faction: unit.faction,
     name: unit.name,
     cost: unit.cost,
     unitType: unit.type,
     weight: unit.weight,
+    unitClass: unit.unitClass || null,
+    unitClassLabel: unit.unitClassLabel || null,
+    traits: Array.isArray(unit.traits) ? [...unit.traits] : [],
     blueprintId: unit.id || null,
     tacticId: null
   };
@@ -1152,7 +1436,7 @@ function gameCardPreviewEnsureDefaultHandCard(side) {
   const current = gameCardPreviewCardByUid(side, GAME_CARD_PREVIEW_STATE.handCardUid);
   if (current) return current;
   const hand = state.hand && state.hand[side]
-    ? state.hand[side].filter(card => !(typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, card)))
+    ? state.hand[side].filter(card => !(typeof handCardHiddenFromViewer === "function" && handCardHiddenFromViewer(side, card)) && !(typeof missionCardHiddenFromViewer === "function" && missionCardHiddenFromViewer(side, card)))
     : [];
   if (hand.length) {
     GAME_CARD_PREVIEW_STATE.handSide = side;

@@ -1,0 +1,92 @@
+ARENA RUBRA — F9Q3e1a TELEMETRY ATTRIBUTION & PIVOT INSTANCES HOTFIX
+
+Build candidata: C2-STABLE-1-F9Q3e1a-APK-M4c
+Build di partenza: C2-STABLE-1-F9Q3e1-APK-M4c
+Baseline logica: C2-STABLE-1-F9S1c1-APK-M4c
+Schema telemetrico: F9Q3e1-2
+Data: 2026-07-28
+
+ESITO GENERALE
+- Correzioni tecniche implementate e verificate.
+- Nessuna modifica a data/, assets/, carte, deck, mappe, regole o IA.
+- Candidata non ancora validata su dispositivo Android fisico.
+
+VERIFICA DELLE CAUSE
+1. PS
+   - L'evento reale usa nextControl/previousControl.
+   - F9Q3e1 leggeva newControl e passava null a telemetryPlayer().
+   - Number(null) produceva 0, creando players[0].
+
+2. Pivot
+   - UNIT_DESTROYED fornisce unitId ma non garantisce blueprintId.
+   - Il vecchio controllo non riconosceva quindi la distruzione.
+   - I campi singoli non potevano rappresentare più istanze dello stesso blueprint.
+
+3. Overdraw
+   - CARD_DRAWN conteneva overdrawDiscarded=true.
+   - CARD_DISCARDED emetteva anche reason=overdraw.
+   - Entrambi incrementavano lo stesso contatore.
+
+TEST STATICI
+- 154 file JavaScript verificati con node --check.
+- 71 file suite Node eseguiti con successo.
+- Smoke dedicato F9Q3e1 originale: 28/28.
+- Smoke dedicato F9Q3e1a: 23/23.
+
+TEST DEDICATO F9Q3e1a
+Verificati:
+- nessuna creazione di side 0;
+- guadagni e perdite PS separati;
+- timeline PS principale;
+- due istanze della stessa Pivot;
+- distruzione della prima istanza tramite unitId;
+- seconda istanza ancora attiva;
+- attacchi e abilità aggregati;
+- 7 danni attribuiti alle due istanze;
+- timeline con due schieramenti e una distruzione;
+- overdraw Testudo conteggiato una sola volta;
+- overdraw da carta rubata a mano piena;
+- sopravvivenza cumulativa 5 round nello scenario sintetico;
+- dichiarazione esplicita della fonte autorevole per le carte.
+
+TEST CHROMIUM MIRATI
+Superati individualmente:
+1. F9Q3e1 Match Telemetry Foundation.
+2. F9Q3e1a Telemetry Hotfix.
+3. F9S1c1 Deck Builder UX.
+4. F9S1c1 avvio dei 50 deck ufficiali.
+5. F9Q3d4 eliminazioni, assist e Pressione.
+6. F9R3 nove mappe ufficiali e Pressione.
+7. F9S1b Pivot alternative.
+8. F9Q3c sfondi mappe custom.
+9. F9O7h1 visibilità tutorial.
+10. F9O4c stabilità layout Android/WebView.
+11. F9Q3d1 targeting del giocatore.
+
+TEST BROWSER DEDICATO F9Q3e1a
+- Build visibile corretta.
+- Schema F9Q3e1-2.
+- 0 bucket side 0.
+- PS G1: 2 cambi, 2 guadagni.
+- PS G2: 2 cambi, 1 guadagno, 1 perdita.
+- Timeline PS: 3 eventi.
+- Pivot: 2 istanze, 1 distrutta, 1 attiva.
+- Ultima distruzione: round 21.
+- Attacchi Pivot: 2.
+- Abilità Pivot: 1.
+- Danni Pivot: 7.
+- Sopravvivenza cumulativa: 5 round.
+- Overdraw Testudo: 1.
+- Precheck: 0 problemi, 0 warning.
+- Errori pagina: 0.
+- Errori console: 0.
+
+REGRESSIONI DATI
+- data/ identica a F9Q3e1.
+- assets/ identica a F9Q3e1.
+- roster dei 50 deck invariato.
+
+LIMITI DELLA VERIFICA
+- Nessun APK Android fisico testato.
+- Nessun file originale della partita segnalata era disponibile nella cartella della build; la verifica della causa è stata eseguita sul codice e su scenari sintetici equivalenti.
+- I JSON F9Q3e1-1 già esportati non vengono riscritti retroattivamente.

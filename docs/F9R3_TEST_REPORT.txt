@@ -1,0 +1,64 @@
+ARENA RUBRA — F9R3 TEST REPORT
+Build: C2-STABLE-1-F9R3-APK-M4c
+Baseline: C2-STABLE-1-F9O7h3-APK-M4c
+Data: 2026-07-26
+
+1. CONTROLLO SINTATTICO
+- JavaScript controllati con node --check: 137
+- Errori: 0
+
+2. SUITE NODE
+- Suite eseguite: 61
+- Superate: 61
+- Fallite: 0
+
+Smoke dedicato F9R3:
+- 63/63 verifiche superate.
+- Formule Rapida/Standard verificate.
+- Soglia ceil(PS/2) e requisito del PS centrale verificati.
+- Ambiguità con più giocatori qualificati verificata.
+- Sei mappe attive verificate.
+- Centri semantici ed equidistanza lineare verificati.
+- ID PS e pericoli univoci verificati.
+- Compatibilità diretta con gli ID delle vecchie mappe disabilitate verificata.
+
+3. SMOKE CHROMIUM F9R3
+Esito: superato.
+
+Verifiche:
+- BUILD_INFO corrente corretto;
+- 6 mappe ufficiali presenti nel selettore;
+- metadati giocatori/celle/PS corretti;
+- centralStrategicPointId = ps-center per tutte le mappe;
+- distanze lineari identiche da tutti i QG;
+- tutte le definizioni valide;
+- profili Pressione verificati su Campo Starter, Diamond 4, Triple Battlefield e The Valley;
+- asset statico WebP di Narrow Path risolto correttamente;
+- errori pagina: 0;
+- errori console: 0.
+
+4. REGRESSIONI BROWSER MIRATE
+Superate:
+- sfondi custom editor/runtime;
+- tutorial visibility hotfix;
+- tutorial guidance;
+- adaptive framing mobile;
+- ripresa stato UI tutorial;
+- reflow controlli Mano ridotta.
+
+5. LEZIONI TUTORIAL
+Lezioni 1–5 completate nei rispettivi smoke Chromium.
+- Lezione 1: 30 passi, completata, 0 errori pagina/console.
+- Lezione 2: 31 passi, completata, 0 errori pagina/console.
+- Lezione 3: 25 passi, completata, 0 errori pagina/console.
+- Lezione 4: 20 passi, completata; anteprima sopra scrim verificata; 0 errori pagina/console.
+- Lezione 5: 23 passi, completata; ripresa e anteprima verificate; 0 errori pagina/console.
+
+6. LIMITI DEL COLLAUDO
+- Non eseguito test su APK Android fisico.
+- Non eseguito batch completo di partite fino ai limiti R33–R50.
+- Ritmo e bilanciamento delle nuove soglie richiedono test reali Rapida/Standard.
+- I vecchi smoke browser non direttamente pertinenti a F9R3 non sono stati tutti considerati criteri bloccanti; alcuni contengono aspettative storiche superate.
+
+ESITO
+Candidata tecnicamente pronta per collaudo manuale. Non ancora validata come baseline ufficiale.

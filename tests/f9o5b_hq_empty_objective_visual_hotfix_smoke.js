@@ -1,0 +1,20 @@
+"use strict";
+const fs=require("fs");
+const path=require("path");
+const root=path.resolve(__dirname,"..");
+let checks=0;
+function ok(condition,label){ if(!condition) throw new Error(label); checks+=1; }
+const render=fs.readFileSync(path.join(root,"src/render.js"),"utf8");
+ok(render.includes('unit.type !== "QG" && Array.isArray(unit.pos)'),"QG excluded from visual occupancy");
+ok(render.includes('if (hqSide) classes.push("hq"'),"HQ cell objective classes preserved");
+ok(render.includes('const hqSide = hqSideAt(cell.coord)'),"HQ marker resolution preserved");
+ok(render.includes('if (!unit) {'),"empty objective branch remains active");
+ok(render.includes('stale.remove()'),"stale HQ token can be removed");
+const state=fs.readFileSync(path.join(root,"src/state.js"),"utf8");
+ok(state.includes('type: "QG"'),"logical HQ pseudo-unit preserved");
+ok(state.includes('source: "QG v1.4.1 · cella occupabile"'),"occupiable HQ contract preserved");
+const rules=fs.readFileSync(path.join(root,"src/rules.js"),"utf8");
+ok(rules.includes('type:"qg"') || rules.includes('type: "qg"') || rules.includes('type: "QG"'),"HQ victory logic remains present");
+const deployment=fs.readFileSync(path.join(root,"src/deployment.js"),"utf8");
+ok(deployment.includes('own_hq'),"HQ build source preserved");
+console.log(`F9O5b HQ empty objective visual hotfix smoke: ${checks}/${checks} OK`);

@@ -72,7 +72,7 @@ function cardPoolTypeLabel(card) {
   if (typeof cardRendererTypeText === "function") return cardRendererTypeText(card);
   if (card.sourceType === "mission") return card.missionClass === "desperate" ? "MISSIONE DISPERATA" : "MISSIONE";
   if (card.sourceType === "tactic") return card.category ? `TATTICA · ${card.category}` : "TATTICA";
-  return [card.unitType, card.weight].filter(Boolean).join(" ").toUpperCase() || "UNITÀ";
+  return [card.unitType, card.unitClassLabel || card.weight].filter(Boolean).join(" ").toUpperCase() || "UNITÀ";
 }
 
 function cardPoolCompare(a, b) {
@@ -257,16 +257,73 @@ function cardPoolRenderGalleryCanvases(cards) {
 
 function cardPoolPreviewStatsHtml(card) {
   if (!card) return "";
-  return `<div class="deckBuilderPreviewStats">
-    <span><strong>Fazione</strong> ${cardPoolEscapeHtml(card.faction || "—")}</span>
-    <span><strong>Tipo</strong> ${cardPoolEscapeHtml(cardPoolTypeLabel(card))}</span>
-    <span><strong>Ruolo</strong> ${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</span>
-    <span><strong>ENE</strong> ${Number.isFinite(typeof cardRendererStat === "function" ? cardRendererStat(card, "cost") : card.cost) ? (typeof cardRendererStat === "function" ? cardRendererStat(card, "cost") : card.cost) : "—"}</span>
-    ${card.sourceType !== "tactic" && card.sourceType !== "mission" && typeof cardRendererStat === "function" ? `
-      <span><strong>HP</strong> ${Number.isFinite(cardRendererStat(card, "hp")) ? cardRendererStat(card, "hp") : "—"}</span>
-      <span><strong>DEF</strong> ${Number.isFinite(cardRendererStat(card, "def")) ? cardRendererStat(card, "def") : "—"}</span>
-      <span><strong>ATT</strong> ${Number.isFinite(cardRendererStat(card, "att")) ? cardRendererStat(card, "att") : "—"}</span>` : ""}
-  </div>`;
+  const stat = key => typeof cardRendererStat === "function" ? cardRendererStat(card, key) : card[key];
+  const values = [{ key:"ENE", value:stat("cost") }];
+  if (card.sourceType !== "tactic" && card.sourceType !== "mission") {
+    values.push({ key:"HP", value:stat("hp") }, { key:"DEF", value:stat("def") }, { key:"ATT", value:stat("att") });
+  }
+  return `<div class="cardPoolLargeStats" aria-label="Statistiche carta">${values.map(item => `<div class="cardPoolLargeStat"><span>${item.key}</span><strong>${Number.isFinite(item.value) ? item.value : "—"}</strong></div>`).join("")}</div>`;
+}
+
+function cardPoolSourceBlueprint(card) {
+  return typeof cardRendererSourceBlueprint === "function" ? cardRendererSourceBlueprint(card) : null;
+}
+
+function cardPoolActiveAbility(card) {
+  if (!card || card.sourceType === "tactic" || card.sourceType === "mission") return null;
+  const blueprint = cardPoolSourceBlueprint(card);
+  const ability = blueprint && blueprint.ability ? blueprint.ability : (card.ability || null);
+  return ability && !ability.passive ? ability : null;
+}
+
+function cardPoolAbilityMetaHtml(ability) {
+  if (!ability) return "";
+  const items = [];
+  if (Number.isFinite(ability.cost)) items.push(`Costo ${ability.cost} ENE`);
+  if (Number.isFinite(ability.cooldown)) items.push(`CD ${ability.cooldown}`);
+  if (Number.isFinite(ability.range)) items.push(`R${ability.range}`);
+  if (ability.target) items.push(`Bersaglio: ${ability.target}`);
+  return items.length ? `<div class="cardPoolAbilityMeta">${items.map(item => `<span>${cardPoolEscapeHtml(item)}</span>`).join("")}</div>` : "";
+}
+
+function cardPoolAbilitiesHtml(card) {
+  if (!card) return "";
+  const desc = typeof cardRendererDescriptionText === "function"
+    ? cardRendererNormalizeDescription(cardRendererDescriptionText(card))
+    : String(card.effectText || card.description || "").trim();
+  if (card.sourceType === "tactic" || card.sourceType === "mission") {
+    return `<section class="cardPoolAbilitySection">
+      <h5>${card.sourceType === "mission" ? "Obiettivo ed effetto" : "Effetto tattica"}</h5>
+      <p>${cardPoolEscapeHtml(desc || "Nessun testo disponibile nel catalogo.")}</p>
+    </section>`;
+  }
+  const active = cardPoolActiveAbility(card);
+  const passiveEntries = typeof cardRendererPassiveEntries === "function" ? cardRendererPassiveEntries(card) : [];
+  const activeHtml = active ? `<section class="cardPoolAbilitySection cardPoolActiveAbility">
+    <h5>Abilità attiva · ${cardPoolEscapeHtml(active.name || "Abilità")}</h5>
+    ${cardPoolAbilityMetaHtml(active)}
+    <p>${cardPoolEscapeHtml(active.description || "Descrizione non disponibile.")}</p>
+  </section>` : "";
+  const passiveHtml = passiveEntries.length ? `<section class="cardPoolAbilitySection">
+    <h5>Passive e tratti</h5>
+    <div class="cardPoolPassiveList">${passiveEntries.map(entry => `<article><strong>${cardPoolEscapeHtml(entry.name || "Passiva")}</strong><p>${cardPoolEscapeHtml(entry.description || "")}</p></article>`).join("")}</div>
+  </section>` : "";
+  const fallbackHtml = (!active && !passiveEntries.length) || desc
+    ? `<section class="cardPoolAbilitySection cardPoolFullText"><h5>Testo carta</h5><p>${cardPoolEscapeHtml(desc || "Nessuna abilità.")}</p></section>`
+    : "";
+  return `${activeHtml}${passiveHtml}${fallbackHtml}`;
+}
+
+function cardPoolTechnicalHtml(card, entry = null) {
+  if (!card) return "Nessuna informazione tecnica disponibile.";
+  return `
+    <div><strong>Card ID:</strong> <code>${cardPoolEscapeHtml(card.id || "")}</code></div>
+    <div><strong>Source ID:</strong> <code>${cardPoolEscapeHtml(card.sourceId || card.blueprintId || card.tacticId || "")}</code></div>
+    <div><strong>Origine:</strong> <code>${card.custom ? "custom" : "official"}</code></div>
+    <div><strong>Frame:</strong> <code>${cardPoolEscapeHtml(entry && entry.framePath || "")}</code></div>
+    <div><strong>Art preferita:</strong> <code>${cardPoolEscapeHtml(entry && entry.artPath || "")}</code></div>
+    <div><strong>Fallback art:</strong> <code>${cardPoolEscapeHtml(entry && entry.artCandidatePaths ? entry.artCandidatePaths.join(" | ") : "")}</code></div>
+    <div><strong>Formato:</strong> <code>${cardPoolEscapeHtml(entry && entry.recommendedArtSize || "")}</code> · <code>${cardPoolEscapeHtml(entry && entry.recommendedColorDepth || "")}</code></div>`;
 }
 
 function cardPoolUpdateNavButtons(cards = null) {
@@ -319,12 +376,14 @@ function renderCardPoolPreview(card = null) {
   const canvas = document.getElementById("cardPoolPreviewCanvas");
   const meta = document.getElementById("cardPoolPreviewMeta");
   const body = document.getElementById("cardPoolPreviewBody");
+  const debugBody = document.getElementById("cardPoolDebugBody");
   if (!canvas || !meta || !body) return selected;
 
   if (typeof renderArenaCardPreviewCanvas === "function") renderArenaCardPreviewCanvas(canvas, selected || null);
   if (!selected) {
     meta.textContent = "Nessuna carta selezionata.";
     body.innerHTML = `<div class="deckBuilderPreviewHelp">Seleziona una carta dal pool.</div>`;
+    if (debugBody) debugBody.textContent = "Nessuna informazione tecnica disponibile.";
     cardPoolRenderFocusMode(null);
     return null;
   }
@@ -335,20 +394,15 @@ function renderCardPoolPreview(card = null) {
     duplicateButton.disabled = selected.sourceType === "mission";
     duplicateButton.title = selected.sourceType === "mission" ? "Le Missioni ufficiali non sono duplicabili nel Card Editor in F9N4." : "";
   }
-  const desc = typeof cardRendererDescriptionText === "function" ? cardRendererNormalizeDescription(cardRendererDescriptionText(selected)) : (selected.effectText || "");
-  meta.textContent = `${selected.faction || "—"} · ${selected.sourceType === "mission" ? "Missione" : (selected.sourceType === "tactic" ? "Tattica" : "Unità")} · ${selected.id || ""}`;
+  meta.textContent = `${selected.faction || "—"} · ${selected.sourceType === "mission" ? "Missione" : (selected.sourceType === "tactic" ? "Tattica" : "Unità")} · ${cardPoolRoleLabel(selected)}`;
   body.innerHTML = `
+    <header class="cardPoolSelectedHeading">
+      <h4>${cardPoolEscapeHtml(selected.name || "Carta")}</h4>
+      <span>${cardPoolEscapeHtml(cardPoolTypeLabel(selected))}</span>
+    </header>
     ${cardPoolPreviewStatsHtml(selected)}
-    <div class="deckBuilderPreviewDesc">${cardPoolEscapeHtml(desc || "Nessun testo descrittivo disponibile nel catalogo.")}</div>
-    ${typeof cardRendererPassiveBadgesHtml === "function" ? cardRendererPassiveBadgesHtml(selected, cardPoolEscapeHtml) : ""}
-    <div class="deckBuilderPreviewPaths">
-      <div><strong>Card ID:</strong> <code>${cardPoolEscapeHtml(selected.id || "")}</code></div>
-      <div><strong>Source ID:</strong> <code>${cardPoolEscapeHtml(selected.sourceId || selected.blueprintId || selected.tacticId || "")}</code></div>
-      <div><strong>Frame:</strong> <code>${cardPoolEscapeHtml(entry && entry.framePath || "")}</code></div>
-      <div><strong>Art preferita:</strong> <code>${cardPoolEscapeHtml(entry && entry.artPath || "")}</code></div>
-      <div><strong>Fallback art:</strong> <code>${cardPoolEscapeHtml(entry && entry.artCandidatePaths ? entry.artCandidatePaths.join(" | ") : "")}</code></div>
-      <div><strong>Formato:</strong> <code>${cardPoolEscapeHtml(entry && entry.recommendedArtSize || "")}</code> · <code>${cardPoolEscapeHtml(entry && entry.recommendedColorDepth || "")}</code></div>
-    </div>`;
+    <div class="cardPoolAbilityStack">${cardPoolAbilitiesHtml(selected)}</div>`;
+  if (debugBody) debugBody.innerHTML = cardPoolTechnicalHtml(selected, entry);
   cardPoolRenderFocusMode(selected);
   cardPoolUpdateNavButtons();
   return selected;

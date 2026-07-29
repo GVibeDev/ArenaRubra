@@ -1,7 +1,7 @@
 "use strict";
 
 // Arena Rubra – C2a Tactic Cards Data Foundation.
-// 59 tattiche deck pescabili definite come dati.
+// 70 tattiche deck pescabili definite come dati (14 per fazione, F9S1a).
 // Le tattiche starter/base in data/tactics_base.js restano fuori deck e sempre disponibili.
 
 const DECK_TACTICS = Object.freeze([
@@ -1244,4 +1244,82 @@ const DECK_TACTICS = Object.freeze([
     "implementationStatus": "playable_c2c4a",
     "notes": ""
   }
+  ,{
+    "id":"NXTAC13","faction":"Nexus","name":"Kit di Riparazione","cardType":"tactic","deckRole":"tactic",
+    "category":"Intervento","quality":"Riparazione flessibile","target":"Unità Nexus alleata","targetDomain":"board_unit","targetSide":"ally",
+    "rangeMode":"ally_network","range":2,"cost":2,"condition":"Unità danneggiata negli HP o nella DEF; QG escluso",
+    "effectText":"Scegli: recupera fino a 2 HP oppure fino a 2 DEF, senza superare i rispettivi massimi.","duration":"Immediata",
+    "effectKind":"f9s1_repair_choice","implementationStatus":"playable_f9s1a","notes":"La scelta umana usa un dialogo esplicito; il bot sceglie il recupero maggiore."
+  },
+  {
+    "id":"NXTAC14","faction":"Nexus","name":"Visore Multispettrale","cardType":"tactic","deckRole":"tactic",
+    "category":"Dispositivo","quality":"Rilevamento ad area","target":"Cella entro R2 dalla rete alleata","targetDomain":"board_cell","targetSide":"enemy",
+    "rangeMode":"ally_network","range":2,"cost":2,"condition":"Cella valida entro R2 dalla rete operativa Nexus",
+    "effectText":"Tutte le unità nemiche Furtive entro R2 lineare dalla cella scelta perdono Furtivo. Lo stato può essere ottenuto nuovamente in seguito.","duration":"Immediata",
+    "effectKind":"f9s1_reveal_stealth_area","implementationStatus":"playable_f9s1a","notes":"Ignora ostacoli."
+  },
+  {
+    "id":"EXTAC13","faction":"Exordium","name":"Puntatore Imperiale","cardType":"tactic","deckRole":"tactic",
+    "category":"Dispositivo","quality":"Potenziamento permanente","target":"Fanteria o Veicolo Exordium alleato","targetDomain":"board_unit","targetSide":"ally",
+    "rangeMode":"ally_network","range":2,"cost":3,"condition":"Non già potenziata da Puntatore Imperiale",
+    "effectText":"Il bersaglio ottiene permanentemente Visione R2 e +1 ATT. Non cumulabile sulla stessa unità.","duration":"Permanente",
+    "effectKind":"f9s1_permanent_vision_att","implementationStatus":"playable_f9s1a","notes":"Visione usa il tag runtime vision."
+  },
+  {
+    "id":"EXTAC14","faction":"Exordium","name":"Meccanico","cardType":"tactic","deckRole":"tactic",
+    "category":"Intervento","quality":"Riparazione veicoli","target":"Veicolo Exordium alleato","targetDomain":"board_unit","targetSide":"ally",
+    "rangeMode":"ally_network","range":2,"cost":2,"condition":"Veicolo con HP mancanti",
+    "effectText":"Il Veicolo recupera fino a 3 HP, senza superare gli HP massimi.","duration":"Immediata",
+    "effectKind":"f9s1_heal_vehicle","implementationStatus":"playable_f9s1a","notes":""
+  },
+  {
+    "id":"AGTAC10","faction":"Agathoi","name":"Furia Verde","cardType":"tactic","deckRole":"tactic",
+    "category":"Operazione","quality":"Trasformazione temporanea","target":"Fanteria o Veicolo Agathoi alleato","targetDomain":"board_unit","targetSide":"ally",
+    "rangeMode":"ally_network","range":2,"cost":3,"condition":"Bersaglio non già sotto Furia Verde",
+    "effectText":"Scambia ATT corrente e DEF corrente fino alla fine del round. Il ripristino conserva danni e variazioni avvenuti durante l'effetto.","duration":"Fino a fine round",
+    "effectKind":"f9s1_green_fury","implementationStatus":"playable_f9s1a","notes":"Non cumulabile."
+  },
+  {
+    "id":"AGTAC11","faction":"Agathoi","name":"Ballista Agathoi","cardType":"tactic","deckRole":"tactic",
+    "category":"Sistema d’Arma","quality":"Danno diretto","target":"Unità nemica non QG","targetDomain":"board_unit","targetSide":"enemy",
+    "rangeMode":"ally_network","range":2,"cost":2,"condition":"Unità nemica valida",
+    "effectText":"Infligge 2 danni normali a una unità nemica.","duration":"Immediata",
+    "effectKind":"f9s1_damage_unit","damageValue":2,"implementationStatus":"playable_f9s1a","notes":""
+  },
+  {
+    "id":"AGTAC12","faction":"Agathoi","name":"Campo Minato","cardType":"tactic","deckRole":"tactic",
+    "category":"Intervento / Terreno","quality":"Controllo terreno","target":"Due celle libere adiacenti","targetDomain":"board_cell_pair","targetSide":"both",
+    "rangeMode":"ally_network","range":2,"cost":2,"condition":"Entrambe le celle entro R2, libere, adiacenti e senza mine o effetti incompatibili",
+    "effectText":"Piazza una mina su ciascuna cella. Ogni mina si consuma al primo passaggio e infligge 1 danno diretto agli HP, ad alleati o nemici.","duration":"Fino all'attivazione",
+    "effectKind":"f9s1_place_two_mines","selectionCount":2,"implementationStatus":"playable_f9s1a","notes":""
+  },
+  {
+    "id":"AGTAC13","faction":"Agathoi","name":"Dispiegamento","cardType":"tactic","deckRole":"tactic",
+    "category":"Operazione","quality":"Rinforzi","target":"Due celle di sbarco valide e adiacenti","targetDomain":"deployment_cell_pair","targetSide":"ally",
+    "rangeMode":"deployment_network","range":1,"cost":3,"condition":"Due celle valide, libere e adiacenti; cap disponibile per due Custodi",
+    "effectText":"Schiera due Custodi Agathoi su due celle valide adiacenti. Entrano esausti e senza Avanguardia.","duration":"Immediata",
+    "effectKind":"f9s1_spawn_two_guardians","selectionCount":2,"spawnBlueprintId":"AG1B01","implementationStatus":"playable_f9s1a","notes":""
+  },
+  {
+    "id":"AGTAC14","faction":"Agathoi","name":"Vedetta Agathoi","cardType":"tactic","deckRole":"tactic",
+    "category":"Dispositivo","quality":"Potenziamento permanente","target":"Fanteria Agathoi alleata","targetDomain":"board_unit","targetSide":"ally",
+    "rangeMode":"ally_network","range":2,"cost":3,"condition":"Fanteria non già potenziata da Vedetta Agathoi",
+    "effectText":"La Fanteria ottiene permanentemente Visione R2 e +1 DEF massima/base e corrente. Non cumulabile.","duration":"Permanente",
+    "effectKind":"f9s1_permanent_vision_def","implementationStatus":"playable_f9s1a","notes":""
+  },
+  {
+    "id":"FABTAC13","faction":"Fabeot","name":"Doppio Colpo","cardType":"tactic","deckRole":"tactic",
+    "category":"Sistema d’Arma","quality":"Danno sequenziale","target":"Unità nemica","targetDomain":"board_unit","targetSide":"enemy",
+    "rangeMode":"ally_network","range":2,"cost":2,"condition":"Unità nemica valida",
+    "effectText":"Infligge 1 danno normale, poi risolve un secondo colpo da 1 danno sullo stesso bersaglio se ancora vivo.","duration":"Immediata",
+    "effectKind":"f9s1_double_hit","hitDamage":1,"hitCount":2,"implementationStatus":"playable_f9s1a","notes":"I colpi sono risolti separatamente."
+  },
+  {
+    "id":"FABTAC14","faction":"Fabeot","name":"Doppio Colpo Pesante","cardType":"tactic","deckRole":"tactic",
+    "category":"Sistema d’Arma","quality":"Danno sequenziale pesante","target":"Unità nemica","targetDomain":"board_unit","targetSide":"enemy",
+    "rangeMode":"ally_network","range":2,"cost":4,"condition":"Unità nemica valida",
+    "effectText":"Infligge 2 danni normali, poi risolve un secondo colpo da 2 danni sullo stesso bersaglio se ancora vivo.","duration":"Immediata",
+    "effectKind":"f9s1_double_hit","hitDamage":2,"hitCount":2,"implementationStatus":"playable_f9s1a","notes":"I colpi sono risolti separatamente."
+  }
+
 ]);

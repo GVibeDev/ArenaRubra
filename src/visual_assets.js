@@ -9,6 +9,7 @@ const VISUAL_ASSET_TOKEN_MODE_DEFAULT = "on";
 const VISUAL_ASSET_TOKEN_MODE_OPTIONS = Object.freeze(["off", "on"]);
 
 const TOKEN_ASSET_TYPES = Object.freeze(["infantry", "vehicle", "structure", "commander", "pivot", "qg"]);
+const TOKEN_ASSET_CLASSES_F9O5 = Object.freeze(["starter", "light", "heavy", "elite", "pivot", "commander"]);
 const TOKEN_ASSET_FACTIONS = Object.freeze(["nexus", "exordium", "liberti", "agathoi", "fabeot"]);
 
 function visualAssetTokenPath(factionKey, typeKey) {
@@ -177,25 +178,105 @@ function visualAssetTokenTypeForUnit(unit) {
   return "infantry";
 }
 
-function visualAssetTokenArtForUnit(unit) {
+function visualAssetTokenClassForUnitF9O5(unit) {
+  if (!unit) return "light";
+  const explicit = String(unit.tokenClass || unit.unitClass || "").toLowerCase();
+  if (TOKEN_ASSET_CLASSES_F9O5.includes(explicit)) return explicit;
   const typeKey = visualAssetTokenTypeForUnit(unit);
-  if (unit && unit.customRuntime === true && VISUAL_TOKEN_ASSET_REGISTRY.custom && VISUAL_TOKEN_ASSET_REGISTRY.custom[typeKey]) {
-    return VISUAL_TOKEN_ASSET_REGISTRY.custom[typeKey];
+  if (typeKey === "commander" || typeKey === "pivot") return typeKey;
+  const weight = String(unit.weight || "").toLowerCase();
+  if (weight.startsWith("pesant")) return "heavy";
+  if (weight === "elite") return "elite";
+  return "light";
+}
+
+function visualAssetTokenBaseTypeForUnitF9O5(unit) {
+  const type = String(unit && unit.type || "").toLowerCase();
+  if (type === "struttura") return "structure";
+  if (type === "veicolo") return "vehicle";
+  if (type === "comandante") return "commander";
+  if (type === "qg") return "qg";
+  return "infantry";
+}
+
+function visualAssetTokenCandidatesForUnit(unit) {
+  if (!unit) return [];
+  const factionKey = unit.customRuntime === true ? "custom" : visualAssetFactionKeyForUnit(unit);
+  const classKey = visualAssetTokenClassForUnitF9O5(unit);
+  const fallbackClass = String(unit.tokenFallbackClass || "").toLowerCase();
+  const baseType = visualAssetTokenBaseTypeForUnitF9O5(unit);
+  const legacyType = visualAssetTokenTypeForUnit(unit);
+  const assetId = String(unit.tokenAssetId || unit.blueprintId || unit.id || "").trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "-");
+  const candidates = [];
+  if (assetId) candidates.push(`assets/tokens/${factionKey}/units/${assetId}.webp`);
+  candidates.push(`assets/tokens/${factionKey}/${baseType}/${classKey}.webp`);
+  candidates.push(`assets/tokens/${factionKey}/${classKey}.webp`);
+  if (fallbackClass && fallbackClass !== classKey) {
+    candidates.push(`assets/tokens/${factionKey}/${baseType}/${fallbackClass}.webp`);
+    candidates.push(`assets/tokens/${factionKey}/${fallbackClass}.webp`);
   }
-  const factionKey = visualAssetFactionKeyForUnit(unit);
-  const factionRegistry = VISUAL_TOKEN_ASSET_REGISTRY[factionKey] || VISUAL_TOKEN_ASSET_REGISTRY.nexus;
-  return factionRegistry[typeKey] || factionRegistry.infantry || null;
+  const registry = VISUAL_TOKEN_ASSET_REGISTRY[factionKey] || VISUAL_TOKEN_ASSET_REGISTRY.nexus;
+  if (registry && registry[legacyType]) candidates.push(registry[legacyType]);
+  if (registry && registry[baseType]) candidates.push(registry[baseType]);
+  if (registry && registry.infantry) candidates.push(registry.infantry);
+  return [...new Set(candidates.filter(Boolean))];
+}
+
+const VISUAL_TOKEN_CANDIDATE_WATCHED_F9O5 = new Set();
+let VISUAL_TOKEN_RERENDER_QUEUED_F9O5 = false;
+function visualAssetScheduleTokenRerenderF9O5() {
+  if (VISUAL_TOKEN_RERENDER_QUEUED_F9O5) return;
+  VISUAL_TOKEN_RERENDER_QUEUED_F9O5 = true;
+  const run = () => {
+    VISUAL_TOKEN_RERENDER_QUEUED_F9O5 = false;
+    if (typeof renderBoard === "function") renderBoard();
+  };
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+  else setTimeout(run, 0);
+}
+
+function visualAssetWatchTokenCandidateF9O5(path) {
+  if (!path || VISUAL_TOKEN_CANDIDATE_WATCHED_F9O5.has(path)) return;
+  VISUAL_TOKEN_CANDIDATE_WATCHED_F9O5.add(path);
+  visualAssetPreloadTokenArt(path, () => visualAssetScheduleTokenRerenderF9O5());
+}
+
+function visualAssetTokenArtForUnit(unit) {
+  const candidates = visualAssetTokenCandidatesForUnit(unit);
+  if (!candidates.length) return null;
+  for (const path of candidates) visualAssetWatchTokenCandidateF9O5(path);
+  const loaded = candidates.find(path => visualAssetTokenAssetStatus(path) === "loaded");
+  if (loaded) return loaded;
+  // Conserva il vecchio asset generico come placeholder stabile mentre i livelli
+  // dedicato/classe vengono risolti in background.
+  const legacy = candidates[candidates.length - 1];
+  if (legacy && visualAssetTokenAssetStatus(legacy) !== "missing") return legacy;
+  return candidates.find(path => visualAssetTokenAssetStatus(path) !== "missing") || null;
 }
 
 function visualAssetTokenRegistryExport() {
   const status = {};
   for (const [path, value] of VISUAL_TOKEN_ASSET_STATUS.entries()) status[path] = value;
+  const coverage = typeof BLUEPRINTS !== "undefined" ? BLUEPRINTS.map(bp => ({
+    id: bp.id,
+    faction: bp.faction,
+    type: bp.type,
+    unitClass: bp.unitClass || null,
+    tokenClass: bp.tokenClass || null,
+    tokenAssetId: bp.tokenAssetId || null,
+    candidates: visualAssetTokenCandidatesForUnit(bp),
+    resolved: visualAssetTokenArtForUnit(bp),
+    resolvedStatus: visualAssetTokenAssetStatus(visualAssetTokenArtForUnit(bp))
+  })) : [];
   return {
-    schema: "arena-rubra-token-assets-v1",
+    schema: "arena-rubra-token-assets-f9o5-v1",
     mode: visualAssetTokenGraphicsMode(),
     assetFormat: "webp",
     root: "assets/tokens/",
+    fallbackOrder: ["dedicated", "faction-type-class", "faction-class", "fallback-class", "legacy-faction-type", "procedural"],
+    classes: [...TOKEN_ASSET_CLASSES_F9O5],
     registry: JSON.parse(JSON.stringify(VISUAL_TOKEN_ASSET_REGISTRY)),
+    coverage,
     status
   };
 }

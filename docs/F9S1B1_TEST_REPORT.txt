@@ -1,0 +1,194 @@
+ARENA RUBRA — F9S1b1 TEST REPORT
+================================
+
+Build
+-----
+Versione: C2-STABLE-1-F9S1b1-APK-M4c
+Build name: Custom Deck Selection & Official Map Pack Hotfix
+Canale: f9s1b1-candidate
+Baseline validata: C2-STABLE-1-F9S1b-APK-M4c
+Data: 2026-07-28
+
+Scopo
+-----
+1. Rendere selezionabili in Nuova partita tutti i deck salvati/custom validi della fazione, anche quando usano un comandante diverso da quello inizialmente selezionato.
+2. Integrare Central hotspot, Plains 2G large e La Trappola come mappe ufficiali con sfondo WebP statico.
+
+Validazione della baseline
+--------------------------
+- F9S1b è stata validata esplicitamente dall’utente.
+- L’utente ha confermato che gli asset grafici delle nuove Pivot risultano già integrati.
+- La baseline ufficiale durante il collaudo F9S1b1 è C2-STABLE-1-F9S1b-APK-M4c.
+
+Controllo completo dei tre pacchetti mappa
+------------------------------------------
+Central hotspot:
+- kind/schema package: OK
+- assetMode: embedded
+- 3 giocatori, MOV ×3
+- 439 celle uniche e valide
+- terreni: 372 free, 28 obstacle, 22 difficult, 17 defensive
+- 8 PS, 3 QG
+- centro [0,-3,3], distanze QG: 13/13/13
+- 0 pericoli iniziali
+- WebP reale: 1970×1968, coerente con i metadati
+- errori/warning: 0/0
+
+Plains 2G large:
+- kind/schema package: OK
+- assetMode: embedded
+- 2 giocatori, MOV ×2
+- 313 celle uniche e valide
+- terreni: 221 free, 46 obstacle, 24 exposed, 18 defensive, 4 difficult
+- 7 PS, 2 QG
+- centro [0,5,-5], distanze QG: 12/12
+- 0 pericoli iniziali
+- WebP reale: 2697×1528, coerente con i metadati
+- errori/warning: 0/0
+
+La Trappola:
+- kind/schema package: OK
+- assetMode: embedded
+- 4 giocatori, MOV ×1
+- 151 celle uniche e valide
+- terreni: 79 free, 36 obstacle, 14 defensive, 12 exposed, 10 difficult
+- 7 PS, 4 QG
+- centro [0,0,0], distanze QG: 7/7/7/7
+- 0 pericoli iniziali
+- WebP reale: 2379×1782, coerente con i metadati
+- errori/warning: 0/0
+
+Per tutte le mappe:
+- coordinate cubiche e somma q+r+s: OK
+- coordinate duplicate: 0
+- componenti mancanti: 0
+- QG/playerSlots/owner: coerenti
+- PS lista/celle: corrispondenza esatta
+- ID PS duplicati: 0
+- PS centrale valido ed equidistante: OK
+- riferimenti hazard incoerenti: 0
+- background dichiarato/reale: coerente
+
+Asset estratti
+--------------
+- ruins.webp: 2.890.810 byte
+  SHA-256: 5df2e20482575eb3ab3ca4e4f477f6440e2093a89ac7df471ba60996e8f23238
+- plains.webp: 3.492.178 byte
+  SHA-256: a40452d38bb67a5f8767e2e411383e48f9e3fd3c5a4b9dd05e9a5a9216bda7dc
+- trap.webp: 3.245.958 byte
+  SHA-256: fa7fbfc9926ca29436409e9e55dbb67bea243d6393e5da672f373d3c3224102c
+
+Gli asset sono stati estratti dal dataUrl e salvati senza ricompressione.
+
+Sintassi
+--------
+- File JavaScript controllati con node --check: 143
+- Superati: 143
+- Errori: 0
+
+Suite Node
+----------
+- Suite eseguite: 64
+- Superate: 64
+- Fallite: 0
+
+Smoke dedicato F9S1b1
+----------------------
+- Verifiche: 45/45
+- mappe ufficiali presenti e collegate al loader
+- campi, celle, QG, PS e centro delle tre mappe
+- distanze esagonali lineari dal centro
+- asset statici esistenti e metadati coerenti
+- formule Pressione per i nuovi profili
+- sorgente della correzione Setup
+- versione e baseline logica
+
+Smoke Chromium deck selector
+-----------------------------
+Esito: PASS
+
+Scenario testato:
+- fazione Nexus;
+- tre deck built-in validi distribuiti fra Avatex e Unità Comando;
+- un deck salvato custom valido con Unità Comando e Pivot alternativa.
+
+Risultati:
+- opzioni mostrate: 4/4
+- deck di entrambi i comandanti visibili contemporaneamente: sì
+- selezione deck custom NXCMD02 sincronizza il comandante: sì
+- selezione deck built-in NXCMD01 sincronizza il comandante: sì
+- comandante disabilitato in modalità custom: sì
+- comandante riabilitato in modalità template: sì
+- chiave deck letta dal Setup: sì
+- validazione deck selezionato: OK, 0 issue
+- errori pagina: 0
+- errori console: 0
+
+Smoke Chromium mappe/Pressione
+------------------------------
+Esito: PASS
+
+- 9 mappe ufficiali visibili nel selettore
+- tutte le mappe con PS centrale valido
+- sfondi statici risolti per Narrow Path e per le tre nuove mappe
+- nessun errore pagina o console
+
+Smoke Chromium mirati
+----------------------
+1. F9S1b1 deck selection: PASS
+2. F9R3 nine maps/pressure/static backgrounds: PASS
+3. F9S1b pivot/catalog/precheck: PASS
+4. F9S1a faction expansion: PASS
+5. F9Q3c custom backgrounds: PASS
+6. F9O7b UI/state/resume: PASS
+7. F9O7h1 tutorial visibility: PASS
+8. F9O4c Android layout stability: PASS
+
+Totale mirato:
+- smoke: 8
+- superati: 8
+- falliti: 0
+- errori pagina inattesi: 0
+- errori console inattesi: 0
+
+Nota sul gruppo Chromium completo
+--------------------------------
+Il tentativo di eseguire tutti gli smoke Chromium in una sola sessione ha superato il limite temporale di 10 minuti dell’ambiente. Prima del timeout, il legacy smoke F9O2c della camera ha rilevato un reset dello stato manuale della camera nel proprio harness:
+
+- prima: fitScale 0.4973, zoom 1.684, x 0, y -52, mode manual
+- dopo: fitScale 0.541 circa, zoom 1, x 0, y 0, mode manual
+
+Il comportamento non è stato riprodotto negli otto smoke mirati e non appartiene ai percorsi modificati da F9S1b1. Non viene tuttavia nascosto: resta una verifica manuale aperta sulla persistenza della camera durante cambi di schermata/mappa.
+
+Pressione sulle nuove mappe
+---------------------------
+Central hotspot:
+- C = ceil((8+3)/2) = 6
+- Rapida: inizio R20, 5 incrementi, limite R36
+- Standard: inizio R26, 7 incrementi, limite R50
+- controllo richiesto: 4/8 PS, centro incluso
+
+Plains 2G large:
+- C = ceil((7+2)/2) = 5
+- Rapida: inizio R20, 5 incrementi, limite R35
+- Standard: inizio R25, 7 incrementi, limite R50
+- controllo richiesto: 4/7 PS, centro incluso
+
+La Trappola:
+- C = ceil((7+4)/2) = 6
+- Rapida: inizio R20, 5 incrementi, limite R36
+- Standard: inizio R26, 7 incrementi, limite R50
+- controllo richiesto: 4/7 PS, centro incluso
+
+Limiti del collaudo
+-------------------
+- Nessun test su APK installato su dispositivo Android fisico.
+- Nessuna partita completa lunga sulle tre nuove mappe.
+- Nessun benchmark bot-vs-bot prolungato con deck custom contenenti le nuove Pivot.
+- Il legacy smoke camera F9O2c richiede una verifica manuale separata.
+- I deck ufficiali restano quelli precedenti e saranno ricostruiti in F9S1c.
+
+Esito
+-----
+CANDIDATA TECNICAMENTE PRONTA PER IL COLLAUDO MANUALE.
+NON ANCORA VALIDATA DALL'UTENTE.

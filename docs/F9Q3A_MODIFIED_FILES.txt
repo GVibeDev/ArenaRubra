@@ -1,0 +1,33 @@
+ARENA RUBRA — F9Q3a FILE MODIFICATI
+
+AGGIUNTI
+- src/board_geometry.js
+- src/data_store.js
+- tests/f9q3a_dynamic_board_geometry_smoke.js
+- tests/f9q3a_local_data_vault_smoke.js
+- tests/f9q3a_main_menu_smoke.js
+- tests/fixtures/custom_double_ms0cunhu.json
+- docs/F9Q3A_CHANGELOG.md
+- docs/F9Q3A_LOCAL_DATA_VAULT.md
+- docs/F9Q3A_MANUAL_TEST_CHECKLIST.md
+- docs/F9Q3A_TEST_REPORT.txt
+- docs/F9Q3A_MODIFIED_FILES.txt
+
+MODIFICATI
+- README.md
+- css/style.css
+- index.html
+- src/app.js
+- src/build_info.js
+- src/camera.js
+- src/camera_interaction.js
+- src/card_editor.js
+- src/deck_builder.js
+- src/mobile.js
+- src/render.js
+- src/stats.js
+- src/storage.js
+- src/ui.js
+
+RIMOSSI
+- Nessuno.

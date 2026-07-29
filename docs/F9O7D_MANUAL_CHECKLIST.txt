@@ -1,0 +1,14 @@
+ARENA RUBRA — F9O7d CHECKLIST MANUALE
+
+[ ] Avviare una partita normale su desktop/browser.
+[ ] Con Mano aperta, verificare che Fine turno, Muovi unità e Riduci mano siano invariati.
+[ ] Ridurre la Mano: verificare che il riquadro destro scompaia.
+[ ] Verificare Mostra mano e Fine turno sotto le abilità di fazione, sul lato sinistro.
+[ ] Verificare che i due pulsanti non coprano abilità, ENE o mappa.
+[ ] Usare Fine turno dal nuovo gruppo e verificare il normale cambio turno.
+[ ] Usare Mostra mano e verificare il ritorno del pannello originale.
+[ ] Ripetere riduzione/apertura più volte senza duplicati o pulsanti fantasma.
+[ ] Avviare Lezione 1 e verificare il passaggio Mostra mano.
+[ ] Avviare Lezione 2 e verificare Mano, sbarco, costruzione e fine turno.
+[ ] Su Android landscape: provare tap, pan e pinch con Mano ridotta.
+[ ] Su Android: verificare che il gruppo resti leggibile e non copra il dock abilità.

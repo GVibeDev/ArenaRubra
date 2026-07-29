@@ -376,7 +376,7 @@ function arenaAudioTryNextCandidate(reason = "missing") {
 function arenaAudioHumanOutcome(meta = {}) {
   const winnerSide = Object.prototype.hasOwnProperty.call(meta, "winnerSide") ? meta.winnerSide : (typeof state !== "undefined" && state ? state.winnerSide : null);
   const modes = meta.modes || (typeof state !== "undefined" && state && state.modes ? state.modes : {});
-  const humanSides = [1, 2].filter(side => modes && modes[side] === "human");
+  const humanSides = (typeof mapRuntimePlayerIds === "function" && typeof state !== "undefined" && state ? mapRuntimePlayerIds(state) : [1, 2]).filter(side => modes && modes[side] === "human");
   if (!winnerSide) return "neutral";
   if (humanSides.length === 1) return winnerSide === humanSides[0] ? "victory" : "defeat";
   return "victory";

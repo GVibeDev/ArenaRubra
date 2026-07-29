@@ -13,5 +13,5 @@ const TACTICS = Object.freeze([
       { id:"AG_TAC_ROOTS", faction:"Agathoi", name:"Radici Difensive", cost:2, cooldown:2, target:"ally", kind:"defensiveRoots", description:"Una tua unità su PS o struttura ottiene Spine 2 per un turno." },
       { id:"AG_TAC_WALL", faction:"Agathoi", name:"Muro Verde", cost:3, cooldown:2, target:"none", kind:"greenWall", description:"Le tue unità adiacenti a una tua struttura recuperano +1 DEF fino al massimo." },
       { id:"FB_TAC_CHOKE", faction:"Fabeot", name:"Strozzatura Logistica", cost:1, cooldown:2, target:"enemy", kind:"logisticChoke", description:"Marchia un nemico; se attacca, Fabeot guadagna +2 ENE." },
-      { id:"FB_TAC_CONTRACT", faction:"Fabeot", name:"Contratto Capestro", cost:4, cooldown:3, target:"none", kind:"contractTrap", description:"Il nemico paga +1 ENE per acquistare unità fino alla fine del suo prossimo turno." }
+      { id:"FB_TAC_CONTRACT", faction:"Fabeot", name:"Contratto Capestro", cost:4, cooldown:3, target:"enemy_player", kind:"contractTrap", description:"Il nemico paga +1 ENE per acquistare unità fino alla fine del suo prossimo turno." }
     ]);

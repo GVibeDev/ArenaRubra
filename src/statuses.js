@@ -20,7 +20,11 @@ const STATUS_DEFINITIONS = Object.freeze({
         directHp: true,
         blocks: {},
         tick(unit, status) {
-          applyDamage(unit, status.value, this.label, { status:true, directHp:true, sourceSide:status.owner || null, damageKind:"bleed" });
+          applyDamage(unit, status.value, this.label, {
+            status:true, directHp:true, sourceSide:status.owner || null,
+            sourceUnitId:status.sourceUnitId || null, sourceBlueprintId:status.sourceBlueprintId || null,
+            damageKind:"bleed"
+          });
           status.turns -= 1;
           return status.turns > 0 && unit.alive;
         }

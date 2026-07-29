@@ -1,0 +1,48 @@
+ARENA RUBRA — F9Q3c TEST REPORT
+Build: C2-STABLE-1-F9Q3c-APK-M4c
+Baseline: C2-STABLE-1-F9Q3b-APK-M4c
+
+1. CONTROLLO SINTATTICO JAVASCRIPT
+- File controllati: 130
+- Errori: 0
+- Comando: node --check su tutti i file .js
+
+2. SUITE NODE
+- Suite eseguite: 55
+- Superate: 55
+- Fallite: 0
+
+Copertura dedicata F9Q3c:
+- normalizzazione dei campi presentation;
+- validazione MIME e dimensione;
+- salvataggio/rilettura Blob;
+- rimozione asset;
+- export leggero senza immagine inline;
+- export portatile con immagine incorporata;
+- import portatile e ricostruzione riferimento locale;
+- fallback inline controllato;
+- markup e binding dell’editor;
+- compatibilità dello smoke editor F9Q3.
+
+3. SMOKE TEST BROWSER F9Q3c
+Esito: SUPERATO
+
+Editor:
+- immagine presente: sì
+- opacità applicata: 0.66
+- fit: contain
+- stato asset mostrato correttamente
+
+Runtime:
+- fit: cover
+- opacità: 0.7
+- transform: translate3d(3%, -2%, 0px) scale(1.1)
+- modalità background: custom
+
+Errori pagina: 0
+Errori console: 0
+
+4. LIMITI DELLA VERIFICA
+- Non è stato eseguito un test APK Android fisico in questa sessione.
+- Selettore file, persistenza del backend WebView e consumo memoria devono essere verificati sul dispositivo reale.
+- La candidata non è dichiarata validata fino al collaudo dell’autore.

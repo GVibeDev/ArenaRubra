@@ -2,18 +2,21 @@
 
 // Arena Rubra – F9P1 Persistent Storage Foundation.
 // Unico layer di accesso allo storage persistente dell'app.
-// Per ora usa localStorage, ma Deck Builder / Stats / Setup devono passare da qui:
-// in futuro il backend potrà diventare file JSON per EXE/APK senza riscrivere le schermate.
+// Facade sincrona sopra ArenaDataStore F9Q3a. Il backend preferito è OPFS,
+// con IndexedDB e localStorage come fallback automatici.
 
 const ARENA_STORAGE_SCHEMA_VERSION = "F9P1-1";
 const ARENA_STORAGE_KEYS = Object.freeze({
+  customCards: "arenaRubra.customCards.v1",
   customDecks: "arenaRubraF9H3SavedDecksV1",        // chiave F9H3 mantenuta per compatibilità.
+  customMaps: "arenaRubra.maps.v1",
   matchupStats: typeof STATS_STORAGE_KEY !== "undefined" ? STATS_STORAGE_KEY : "arenaRubra.matchupStats.v1",
   matchHistory: "arenaRubra.matchHistory.v1",
   settings: "arenaRubra.settings.v1"
 });
 
 function arenaStorageAvailable() {
+  if (typeof ArenaDataStore !== "undefined" && ArenaDataStore) return true;
   try {
     if (typeof localStorage === "undefined") return false;
     const key = "__arenaRubraStorageProbe__";
@@ -26,6 +29,9 @@ function arenaStorageAvailable() {
 }
 
 function arenaStorageReadJson(key, fallback) {
+  if (typeof ArenaDataStore !== "undefined" && ArenaDataStore && typeof ArenaDataStore.readJsonSync === "function") {
+    return ArenaDataStore.readJsonSync(key, fallback);
+  }
   if (!arenaStorageAvailable()) return fallback;
   try {
     const raw = localStorage.getItem(key);
@@ -39,6 +45,9 @@ function arenaStorageReadJson(key, fallback) {
 }
 
 function arenaStorageWriteJson(key, value) {
+  if (typeof ArenaDataStore !== "undefined" && ArenaDataStore && typeof ArenaDataStore.writeJsonSync === "function") {
+    return ArenaDataStore.writeJsonSync(key, value);
+  }
   if (!arenaStorageAvailable()) return false;
   try {
     localStorage.setItem(key, JSON.stringify(value, null, 2));
@@ -50,6 +59,9 @@ function arenaStorageWriteJson(key, value) {
 }
 
 function arenaStorageRemove(key) {
+  if (typeof ArenaDataStore !== "undefined" && ArenaDataStore && typeof ArenaDataStore.removeSync === "function") {
+    return ArenaDataStore.removeSync(key);
+  }
   if (!arenaStorageAvailable()) return false;
   try {
     localStorage.removeItem(key);
@@ -58,6 +70,12 @@ function arenaStorageRemove(key) {
     console.warn(`Arena Rubra storage: rimozione fallita per ${key}`, err);
     return false;
   }
+}
+
+function arenaStorageBackendDiagnostics() {
+  return typeof ArenaDataStore !== "undefined" && ArenaDataStore && typeof ArenaDataStore.diagnostics === "function"
+    ? ArenaDataStore.diagnostics()
+    : { backendName: arenaStorageAvailable() ? "localStorage" : "memory", initialized: true };
 }
 
 function arenaStorageCopyText(text, okMessage = "Testo copiato negli appunti.") {

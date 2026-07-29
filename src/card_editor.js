@@ -119,22 +119,15 @@ function cardEditorStatusDescription(active) {
 }
 
 function cardEditorStorageAvailable() {
-  try {
-    if (typeof localStorage === "undefined") return false;
-    const key = "__arenaRubraCardEditorProbe__";
-    localStorage.setItem(key, "1");
-    localStorage.removeItem(key);
-    return true;
-  } catch (_) {
-    return false;
-  }
+  return typeof arenaStorageAvailable === "function" ? arenaStorageAvailable() : false;
 }
 
 function cardEditorReadCustomCards() {
   if (!cardEditorStorageAvailable()) return [];
   try {
-    const raw = localStorage.getItem(CARD_EDITOR_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
+    const parsed = typeof arenaStorageReadJson === "function"
+      ? arenaStorageReadJson(CARD_EDITOR_STORAGE_KEY, [])
+      : [];
     return Array.isArray(parsed) ? parsed.filter(card => card && card.custom === true) : [];
   } catch (err) {
     console.warn("Card Editor: custom cards non leggibili", err);
@@ -145,8 +138,9 @@ function cardEditorReadCustomCards() {
 function cardEditorWriteCustomCards(cards) {
   if (!cardEditorStorageAvailable()) return false;
   try {
-    localStorage.setItem(CARD_EDITOR_STORAGE_KEY, JSON.stringify(Array.isArray(cards) ? cards : [], null, 2));
-    return true;
+    return typeof arenaStorageWriteJson === "function"
+      ? arenaStorageWriteJson(CARD_EDITOR_STORAGE_KEY, Array.isArray(cards) ? cards : [])
+      : false;
   } catch (err) {
     console.warn("Card Editor: salvataggio custom cards fallito", err);
     return false;

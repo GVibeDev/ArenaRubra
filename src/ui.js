@@ -38,6 +38,7 @@ $("newGameBtn").addEventListener("click", newGame);
     if ($("copyLogBtn")) $("copyLogBtn").addEventListener("click", copyCurrentMatchLogTxt);
     if ($("exportLogBtn")) $("exportLogBtn").addEventListener("click", exportCurrentMatchLogTxt);
     if ($("copyMatchStatsJsonBtn")) $("copyMatchStatsJsonBtn").addEventListener("click", copyCurrentMatchStatsJson);
+    if ($("copyMatchTelemetryJsonBtn")) $("copyMatchTelemetryJsonBtn").addEventListener("click", copyCurrentMatchTelemetryJson);
     if ($("copyMatchReportBtn")) $("copyMatchReportBtn").addEventListener("click", copyCurrentMatchReportText);
     if ($("copyEventsJsonBtn")) $("copyEventsJsonBtn").addEventListener("click", copyCurrentMatchEventsJson);
     if ($("copyStatsFullLogBtn")) $("copyStatsFullLogBtn").addEventListener("click", copyCurrentMatchLogTxt);
@@ -49,7 +50,7 @@ $("newGameBtn").addEventListener("click", newGame);
     $("concedeBtn").addEventListener("click", () => concedeMatch(state.currentPlayer));
     $("autoResignToggle").addEventListener("change", () => { if (state) state.autoResignEnabled = $("autoResignToggle").checked; });
     $("botAiMode").addEventListener("change", () => { if (state) { state.aiMode = $("botAiMode").value; log(`AI dei bot impostata su ${state.aiMode === "advanced" ? "Avanzata v1.8.11" : "Base v0.9"}.`); maybeRunBot(); renderAll(); } });
-    $("pacePreset").addEventListener("change", () => { if (state) { state.pacePreset = $("pacePreset").value; log(`Preset ritmo impostato su ${paceLabel()}: Pressione dal round ${pressureStartRound()}, cap leggere G1 ${lightFieldLimit(1)} / G2 ${lightFieldLimit(2)}, movimento veicoli ${vehicleMoveRange()}.`); renderAll(); maybeRunBot(); } });
+    $("pacePreset").addEventListener("change", () => { if (state) { state.pacePreset = $("pacePreset").value; log(`Preset ritmo impostato su ${paceLabel()}: ${typeof pressureRequirementSummary === "function" ? pressureRequirementSummary() : `Pressione dal round ${pressureStartRound()}`}; cap leggere G1 ${lightFieldLimit(1)} / G2 ${lightFieldLimit(2)}, movimento veicoli ${vehicleMoveRange()}.`); renderAll(); maybeRunBot(); } });
     $("p1Mode").addEventListener("change", () => { if (state) state.modes[1] = $("p1Mode").value; maybeRunBot(); renderAll(); });
     $("p2Mode").addEventListener("change", () => { if (state) state.modes[2] = $("p2Mode").value; maybeRunBot(); renderAll(); });
     $("p1Faction").addEventListener("change", () => { refreshCommanderSelects(); if (state) log("La fazione/comandante del G1 verranno applicati dalla prossima nuova partita."); });
@@ -59,7 +60,15 @@ $("newGameBtn").addEventListener("click", newGame);
     $("initiativeMode").addEventListener("change", () => { if (state) log("L'iniziativa verrà applicata dalla prossima nuova partita."); });
 }
 
-function bootArenaRubra() {
+async function bootArenaRubra() {
+  if (typeof document !== "undefined" && document.body) document.body.classList.add("arena-storage-loading");
+  try {
+    if (typeof arenaDataStoreReady === "function") await arenaDataStoreReady();
+  } catch (error) {
+    console.warn("Arena Rubra: archivio locale avviato in fallback", error);
+  } finally {
+    if (typeof document !== "undefined" && document.body) document.body.classList.remove("arena-storage-loading");
+  }
   refreshCommanderSelects();
   bindUiEvents();
   if (typeof initializeArenaAppShell === "function") initializeArenaAppShell();

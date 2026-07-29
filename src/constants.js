@@ -11,17 +11,17 @@ const LIGHT_FIELD_LIMIT = 10;
 const HEAVY_FIELD_LIMIT = 2;
 const ELITE_FIELD_LIMIT = 1;
 const PIVOT_FIELD_LIMIT = 1;
-const STRUCTURE_FIELD_LIMIT = 6;
-const AGATHOI_STRUCTURE_FIELD_LIMIT = 7;
+const STRUCTURE_FIELD_LIMIT = Infinity;
+const AGATHOI_STRUCTURE_FIELD_LIMIT = Infinity;
 const PRESSURE_START_ROUND = 30;
-const PRESSURE_WIN = 5;
-const MAX_ROUND = 50;
+const PRESSURE_WIN = 5; // fallback legacy; usare pressureWinLimit() nel runtime.
+const MAX_ROUND = 50; // fallback legacy; usare maxRoundLimit() nel runtime.
 const AUTO_RESIGN_ROUND = 25;
 const AUTO_RESIGN_STREAK = 3;
 const QG_THREAT_RANGE = 3;
 const PACE_PRESETS = Object.freeze({
-      standard: { key:"standard", label:"Standard", pressureStartRound:30, lightCapDefault:10, lightCapByFaction:{}, vehicleMove:1 },
-      competitive: { key:"competitive", label:"Rapida / Competitive", pressureStartRound:20, lightCapDefault:5, lightCapByFaction:{ Liberti:7 }, vehicleMove:2 }
+      standard: { key:"standard", label:"Standard", pressureBaseRound:20, pressureWin:7, maxRound:50, lightCapDefault:10, lightCapByFaction:{}, vehicleMove:1 },
+      competitive: { key:"competitive", label:"Rapida / Competitive", pressureBaseRound:20, pressureWin:5, maxRoundBase:30, lightCapDefault:5, lightCapByFaction:{ Liberti:7 }, vehicleMove:2 }
     });
 const HEX_W = 66;
 const CENTER_X = 460;
@@ -38,7 +38,8 @@ const CONFIG = Object.freeze({
         heavy: HEAVY_FIELD_LIMIT,
         elite: ELITE_FIELD_LIMIT,
         pivot: PIVOT_FIELD_LIMIT,
-        structure: STRUCTURE_FIELD_LIMIT
+        structure: null,
+        starterStructureTactical: 2
       },
       victory: {
         pressureStartRound: PRESSURE_START_ROUND,

@@ -83,6 +83,12 @@ function runPrecheck(options = {}) {
     if (typeof missionUiDashboardHtml !== "function") warnings.push("F9N7: missionUiDashboardHtml non disponibile.");
     else info.push("F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.");
     if (typeof missionUiRevealOnPlay !== "function") warnings.push("F9N7: hook missionUiRevealOnPlay non disponibile.");
+    if (typeof handCardHiddenFromViewer !== "function" || typeof cardPresentationViewerSide !== "function") problems.push("F9O4: privacy mano bot non disponibile.");
+    else info.push("F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.");
+    if (typeof cardAssetBackCandidatePathsFor !== "function" || typeof cardBackVisualHtml !== "function") problems.push("F9O4: resolver dorsi fazione non disponibile.");
+    else for (const factionName of ["Nexus","Exordium","Liberti","Agathoi","Fabeot"]) info.push(`F9O4 dorso ${factionName}: ${cardAssetBackCandidatePathsFor(factionName)[0]}.`);
+    if (typeof cardMotionEnqueueGameEvent !== "function") problems.push("F9O4: coda animazioni carte non disponibile.");
+    else info.push("F9O4: coda animazioni carta non bloccante disponibile.");
 
     if (missions.length !== 15) problems.push(`Missioni F9N6: ${missions.length}/15.`);
     for (const dup of collectDuplicateValues(missions, mission => mission && mission.id)) {
@@ -157,15 +163,15 @@ function runPrecheck(options = {}) {
           problems.push(`Carta Missione ${card.id}: contratto catalogo non valido.`);
         }
       }
-      if (deckTacticCards.length !== 59) problems.push(`Tattiche deck C2-FINAL-C2 nel catalogo: ${deckTacticCards.length}/59.`);
-      const expectedTacticCounts = { Nexus:12, Exordium:12, Liberti:14, Agathoi:9, Fabeot:12 };
+      if (deckTacticCards.length !== 70) problems.push(`Tattiche deck C2-FINAL-C2 nel catalogo: ${deckTacticCards.length}/70.`);
+      const expectedTacticCounts = { Nexus:14, Exordium:14, Liberti:14, Agathoi:14, Fabeot:14 };
       for (const [factionName, expected] of Object.entries(expectedTacticCounts)) {
         const count = deckTacticCards.filter(card => card.faction === factionName).length;
         if (count !== expected) problems.push(`Tattiche deck C2-FINAL-C2 ${factionName}: ${count}/${expected}.`);
       }
 
       const playableC2c1 = deckTacticCards.filter(card => typeof isC2c1SingleDamageTacticCard === "function" && isC2c1SingleDamageTacticCard(card));
-      info.push(`Tattiche giocabili C2-FINAL-C2: ${playableC2c1.length}/59.`);
+      info.push(`Tattiche giocabili C2-FINAL-C2: ${playableC2c1.length}/70.`);
       
 
       for (const factionName of factionNames) {
@@ -198,7 +204,7 @@ function runPrecheck(options = {}) {
         info.push(`Mano C2-FINAL-C2 G1: ${state.hand && state.hand[1] ? state.hand[1].length : 0}`);
         info.push(`Mano C2-FINAL-C2 G2: ${state.hand && state.hand[2] ? state.hand[2].length : 0}`);
         if (state.cardDebug.openingHand) {
-          for (const side of [1, 2]) {
+          for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2])) {
             const opening = state.cardDebug.openingHand[side];
             if (!opening || opening.ok !== true) problems.push(`F9N5 mano iniziale G${side}: contratto non valido.`);
             else info.push(`F9N5 mano iniziale G${side}: ${opening.missionCopies ? "Missione + " : ""}Comandante + ${opening.ordinaryCopies} ordinarie.`);
@@ -209,9 +215,11 @@ function runPrecheck(options = {}) {
         if (state.cardDebug && Object.prototype.hasOwnProperty.call(state.cardDebug, "runtimeDeckShuffled")) {
           info.push(`Runtime deck shuffle C2c-6a-fix2: ${state.cardDebug.runtimeDeckShuffleMode || (state.cardDebug.runtimeDeckShuffled ? "after_initial_hand" : "off")}.`);
         }
-        if (typeof deckRuntimeValidationSummary === "function") {
+        if (state.tutorialMode === true) {
+          info.push(`F9O6 scenario tutorial ${state.tutorialScenarioId || "custom"}: validazione deck competitivo esclusa per setup deterministico.`);
+        } else if (typeof deckRuntimeValidationSummary === "function") {
           const runtime = deckRuntimeValidationSummary();
-          for (const side of [1, 2]) {
+          for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2])) {
             const r = runtime.sides && runtime.sides[side];
             if (!r) continue;
             info.push(`Runtime deck C2-FINAL-C2 G${side}: totale ${r.totalCards}/${r.targetSize}, deck ${r.zoneCounts.deck}, mano ${r.zoneCounts.hand}, scarti ${r.zoneCounts.discard}, overflow ${r.debugOverflowCopies}, ok ${r.ok}.`);
@@ -270,6 +278,129 @@ function runPrecheck(options = {}) {
       if (Array.isArray(bp.passives)) {
         for (const passive of bp.passives) precheckAbility(passive, bp, problems, warnings);
       }
+    }
+
+    if (typeof unitTaxonomyAuditF9O5 === "function") {
+      const taxonomyAudit = unitTaxonomyAuditF9O5(blueprints);
+      info.push(`F9O5 tassonomia unità: ${taxonomyAudit.total} blueprint · ${Object.entries(taxonomyAudit.counts).map(([key,value]) => `${key} ${value}`).join(", ")}.`);
+      for (const error of taxonomyAudit.errors || []) problems.push(`F9O5: ${error}`);
+      for (const warning of taxonomyAudit.warnings || []) warnings.push(`F9O5: ${warning}`);
+    }
+
+    if (typeof tokenFxProfileAuditF9O5a === "function") {
+      const fxAudit = tokenFxProfileAuditF9O5a(blueprints);
+      info.push(`F9O5a profili FX/SFX: ${fxAudit.total} blueprint · ${Object.entries(fxAudit.counts).map(([key,value]) => `${key} ${value}`).join(", ")}.`);
+      for (const error of fxAudit.errors || []) problems.push(`F9O5a: ${error}`);
+    } else {
+      warnings.push("F9O5a: audit profili FX/SFX non disponibile.");
+    }
+
+    if (typeof CARD_CATALOG_CONFIG !== "undefined") {
+      const requiredF9O5aFlags = [
+        "tokenFxProfilesF9O5a",
+        "dynamicTokenFxLayerF9O5a",
+        "tokenFxReducedOffModesF9O5a",
+        "synthesizedSfxRuntimeF9O5a",
+        "persistentSfxControlsF9O5a",
+        "noWebGlMigrationF9O5a"
+      ];
+      for (const flag of requiredF9O5aFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O5a: feature flag mancante o disattivato: ${flag}.`);
+      }
+      info.push("F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.");
+
+      const requiredF9O6Flags = [
+        "hqObjectiveTokenSuppressionF9O5b",
+        "dataDrivenTutorialRuntimeF9O6",
+        "semanticTutorialSpotlightF9O6",
+        "tutorialNarrativePortraitsF9O6",
+        "tutorialInputModesF9O6",
+        "tutorialEventCompletionF9O6",
+        "tutorialCheckpointStorageF9O6",
+        "tutorialBotPauseF9O6",
+        "tutorialStatsExclusionF9O6"
+      ];
+      for (const flag of requiredF9O6Flags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O6: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7aFlags = [
+        "tutorialLessonOneExordiumF9O7a",
+        "tutorialScenarioCommandsF9O7a",
+        "tutorialCheckpointSnapshotF9O7a",
+        "tutorialPlayerTextGameplayOnlyF9O7a"
+      ];
+      for (const flag of requiredF9O7aFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7a: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7bFlags = [
+        "tutorialUiStateContractF9O7b",
+        "tutorialResumeSynchronizationF9O7b",
+        "tutorialAsyncSessionGuardF9O7b",
+        "tutorialPortraitFallbackF9O7b"
+      ];
+      for (const flag of requiredF9O7bFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7b: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7cFlags = [
+        "tutorialLessonTwoNexusF9O7c",
+        "tutorialStarterReserveF9O7c",
+        "tutorialDeploymentNetworkF9O7c",
+        "tutorialVanguardComparisonF9O7c",
+        "tutorialMultiLessonMenuF9O7c"
+      ];
+      for (const flag of requiredF9O7cFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7c: feature flag mancante o disattivato: ${flag}.`);
+      }
+      if (CARD_CATALOG_CONFIG.collapsedHandControlsReflowF9O7d !== true) {
+        problems.push("F9O7d: reflow dei comandi Mano ridotta mancante o disattivato.");
+      }
+      const requiredF9O7eFlags = [
+        "tutorialLessonThreeAgathoiF9O7e",
+        "tutorialDefenseChoiceF9O7e",
+        "tutorialThornsCounterattackF9O7e",
+        "tutorialFortificationWavesF9O7e"
+      ];
+      for (const flag of requiredF9O7eFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7e: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7fFlags = [
+        "tutorialLessonFourLibertiF9O7f",
+        "tutorialCardChoiceGateF9O7f",
+        "tutorialHoverPreviewAboveSpotlightF9O7f",
+        "tutorialBleedSuperiorityCoordinationF9O7f"
+      ];
+      for (const flag of requiredF9O7fFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7f: feature flag mancante o disattivato: ${flag}.`);
+      }
+      const requiredF9O7gFlags = [
+        "tutorialLessonFiveFabeotF9O7g",
+        "tutorialFabeotMarkVulnerabilityF9O7g",
+        "tutorialHandEnergyDisruptionF9O7g",
+        "tutorialConversionResumeF9O7g"
+      ];
+      for (const flag of requiredF9O7gFlags) {
+        if (CARD_CATALOG_CONFIG[flag] !== true) problems.push(`F9O7g: feature flag mancante o disattivato: ${flag}.`);
+      }
+    }
+
+    if (typeof tutorialScenarioAuditF9O6 === "function") {
+      const tutorialAudit = tutorialScenarioAuditF9O6();
+      info.push(`Tutorial: ${tutorialAudit.lessons} lezioni pianificate · ${tutorialAudit.scenarios} lezioni giocabili · ${tutorialAudit.portraitSets} set ritratti.`);
+      for (const error of tutorialAudit.errors || []) problems.push(`F9O6: ${error}`);
+      for (const warning of tutorialAudit.warnings || []) warnings.push(`F9O6: ${warning}`);
+    } else {
+      problems.push("F9O6: audit scenari tutorial non disponibile.");
+    }
+    if (typeof tutorialRuntimeStartScenario !== "function" || typeof tutorialRuntimeHandleGameEvent !== "function" || typeof tutorialRuntimeShouldPauseBot !== "function") {
+      problems.push("F9O6: API runtime tutorial incompleta.");
+    } else {
+      info.push("F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.");
+      info.push("F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.");
+      info.push("F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.");
+      info.push("F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.");
+      info.push("F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.");
+      info.push("F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.");
+      info.push("F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.");
     }
 
     // C2a deck tactic checks.
@@ -344,20 +475,33 @@ function runPrecheck(options = {}) {
 
     const builtInDecks = typeof BUILTIN_DECKS !== "undefined" && BUILTIN_DECKS ? BUILTIN_DECKS : {};
     const builtInEntries = Object.entries(builtInDecks);
-    if (builtInEntries.length !== 13) problems.push(`Deck built-in F9N10: ${builtInEntries.length}/13.`);
-    else if (typeof deckBuilderValidateSavedDeckPayload !== "function" || typeof buildCardCatalog !== "function") warnings.push("Validazione runtime deck built-in F9N10 non disponibile nel precheck.");
+    const starterIdsF9S1c1 = new Set(["NX2B01","NX3B01","NXC1F07","EX1B01","EXC1F04","EX4B02","LX2B01","LX3B02","LX4B01","AG1B01","AG2B01","AG4B01","FB1B01","FB2B01","FB4B01"]);
+    if (builtInEntries.length !== 50) problems.push(`Deck ufficiali F9S1c1: ${builtInEntries.length}/50.`);
+    else if (typeof deckBuilderValidateSavedDeckPayload !== "function" || typeof buildCardCatalog !== "function") warnings.push("Validazione runtime deck ufficiali F9S1c1 non disponibile nel precheck.");
     else {
-      const catalogF9N10 = buildCardCatalog();
+      const catalogF9S1c1 = buildCardCatalog();
       let missionPresets = 0;
+      let tacticalPresets = 0;
+      const factionCounts = {};
+      const commanderCounts = {};
       for (const [key, payload] of builtInEntries) {
-        const check = deckBuilderValidateSavedDeckPayload(payload, payload.faction, payload.commanderId, catalogF9N10, { allowCustom:true, setupRuntime:true, savedKey:key });
-        if (!check.ok) problems.push(`Deck built-in ${key}: ${check.issues.join("; ")}`);
+        const check = deckBuilderValidateSavedDeckPayload(payload, payload.faction, payload.commanderId, catalogF9S1c1, { allowCustom:true, setupRuntime:true, savedKey:key });
+        if (!check.ok) problems.push(`Deck ufficiale ${key}: ${check.issues.join("; ")}`);
         if (check.runtimeMissionCopies === 1) missionPresets += 1;
+        else tacticalPresets += 1;
+        factionCounts[payload.faction] = (factionCounts[payload.faction] || 0) + 1;
+        const commanderKey = `${payload.faction}::${payload.commanderId}`;
+        commanderCounts[commanderKey] = (commanderCounts[commanderKey] || 0) + 1;
+        const illegalStarter = (payload.deckIds || []).map(id => String(id).replace(/^[A-Z]+:/, "")).find(id => starterIdsF9S1c1.has(id));
+        if (illegalStarter) problems.push(`Deck ufficiale ${key}: Starter escluso ancora presente (${illegalStarter}).`);
       }
-      if (missionPresets !== 10) problems.push(`Preset Missione built-in F9N10: ${missionPresets}/10.`);
+      if (missionPresets !== 10) problems.push(`Deck Missione F9S1c1: ${missionPresets}/10.`);
+      if (tacticalPresets !== 40) problems.push(`Deck tattici F9S1c1: ${tacticalPresets}/40.`);
+      for (const faction of ["Nexus","Exordium","Liberti","Agathoi","Fabeot"]) if ((factionCounts[faction] || 0) !== 10) problems.push(`Roster ${faction}: ${factionCounts[faction] || 0}/10 deck.`);
+      for (const [commanderKey, count] of Object.entries(commanderCounts)) if (count !== 5) problems.push(`Roster ${commanderKey}: ${count}/5 deck.`);
       const tafos = builtInDecks["Agathoi::AG0B00::agathoi-alexandros-tafos-lithos"];
       if (!tafos || tafos.supplementalMissionId !== "AGMSN01" || tafos.deckIds.length !== 30) problems.push("Preset Tafos Lithos F9N10 non rispetta 30 carte + Missione supplementare AGMSN01.");
-      else info.push(`F9N10: ${builtInEntries.length} deck integrati, ${missionPresets} preset Missione; Tafos Lithos 30+Missione.`);
+      else info.push(`F9S1c1: ${builtInEntries.length} deck ufficiali, ${tacticalPresets} tattici, ${missionPresets} Missione; 10 per fazione e 5 per Comandante; Starter esclusi.`);
     }
 
     if (typeof botTryPlayMission !== "function" || typeof botMissionPurchaseBonus !== "function" || typeof botMissionMoveBonus !== "function") problems.push("Runtime IA Missioni F9N10 non disponibile.");
@@ -388,6 +532,30 @@ function runPrecheck(options = {}) {
       if (!diagnostics || !diagnostics.limits || diagnostics.limits.minZoom >= diagnostics.limits.maxZoom) problems.push("Camera F9O2: limiti zoom non validi.");
       info.push("F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.");
       info.push("F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.");
+      const perf = diagnostics && diagnostics.performance;
+      if (!perf || !perf.frameCoalescing || !perf.geometryCache || !perf.compositeTransform || !perf.gestureReducedEffects) problems.push("F9O4a: contratto prestazioni camera Android incompleto.");
+      else info.push("F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.");
+    }
+
+    // F9O4b – renderer DOM incrementale della mappa.
+    const rendererFlagsF9O4b = typeof CARD_CATALOG_CONFIG !== "undefined" && CARD_CATALOG_CONFIG ? CARD_CATALOG_CONFIG : {};
+    if (typeof boardRenderDiagnostics !== "function") {
+      problems.push("F9O4b: diagnostica renderer DOM incrementale non disponibile.");
+    } else if (!rendererFlagsF9O4b.incrementalBoardDomF9O4b || !rendererFlagsF9O4b.persistentHexNodesF9O4b || !rendererFlagsF9O4b.delegatedBoardInputF9O4b || !rendererFlagsF9O4b.cachedBoardTargetsF9O4b || !rendererFlagsF9O4b.reusableUnitTokensF9O4b) {
+      problems.push("F9O4b: contratto renderer DOM incrementale incompleto.");
+    } else {
+      const rendererDiag = boardRenderDiagnostics();
+      if (!rendererDiag || !Number.isFinite(rendererDiag.generation)) problems.push("F9O4b: diagnostica renderer non valida.");
+      else info.push("F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.");
+    }
+
+    // F9O4c – stabilità WebView Android, asset canvas e pannelli mobile.
+    if (!rendererFlagsF9O4b.webViewReplaceChildrenFallbackF9O4c || !rendererFlagsF9O4b.boardContainmentDisabledF9O4c || !rendererFlagsF9O4b.boundedThumbnailQueueF9O4c || !rendererFlagsF9O4b.staleCanvasRedrawGuardF9O4c || !rendererFlagsF9O4b.coalescedMobilePanelLayoutF9O4c) {
+      problems.push("F9O4c: contratto stabilità Android incompleto.");
+    } else if (typeof boardRenderReplaceChildrenCompat !== "function" || typeof requestInGameHandThumbnailRender !== "function" || typeof apkM4SchedulePanelLayout !== "function") {
+      problems.push("F9O4c: runtime compatibilità/coda/pannelli non disponibile.");
+    } else {
+      info.push("F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.");
     }
 
     // F9O3 – overlay eventi rapidi e fondazione narrativa.
@@ -404,6 +572,42 @@ function runPrecheck(options = {}) {
       const narrativeDiag = narrativeDiagnostics();
       if (!narrativeDiag || !Array.isArray(narrativeDiag.expressions) || narrativeDiag.expressions.length < 5) problems.push("Narrativa F9O3: espressioni avatar incomplete.");
       info.push("F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.");
+    }
+
+    // F9U3 – Centro di controllo applicazione.
+    if (typeof initializeControlCenter !== "function" || typeof controlCenterSnapshot !== "function" || typeof controlCenterArchiveEnvelope !== "function") {
+      problems.push("F9U3: runtime Centro di controllo incompleto.");
+    } else {
+      info.push("F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.");
+    }
+    if (typeof document !== "undefined") {
+      const requiredControlCenterIds = [
+        "controlCenterPanel", "controlCenterVersion", "controlCenterLogicBaseline", "controlCenterTelemetrySchema",
+        "controlCenterOfficialDecks", "controlCenterOfficialMaps", "controlCenterStorageSpace",
+        "controlCenterLastMatch", "controlCenterDiagnosticErrors"
+      ];
+      const missingControlCenterIds = requiredControlCenterIds.filter(id => !document.getElementById(id));
+      if (missingControlCenterIds.length) problems.push(`F9U3: elementi Centro di controllo mancanti: ${missingControlCenterIds.join(", ")}.`);
+      const areaCount = document.querySelectorAll(".controlCenterArea").length;
+      if (areaCount !== 5) problems.push(`F9U3: aree Centro di controllo ${areaCount}/5.`);
+    }
+
+    // F9T0 – finalizzazione IA avanzata e preparazione Expert.
+    const f9t0AiHelpers = [
+      "botPressureProfileF9T0", "botBuildGarrisonPlanF9T0", "botNexusNetworkMaturityF9T0",
+      "botAgathoiGreenLineMaturityF9T0", "botStallOscillationScoreF9T0",
+      "botCreateAdvancedMoveContextF9T0", "botAdvancedMoveScoreF9T0"
+    ];
+    const missingF9T0AiHelpers = f9t0AiHelpers.filter(name => typeof globalThis[name] !== "function");
+    if (missingF9T0AiHelpers.length) {
+      problems.push(`F9T0: helper IA avanzata mancanti: ${missingF9T0AiHelpers.join(", ")}.`);
+    } else {
+      info.push("F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.");
+    }
+    if (state && (!state.aiFinalizationF9T0 || state.aiFinalizationF9T0.schema !== "F9T0-1")) {
+      problems.push("F9T0: memoria leggera di finalizzazione IA non inizializzata nella partita attiva.");
+    } else if (!state) {
+      info.push("F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.");
     }
 
     // Handler orfani: non errore, ma utile per pulizia.
@@ -433,12 +637,17 @@ function runPrecheck(options = {}) {
   };
 
   window.__arenaRubraLastPrecheck = report;
+  if (typeof document !== "undefined" && document.documentElement) {
+    document.documentElement.dataset.arenaPrecheckOk = String(report.ok);
+    document.documentElement.dataset.arenaPrecheckProblems = JSON.stringify(problems);
+    document.documentElement.dataset.arenaPrecheckWarnings = JSON.stringify(warnings);
+  }
 
   if (!quiet || problems.length || warnings.length) {
     const msg = `Precheck Arena Rubra: ${report.ok ? "OK" : "PROBLEMI"} · problemi ${problems.length}, warning ${warnings.length}.`;
     if (typeof console !== "undefined") {
-      if (problems.length) console.error(msg, report);
-      else if (warnings.length) console.warn(msg, report);
+      if (problems.length) console.error(msg, JSON.stringify({ problems, warnings }));
+      else if (warnings.length) console.warn(msg, JSON.stringify({ warnings }));
       else console.info(msg, report);
     }
     if (typeof log === "function" && (problems.length || warnings.length)) {

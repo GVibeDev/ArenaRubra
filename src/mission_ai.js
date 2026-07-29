@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9N10 Mission AI.
+// Arena Rubra – F9Q3d2 Mission AI FFA.
 // L'IA gioca le Missioni pronte e orienta le decisioni ordinarie verso
 // gli obiettivi ancora incompleti. Non altera soglie o progressi del tracker.
 
@@ -88,15 +88,24 @@ function botMissionMoveBonus(unit, coord) {
 
   if (metrics.has("controlled_ps") || metrics.has("controls_central_ps")) {
     if (cell && cell.ps && cell.control !== side) score += 18;
-    if (metrics.has("controls_central_ps") && Array.isArray(coord) && coord[0] === 0 && coord[1] === 0 && coord[2] === 0) score += 22;
+    if (metrics.has("controls_central_ps") && Array.isArray(coord)) {
+      const centralCoord = typeof getCentralStrategicPointCoord === "function"
+        ? getCentralStrategicPointCoord(state && state.mapDefinition)
+        : [0, 0, 0];
+      if (typeof sameCoord === "function" ? sameCoord(coord, centralCoord) : coord.join(",") === centralCoord.join(",")) score += 22;
+    }
     if (psCells.length && typeof minDistance === "function") score += Math.max(0, 7 - minDistance(coord, psCells.map(c => c.coord))) * 1.4;
   }
   if (metrics.has("vehicles_in_play_near_ps") && unit.type === "Veicolo" && psCells.length && typeof minDistance === "function") {
     score += Math.max(0, 6 - minDistance(coord, psCells.map(c => c.coord))) * 2;
   }
   if (metrics.has("unit_distance_from_enemy_hq") && typeof getHq === "function" && typeof hexDistance === "function") {
-    const enemyHq = getHq(typeof enemyOf === "function" ? enemyOf(side) : (side === 1 ? 2 : 1));
-    if (enemyHq) score += Math.max(0, 10 - hexDistance(coord, enemyHq.pos)) * 1.8;
+    const enemySides = typeof missionEnemySides === "function" ? missionEnemySides(side) : (typeof getEnemyPlayers === "function" ? getEnemyPlayers(side) : []);
+    const enemyHqs = typeof missionEnemyHqs === "function" ? missionEnemyHqs(side) : enemySides.map(enemySide => getHq(enemySide)).filter(Boolean);
+    if (enemyHqs.length) {
+      const nearest = Math.min(...enemyHqs.map(hq => hexDistance(coord, hq.pos)));
+      score += Math.max(0, 10 - nearest) * 1.8;
+    }
   }
   return score;
 }
@@ -154,8 +163,7 @@ function botMissionDesperateShouldPlay(side, context, phase="turn_start") {
   const disadvantaged = strategic && strategic.posture === "svantaggio";
   const lateRound = Number(state && state.turn || 0) >= 12;
   const own = typeof combatUnits === "function" ? combatUnits(side) : [];
-  const enemySide = typeof enemyOf === "function" ? enemyOf(side) : (side === 1 ? 2 : 1);
-  const enemies = typeof combatUnits === "function" ? combatUnits(enemySide) : [];
+  const enemies = typeof missionEnemyUnits === "function" ? missionEnemyUnits(side) : (typeof enemyCombatUnits === "function" ? enemyCombatUnits(side) : []);
   const id = runtime.missionId;
 
   if (multiplier >= 2) {
@@ -248,5 +256,7 @@ function missionAiDiagnostics(side=null) {
       lastDecision:state && state.missionTelemetry && state.missionTelemetry.lastAiDecision ? state.missionTelemetry.lastAiDecision[targetSide] || null : null
     };
   };
-  return side === 1 || side === 2 ? one(side) : { 1:one(1), 2:one(2) };
+  if (Number.isFinite(Number(side))) return one(Number(side));
+  const ids = typeof missionPlayerIds === "function" ? missionPlayerIds() : (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : []);
+  return Object.fromEntries(ids.map(playerSide => [playerSide, one(playerSide)]));
 }

@@ -1,0 +1,26 @@
+"use strict";
+const fs = require("fs");
+const path = require("path");
+const root = path.resolve(__dirname, "..");
+const tutorial = fs.readFileSync(path.join(root,"src/tutorial_runtime.js"),"utf8");
+const css = fs.readFileSync(path.join(root,"css/style.css"),"utf8");
+const build = fs.readFileSync(path.join(root,"src/build_info.js"),"utf8");
+const cards = fs.readFileSync(path.join(root,"data/cards_base.js"),"utf8");
+let checks=0;
+function ok(value,label){ checks++; if(!value) throw new Error(label); }
+ok(build.includes('version: "C2-STABLE-1-F9O7h1-APK-M4c"'),"metadata F9O7h1");
+ok(cards.includes("tutorialNarrativeButtonBlinkF9O7h1: true"),"flag blink");
+ok(cards.includes("tutorialPreviewPortalF9O7h1: true"),"flag portal");
+ok(tutorial.includes("function tutorialRuntimePortalCardPreviews"),"portal runtime");
+ok(tutorial.includes("function tutorialRuntimeRestoreCardPreviews"),"restore runtime");
+ok(tutorial.includes('document.body.appendChild(element)'),"preview moved to body");
+ok(tutorial.includes('element.classList.add("tutorialPreviewPortal")'),"portal class");
+ok(tutorial.includes("tutorialRuntimeRestoreCardPreviews();"),"restore hook");
+ok(css.includes("F9O7h1 — Tutorial Visibility Hotfix"),"css milestone");
+ok(css.includes("tutorialNarrativeButtonBlink"),"blink animation");
+ok(css.includes("opacity: .10"),"near-invisible phase");
+ok(css.includes(".mapHandSelectionPreview.tutorialPreviewPortal"),"portal preview selector");
+ok(css.includes("position: fixed !important"),"portal fixed positioning");
+ok(css.includes("z-index: 95 !important"),"preview above spotlight 94");
+ok(css.includes("prefers-reduced-motion: reduce"),"reduced motion fallback");
+console.log(`F9O7h1 tutorial visibility hotfix smoke: ${checks}/${checks} OK`);

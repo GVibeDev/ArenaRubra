@@ -1,0 +1,77 @@
+{
+  "schema": "arena-rubra-package-audit-v1",
+  "build": "C2-STABLE-1-F9Q3-APK-M4c",
+  "baseline": {
+    "build": "C2-STABLE-1-F9O7g-APK-M4c",
+    "archive": "arena_rubra_C2_STABLE_1_F9O7g_APK_M4c_lesson_5_fabeot_LITE.zip",
+    "sha256": "3B68B87CA4A57A15A4AF804103594BF93C59A8235BB1F9F006397387DFFF9F56"
+  },
+  "date": "2026-07-25",
+  "packageKind": "LITE",
+  "packageFileCount": 615,
+  "javascriptFiles": 122,
+  "javascriptFilesInSrcAndData": 72,
+  "nodeSuites": {
+    "total": 50,
+    "passed": 50,
+    "failed": 0
+  },
+  "maps": [
+    {
+      "id": "map1_starter",
+      "players": 2,
+      "cells": 127,
+      "movementMultiplier": 1,
+      "validationErrors": 0,
+      "validationWarnings": 0
+    },
+    {
+      "id": "map2_triumvirate",
+      "players": 3,
+      "cells": 229,
+      "movementMultiplier": 2,
+      "validationErrors": 0,
+      "validationWarnings": 0
+    },
+    {
+      "id": "map3_quadrivium",
+      "players": 4,
+      "cells": 265,
+      "movementMultiplier": 3,
+      "validationErrors": 0,
+      "validationWarnings": 0
+    }
+  ],
+  "interactiveValidation": {
+    "map2RuntimePrecheck": "PASS",
+    "map3RuntimePrecheck": "PASS",
+    "map3Resume": "PASS",
+    "editorSave": "PASS",
+    "editorUndoRedo": "PASS",
+    "editorMatchLabHandoff": "PASS",
+    "map3AllBotShortSoak": "PASS_TO_ROUND_10"
+  },
+  "protectedRegressions": {
+    "map1HistoricalGeometry": "PASS",
+    "tutorialLessons1To5": "PASS",
+    "tutorialCheckpointResume": "PASS",
+    "cardPreviewsAboveScrim": "PASS",
+    "ordinaryGameplayBalanceUnchanged": "AUDITED"
+  },
+  "keyFileSha256": {
+    "data/terrain_registry.js": "0437FF06A5D16ADEBC72F8D99EB98CAA7D60F639E1B626B3EE55041B797AF774",
+    "data/map_definitions.js": "487B0CBFEC573158C6C2E84C267B06406629413C9FB0EB126F07DA1AA5ECA973",
+    "src/map_runtime.js": "A2192814E651E7C1A3CBF37502D183ECCB67414335B78C62ABA7C5072994BC54",
+    "src/map_editor.js": "3BEB980EDAAF5E8F6951946B881EDC90A8EFCA2FD3FA4B91972CFDC0B93E95BE",
+    "src/state.js": "2DFAD62C574C7C706F846E42013172B1F41B6622F5AD429FE9D79C89DE32D8D3",
+    "src/deck.js": "78400886FE1BF0F36E30EB3D9533D5A608F4D79E9C6FD715481FF25632A99F71",
+    "src/rules.js": "F9492A839F5CE78A9AA3E9493F87F8C68A414C515490C1CCFB6909C7048FD48D",
+    "src/ai.js": "6CEF7B864401611291CF465B0C1DA2BDC40F1C4FD5AA49814DE4CFAF0DE737C5",
+    "index.html": "CC44701F41BF7DEE388704642059360E1ED8898210F012A09E63E2607E40162D"
+  },
+  "result": "CANDIDATE_TECHNICAL_GATES_PASS",
+  "promotionPending": [
+    "MAP3 all-bot natural completion soak",
+    "Android real-device checklist"
+  ]
+}

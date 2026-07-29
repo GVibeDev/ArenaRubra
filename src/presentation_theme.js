@@ -92,6 +92,9 @@ function arenaPresentationApplyForFaction(faction, options = {}) {
 
   arenaPresentationWriteDataset(theme, normalizedFaction, activeMapSkinKey, source);
   if (typeof mapSkinApply === "function") mapSkinApply(activeMapSkinKey, { save: false });
+  if (typeof mapBackgroundApplyForMap === "function" && typeof state !== "undefined" && state && state.mapDefinition) {
+    Promise.resolve(mapBackgroundApplyForMap(state.mapDefinition)).catch(error => console.warn("Custom map background non applicato", error));
+  }
   if (previousOverride && previousOverride.tokenGraphicsMode && typeof visualAssetSetTokenGraphicsMode === "function") {
     visualAssetSetTokenGraphicsMode(previousOverride.tokenGraphicsMode, { save: false });
   }
@@ -158,6 +161,9 @@ function arenaPresentationSetGameCalibrationOverride(values = {}) {
   };
   arenaPresentationWriteDataset(theme, faction, mapSkinKey, "calibrator-session");
   if (typeof mapSkinApply === "function") mapSkinApply(mapSkinKey, { save: false });
+  if (typeof mapBackgroundApplyForMap === "function" && state.mapDefinition) {
+    Promise.resolve(mapBackgroundApplyForMap(state.mapDefinition)).catch(error => console.warn("Custom map background non applicato", error));
+  }
   if (tokenGraphicsMode && typeof visualAssetSetTokenGraphicsMode === "function") {
     visualAssetSetTokenGraphicsMode(tokenGraphicsMode, { save: false });
   }
@@ -193,6 +199,7 @@ function arenaPresentationResetForMenu(options = {}) {
       delete body.dataset.arenaThemeSource;
     }
   }
+  if (typeof mapBackgroundReleaseRuntimeUrl === "function") mapBackgroundReleaseRuntimeUrl();
   if (options.restoreMap !== false && typeof mapSkinApplySaved === "function") mapSkinApplySaved();
   if (options.music !== false && typeof arenaAudioEnterMenu === "function") arenaAudioEnterMenu({ fade: options.fade !== false });
 }

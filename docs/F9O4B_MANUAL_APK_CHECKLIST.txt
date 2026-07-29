@@ -1,0 +1,25 @@
+F9O4b — MANUAL APK CHECKLIST
+Build: C2-STABLE-1-F9O4b-APK-M4c
+
+[ ] APK installs and starts normally.
+[ ] Main menu, Setup and game launch show the F9O4b version.
+[ ] Pan and pinch do not regress compared with validated F9O4a.
+[ ] Selecting an active unit highlights legal movement cells.
+[ ] Changing Move / Ability / Build / Tactic / Spawn modes clears and redraws targets correctly.
+[ ] Unit movement leaves no duplicated or ghost token in the origin cell.
+[ ] HP, DEF and ATT change immediately after combat, ability and tactic effects.
+[ ] Bleed, inhibition, thorns, acted and selected visual states update correctly.
+[ ] Sbarco creates the token in the selected legal cell.
+[ ] Construction creates the structure token correctly.
+[ ] Unit destruction removes the token immediately.
+[ ] Bot turns show every movement/action without stale cells or missing tokens.
+[ ] Token artwork ON/OFF and missing-asset fallback still work.
+[ ] Camera remains controllable during the bot turn.
+[ ] Test a crowded board and at least 15 rounds.
+[ ] No softlock in selection, end turn, deck recovery or Mission reward flow.
+
+OBSERVATION TO RECORD
+- Smoothness during bot actions: worse / unchanged / improved / strongly improved.
+- Smoothness during selection and target highlights: worse / unchanged / improved / strongly improved.
+- Pan/zoom compared with F9O4a: regressed / unchanged / improved.
+- Any ghost token, stale stat or wrong target highlight: describe round, unit and action.

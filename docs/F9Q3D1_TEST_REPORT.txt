@@ -1,0 +1,183 @@
+ARENA RUBRA — F9Q3d1 TEST REPORT
+================================
+
+Build
+-----
+Versione: C2-STABLE-1-F9Q3d1-APK-M4c
+Build name: Target Player Foundation
+Canale: f9q3d1-candidate
+Baseline validata: C2-STABLE-1-F9S1b1-APK-M4c
+Data: 2026-07-28
+
+Scopo
+-----
+1. Introdurre un bersaglio giocatore esplicito per effetti su ENE, mano, deck, costi e blocchi.
+2. Mantenere la risoluzione automatica in 1v1.
+3. Richiedere una scelta umana esplicita in FFA quando esistono almeno due avversari validi.
+4. Fornire ai bot una scelta deterministica e sensibile all'effetto.
+5. Escludere sempre il giocatore attivo e i giocatori eliminati.
+
+Audit iniziale
+--------------
+Sono stati controllati i flussi di:
+- tattiche Starter;
+- tattiche da deck/da mano;
+- abilità attive;
+- economia e player effects;
+- furto/copia da mano e deck;
+- controller umano;
+- scoring IA;
+- reset dell'interazione;
+- metadati delle carte player-level.
+
+Effetti player-level inclusi
+----------------------------
+Tattiche da deck:
+- EXTAC10 Campo statico / enemy_ability_cost_tax
+- FABTAC06 Contratto Capestro / mutual_draw_conditional_steal
+- FABTAC07 Embargo / block_enemy_hand_cards_by_ps
+- FABTAC09 Contratto di Usura / usury_energy_income_debuff
+
+Tattica Starter:
+- FB_TAC_CONTRACT Contratto Capestro / contractTrap
+
+Abilità:
+- FBCMD02 Logistica Compromessa / compromisedLogistics
+- FBC1F03 Esproprio di Mano / copyRandomEnemyHandCard
+- FBC1F04 Clausola di Stasi / lockEnemyEnergy
+
+Fondazione generica:
+- ability kinds incomeSwing, costDelta e incomeDelta con affects:"enemy"
+
+Regole di eleggibilità verificate
+---------------------------------
+- self escluso: OK
+- giocatori eliminati esclusi: OK
+- soli avversari attivi: OK
+- Campo statico: solo avversari con almeno una abilità non gratuita: OK
+- Contratto Capestro deck: solo avversari con deck non vuoto: OK
+- Embargo: solo avversari con almeno una carta non già bloccata: OK
+- Logistica Compromessa: solo avversari con deck non vuoto: OK
+- Esproprio di Mano: solo avversari con almeno una carta copiabile: OK
+- Usura, Clausola di Stasi e contractTrap: tutti gli avversari attivi: OK
+
+Sintassi
+--------
+- File JavaScript controllati con node --check: 145
+- Superati: 145
+- Errori: 0
+
+Suite Node
+----------
+- Suite eseguite: 65
+- Superate: 65
+- Fallite: 0
+
+Smoke dedicato F9Q3d1 Node
+---------------------------
+- Verifiche: 28/28
+- esclusione giocatore eliminato: PASS
+- filtri specifici per effetto: PASS
+- token PLAYER-<side> stabili: PASS
+- scoring automatico deterministico: PASS
+- classificazione tattiche/abilità player-level: PASS
+- auto-risoluzione 1v1: PASS
+- collegamenti controller, tattiche, abilità, IA e dati: PASS
+- metadati build e baseline: PASS
+
+Smoke Chromium F9Q3d1
+----------------------
+Esito: PASS
+
+Scenario iniziale:
+- 4 slot, giocatori 1–3 attivi, giocatore 4 eliminato;
+- P1 umano Fabeot;
+- P2 Nexus con abilità a pagamento;
+- P3 Exordium con sola abilità gratuita.
+
+Risultati pool bersagli:
+- avversari attivi generici: [2,3]
+- Contratto di Usura: [2,3]
+- Embargo: [2,3]
+- Campo statico: [2]
+- Clausola di Stasi: [2,3]
+- giocatore eliminato P4: mai presente
+
+Selettore umano FFA:
+- pulsanti mostrati: P2 e P3
+- selezione esplicita P3: PASS
+- pannello chiuso dopo la scelta: PASS
+
+Flusso reale tattica dalla mano:
+- carta: FABTAC09 Contratto di Usura
+- bersaglio scelto: P3
+- ENE P1: 20 -> 16
+- ENE P2: invariata a 4
+- ENE P3: 8 -> 7
+- debuff income: applicato solo a P3
+- carta rimossa dalla mano e spostata negli scarti: PASS
+
+Flusso reale abilità:
+- unità: Architetto Nero
+- abilità: Clausola di Stasi
+- bersaglio scelto: P3
+- ENE P1: 20 -> 15
+- lock P2: 0
+- lock P3: 1
+- cooldown: 4
+- abilityUsedThisTurn: true
+- unità considerata agita: true
+
+Auto-risoluzione 1v1:
+- unico avversario P2 selezionato automaticamente
+- pannello non mostrato
+- esito: PASS
+
+Errori browser:
+- page errors: 0
+- console errors: 0
+
+Regressioni Chromium mirate
+---------------------------
+1. F9Q3d1 target-player pubblico: PASS
+2. F9S1b1 selettore deck custom/comandante: PASS
+3. F9S1b pool da 40 carte, Pivot e precheck: PASS
+4. F9R3/F9S1b1 nove mappe, Pressione e sfondi statici: PASS
+
+Totale smoke Chromium mirati: 4/4 PASS
+Errori pagina inattesi: 0
+Errori console inattesi: 0
+
+Precheck catalogo
+-----------------
+- esito: OK
+- problemi: 0
+- warning inattesi: 0
+- ogni fazione: 23 unità, 14 tattiche, 3 Missioni, 40 carte
+- due Pivot per fazione: OK
+- ID duplicati: 0
+
+Audit delle assunzioni residue
+------------------------------
+Nel sorgente restano chiamate enemyOf() usate da:
+- ciclo eliminazioni e concessione;
+- Missioni e mission_ai;
+- dottrine IA storiche;
+- alcune euristiche di combattimento e obiettivi strategici;
+- fallback legacy 1v1.
+
+Non sono state sostituite in F9Q3d1 perché non appartengono alla sola fondazione di targeting player-level. Saranno trattate nelle fasi F9Q3d2–F9Q3d4, evitando una modifica trasversale non verificata.
+
+Limiti del collaudo
+-------------------
+- Nessun APK installato su dispositivo Android fisico.
+- Nessuna partita FFA completa fino all'eliminazione di uno o più giocatori.
+- Nessuna Missione FFA modificata o validata.
+- Nessuna attribuzione assist/eliminazione/Pressione modificata.
+- Nessun salvataggio eseguito mentre il pannello di scelta è aperto; il targeting pendente è intenzionalmente un contesto UI effimero.
+- Il pannello deve essere verificato manualmente su schermi Android stretti.
+
+Esito
+-----
+CANDIDATA TECNICAMENTE PRONTA PER IL COLLAUDO MANUALE.
+NON ANCORA VALIDATA DALL'UTENTE.

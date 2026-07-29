@@ -1,0 +1,42 @@
+{
+  "build": "C2-STABLE-1-F9O7f-APK-M4c",
+  "package": "arena_rubra_C2_STABLE_1_F9O7f_APK_M4c_lesson_4_liberti_LITE",
+  "baseline": "C2-STABLE-1-F9O7e-APK-M4c",
+  "date": "2026-07-25",
+  "variant": "LITE",
+  "files": 588,
+  "bytes": 4447223,
+  "extensions": {
+    ".css": 2,
+    ".html": 2,
+    ".js": 112,
+    ".json": 15,
+    ".log": 2,
+    ".md": 210,
+    ".py": 24,
+    ".txt": 190,
+    "<none>": 31
+  },
+  "checks": {
+    "javascriptSyntax": "112/112 PASS",
+    "nodeTests": "44/44 PASS",
+    "targetedBrowserTests": "8/8 PASS",
+    "lesson1Playthrough": "PASS",
+    "lesson2Playthrough": "PASS",
+    "lesson3Playthrough": "PASS",
+    "lesson4Playthrough": "PASS",
+    "lesson4WrongCardGate": "PASS",
+    "tutorialHoverPreviewLayer": "PASS (95 > 94; narrative 96)",
+    "lesson4CheckpointResume": "PASS",
+    "precheck": "PASS",
+    "pageErrors": 0,
+    "unexpectedConsoleErrors": 0
+  },
+  "playableTutorialLessons": [
+    "lesson-1-exordium",
+    "lesson-2-nexus",
+    "lesson-3-agathoi",
+    "lesson-4-liberti"
+  ],
+  "manualValidationRequired": true
+}

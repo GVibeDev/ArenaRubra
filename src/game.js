@@ -6,6 +6,7 @@
 // Non contiene turn flow generale, controller umano o AI.
 
 function normalizeBlueprints() {
+      if (typeof applyUnitTaxonomyF9O5 === "function") applyUnitTaxonomyF9O5(BLUEPRINTS);
       for (const bp of BLUEPRINTS) {
         bp.tags = bp.tags || [];
         bp.factionRules = Array.isArray(bp.factionRules) ? [...bp.factionRules] : [];
@@ -47,31 +48,74 @@ function validateDataModel() {
 
 function newGame(setupOverrides = null) {
       if (typeof normalizeBlueprints === "function") normalizeBlueprints();
-      const setup = { ...readGameSetupFromDom(), ...(setupOverrides && typeof setupOverrides === "object" ? setupOverrides : {}) };
+      let setup = { ...readGameSetupFromDom(), ...(setupOverrides && typeof setupOverrides === "object" ? setupOverrides : {}) };
+      if (setup.tutorialMode === true) {
+        setup = {
+          ...setup,
+          mapId: "map1_starter",
+          mapDefinition: getMapDefinitionById("map1_starter"),
+          playerCount: 2,
+          playerIds: [1, 2],
+          factions: { 1: setup.factions[1], 2: setup.factions[2] },
+          selectedCommanders: { 1: setup.selectedCommanders[1], 2: setup.selectedCommanders[2] },
+          selectedDecks: { 1: setup.selectedDecks[1], 2: setup.selectedDecks[2] },
+          modes: { 1: setup.modes[1], 2: setup.modes[2] }
+        };
+      } else {
+        const definition = getMapDefinitionById(setup.mapId || "map1_starter");
+        setup.mapDefinition = definition;
+        setup.playerCount = definition ? definition.playerCount : 2;
+        setup.playerIds = Array.from({ length: setup.playerCount }, (_, index) => index + 1);
+      }
       const factions = setup.factions;
-      const firstPlayer = chooseFirstPlayer();
-      state = createInitialGameState({ ...setup, firstPlayer });
+      const matchSeed = String(setup.matchSeed || (typeof createMatchSeed === "function" ? createMatchSeed() : Date.now()));
+      const matchRng = typeof createMatchRngController === "function" ? createMatchRngController(matchSeed) : null;
+      const firstPlayer = chooseFirstPlayer(setup.playerIds, matchRng);
+      state = createInitialGameState({
+        ...setup,
+        firstPlayer,
+        matchSeed,
+        matchRngState: matchRng ? matchRng.state : 0,
+        matchRngCalls: matchRng ? matchRng.calls : 0
+      });
       if (typeof arenaPresentationApplyForGame === "function") arenaPresentationApplyForGame({ music: true, fade: true, resetSessionOverride: true });
-      state.units.push(createHq(1), createHq(2));
+      state.units.push(...state.playerIds.map(createHq));
       if (typeof initializeCardZonesForGame === "function") initializeCardZonesForGame();
       resetInteractionContext();
       if (typeof cameraResetForNewGame === "function") cameraResetForNewGame();
       clearLog();
       updateControlFromOccupants();
       if (typeof initializeMatchStats === "function") initializeMatchStats();
+      if (typeof initializeMatchTelemetry === "function") initializeMatchTelemetry();
       validateDataModel();
       if (typeof runPrecheck === "function") runPrecheck({ quiet: true, source: "newGame" });
       const buildLabel = typeof buildInfoLabel === "function" ? buildInfoLabel() : (CONFIG && CONFIG.version ? CONFIG.version : "unknown");
       const buildName = typeof BUILD_INFO !== "undefined" && BUILD_INFO && BUILD_INFO.buildName ? BUILD_INFO.buildName : "Starter Logic Freeze Candidate";
-      log(`Arena Rubra – ${buildName} ${buildLabel} avviata. ${playerName(1)} contro ${playerName(2)}. QG occupabili: per vincere serve almeno 1 PS e occupare il QG nemico. Deck/Roster Sanity Pass: deck da 30; comandanti/pivot/elite max 1 copia; altre carte, incluse tattiche, max 2 copie; starter loadout escluso dal deck; mano/deck C2 attivi; cap mano 10; recupero deck a 5 ENE; Missile Jam audit + blocco centrale azioni veicoli; Nexus + Exordium + Liberti + Agathoi + Fabeot numerical/faction-rules balance pass attivi; Bot Strategic Layer C2e-4g Integration/Regression attivo; Superior Doctrine Calibration C2e-4h attiva per Exordium/Fabeot/Agathoi; Fine Balance C2e-5a: Protocollo di Blocco Nexus 1 danno / 1 ENE; MAP1 C2e-6a validata; Starter Logic Freeze C2-STABLE-1: mappa radius 6, QG sui nuovi bordi, PS invariati con margine esterno; F9K6 Ability Runtime Binding attiva: F9K5c validata, Custom Match Test Lab operativo, unità custom con abilità attive runtime semplici collegate a danno/cura/ripristino DEF/shred/buff/pesca/ENE; effetti ambigui e tattiche custom restano data-only; BUILD_INFO centralizzato, Main Menu, SetupScreen con deck custom runtime esplicito, HUD contestuale, PanelManager, Fit ritorna alla mappa, Mano/Azioni si chiudono sui flussi di targeting, matchStats/export strutturati, camera UI separata con Fit/Focus, Deck Builder con salvataggio locale/export-import dei deck validi, Card Editor con import immagini custom e allineamento permanente artwork, storico partite persistente, preview renderer nel Deck Builder e nel GameScreen con box unità selezionata più alto su desktop e mobile; Tactical UX D1 attivo: ATT visibile in mappa e movimento evidenziato alla selezione unità; APK-M1/M2b/M3b ereditati; APK-M4 Fixed Mobile Game Layout attivo: pagina bloccata, mappa centrata, preset camera, pannelli mobile Mano/Azioni/Log/Opz e scheda unità flottante; ogni fazione sceglie 1 comandante tra 2 opzioni prima della partita; overlay mano rapido con starter giocabili, preview laterale e pulsante Muovi unità; dock Azioni F9N7a centrato verticalmente con ENE corrente e prossimo income; Missioni F9N10 giocabili su cicli multipli con recupero Missione + 4 carte, 13 deck integrati e IA orientata agli obiettivi; mercato unità in pannello debug a scomparsa. Iniziativa: ${playerName(firstPlayer)}.`, EventTypes.GAME_STARTED, {
+      const tutorialLaunch = setup.tutorialMode === true;
+      const startMessage = tutorialLaunch
+        ? `${setup.tutorialTitle || "Lezione guidata"}. ${playerName(1)} contro ${playerName(2)}. Ritmo Rapida, scala Tattica. Iniziativa: ${playerName(firstPlayer)}.`
+        : `Arena Rubra – ${buildName} ${buildLabel} avviata. ${playerName(1)} contro ${playerName(2)}. QG occupabili: per vincere serve almeno 1 PS e occupare il QG nemico. Deck/Roster Sanity Pass: deck da 30; comandanti/pivot/elite max 1 copia; altre carte, incluse tattiche, max 2 copie; starter loadout escluso dal deck; mano/deck C2 attivi; cap mano 10; recupero deck a 5 ENE; Missile Jam audit + blocco centrale azioni veicoli; Nexus + Exordium + Liberti + Agathoi + Fabeot numerical/faction-rules balance pass attivi; Bot Strategic Layer C2e-4g Integration/Regression attivo; Superior Doctrine Calibration C2e-4h attiva per Exordium/Fabeot/Agathoi; Fine Balance C2e-5a: Protocollo di Blocco Nexus 1 danno / 1 ENE; MAP1 C2e-6a validata; Starter Logic Freeze C2-STABLE-1: mappa radius 6, QG sui nuovi bordi, PS invariati con margine esterno; F9K6 Ability Runtime Binding attiva: F9K5c validata, Custom Match Test Lab operativo, unità custom con abilità attive runtime semplici collegate a danno/cura/ripristino DEF/shred/buff/pesca/ENE; effetti ambigui e tattiche custom restano data-only; BUILD_INFO centralizzato, Main Menu, SetupScreen con deck custom runtime esplicito, HUD contestuale, PanelManager, Fit ritorna alla mappa, Mano/Azioni si chiudono sui flussi di targeting, matchStats/export strutturati, camera UI separata con Fit/Focus, Deck Builder con salvataggio locale/export-import dei deck validi, Card Editor con import immagini custom e allineamento permanente artwork, storico partite persistente, preview renderer nel Deck Builder e nel GameScreen con box unità selezionata più alto su desktop e mobile; Tactical UX D1 attivo: ATT visibile in mappa e movimento evidenziato alla selezione unità; APK-M1/M2b/M3b ereditati; APK-M4 Fixed Mobile Game Layout attivo: pagina bloccata, mappa centrata, preset camera, dock sinistro F9U1b e pannelli Debug Log/Statistiche; ogni fazione sceglie 1 comandante tra 2 opzioni prima della partita; overlay mano rapido con starter giocabili, preview laterale e pulsante Muovi unità; dock F9U1b fissato a sinistra con Missione, abilità di fazione, Mano e Fine turno; Missioni F9N10 giocabili su cicli multipli con recupero Missione + 4 carte, 50 deck ufficiali integrati e IA orientata agli obiettivi; mercato unità in pannello debug a scomparsa. Iniziativa: ${playerName(firstPlayer)}.`;
+      log(startMessage, EventTypes.GAME_STARTED, {
         player1: 1,
         player2: 2,
         faction1: state.factions[1],
         faction2: state.factions[2],
         firstPlayer,
+        matchSeed: state.matchSeed || matchSeed,
+        rngAlgorithm: typeof MATCH_TELEMETRY_RNG_ALGORITHM !== "undefined" ? MATCH_TELEMETRY_RNG_ALGORITHM : "unknown",
+        telemetrySchemaVersion: typeof MATCH_TELEMETRY_SCHEMA_VERSION !== "undefined" ? MATCH_TELEMETRY_SCHEMA_VERSION : null,
         pacePreset: state.pacePreset,
         aiMode: state.aiMode,
         gameScaleMode: state.gameScaleMode,
+        mapId: state.mapId,
+        mapName: state.mapDefinition.name,
+        mapSchemaVersion: state.mapDefinition.schemaVersion,
+        mapRevision: state.mapDefinition.metadata.revision,
+        mapCellCount: state.cells.length,
+        terrainUsage: { ...state.mapRuntime.terrainUsage },
+        playerIds: [...state.playerIds],
+        tutorialMode:tutorialLaunch,
+        tutorialScenarioId:setup.tutorialScenarioId || null,
         buildLabel,
         buildInfo: typeof buildInfoExportMeta === "function" ? buildInfoExportMeta() : {},
         selectedCommanders: state.selectedCommanders ? { ...state.selectedCommanders } : {},
@@ -83,14 +127,40 @@ function newGame(setupOverrides = null) {
         botRosterAdoption: true,
         presentationTheme: state.presentationTheme ? { ...state.presentationTheme } : null
       });
+      if (state.mapLabMode) {
+        log(`MATCH LAB · ${state.mapDefinition.name} · ${state.playerIds.length} giocatori. La sessione non entra nelle statistiche competitive.`, EventTypes.LOG_MESSAGE, {
+          mapId: state.mapId,
+          playerIds: [...state.playerIds],
+          source: "F9Q3-map-lab-start"
+        });
+      }
+      if (!tutorialLaunch && state.playerIds.length > 2) {
+        log(`${state.mapDefinition.name}: ${state.playerIds.map(playerName).join(" · ")} in modalità tutti contro tutti. Movimento mappa ×${state.mapDefinition.movementMultiplier}; i giocatori eliminati vengono saltati.`, EventTypes.LOG_MESSAGE, {
+          mapId: state.mapId,
+          players: [...state.playerIds],
+          movementMultiplier: state.mapDefinition.movementMultiplier,
+          terrainUsage: { ...state.mapRuntime.terrainUsage },
+          source: "F9Q-multiplayer-start"
+        });
+      }
+      if (!tutorialLaunch && typeof pressureRequirementSummary === "function") {
+        log(`Regola F9R3: ${pressureRequirementSummary()}.`, EventTypes.LOG_MESSAGE, {
+          mapId: state.mapId,
+          pacePreset: state.pacePreset,
+          pressureProfile: typeof pressureRuleProfile === "function" ? pressureRuleProfile() : null,
+          source: "F9R3-pressure-profile"
+        });
+      }
       if (typeof initializeMissionTrackerForGame === "function") initializeMissionTrackerForGame();
       startTurn(firstPlayer, true);
       renderAll();
       maybeRunBot();
     }
 
-function chooseFirstPlayer() {
+function chooseFirstPlayer(playerIds = null, rngController = null) {
       const modeValue = $("initiativeMode").value;
-      if (modeValue === "1" || modeValue === "2") return Number(modeValue);
-      return Math.random() < 0.5 ? 1 : 2;
+      const ids = Array.isArray(playerIds) && playerIds.length ? playerIds.map(Number) : [1, 2];
+      if (ids.includes(Number(modeValue))) return Number(modeValue);
+      const randomValue = rngController && typeof rngController.next === "function" ? rngController.next() : Math.random();
+      return ids[Math.floor(randomValue * ids.length)];
     }

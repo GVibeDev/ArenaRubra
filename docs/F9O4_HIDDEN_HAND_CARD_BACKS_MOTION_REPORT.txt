@@ -1,0 +1,21 @@
+ARENA RUBRA — F9O4 IMPLEMENTATION REPORT
+
+Build: C2-STABLE-1-F9O4-APK-M4c
+Baseline: C2-STABLE-1-F9O3-APK-M4c
+
+Privacy: singolo lato umano visibile; hotseat lato corrente; bot-vs-bot mani ordinarie coperte. Missione e Comandante pubblici.
+Dorsi: root assets/cards/art/<factionKey>/, nomi nexback/exoback/libback/agaback/fabback, estensioni webp/png/jpg/jpeg, fallback legacy e procedurale.
+Motion: toggle persistente Carte animate ON/RIDOTTE; CARD_DRAWN, CARD_PLAYED, CARD_DISCARDED, CARD_STOLEN, CARD_BLOCKED, CARD_UNBLOCKED, DECK_RECOVERED, MISSION_PLAYED. Coda max 14, 280/90 ms.
+Nessuna modifica a camera o gameplay. Varianti numeriche rinviate.
+
+TEST FINALI
+- JavaScript: 90 file sintatticamente validi.
+- Suite Node: 28/28 superate.
+- Test F9O4 dedicato: 44/44.
+- Browser Playwright: privacy, dorsi/fallback, pesca coperta, gioco rivelato, deduplica Missione e movimento ridotto superati.
+- Regressioni browser F9O2c/F9O2d/F9O2e/F9O3 superate.
+- Nessun errore page/console nei test browser.
+
+NOTE LITE
+I cinque dorsi binari non sono inclusi. Le cartelle e il manifest di posizionamento sono predisposti; il runtime usa fallback legacy/procedurale.
+

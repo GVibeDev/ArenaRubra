@@ -314,10 +314,11 @@
       const handModifiers = typeof playerHandUnitCostModifiers === "function" ? playerHandUnitCostModifiers(side, bp) : [];
       const allModifiers = [...modifiers, ...handModifiers];
       const placement = typeof c1fPlacementCostModifier === "function" ? c1fPlacementCostModifier(side, bp, coord) : { value:0, minCost:0 };
-      const delta = allModifiers.reduce((sum, mod) => sum + (mod.value || 0), 0) + (placement.value || 0);
+      const structureDeployment = typeof f9s1aDeploymentCostModifier === "function" ? f9s1aDeploymentCostModifier(side, bp, coord) : { value:0, minCost:0 };
+      const delta = allModifiers.reduce((sum, mod) => sum + (mod.value || 0), 0) + (placement.value || 0) + (structureDeployment.value || 0);
       const modifierMin = allModifiers.reduce((min, mod) => Math.max(min, mod.minCost || 0), 0);
       const cardMin = Number.isFinite(card.c2c6aMinCost) ? card.c2c6aMinCost : 0;
-      const minCost = Math.max(cardMin, modifierMin, placement.minCost || 0);
+      const minCost = Math.max(cardMin, modifierMin, placement.minCost || 0, structureDeployment.minCost || 0);
       const normalCost = Math.max(minCost, baseCost + delta);
       return typeof missionEffectiveCardCost === "function" ? missionEffectiveCardCost(side, card, normalCost) : normalCost;
     }
@@ -352,7 +353,7 @@
         const runtime = typeof missionRuntime === "function" ? missionRuntime(side) : null;
         const status = typeof missionUiStatus === "function" ? missionUiStatus(side) : null;
         const canOpen = Boolean(state.currentPlayer === side && state.modes && state.modes[side] === "human" && !botRunning);
-        const playable = typeof missionUiPlayCheck === "function" ? missionUiPlayCheck(side, card) : { ok:false, reason:"Runtime Missione non disponibile" };
+        const playable = typeof missionUiPlayCheck === "function" ? missionUiPlayCheck(side, card, { evaluate:false, source:"hand_render" }) : { ok:false, reason:"Runtime Missione non disponibile" };
         const reason = status ? `${status.label} · ${playable.reason || status.detail}` : playable.reason;
         return { canUse:canOpen, reason, actionText:playable.ok ? "Gioca Missione" : "Mostra progressi" };
       }
@@ -557,6 +558,9 @@
 
 
     function spawnUnit(bp, side, coord, options={}) {
+      if (!isCellEnterable(coord) || getUnitAt(coord)) return false;
+      const spawnTerrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+      if (spawnTerrain && spawnTerrain.blocksDeployment) return false;
       if (purchaseLimitReached(side, bp)) return false;
       const handCard = c2c6aPendingHandCardFor(side, bp);
       const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
@@ -581,6 +585,7 @@
       applyC2c6aHandCardSpawnBonuses(unit, handCard);
       unit.acted = !unit.vanguard;
       state.units.push(unit);
+      if (typeof f9s1aConsumeDeploymentSource === "function") f9s1aConsumeDeploymentSource(side, bp, coord);
       if (starterRole && typeof markStarterOrigin === "function") markStarterOrigin(unit, side, starterRole, paid);
       const ownHq = getHq(side);
       if (ownHq && sameCoord(coord, ownHq.pos) && state.f9n3Telemetry) state.f9n3Telemetry.hqDeployments[side] = (state.f9n3Telemetry.hqDeployments[side] || 0) + 1;
@@ -598,7 +603,8 @@
         exhausted: !unit.vanguard,
         spawnSource: unit.spawnSource || "deck_or_market",
         starterRole: unit.starterRole || null,
-        deployedOnOwnHq: Boolean(ownHq && sameCoord(coord, ownHq.pos))
+        deployedOnOwnHq: Boolean(ownHq && sameCoord(coord, ownHq.pos)),
+        instanceNo: unit.instanceNo
       });
       return true;
     }
@@ -632,7 +638,9 @@
       const buildSource = options.buildSource === "own_hq" ? "own_hq" : "unit";
       const side = buildSource === "own_hq" ? Number(options.side) : (builder && builder.side);
       const hqCell = buildSource === "own_hq" && typeof ownHqBuildCell === "function" ? ownHqBuildCell(side) : null;
-      if (!side || !bp || (buildSource === "unit" && !builder) || (buildSource === "own_hq" && (!hqCell || !sameCoord(coord, hqCell)))) return false;
+      if (!side || !bp || !isCellEnterable(coord) || getUnitAt(coord) || (buildSource === "unit" && !builder) || (buildSource === "own_hq" && (!hqCell || !sameCoord(coord, hqCell)))) return false;
+      const buildTerrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+      if (buildTerrain && buildTerrain.blocksDeployment) return false;
       const handCard = c2c6aPendingHandCardFor(side, bp);
       const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
       const costCard = handCard || starterCard;
@@ -663,7 +671,8 @@
         unitName: structure.name,
         blueprintId: bp.id,
         cost: paid,
-        coord: [...coord]
+        coord: [...coord],
+        instanceNo: structure.instanceNo
       });
       return true;
     }
@@ -692,17 +701,20 @@
 
     function spawnSourcesFor(player) {
       const hq = getHq(player);
-      return [hq.pos, ...combatUnits(player).filter(u => u.type === "Struttura").map(u => u.pos)];
+      return [hq.pos, ...combatUnits(player).filter(u => u.type === "Struttura" && !u.deploymentRule).map(u => u.pos)];
     }
 
     function specialSpawnSourcesFor(player, bp=null) {
-      if (!bp || !countsAsLightCap(bp)) return [];
+      if (!bp) return [];
       const sources = [];
-      for (const s of combatUnits(player).filter(u => u.type === "Struttura" && u.specialSpawn)) {
+      if (countsAsLightCap(bp)) for (const s of combatUnits(player).filter(u => u.type === "Struttura" && u.specialSpawn)) {
         const rule = s.specialSpawn;
         if (rule.onlyLight && !countsAsLightCap(bp)) continue;
         if (Array.isArray(rule.unitTypes) && !rule.unitTypes.includes(bp.type)) continue;
         sources.push({ source:s.pos, range:rule.range || 1 });
+      }
+      if (typeof f9s1aDeploymentRuleStructures === "function") {
+        for (const s of f9s1aDeploymentRuleStructures(player, bp)) sources.push({ source:s.pos, range:s.deploymentRule.range || 1, f9s1aSourceId:s.uid });
       }
       return sources;
     }
@@ -712,12 +724,16 @@
     }
 
     function spawnCellsFor(player, bp=null) {
-      const enemyHq = getHq(enemyOf(player));
+      const enemyHqs = (typeof getEnemyPlayers === "function" ? getEnemyPlayers(player) : [enemyOf(player)])
+        .map(getHq)
+        .filter(Boolean);
       const seen = new Set();
       const cells = [];
       const addCell = (c) => {
         const key = coordKey(c);
-        if (!seen.has(key) && isCellEnterable(c) && !getUnitAt(c) && hexDistance(c, enemyHq.pos) > 1) {
+        const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(c) : null;
+        const farFromEnemyHq = enemyHqs.every(enemyHq => hexDistance(c, enemyHq.pos) > 1);
+        if (!seen.has(key) && isCellEnterable(c) && (!terrain || !terrain.blocksDeployment) && !getUnitAt(c) && farFromEnemyHq) {
           seen.add(key);
           cells.push(c);
         }

@@ -1,0 +1,1695 @@
+{
+  "build": {
+    "appName": "Arena Rubra",
+    "stage": "Starter Game ALPHA",
+    "version": "C2-STABLE-1-F9S1c1-APK-M4c",
+    "buildName": "Official 50-Deck Roster & Deck Builder UX Optimization",
+    "buildDate": "2026-07-28",
+    "buildChannel": "f9s1c1-candidate",
+    "logicBaseline": "C2-STABLE-1-F9Q3d4-APK-M4c",
+    "notes": "50 deck ufficiali: 40 tattici legalizzati da Decks.pdf + 10 deck Missione. I 3 preset legacy sono stati rimossi."
+  },
+  "summary": {
+    "officialDecks": 50,
+    "tacticalDecks": 40,
+    "missionDecks": 10,
+    "removedLegacyDecks": [
+      "Exordium::EX0B00::varran-default",
+      "Liberti::LXCMD02::pravus-default",
+      "Nexus::NXCMD01::nexus-avatex-ufficiale"
+    ],
+    "starterCardsExcluded": [
+      "AG1B01",
+      "AG2B01",
+      "AG4B01",
+      "EX1B01",
+      "EX4B02",
+      "EXC1F04",
+      "FB1B01",
+      "FB2B01",
+      "FB4B01",
+      "LX2B01",
+      "LX3B02",
+      "LX4B01",
+      "NX2B01",
+      "NX3B01",
+      "NXC1F07"
+    ],
+    "starterCopiesReplaced": 142
+  },
+  "replacementAudit": [
+    {
+      "faction": "Nexus",
+      "deckName": "Bastione Mobile",
+      "commander": "Avatex",
+      "pivot": "Fortezza Mobile",
+      "archetype": "Armored/Control",
+      "sourceEnergyAverage": 2.53,
+      "finalEnergyAverage": 2.67,
+      "sourceStructureCount": 4,
+      "finalStructureCount": 4,
+      "replacements": [
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXC1F01",
+          "addedName": "Fante Robot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F03",
+          "addedName": "Mech Leggero",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F03",
+          "addedName": "Mech Leggero",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Presidio Reticolare",
+      "commander": "Avatex",
+      "pivot": "Fortezza Mobile",
+      "archetype": "Enclave/Control",
+      "sourceEnergyAverage": 2.53,
+      "finalEnergyAverage": 2.73,
+      "sourceStructureCount": 10,
+      "finalStructureCount": 9,
+      "replacements": [
+        {
+          "removedId": "NXC1F07",
+          "removedName": "Barriera Armata",
+          "removedCost": 2,
+          "addedId": "NXC1F08",
+          "addedName": "Fabbrica Automatizzata",
+          "addedCost": 4
+        },
+        {
+          "removedId": "NXC1F07",
+          "removedName": "Barriera Armata",
+          "removedCost": 2,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXS1A01",
+          "addedName": "Vettore Nexus",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXS1A01",
+          "addedName": "Vettore Nexus",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F03",
+          "addedName": "Mech Leggero",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F03",
+          "addedName": "Mech Leggero",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Tramonto sul PS",
+      "commander": "Avatex",
+      "pivot": "UCB Unità Corazzata da Battaglia",
+      "archetype": "Control/Armored",
+      "sourceEnergyAverage": 2.43,
+      "finalEnergyAverage": 2.57,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXC1F01",
+          "addedName": "Fante Robot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXS1A01",
+          "addedName": "Vettore Nexus",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Cuneo di Precisione",
+      "commander": "Avatex",
+      "pivot": "UCB Unità Corazzata da Battaglia",
+      "archetype": "Shooter/Control",
+      "sourceEnergyAverage": 2.6,
+      "finalEnergyAverage": 2.73,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXC1F01",
+          "addedName": "Fante Robot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXS1A01",
+          "addedName": "Vettore Nexus",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Logistica di Massa",
+      "commander": "Unità Comando",
+      "pivot": "Fortezza Mobile",
+      "archetype": "Raid/Armored",
+      "sourceEnergyAverage": 2.23,
+      "finalEnergyAverage": 2.5,
+      "sourceStructureCount": 6,
+      "finalStructureCount": 6,
+      "replacements": [
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NX2B04",
+          "addedName": "Drone Militare Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NX2B04",
+          "addedName": "Drone Militare Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NX3B03",
+          "addedName": "Mech Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NX3B03",
+          "addedName": "Mech Pesante",
+          "addedCost": 3
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Convoglio Corazzato",
+      "commander": "Unità Comando",
+      "pivot": "Fortezza Mobile",
+      "archetype": "Armored",
+      "sourceEnergyAverage": 2.8,
+      "finalEnergyAverage": 2.87,
+      "sourceStructureCount": 3,
+      "finalStructureCount": 3,
+      "replacements": [
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F02",
+          "addedName": "Drone Geniere",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Sbarco a Tenaglia",
+      "commander": "Unità Comando",
+      "pivot": "UCB Unità Corazzata da Battaglia",
+      "archetype": "Raid/Control",
+      "sourceEnergyAverage": 2.2,
+      "finalEnergyAverage": 2.47,
+      "sourceStructureCount": 4,
+      "finalStructureCount": 4,
+      "replacements": [
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NX2B04",
+          "addedName": "Drone Militare Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NX2B01",
+          "removedName": "Droide di Sicurezza",
+          "removedCost": 1,
+          "addedId": "NX2B04",
+          "addedName": "Drone Militare Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NX3B03",
+          "addedName": "Mech Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NX3B03",
+          "addedName": "Mech Pesante",
+          "addedCost": 3
+        },
+        {
+          "removedId": "NXC1F07",
+          "removedName": "Barriera Armata",
+          "removedCost": 2,
+          "addedId": "NXC1F06",
+          "addedName": "Barriera Difensiva",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NXC1F07",
+          "removedName": "Barriera Armata",
+          "removedCost": 2,
+          "addedId": "NXC1F06",
+          "addedName": "Barriera Difensiva",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Nexus",
+      "deckName": "Batteria di Soppressione",
+      "commander": "Unità Comando",
+      "pivot": "UCB Unità Corazzata da Battaglia",
+      "archetype": "Shooter/Armored",
+      "sourceEnergyAverage": 2.77,
+      "finalEnergyAverage": 2.83,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F01",
+          "addedName": "Fante Robot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "NX3B01",
+          "removedName": "Quad Ricognitore",
+          "removedCost": 1,
+          "addedId": "NXC1F01",
+          "addedName": "Fante Robot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Doppio Assalto Imperiale",
+      "commander": "Varran",
+      "pivot": "Orgoglio di Aurex",
+      "archetype": "Armored/Combo",
+      "sourceEnergyAverage": 2.6,
+      "finalEnergyAverage": 2.67,
+      "sourceStructureCount": 2,
+      "finalStructureCount": 2,
+      "replacements": [
+        {
+          "removedId": "EXC1F04",
+          "removedName": "Cursor",
+          "removedCost": 1,
+          "addedId": "EXS1A01",
+          "addedName": "Apotecario Exordium",
+          "addedCost": 2
+        },
+        {
+          "removedId": "EXC1F04",
+          "removedName": "Cursor",
+          "removedCost": 1,
+          "addedId": "EXS1A01",
+          "addedName": "Apotecario Exordium",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Decapitazione Cremisi",
+      "commander": "Varran",
+      "pivot": "Orgoglio di Aurex",
+      "archetype": "Shooter/Combo",
+      "sourceEnergyAverage": 2.77,
+      "finalEnergyAverage": 2.77,
+      "sourceStructureCount": 1,
+      "finalStructureCount": 1,
+      "replacements": []
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Breccia Cremisi",
+      "commander": "Varran",
+      "pivot": "Mech d'Assalto",
+      "archetype": "Armored/Control",
+      "sourceEnergyAverage": 2.47,
+      "finalEnergyAverage": 2.5,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "EX1B01",
+          "removedName": "Guardia di Aurex",
+          "removedCost": 1,
+          "addedId": "EXS1A01",
+          "addedName": "Apotecario Exordium",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Linea di Soppressione",
+      "commander": "Varran",
+      "pivot": "Mech d'Assalto",
+      "archetype": "Shooter/Control",
+      "sourceEnergyAverage": 2.53,
+      "finalEnergyAverage": 2.6,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "EXC1F04",
+          "removedName": "Cursor",
+          "removedCost": 1,
+          "addedId": "EXC1F05",
+          "addedName": "Carro Leggero",
+          "addedCost": 2
+        },
+        {
+          "removedId": "EXC1F04",
+          "removedName": "Cursor",
+          "removedCost": 1,
+          "addedId": "EXC1F05",
+          "addedName": "Carro Leggero",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Orgoglio Immortale",
+      "commander": "Nemira",
+      "pivot": "Orgoglio di Aurex",
+      "archetype": "Armored/Sustain",
+      "sourceEnergyAverage": 2.67,
+      "finalEnergyAverage": 2.67,
+      "sourceStructureCount": 2,
+      "finalStructureCount": 2,
+      "replacements": []
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Trionfo Progressivo",
+      "commander": "Nemira",
+      "pivot": "Orgoglio di Aurex",
+      "archetype": "Armored/Scaling",
+      "sourceEnergyAverage": 2.67,
+      "finalEnergyAverage": 2.73,
+      "sourceStructureCount": 4,
+      "finalStructureCount": 4,
+      "replacements": [
+        {
+          "removedId": "EXC1F04",
+          "removedName": "Cursor",
+          "removedCost": 1,
+          "addedId": "EXC1F01",
+          "addedName": "Il Tribuno",
+          "addedCost": 2
+        },
+        {
+          "removedId": "EXC1F04",
+          "removedName": "Cursor",
+          "removedCost": 1,
+          "addedId": "EXC1F01",
+          "addedName": "Il Tribuno",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Ferro e Soccorso",
+      "commander": "Nemira",
+      "pivot": "Mech d'Assalto",
+      "archetype": "Armored/Control",
+      "sourceEnergyAverage": 2.63,
+      "finalEnergyAverage": 2.63,
+      "sourceStructureCount": 2,
+      "finalStructureCount": 2,
+      "replacements": [
+        {
+          "removedId": "EX4B02",
+          "removedName": "Bastione Armato",
+          "removedCost": 2,
+          "addedId": "EXS1A03",
+          "addedName": "Deposito Spedizioni",
+          "addedCost": 2
+        },
+        {
+          "removedId": "EX4B02",
+          "removedName": "Bastione Armato",
+          "removedCost": 2,
+          "addedId": "EXS1A03",
+          "addedName": "Deposito Spedizioni",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Exordium",
+      "deckName": "Falange d’Assedio",
+      "commander": "Nemira",
+      "pivot": "Mech d'Assalto",
+      "archetype": "Shooter/Control",
+      "sourceEnergyAverage": 2.77,
+      "finalEnergyAverage": 2.77,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": []
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Orda della Fossa",
+      "commander": "Rauk del Ripudio",
+      "pivot": "Bestia della Fossa",
+      "archetype": "Raid/Spawn",
+      "sourceEnergyAverage": 2.4,
+      "finalEnergyAverage": 2.53,
+      "sourceStructureCount": 5,
+      "finalStructureCount": 5,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F02",
+          "addedName": "Predone Sanguis",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F02",
+          "addedName": "Predone Sanguis",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LBS1A02",
+          "addedName": "Segugio Liberto",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LBS1A02",
+          "addedName": "Segugio Liberto",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX4B01",
+          "removedName": "Punto di Raccolta",
+          "removedCost": 2,
+          "addedId": "LBS1A04",
+          "addedName": "Barricata di Rottami",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX4B01",
+          "removedName": "Punto di Raccolta",
+          "removedCost": 2,
+          "addedId": "LBS1A04",
+          "addedName": "Barricata di Rottami",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Campioni del Branco",
+      "commander": "Rauk del Ripudio",
+      "pivot": "Bestia della Fossa",
+      "archetype": "Raid/Combo",
+      "sourceEnergyAverage": 2.4,
+      "finalEnergyAverage": 2.47,
+      "sourceStructureCount": 5,
+      "finalStructureCount": 5,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F02",
+          "addedName": "Predone Sanguis",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F02",
+          "addedName": "Predone Sanguis",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX4B01",
+          "removedName": "Punto di Raccolta",
+          "removedCost": 2,
+          "addedId": "LBS1A04",
+          "addedName": "Barricata di Rottami",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX4B01",
+          "removedName": "Punto di Raccolta",
+          "removedCost": 2,
+          "addedId": "LBS1A04",
+          "addedName": "Barricata di Rottami",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Convoglio del Ripudio",
+      "commander": "Rauk del Ripudio",
+      "pivot": "Camion Corazzato",
+      "archetype": "Raid/Sanguinamento",
+      "sourceEnergyAverage": 2.03,
+      "finalEnergyAverage": 2.13,
+      "sourceStructureCount": 1,
+      "finalStructureCount": 1,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LX2B02",
+          "addedName": "Predone Liberto",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LBS1A01",
+          "addedName": "Predone Attentatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LBS1A01",
+          "addedName": "Predone Attentatore",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Schianto di Massa",
+      "commander": "Rauk del Ripudio",
+      "pivot": "Camion Corazzato",
+      "archetype": "Raid/Sacrificio",
+      "sourceEnergyAverage": 2.4,
+      "finalEnergyAverage": 2.47,
+      "sourceStructureCount": 3,
+      "finalStructureCount": 3,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F01",
+          "addedName": "Avanguardia Liberta",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F01",
+          "addedName": "Avanguardia Liberta",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Sanguis dell’Orda",
+      "commander": "Pravus dei Sanguis",
+      "pivot": "Bestia della Fossa",
+      "archetype": "Raid/Attrition",
+      "sourceEnergyAverage": 2.3,
+      "finalEnergyAverage": 2.43,
+      "sourceStructureCount": 3,
+      "finalStructureCount": 3,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1HA01",
+          "addedName": "Predone cacciacarri",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1HA01",
+          "addedName": "Predone cacciacarri",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LXC1HA03",
+          "addedName": "Buggy da Sbarco",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LXC1HA03",
+          "addedName": "Buggy da Sbarco",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Arena d’Agguato",
+      "commander": "Pravus dei Sanguis",
+      "pivot": "Bestia della Fossa",
+      "archetype": "Raid reattivo",
+      "sourceEnergyAverage": 2.23,
+      "finalEnergyAverage": 2.3,
+      "sourceStructureCount": 3,
+      "finalStructureCount": 3,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1HA03",
+          "addedName": "Buggy da Sbarco",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1HA03",
+          "addedName": "Buggy da Sbarco",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Emorragia Mobile",
+      "commander": "Pravus dei Sanguis",
+      "pivot": "Camion Corazzato",
+      "archetype": "Raid/Attrition",
+      "sourceEnergyAverage": 2.27,
+      "finalEnergyAverage": 2.33,
+      "sourceStructureCount": 3,
+      "finalStructureCount": 3,
+      "replacements": [
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LXC1F03",
+          "addedName": "Buggy Demolitore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX3B02",
+          "removedName": "Moto Guerriglia",
+          "removedCost": 1,
+          "addedId": "LXC1F03",
+          "addedName": "Buggy Demolitore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX4B01",
+          "removedName": "Punto di Raccolta",
+          "removedCost": 2,
+          "addedId": "LBS1A04",
+          "addedName": "Barricata di Rottami",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX4B01",
+          "removedName": "Punto di Raccolta",
+          "removedCost": 2,
+          "addedId": "LBS1A04",
+          "addedName": "Barricata di Rottami",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Liberti",
+      "deckName": "Carovana del Macello",
+      "commander": "Pravus dei Sanguis",
+      "pivot": "Camion Corazzato",
+      "archetype": "Sacrificio/Attrition",
+      "sourceEnergyAverage": 2.43,
+      "finalEnergyAverage": 2.5,
+      "sourceStructureCount": 4,
+      "finalStructureCount": 4,
+      "replacements": [
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F01",
+          "addedName": "Avanguardia Liberta",
+          "addedCost": 2
+        },
+        {
+          "removedId": "LX2B01",
+          "removedName": "Miliziano Liberto",
+          "removedCost": 1,
+          "addedId": "LXC1F01",
+          "addedName": "Avanguardia Liberta",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Città Vivente",
+      "commander": "Alexandros",
+      "pivot": "Selva Simbiotica",
+      "archetype": "Enclave/Economy",
+      "sourceEnergyAverage": 3.17,
+      "finalEnergyAverage": 3.23,
+      "sourceStructureCount": 12,
+      "finalStructureCount": 10,
+      "replacements": [
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Santuario Inespugnabile",
+      "commander": "Alexandros",
+      "pivot": "Selva Simbiotica",
+      "archetype": "Enclave/Control",
+      "sourceEnergyAverage": 2.83,
+      "finalEnergyAverage": 3.03,
+      "sourceStructureCount": 12,
+      "finalStructureCount": 10,
+      "replacements": [
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AG1B02",
+          "addedName": "Oplita di Confine",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AG1B02",
+          "addedName": "Oplita di Confine",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Muro in Marcia",
+      "commander": "Alexandros",
+      "pivot": "Giganthropos",
+      "archetype": "Armored/Control",
+      "sourceEnergyAverage": 2.77,
+      "finalEnergyAverage": 2.9,
+      "sourceStructureCount": 4,
+      "finalStructureCount": 4,
+      "replacements": [
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F08",
+          "addedName": "Tholos Sacro",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F08",
+          "addedName": "Tholos Sacro",
+          "addedCost": 3
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Furia del Colosso",
+      "commander": "Alexandros",
+      "pivot": "Giganthropos",
+      "archetype": "Armored/Combo",
+      "sourceEnergyAverage": 2.87,
+      "finalEnergyAverage": 3.0,
+      "sourceStructureCount": 5,
+      "finalStructureCount": 5,
+      "replacements": [
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Agorà dei Rovi",
+      "commander": "Dycaios",
+      "pivot": "Selva Simbiotica",
+      "archetype": "Enclave/Counter",
+      "sourceEnergyAverage": 2.67,
+      "finalEnergyAverage": 2.9,
+      "sourceStructureCount": 11,
+      "finalStructureCount": 9,
+      "replacements": [
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AG2B02",
+          "addedName": "Aratro Corazzato",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AG2B02",
+          "addedName": "Aratro Corazzato",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F06",
+          "addedName": "Karyon Mobile",
+          "addedCost": 3
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Reticolo di Reazione",
+      "commander": "Dycaios",
+      "pivot": "Selva Simbiotica",
+      "archetype": "Enclave/Terrain Control",
+      "sourceEnergyAverage": 2.7,
+      "finalEnergyAverage": 2.83,
+      "sourceStructureCount": 11,
+      "finalStructureCount": 9,
+      "replacements": [
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F06",
+          "addedName": "Karyon Mobile",
+          "addedCost": 3
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Spine di Erkos",
+      "commander": "Dycaios",
+      "pivot": "Giganthropos",
+      "archetype": "Armored/Counter",
+      "sourceEnergyAverage": 2.83,
+      "finalEnergyAverage": 2.93,
+      "sourceStructureCount": 4,
+      "finalStructureCount": 4,
+      "replacements": [
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AGC1F02",
+          "addedName": "Apheton",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F08",
+          "addedName": "Tholos Sacro",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F08",
+          "addedName": "Tholos Sacro",
+          "addedCost": 3
+        }
+      ]
+    },
+    {
+      "faction": "Agathoi",
+      "deckName": "Caccia nella Falange",
+      "commander": "Dycaios",
+      "pivot": "Giganthropos",
+      "archetype": "Control/Positioning",
+      "sourceEnergyAverage": 2.73,
+      "finalEnergyAverage": 2.9,
+      "sourceStructureCount": 3,
+      "finalStructureCount": 3,
+      "replacements": [
+        {
+          "removedId": "AG1B01",
+          "removedName": "Custode Agathoi",
+          "removedCost": 1,
+          "addedId": "AGC1F03",
+          "addedName": "Phylax Difensore",
+          "addedCost": 3
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG2B01",
+          "removedName": "Carro Falange",
+          "removedCost": 1,
+          "addedId": "AGC1F05",
+          "addedName": "Aratron Camminatore",
+          "addedCost": 2
+        },
+        {
+          "removedId": "AG4B01",
+          "removedName": "Radura Curativa",
+          "removedCost": 2,
+          "addedId": "AGC1F08",
+          "addedName": "Tholos Sacro",
+          "addedCost": 3
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Sentenza di Stasi",
+      "commander": "Gerarca Fabeot",
+      "pivot": "Architetto Nero",
+      "archetype": "Control/Tempo",
+      "sourceEnergyAverage": 2.77,
+      "finalEnergyAverage": 2.9,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Esecuzione Porpora",
+      "commander": "Gerarca Fabeot",
+      "pivot": "Architetto Nero",
+      "archetype": "Shooter/Control",
+      "sourceEnergyAverage": 2.87,
+      "finalEnergyAverage": 2.93,
+      "sourceStructureCount": 0,
+      "finalStructureCount": 0,
+      "replacements": [
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Camera di Condanna",
+      "commander": "Gerarca Fabeot",
+      "pivot": "La Torre dell'Architetto",
+      "archetype": "Enclave/Damage Control",
+      "sourceEnergyAverage": 2.97,
+      "finalEnergyAverage": 3.1,
+      "sourceStructureCount": 10,
+      "finalStructureCount": 8,
+      "replacements": [
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1F03",
+          "addedName": "Agente Espropriatore",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1F03",
+          "addedName": "Agente Espropriatore",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1F02",
+          "addedName": "Agente Opportunista",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1F02",
+          "addedName": "Agente Opportunista",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Acquisizione Territoriale",
+      "commander": "Gerarca Fabeot",
+      "pivot": "La Torre dell'Architetto",
+      "archetype": "Enclave/Conversion",
+      "sourceEnergyAverage": 3.17,
+      "finalEnergyAverage": 3.27,
+      "sourceStructureCount": 8,
+      "finalStructureCount": 7,
+      "replacements": [
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBS1A03",
+          "addedName": "Rifugio Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1F03",
+          "addedName": "Agente Espropriatore",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1F02",
+          "addedName": "Agente Opportunista",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1F02",
+          "addedName": "Agente Opportunista",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Logistica Compromessa",
+      "commander": "Emissario della Torre",
+      "pivot": "Architetto Nero",
+      "archetype": "Hand/ENE Control",
+      "sourceEnergyAverage": 2.9,
+      "finalEnergyAverage": 2.97,
+      "sourceStructureCount": 2,
+      "finalStructureCount": 2,
+      "replacements": [
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBS1A03",
+          "addedName": "Rifugio Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBS1A03",
+          "addedName": "Rifugio Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Falsa Abbondanza",
+      "commander": "Emissario della Torre",
+      "pivot": "Architetto Nero",
+      "archetype": "Steal/Resource Control",
+      "sourceEnergyAverage": 3.0,
+      "finalEnergyAverage": 3.2,
+      "sourceStructureCount": 6,
+      "finalStructureCount": 6,
+      "replacements": [
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1F07",
+          "addedName": "Cabina Dislocante",
+          "addedCost": 4
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1F07",
+          "addedName": "Cabina Dislocante",
+          "addedCost": 4
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FB1B02",
+          "addedName": "Iniziato Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB1B01",
+          "removedName": "Adepto Fabeot",
+          "removedCost": 1,
+          "addedId": "FB1B02",
+          "addedName": "Iniziato Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Torre dell’Embargo",
+      "commander": "Emissario della Torre",
+      "pivot": "La Torre dell'Architetto",
+      "archetype": "Enclave/Hand Control",
+      "sourceEnergyAverage": 3.13,
+      "finalEnergyAverage": 3.2,
+      "sourceStructureCount": 10,
+      "finalStructureCount": 8,
+      "replacements": [
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FB2B02",
+          "addedName": "Persecutore Fabeot",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FB2B02",
+          "addedName": "Persecutore Fabeot",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBS1A01",
+          "addedName": "Corriere Fabeot",
+          "addedCost": 2
+        }
+      ]
+    },
+    {
+      "faction": "Fabeot",
+      "deckName": "Rete di Dislocazione",
+      "commander": "Emissario della Torre",
+      "pivot": "La Torre dell'Architetto",
+      "archetype": "Enclave/Position Control",
+      "sourceEnergyAverage": 3.0,
+      "finalEnergyAverage": 3.07,
+      "sourceStructureCount": 9,
+      "finalStructureCount": 7,
+      "replacements": [
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1HA02",
+          "addedName": "Prima Linea Fabeot",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB4B01",
+          "removedName": "Avamposto Fabeot",
+          "removedCost": 3,
+          "addedId": "FBC1HA02",
+          "addedName": "Prima Linea Fabeot",
+          "addedCost": 3
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        },
+        {
+          "removedId": "FB2B01",
+          "removedName": "Inseguitore Fabeot",
+          "removedCost": 1,
+          "addedId": "FBC1HA01",
+          "addedName": "Lancia Fabeot",
+          "addedCost": 2
+        }
+      ]
+    }
+  ]
+}

@@ -28,11 +28,10 @@
     }
 
     function structureFieldLimit(player=null) {
-      const side = player || (state && state.currentPlayer) || 1;
-      const faction = state && state.factions ? state.factions[side] : null;
-      // C2e-3: cap strutture esplicito. Generale 6, Agathoi 7.
-      // Il precedente capBonus struttura non alza oltre questi valori nello Starter Game.
-      return faction === "Agathoi" ? AGATHOI_STRUCTURE_FIELD_LIMIT : STRUCTURE_FIELD_LIMIT;
+      // F9O7h3: nessun cap generale per le strutture provenienti dal deck.
+      // In modalità Tattica resta separato il cap di 2 strutture Starter vive complessive per giocatore,
+      // gestito dal ruolo starter_structure in game_scale.js.
+      return Infinity;
     }
 
 
@@ -53,7 +52,7 @@
       if (!state) return null;
       if (!state.c2c6b) state.c2c6b = {};
       if (!state.c2c6b.enemyDestroyedThisTurn) state.c2c6b.enemyDestroyedThisTurn = { 1:0, 2:0 };
-      for (const side of [1,2]) {
+      for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
         if (!Number.isFinite(state.c2c6b.enemyDestroyedThisTurn[side])) state.c2c6b.enemyDestroyedThisTurn[side] = 0;
       }
       return state.c2c6b;
@@ -197,10 +196,10 @@
       return activeLightCountByType(player, obj && obj.type);
     }
 function fieldLimitFor(bp, player=null) {
+      if (bp.type === "Struttura") return Infinity;
       if (bp.type === "Comandante") return COMMANDER_FIELD_LIMIT;
       if (bp.weight === "Pivot") return PIVOT_FIELD_LIMIT;
       if (bp.weight === "Elite") return ELITE_FIELD_LIMIT;
-      if (bp.type === "Struttura") return structureFieldLimit(player || state.currentPlayer || 1);
       if (String(bp.weight || "").toLowerCase().startsWith("pesant")) return HEAVY_FIELD_LIMIT;
       if (countsAsLightCap(bp)) return lightFieldLimit(player || state.currentPlayer || 1, bp.type);
       return Infinity;
@@ -210,10 +209,12 @@ function fieldLimitFor(bp, player=null) {
 
     function purchaseLimitReached(player, bp) {
       if (!bp) return true;
+      // Le strutture non Starter sono limitate dalle copie realmente disponibili
+      // nel deck, non da un cap globale o di classe sul campo.
+      if (bp.type === "Struttura") return false;
       if (bp.type === "Comandante") return activeCommanderCount(player) >= COMMANDER_FIELD_LIMIT;
       if (bp.weight === "Pivot") return activeBlueprintCount(player, bp) >= PIVOT_FIELD_LIMIT;
       if (bp.weight === "Elite") return activeBlueprintCount(player, bp) >= ELITE_FIELD_LIMIT;
-      if (bp.type === "Struttura") return activeStructureCount(player) >= structureFieldLimit(player);
       if (countsAsLightCap(bp)) return lightBucketCount(player, bp) >= lightFieldLimit(player, bp.type);
       const limit = fieldLimitFor(bp, player);
       return Number.isFinite(limit) && activeBlueprintCount(player, bp) >= limit;
@@ -223,10 +224,10 @@ function fieldLimitFor(bp, player=null) {
 
     function limitLabel(player, bp) {
       if (!bp) return "—";
+      if (bp.type === "Struttura") return `${activeStructureCount(player)} edifici · nessun cap generale`;
       if (bp.type === "Comandante") return `${activeCommanderCount(player)}/${COMMANDER_FIELD_LIMIT} comandante`;
       if (bp.weight === "Pivot") return `${activeBlueprintCount(player, bp)}/${PIVOT_FIELD_LIMIT} pivot`;
       if (bp.weight === "Elite") return `${activeBlueprintCount(player, bp)}/${ELITE_FIELD_LIMIT} elite`;
-      if (bp.type === "Struttura") return `${activeStructureCount(player)}/${structureFieldLimit(player)} edifici`;
       if (countsAsLightCap(bp)) return `${lightBucketCount(player, bp)}/${lightFieldLimit(player, bp.type)} ${String(bp.type || "unità").toLowerCase()} leggere campo`;
       const limit = fieldLimitFor(bp, player);
       if (!Number.isFinite(limit)) return "∞";
@@ -237,10 +238,10 @@ function fieldLimitFor(bp, player=null) {
 
 
     function limitReason(player, bp) {
+      if (bp.type === "Struttura") return "Nessun cap generale strutture";
       if (bp.type === "Comandante") return "Comandante già in campo";
       if (bp.weight === "Pivot") return "Pivot già in campo";
       if (bp.weight === "Elite") return "Elite già in campo";
-      if (bp.type === "Struttura") return `Limite edifici raggiunto (${structureFieldLimit(player)})`;
       if (countsAsLightCap(bp)) return `Limite ${String(bp.type || "unità").toLowerCase()} leggere raggiunto (${lightFieldLimit(player, bp.type)})`;
       if (String(bp.weight || "").toLowerCase().startsWith("pesant")) return "Limite pesanti raggiunto";
       return "Limite unità raggiunto";
@@ -257,6 +258,9 @@ function fieldLimitFor(bp, player=null) {
         existing.timing = effect.timing || existing.timing;
         existing.minCost = effect.minCost ?? existing.minCost;
         existing.minIncome = effect.minIncome ?? existing.minIncome;
+        existing.casterSide = effect.casterSide ?? existing.casterSide;
+        existing.owner = effect.owner ?? existing.owner;
+        existing.sourceSide = effect.sourceSide ?? existing.sourceSide;
       } else {
         state.playerEffects[player].push({ ...effect });
       }
@@ -273,8 +277,11 @@ function fieldLimitFor(bp, player=null) {
 
 
     function affectedPlayerForAbility(user, target, ab) {
-      if (ab.affects === "enemy") return enemyOf(user.side);
-      if (ab.affects === "target" && target && target.side) return target.side;
+      if (ab.affects === "enemy") {
+        if (typeof isPlayerTargetToken === "function" && isPlayerTargetToken(target)) return Number(target.side);
+        return enemyOf(user.side); // compatibilità per chiamate 1v1 legacy non interattive
+      }
+      if (ab.affects === "target" && target && target.side) return Number(target.side);
       return user.side;
     }
 
@@ -374,8 +381,9 @@ function fieldLimitFor(bp, player=null) {
       if (!bp) return Infinity;
       const modifiers = playerCostModifiers(player, bp);
       const placement = c1fPlacementCostModifier(player, bp, coord);
-      const delta = modifiers.reduce((sum, mod) => sum + (mod.value || 0), 0) + (placement.value || 0);
-      const minCost = Math.max(modifiers.reduce((min, mod) => Math.max(min, mod.minCost || 0), 0), placement.minCost || 0);
+      const structureDeployment = typeof f9s1aDeploymentCostModifier === "function" ? f9s1aDeploymentCostModifier(player, bp, coord) : { value:0, minCost:0 };
+      const delta = modifiers.reduce((sum, mod) => sum + (mod.value || 0), 0) + (placement.value || 0) + (structureDeployment.value || 0);
+      const minCost = Math.max(modifiers.reduce((min, mod) => Math.max(min, mod.minCost || 0), 0), placement.minCost || 0, structureDeployment.minCost || 0);
       return Math.max(minCost, bp.cost + delta);
     }
 

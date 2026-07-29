@@ -355,7 +355,11 @@ function customTacticCandidateUnits(player, card) {
   const normalized = normalizeCustomTacticCard(card);
   if (!customTacticRuntimePlayable(normalized) || normalized.customTacticSchema.targetDomain !== "board_unit") return [];
   const side = normalized.customTacticSchema.targetSide;
-  const candidates = side === "ally" ? combatUnits(player) : (side === "enemy" ? combatUnits(enemyOf(player)) : combatUnits(null));
+  const candidates = side === "ally"
+    ? combatUnits(player)
+    : (side === "enemy"
+      ? (typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemyOf(player)))
+      : combatUnits(null));
   return candidates.filter(target => customTacticTargetUnitValid(player, normalized, target));
 }
 

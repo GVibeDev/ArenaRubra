@@ -455,8 +455,8 @@ function rendererCalibrationClose() {
 function rendererCalibrationInjectButtons() {
   if (typeof document === "undefined") return;
   const targets = [
-    { selector: "#cardEditorScreen .deckBuilderHeaderActions", id: "cardEditorRendererCalibrationBtn" },
-    { selector: "#cardPoolScreen .deckBuilderHeaderActions", id: "cardPoolRendererCalibrationBtn" },
+    { selector: "#cardEditorScreen .cardEditorHeaderToolsBody", id: "cardEditorRendererCalibrationBtn" },
+    { selector: "#cardPoolScreen .cardPoolDebugActions", id: "cardPoolRendererCalibrationBtn" },
     { selector: "#deckBuilderScreen .deckBuilderHeaderActions", id: "deckBuilderRendererCalibrationBtn" }
   ];
   targets.forEach(target => {

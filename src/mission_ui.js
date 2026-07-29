@@ -7,8 +7,137 @@ const MISSION_UI_STATE = {
   selectedSide: 0,
   revealPendingSide: 0,
   playPendingSide: 0,
-  lastOpenedAt: null
+  lastOpenedAt: null,
+  renderRevision: 0,
+  lastInvalidationReason: "startup"
 };
+
+const MISSION_UI_RENDER_EVENT_TYPES = new Set([
+  "MISSION_PROGRESS_CHANGED",
+  "MISSION_READY",
+  "MISSION_CHECKPOINT",
+  "MISSION_REVEALED",
+  "MISSION_PLAYED",
+  "MISSION_REWARD_PENDING",
+  "MISSION_REWARD_RESOLVED",
+  "MISSION_CYCLE_RESET",
+  "MISSION_RECOVERY_LOCKED",
+  "MISSION_UNLOCKED",
+  "DECK_RECOVERED",
+  "CARD_BLOCKED",
+  "CARD_UNBLOCKED"
+]);
+
+function missionUiInvalidate(reason="manual") {
+  MISSION_UI_STATE.renderRevision = Number(MISSION_UI_STATE.renderRevision || 0) + 1;
+  MISSION_UI_STATE.lastInvalidationReason = String(reason || "manual");
+  if (typeof document !== "undefined") {
+    for (const id of ["mapHandOverlay", "cardZonePanel", "mapActionDock"]) {
+      const node = document.getElementById(id);
+      if (node && node.dataset) delete node.dataset.renderSignature;
+    }
+  }
+  return MISSION_UI_STATE.renderRevision;
+}
+
+function missionUiHandleGameEvent(event) {
+  const type = event && event.type ? String(event.type) : "";
+  if (!MISSION_UI_RENDER_EVENT_TYPES.has(type)) return false;
+  missionUiInvalidate(`event:${type}`);
+  return true;
+}
+
+function missionUiSignatureValue(value) {
+  if (value == null) return "";
+  if (typeof value === "boolean") return value ? "1" : "0";
+  if (typeof value === "number" || typeof value === "string") return String(value);
+  try { return JSON.stringify(value); }
+  catch (_err) { return String(value); }
+}
+
+function missionUiPendingRewardSignature() {
+  const pending = typeof missionPendingReward === "function"
+    ? missionPendingReward()
+    : (typeof state !== "undefined" && state ? state.missionPendingReward : null);
+  if (!pending) return "none";
+  const groups = Array.isArray(pending.groups)
+    ? pending.groups.map(group => [
+        group && group.key || "",
+        group && group.required || 0,
+        group && group.wasted || 0,
+        Array.isArray(group && group.selectedUids) ? group.selectedUids.slice().sort().join(",") : ""
+      ].join("~")).join("|")
+    : "";
+  return [
+    pending.kind || "",
+    pending.side || pending.player || pending.chooserSide || 0,
+    pending.missionId || "",
+    pending.multiplier || 1,
+    pending.required || 0,
+    pending.remaining || pending.repeatAttacksRemaining || 0,
+    pending.attackerUid || "",
+    pending.defenderUid || "",
+    Array.isArray(pending.selectedUids) ? pending.selectedUids.slice().sort().join(",") : "",
+    Array.isArray(pending.targetSides) ? pending.targetSides.slice().sort((a,b)=>a-b).join(",") : "",
+    groups
+  ].join("^");
+}
+
+function missionUiRenderSignature(side) {
+  const runtime = missionUiRuntime(side);
+  if (!runtime || !runtime.active) {
+    return [
+      "mission-absent",
+      side,
+      MISSION_UI_STATE.selectedSide || 0,
+      MISSION_UI_STATE.revealPendingSide || 0,
+      MISSION_UI_STATE.playPendingSide || 0,
+      MISSION_UI_STATE.renderRevision || 0,
+      missionUiPendingRewardSignature()
+    ].join("¦");
+  }
+  const definition = missionUiDefinition(side);
+  const items = definition && typeof missionObjectivesFor === "function" ? missionObjectivesFor(definition) : [];
+  const orderedIds = items.map(item => String(item && item.id || "")).filter(Boolean);
+  const extraIds = Object.keys(runtime.entries || {}).filter(id => !orderedIds.includes(id)).sort();
+  const entrySignature = orderedIds.concat(extraIds).map(id => {
+    const entry = runtime.entries && runtime.entries[id] ? runtime.entries[id] : null;
+    return [
+      id,
+      entry && missionUiSignatureValue(entry.current),
+      entry && missionUiSignatureValue(entry.target),
+      entry && Number(entry.streak || 0),
+      entry && entry.satisfied ? 1 : 0,
+      entry && entry.completed ? 1 : 0,
+      entry && missionUiSignatureValue(entry.detail)
+    ].join("~");
+  }).join("|");
+  const card = missionUiCardForSide(side);
+  const blocked = typeof handCardBlocked === "function" && card ? (handCardBlocked(card) ? 1 : 0) : 0;
+  return [
+    "mission",
+    side,
+    runtime.missionId || "",
+    runtime.missionClass || "",
+    runtime.cycle || 1,
+    runtime.status || "",
+    runtime.played ? 1 : 0,
+    runtime.revealed ? 1 : 0,
+    runtime.rewardPending ? 1 : 0,
+    runtime.ready ? 1 : 0,
+    Number(runtime.readyCount || 0),
+    runtime.recoveryLocked ? 1 : 0,
+    Number(runtime.unlockAtOwnerTurnStarted || 0),
+    blocked,
+    missionUiBlockedReason(side),
+    entrySignature,
+    MISSION_UI_STATE.selectedSide || 0,
+    MISSION_UI_STATE.revealPendingSide || 0,
+    MISSION_UI_STATE.playPendingSide || 0,
+    MISSION_UI_STATE.renderRevision || 0,
+    missionUiPendingRewardSignature()
+  ].join("¦");
+}
 
 function missionUiEscape(value) {
   if (typeof escapeHtml === "function") return escapeHtml(value == null ? "" : String(value));
@@ -108,6 +237,7 @@ function missionUiActivateCard(side, options={}) {
     MISSION_UI_STATE.playPendingSide = 0;
   }
   MISSION_UI_STATE.lastOpenedAt = new Date().toISOString();
+  missionUiInvalidate("activate_card");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
@@ -118,7 +248,7 @@ function missionUiCompactPanelHtml(side) {
   const definition = missionUiDefinition(side);
   const items = definition && typeof missionObjectivesFor === "function" ? missionObjectivesFor(definition) : [];
   const status = missionUiStatus(side);
-  const check = missionUiPlayCheck(side);
+  const check = missionUiPlayCheck(side, null, { evaluate:false, source:"ui_render_compact" });
   const pending = MISSION_UI_STATE.playPendingSide === side;
   const rows = items.map((item, index) => {
     const entry = runtime.entries && runtime.entries[item.id];
@@ -185,7 +315,7 @@ function missionUiActionHtml(side, viewerSide) {
   const runtime = missionUiRuntime(side);
   if (!runtime || !runtime.active) return "";
   if (runtime.played) return `<div class="missionUiHint">${runtime.rewardPending ? "Completa la scelta della ricompensa." : "Missione risolta e carta negli scarti."}</div>`;
-  const check = missionUiPlayCheck(side);
+  const check = missionUiPlayCheck(side, null, { evaluate:false, source:"ui_render_detailed" });
   if (!missionUiOwnerHasPrivateView(side)) return `<div class="missionUiHint">${missionUiEscape(check.reason)}</div>`;
   if (MISSION_UI_STATE.playPendingSide === side) {
     return `<div class="missionRevealConfirm"><span>Confermi il gioco di “${missionUiEscape(runtime.missionName)}”? La carta andrà negli scarti e la ricompensa sarà applicata.</span><div class="missionUiButtons"><button class="ghost" type="button" onclick="missionUiCancelPlay()">Annulla</button><button type="button" onclick="missionUiConfirmPlay(${side})">Conferma Missione</button></div></div>`;
@@ -281,6 +411,7 @@ function missionUiSelect(side) {
   MISSION_UI_STATE.revealPendingSide = 0;
   MISSION_UI_STATE.playPendingSide = 0;
   MISSION_UI_STATE.lastOpenedAt = new Date().toISOString();
+  missionUiInvalidate("select");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
@@ -289,6 +420,7 @@ function missionUiCancelSelection(options={}) {
   MISSION_UI_STATE.selectedSide = 0;
   MISSION_UI_STATE.revealPendingSide = 0;
   MISSION_UI_STATE.playPendingSide = 0;
+  missionUiInvalidate("cancel_selection");
   if (!options.skipRender && typeof renderAll === "function") renderAll();
   return true;
 }
@@ -299,12 +431,14 @@ function missionUiRequestReveal(side) {
   if (!missionUiOwnerHasPrivateView(side) || missionUiBlockedReason(side)) return false;
   MISSION_UI_STATE.selectedSide = side;
   MISSION_UI_STATE.revealPendingSide = side;
+  missionUiInvalidate("request_reveal");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
 
 function missionUiCancelReveal() {
   MISSION_UI_STATE.revealPendingSide = 0;
+  missionUiInvalidate("cancel_reveal");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
@@ -355,6 +489,7 @@ function missionUiReveal(side, options = {}) {
   if (typeof log === "function") log(`${playerName(side)} rivela la Missione “${runtime.missionName}”. F9N7: nessuna ricompensa applicata e carta non scartata.`);
   MISSION_UI_STATE.selectedSide = 0;
   MISSION_UI_STATE.revealPendingSide = 0;
+  missionUiInvalidate("revealed");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
@@ -375,12 +510,14 @@ function missionUiRequestPlay(side) {
   MISSION_UI_STATE.selectedSide = side;
   MISSION_UI_STATE.playPendingSide = side;
   MISSION_UI_STATE.lastOpenedAt = new Date().toISOString();
+  missionUiInvalidate("request_play");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
 
 function missionUiCancelPlay() {
   MISSION_UI_STATE.playPendingSide = 0;
+  missionUiInvalidate("cancel_play");
   if (typeof renderAll === "function") renderAll();
   return true;
 }
@@ -388,12 +525,20 @@ function missionUiCancelPlay() {
 function missionUiConfirmPlay(side) {
   if (MISSION_UI_STATE.playPendingSide !== side) return false;
   MISSION_UI_STATE.playPendingSide = 0;
+  missionUiInvalidate("confirm_play");
   return typeof missionPlayMission === "function" ? missionPlayMission(side) : (typeof missionPlayOrdinary === "function" ? missionPlayOrdinary(side) : false);
 }
 
 function missionUiPendingRewardChoiceHtml() {
   const pending = typeof missionPendingReward === "function" ? missionPendingReward() : null;
   if (!pending) return "";
+  if (pending.kind === "mission_player_target_selection") {
+    const buttons = (pending.targetSides || []).map(side => {
+      const info = typeof f9q3d1TargetSummary === "function" ? f9q3d1TargetSummary(side) : {faction:state.factions && state.factions[side],energy:state.energy && state.energy[side],hand:state.hand && state.hand[side] ? state.hand[side].length : 0,deck:state.deck && state.deck[side] ? state.deck[side].length : 0,pressure:state.pressure && state.pressure[side] || 0,ps:typeof countControlledPS === "function" ? countControlledPS(side) : 0};
+      return `<button type="button" class="missionRewardCard" onclick="missionRewardConfirmPlayerTarget(${side})"><strong>${missionUiEscape(playerName(side))}</strong><span>${missionUiEscape(info.faction || "Fazione")} · ENE ${info.energy} · PS ${info.ps} · Pressione ${info.pressure} · Mano ${info.hand} · Deck ${info.deck}</span></button>`;
+    }).join("");
+    return `<section class="missionRewardChoice" aria-label="Scelta avversario ricompensa Missione"><div class="missionRewardChoiceHeader"><div><strong>Scegli l’avversario della Missione “${missionUiEscape(pending.missionName)}”</strong><span>Solo i giocatori attivi sono bersagli validi.</span></div><span class="missionStatus missionStatus-reward_pending">FFA</span></div><div class="missionRewardCardGrid">${buttons}</div></section>`;
+  }
   if (pending.kind === "enemy_discard_selection") {
     const cards = typeof missionPendingDiscardEligibleCards === "function" ? missionPendingDiscardEligibleCards() : [];
     const selected = new Set(pending.selectedUids || []);
@@ -447,4 +592,5 @@ function missionUiResetSelectionForTurn() {
   MISSION_UI_STATE.selectedSide = 0;
   MISSION_UI_STATE.revealPendingSide = 0;
   MISSION_UI_STATE.playPendingSide = 0;
+  missionUiInvalidate("turn_reset");
 }

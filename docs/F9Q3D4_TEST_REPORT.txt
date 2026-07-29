@@ -1,0 +1,81 @@
+ARENA RUBRA — F9Q3d4 TEST REPORT
+================================
+
+Build candidata
+---------------
+Versione: C2-STABLE-1-F9Q3d4-APK-M4c
+Nome: Elimination, Assist & Pressure Attribution
+Baseline: C2-STABLE-1-F9Q3d3-APK-M4c
+Data: 2026-07-28
+
+Controlli statici
+-----------------
+File JavaScript controllati: 150
+Errori sintattici: 0
+
+Suite Node
+----------
+Suite eseguite: 68
+Suite superate: 68
+Suite fallite: 0
+
+Smoke dedicato F9Q3d4
+----------------------
+tests/f9q3d4_elimination_assist_pressure_attribution_smoke.js
+Esito: 44/44 OK
+
+Copertura dedicata:
+- registro della provenienza del danno;
+- finestra assist unità di 2 round;
+- kill diretta e assist multi-avversario;
+- mine possedute e danno da pericolo;
+- autodistruzioni senza killer ostile;
+- eliminazioni giocatore e finestra assist di 3 round;
+- concessione senza attribuzione arbitraria;
+- valutazione tipizzata della Pressione;
+- esclusione degli eliminati dalla classifica attiva;
+- danni, kill, assist, eliminazioni e Pressione nelle statistiche;
+- conservazione del campo legacy destroyedBySide;
+- metadati versione e baseline.
+
+Smoke Chromium
+---------------
+Test mirati eseguiti: 6
+Test superati: 6
+Test falliti: 0
+
+1. f9q3d4_browser_elimination_assist_pressure_smoke.py
+2. f9q3d2_browser_ffa_missions_smoke.py
+3. f9q3d1_browser_target_player_smoke.py
+4. f9s1b1_browser_deck_selection_smoke.py
+5. f9r3_browser_official_maps_pressure_smoke.py
+6. f9s1b_browser_alternative_pivots_smoke.py
+
+Il test browser dedicato ha verificato nel runtime reale:
+- kill di G2 e assist di G3 sulla stessa unità;
+- aggiornamento delle statistiche;
+- conquista QG con responsabile e assist;
+- persistenza dell’attribuzione nel record ciclo vita;
+- concessione senza killer o assist;
+- valutazione Pressione con G4 eliminato;
+- incremento assegnato soltanto a G1;
+- evento PRESSURE_EVALUATED seguito da PRESSURE_CHANGED;
+- precheck con 0 problemi e 0 warning;
+- nessun errore pagina o console.
+
+Pacchetto
+---------
+Archivio ZIP verificato: nessun errore di integrità
+Elementi archivio: 762
+File effettivi: 710
+Cache Python incluse: 0
+
+Esclusioni dichiarate
+---------------------
+- Nessun collaudo su APK Android fisico.
+- Nessuna partita FFA completa giocata manualmente fino al termine.
+- Nessun benchmark prestazionale prolungato del registro di attribuzione su partite molto lunghe.
+
+Esito
+-----
+Candidata tecnicamente pronta per il collaudo manuale. Non è una baseline validata finché l’utente non conclude i test reali.

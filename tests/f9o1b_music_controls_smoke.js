@@ -12,7 +12,7 @@ const build = read("src/build_info.js");
 const config = read("data/cards_base.js");
 const css = read("css/style.css");
 
-ok(build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c") || build.includes("C2-STABLE-1-F9O2c-APK-M4c") || build.includes("C2-STABLE-1-F9O2b-APK-M4c") || build.includes("C2-STABLE-1-F9O2a-APK-M4c") || build.includes("C2-STABLE-1-F9O2-APK-M4c") || build.includes("C2-STABLE-1-F9O1b-APK-M4c"), "build F9O1b o successiva");
+ok(build.includes("C2-STABLE-1-F9O7g-APK-M4c") || build.includes("C2-STABLE-1-F9O7e-APK-M4c") || build.includes("C2-STABLE-1-F9O6-APK-M4c") || build.includes("C2-STABLE-1-F9O5b-APK-M4c") || build.includes("C2-STABLE-1-F9O5a-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4e-APK-M4c") || build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c") || build.includes("C2-STABLE-1-F9O4a-APK-M4c") || build.includes("C2-STABLE-1-F9O4-APK-M4c") || build.includes("C2-STABLE-1-F9O2e-APK-M4c") || build.includes("C2-STABLE-1-F9O2d-APK-M4c") || build.includes("C2-STABLE-1-F9O2c-APK-M4c") || build.includes("C2-STABLE-1-F9O2b-APK-M4c") || build.includes("C2-STABLE-1-F9O2a-APK-M4c") || build.includes("C2-STABLE-1-F9O2-APK-M4c") || build.includes("C2-STABLE-1-F9O1b-APK-M4c"), "build F9O1b o successiva");
 ok(config.includes("persistentMusicControlsF9O1b: true"), "feature flag F9O1b");
 ok(config.includes("defaultMusicVolumePercentF9O1b: 65"), "default 65 config");
 ok(audioSource.includes("const ARENA_AUDIO_DEFAULT_VOLUME = 0.65"), "default 65 runtime");

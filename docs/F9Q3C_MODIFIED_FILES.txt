@@ -1,0 +1,24 @@
+F9Q3c — File aggiunti/modificati rispetto a F9Q3b
+
+AGGIUNTI
+- src/map_backgrounds.js
+- tests/f9q3c_custom_map_backgrounds_smoke.js
+- tests/f9q3c_browser_custom_background_smoke.py
+- docs/F9Q3C_CUSTOM_MAP_BACKGROUNDS.md
+- docs/F9Q3C_CHANGELOG.md
+- docs/F9Q3C_TEST_REPORT.txt
+- docs/F9Q3C_MANUAL_TEST_CHECKLIST.md
+- docs/F9Q3C_MODIFIED_FILES.txt
+
+MODIFICATI
+- README.md
+- index.html
+- css/style.css
+- src/build_info.js
+- src/data_store.js
+- src/map_editor.js
+- src/map_runtime.js
+- src/map_skins.js
+- src/presentation_theme.js
+- tests/f9q3_map_editor_smoke.js
+- tests/f9q3a_main_menu_smoke.js

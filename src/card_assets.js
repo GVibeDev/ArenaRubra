@@ -53,6 +53,15 @@ const CARD_ASSET_PLACEHOLDERS = Object.freeze({
 });
 
 const CARD_ASSET_ART_EXTENSIONS = Object.freeze(["webp", "jpg", "png"]);
+const CARD_ASSET_BACK_EXTENSIONS = Object.freeze(["webp", "png", "jpg", "jpeg"]);
+const CARD_ASSET_BACK_PREFIXES = Object.freeze({
+  nexus: "nex",
+  exordium: "exo",
+  liberti: "lib",
+  agathoi: "aga",
+  fabeot: "fab"
+});
+
 
 const CARD_COMPOSER_TEMPLATE_GEOMETRY = Object.freeze({
   canvas: { w: 1024, h: 1536 },
@@ -171,10 +180,23 @@ function cardAssetFramePathFor(card) {
   return frames[kind] || "";
 }
 
-function cardAssetBackPathFor(faction) {
+function cardAssetBackBasePathFor(faction) {
   const factionKey = cardAssetFactionKey(faction);
-  const frames = CARD_ASSET_FRAME_PATHS[factionKey] || {};
-  return frames.back || "";
+  const prefix = CARD_ASSET_BACK_PREFIXES[factionKey] || factionKey.slice(0, 3);
+  return `${CARD_ASSET_BASE_DIR}/art/${factionKey}/${prefix}back`;
+}
+
+function cardAssetBackCandidatePathsFor(faction) {
+  const factionKey = cardAssetFactionKey(faction);
+  const preferred = CARD_ASSET_BACK_EXTENSIONS.map(ext => `${cardAssetBackBasePathFor(faction)}.${ext}`);
+  const legacy = CARD_ASSET_FRAME_PATHS[factionKey] && CARD_ASSET_FRAME_PATHS[factionKey].back
+    ? [CARD_ASSET_FRAME_PATHS[factionKey].back]
+    : [];
+  return [...preferred, ...legacy];
+}
+
+function cardAssetBackPathFor(faction) {
+  return cardAssetBackCandidatePathsFor(faction)[0] || "";
 }
 
 function cardAssetEntryFor(card) {
@@ -191,6 +213,7 @@ function cardAssetEntryFor(card) {
     role: card && (card.deckRole || card.cardType || "") || "",
     framePath: cardAssetFramePathFor(card),
     backPath: cardAssetBackPathFor(card && card.faction),
+    backCandidatePaths: cardAssetBackCandidatePathsFor(card && card.faction),
     fileId: cardAssetFileId(card),
     rawFileId: cardAssetRawFileId(card),
     artPath: embeddedArtPath || cardAssetArtPathFor(card),
@@ -229,8 +252,10 @@ function buildCardAssetManifest(catalog = null) {
     build: typeof buildInfoExportMeta === "function" ? buildInfoExportMeta() : {},
     baseDir: CARD_ASSET_BASE_DIR,
     policy: "Frame/retro leggeri nel progetto; illustrazioni pesanti inserite manualmente secondo artCandidatePaths; naming consigliato lower-case basato su sourceId/blueprintId/tacticId; renderer prova anche raw-case per tollerare file tipo NXTAC02.jpg.",
-    filenameConvention: "assets/cards/art/<factionKey>/<units|tactics>/<sourceId_lowercase>.<webp|jpg|png>; fallback accettato: <sourceId_rawcase>.<webp|jpg|png>",
+    filenameConvention: "assets/cards/art/<factionKey>/<units|tactics>/<sourceId_lowercase>.<webp|jpg|png>; dorso in assets/cards/art/<factionKey>/<abbrev>back.<webp|png|jpg|jpeg>; fallback legacy frames/*_back.png.",
     preferredExtensions: CARD_ASSET_ART_EXTENSIONS,
+    backExtensions: CARD_ASSET_BACK_EXTENSIONS,
+    backPrefixes: CARD_ASSET_BACK_PREFIXES,
     frames: CARD_ASSET_FRAME_PATHS,
     placeholders: CARD_ASSET_PLACEHOLDERS,
     geometry: CARD_COMPOSER_TEMPLATE_GEOMETRY,
@@ -278,6 +303,11 @@ function cardAssetDirectoryTreeText() {
     "    fabeot_tactic_frame.png",
     "    fabeot_back.png",
     "  art/",
+    "    nexus/nexback.webp",
+    "    exordium/exoback.webp",
+    "    liberti/libback.webp",
+    "    agathoi/agaback.webp",
+    "    fabeot/fabback.webp",
     "    nexus/units/*.<webp|jpg|png>",
     "    nexus/tactics/*.<webp|jpg|png>",
     "    exordium/units/*.<webp|jpg|png>",

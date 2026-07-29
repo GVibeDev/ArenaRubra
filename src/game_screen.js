@@ -243,6 +243,7 @@ function renderGameHud() {
     safeText("gameHudPressure", "Pressione —");
     safeText("gameHudCards", "Deck/Mano/Scarti —");
     updateGameHudModeChip();
+    if (typeof renderF9U1bComparisonBars === "function") renderF9U1bComparisonBars();
     return;
   }
 
@@ -255,6 +256,8 @@ function renderGameHud() {
   const p2Cards = gameScreenCardCounts(2);
   const p1 = state.factions && state.factions[1] ? state.factions[1] : "G1";
   const p2 = state.factions && state.factions[2] ? state.factions[2] : "G2";
+  const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+  const hudJoinValues = getter => playerIds.map(side => `G${side}:${getter(side)}`).join(" · ");
 
   safeText("gameHudRound", `R${state.turn || 0}`);
   safeText("gameHudTurn", `Turno: ${currentName} · ${currentMode}`);
@@ -262,7 +265,17 @@ function renderGameHud() {
   safeText("gameHudPs", `PS ${ps1}-${ps2}`);
   safeText("gameHudPressure", `Pressione ${state.pressure ? state.pressure[1] || 0 : 0}-${state.pressure ? state.pressure[2] || 0 : 0}`);
   safeText("gameHudCards", `Carte ${p1}: ${p1Cards.deck}/${p1Cards.hand}/${p1Cards.discard} · ${p2}: ${p2Cards.deck}/${p2Cards.hand}/${p2Cards.discard}`);
+  if (playerIds.length > 2) {
+    safeText("gameHudEnergy", `ENE ${hudJoinValues(side => state.energy ? state.energy[side] : 0)}`);
+    safeText("gameHudPs", `PS ${hudJoinValues(side => typeof countControlledPS === "function" ? countControlledPS(side) : 0)}`);
+    safeText("gameHudPressure", `Pressione ${hudJoinValues(side => state.pressure ? state.pressure[side] || 0 : 0)}`);
+    safeText("gameHudCards", `Carte ${playerIds.map(side => {
+      const counts = gameScreenCardCounts(side);
+      return `G${side} ${state.factions[side]}:${counts.deck}/${counts.hand}/${counts.discard}`;
+    }).join(" · ")}`);
+  }
   updateGameHudModeChip();
+  if (typeof renderF9U1bComparisonBars === "function") renderF9U1bComparisonBars();
 }
 
 function gameScrollToElement(id) {

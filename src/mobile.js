@@ -19,8 +19,54 @@ const apkM4Camera = {
   mode: "fit",
   panel: null,
   lastSelectedId: null,
-  renderPatched: false
+  renderPatched: false,
+  geometryVersion: -1,
+  geometryMapId: "",
+  appliedCamera: { mobile:null, scale:"", x:"", y:"", visualW:"", visualH:"" }
 };
+
+const apkM4PanelLayoutState = {
+  token: 0,
+  frame: 0
+};
+
+function apkM4RequestFrame(callback) {
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") return window.requestAnimationFrame(callback);
+  return setTimeout(callback, 16);
+}
+
+function apkM4CancelFrame(handle) {
+  if (!handle) return;
+  if (typeof window !== "undefined" && typeof window.cancelAnimationFrame === "function") window.cancelAnimationFrame(handle);
+  else clearTimeout(handle);
+}
+
+function apkM4SchedulePanelLayout(options = {}) {
+  if (typeof document === "undefined" || !document.body) return;
+  apkM4PanelLayoutState.token += 1;
+  const token = apkM4PanelLayoutState.token;
+  if (apkM4PanelLayoutState.frame) apkM4CancelFrame(apkM4PanelLayoutState.frame);
+  document.body.classList.add("mobile-panel-layout-pending");
+  apkM4PanelLayoutState.frame = apkM4RequestFrame(() => {
+    apkM4PanelLayoutState.frame = apkM4RequestFrame(() => {
+      apkM4PanelLayoutState.frame = 0;
+      if (token !== apkM4PanelLayoutState.token) return;
+      if (typeof cameraInteractionInvalidateGeometry === "function") cameraInteractionInvalidateGeometry();
+      if (typeof fitApkM4Board === "function") fitApkM4Board({ preserveCamera:true });
+      if (apkM4Camera.panel === "hand" && typeof requestInGameHandThumbnailRender === "function") requestInGameHandThumbnailRender();
+      if (options.scrollTo) {
+        const target = document.getElementById(options.scrollTo);
+        if (target) {
+          const scroller = target.closest ? (target.closest(".body, .cardZonePanel, #log") || target) : target;
+          if (scroller && typeof scroller.scrollTop === "number") scroller.scrollTop = 0;
+          else if (typeof target.scrollIntoView === "function") target.scrollIntoView({ block:"start", inline:"nearest", behavior:"auto" });
+        }
+      }
+      document.body.classList.remove("mobile-panel-layout-pending");
+    });
+  });
+}
+
 
 function apkM4MobileMediaMatches() {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
@@ -34,6 +80,19 @@ function apkM4IsLandscape() {
 
 function apkM4Clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function apkM4BoardGeometry() {
+  return typeof getBoardGeometry === "function"
+    ? getBoardGeometry()
+    : {
+        version: 0,
+        mapId: "map1_starter",
+        nativeWidth: APK_M4_BOARD_W,
+        nativeHeight: APK_M4_BOARD_H,
+        renderOriginX: typeof CENTER_X !== "undefined" ? CENTER_X : APK_M4_BOARD_W / 2,
+        renderOriginY: typeof CENTER_Y !== "undefined" ? CENTER_Y : APK_M4_BOARD_H / 2
+      };
 }
 
 function setApkM4BodyClasses() {
@@ -122,24 +181,14 @@ function setApkM4Panel(panel, options = {}) {
     if (details) details.setAttribute("open", "open");
   }
 
-  window.requestAnimationFrame(() => {
-    fitApkM4Board({ preserveCamera:true });
-    if (options.scrollTo) {
-      const target = document.getElementById(options.scrollTo);
-      if (target) {
-        const scroller = target.closest(".body, .cardZonePanel, #log") || target;
-        if (scroller && typeof scroller.scrollTop === "number") scroller.scrollTop = 0;
-        else if (typeof target.scrollIntoView === "function") target.scrollIntoView({ block:"start", inline:"nearest", behavior:"smooth" });
-      }
-    }
-  });
+  apkM4SchedulePanelLayout({ scrollTo:options.scrollTo || "" });
 }
 
 function closeApkM4Panel() {
   apkM4Camera.panel = null;
   if (!document.body) return;
   document.body.classList.remove("mobile-panel-hand", "mobile-panel-command", "mobile-panel-actions", "mobile-panel-log", "mobile-panel-setup", "mobile-panel-stats", "mobile-hand-play-started");
-  window.requestAnimationFrame(() => fitApkM4Board({ preserveCamera:true }));
+  apkM4SchedulePanelLayout();
 }
 
 function apkM4CloseHandAfterCardPlay() {
@@ -147,19 +196,21 @@ function apkM4CloseHandAfterCardPlay() {
   document.body.classList.add("mobile-hand-play-started");
   apkM4Camera.panel = null;
   document.body.classList.remove("mobile-panel-hand", "mobile-panel-command", "mobile-panel-actions", "mobile-panel-log", "mobile-panel-setup", "mobile-panel-stats");
-  window.requestAnimationFrame(() => {
+  apkM4RequestFrame(() => {
     document.body.classList.remove("mobile-hand-play-started");
-    fitApkM4Board({ preserveCamera:true });
+    apkM4SchedulePanelLayout();
   });
 }
 
 function apkM4BoardPointForCoord(coord) {
-  if (!Array.isArray(coord)) return { x: APK_M4_BOARD_W / 2, y: APK_M4_BOARD_H / 2 };
+  if (typeof getBoardRenderPoint === "function") return getBoardRenderPoint(coord);
+  const geometry = apkM4BoardGeometry();
+  if (!Array.isArray(coord)) return { x: geometry.nativeWidth / 2, y: geometry.nativeHeight / 2 };
   const q = coord[0];
   const r = coord[2];
   return {
-    x: CENTER_X + HEX_SIZE * Math.sqrt(3) * (q + r / 2),
-    y: CENTER_Y + HEX_SIZE * 1.5 * r
+    x: geometry.renderOriginX + HEX_SIZE * Math.sqrt(3) * (q + r / 2),
+    y: geometry.renderOriginY + HEX_SIZE * 1.5 * r
   };
 }
 
@@ -172,42 +223,66 @@ function apkM4FocusCoord() {
     const hq = getHq(state.currentPlayer);
     if (hq && hq.pos) return hq.pos;
   }
-  return CENTER_PS_COORD;
+  return typeof getCentralStrategicPointCoord === "function" ? getCentralStrategicPointCoord(state && state.mapDefinition) : CENTER_PS_COORD;
 }
 
-function clampApkM4Camera() {
+function clampApkM4Camera(options = {}) {
   const wrap = document.getElementById("boardWrap");
   if (!wrap) return;
-  const rect = wrap.getBoundingClientRect();
+  const rect = typeof cameraInteractionViewportRect === "function"
+    ? cameraInteractionViewportRect({ refresh:options.refreshGeometry === true })
+    : wrap.getBoundingClientRect();
+  if (!rect) return;
   const scale = apkM4Camera.fitScale * apkM4Camera.zoom;
-  const visualW = APK_M4_BOARD_W * scale;
-  const visualH = APK_M4_BOARD_H * scale;
+  const margin = 18;
+  if (typeof clampBoardGeometryTranslation === "function") {
+    const clamped = clampBoardGeometryTranslation(apkM4Camera.x, apkM4Camera.y, rect.width, rect.height, scale, margin);
+    apkM4Camera.x = clamped.x;
+    apkM4Camera.y = clamped.y;
+    return;
+  }
+  const geometry = apkM4BoardGeometry();
+  const visualW = geometry.nativeWidth * scale;
+  const visualH = geometry.nativeHeight * scale;
   const extraX = Math.max(0, (visualW - rect.width) / 2);
   const extraY = Math.max(0, (visualH - rect.height) / 2);
-  const margin = 18;
-  apkM4Camera.x = apkM4Clamp(apkM4Camera.x, -(extraX + margin), extraX + margin);
-  apkM4Camera.y = apkM4Clamp(apkM4Camera.y, -(extraY + margin), extraY + margin);
+  apkM4Camera.x = extraX > 0 ? apkM4Clamp(apkM4Camera.x, -(extraX + margin), extraX + margin) : 0;
+  apkM4Camera.y = extraY > 0 ? apkM4Clamp(apkM4Camera.y, -(extraY + margin), extraY + margin) : 0;
 }
 
-function applyApkM4Camera() {
+function applyApkM4Camera(options = {}) {
   const board = document.getElementById("boardVisualStack") || document.getElementById("board");
   const wrap = document.getElementById("boardWrap");
   if (!board || !wrap) return;
+  const applied = apkM4Camera.appliedCamera;
   if (!apkM4Camera.mobile) {
-    board.style.setProperty("--board-fit-scale", "1");
-    board.style.setProperty("--board-camera-x", "0px");
-    board.style.setProperty("--board-camera-y", "0px");
+    if (applied.mobile !== false || applied.scale !== "1") board.style.setProperty("--board-fit-scale", "1");
+    if (applied.mobile !== false || applied.x !== "0px") board.style.setProperty("--board-camera-x", "0px");
+    if (applied.mobile !== false || applied.y !== "0px") board.style.setProperty("--board-camera-y", "0px");
     wrap.style.removeProperty("--board-visual-width");
     wrap.style.removeProperty("--board-visual-height");
+    apkM4Camera.appliedCamera = { mobile:false, scale:"1", x:"0px", y:"0px", visualW:"", visualH:"" };
     return;
   }
-  clampApkM4Camera();
+  if (!options.skipClamp) clampApkM4Camera({ refreshGeometry:options.refreshGeometry === true });
   const totalScale = apkM4Camera.fitScale * apkM4Camera.zoom;
-  board.style.setProperty("--board-fit-scale", String(totalScale.toFixed(4)));
-  board.style.setProperty("--board-camera-x", `${Math.round(apkM4Camera.x)}px`);
-  board.style.setProperty("--board-camera-y", `${Math.round(apkM4Camera.y)}px`);
-  wrap.style.setProperty("--board-visual-width", `${Math.round(APK_M4_BOARD_W * totalScale)}px`);
-  wrap.style.setProperty("--board-visual-height", `${Math.round(APK_M4_BOARD_H * totalScale)}px`);
+  const scaleValue = String(totalScale.toFixed(4));
+  const xValue = `${Math.round(apkM4Camera.x)}px`;
+  const yValue = `${Math.round(apkM4Camera.y)}px`;
+  if (applied.mobile !== true || applied.scale !== scaleValue) board.style.setProperty("--board-fit-scale", scaleValue);
+  if (applied.mobile !== true || applied.x !== xValue) board.style.setProperty("--board-camera-x", xValue);
+  if (applied.mobile !== true || applied.y !== yValue) board.style.setProperty("--board-camera-y", yValue);
+
+  let visualW = applied.visualW;
+  let visualH = applied.visualH;
+  if (!options.skipLayoutSize) {
+    const geometry = apkM4BoardGeometry();
+    visualW = `${Math.round(geometry.nativeWidth * totalScale)}px`;
+    visualH = `${Math.round(geometry.nativeHeight * totalScale)}px`;
+    if (applied.mobile !== true || applied.visualW !== visualW) wrap.style.setProperty("--board-visual-width", visualW);
+    if (applied.mobile !== true || applied.visualH !== visualH) wrap.style.setProperty("--board-visual-height", visualH);
+  }
+  apkM4Camera.appliedCamera = { mobile:true, scale:scaleValue, x:xValue, y:yValue, visualW, visualH };
 }
 
 function fitApkM4Board(options = {}) {
@@ -223,11 +298,14 @@ function fitApkM4Board(options = {}) {
     return 1;
   }
 
-  const rect = wrap.getBoundingClientRect();
+  const rect = typeof cameraInteractionViewportRect === "function"
+    ? cameraInteractionViewportRect({ refresh:true })
+    : wrap.getBoundingClientRect();
   const pad = apkM4IsLandscape() ? 8 : 12;
   const availableW = Math.max(220, rect.width - pad);
   const availableH = Math.max(180, rect.height - pad);
-  apkM4Camera.fitScale = Math.max(0.26, Math.min(1, availableW / APK_M4_BOARD_W, availableH / APK_M4_BOARD_H));
+  const geometry = apkM4BoardGeometry();
+  apkM4Camera.fitScale = Math.max(0.14, Math.min(1, availableW / geometry.nativeWidth, availableH / geometry.nativeHeight));
 
   if (!options.preserveCamera) {
     apkM4Camera.zoom = APK_M4_CAMERA_ZOOMS[apkM4Camera.mode] || 1;
@@ -257,9 +335,28 @@ function centerApkM4CameraOn(coord, options = {}) {
   if (!options.keepZoom) apkM4Camera.zoom = APK_M4_CAMERA_ZOOMS.focus;
   const p = apkM4BoardPointForCoord(coord || CENTER_PS_COORD);
   const scale = apkM4Camera.fitScale * apkM4Camera.zoom;
-  apkM4Camera.x = (APK_M4_BOARD_W / 2 - p.x) * scale;
-  apkM4Camera.y = (APK_M4_BOARD_H / 2 - p.y) * scale;
+  const geometry = apkM4BoardGeometry();
+  apkM4Camera.x = (geometry.nativeWidth / 2 - p.x) * scale;
+  apkM4Camera.y = (geometry.nativeHeight / 2 - p.y) * scale;
   applyApkM4Camera();
+}
+
+function apkM4HandleBoardGeometry(options = {}) {
+  const geometry = apkM4BoardGeometry();
+  const geometryChanged = options.geometryChanged === true || apkM4Camera.geometryVersion !== geometry.version;
+  const mapChanged = options.mapChanged === true || apkM4Camera.geometryMapId !== geometry.mapId;
+  if (!geometryChanged) {
+    applyApkM4Camera();
+    return;
+  }
+  apkM4Camera.geometryVersion = geometry.version;
+  apkM4Camera.geometryMapId = geometry.mapId;
+  if (typeof cameraInteractionInvalidateGeometry === "function") cameraInteractionInvalidateGeometry();
+  if (mapChanged || apkM4Camera.mode === "fit") {
+    fitApkM4Board({ preserveCamera:false });
+  } else {
+    applyApkM4Camera({ refreshGeometry:true });
+  }
 }
 
 function updateApkM4StatusStrip() {
@@ -274,6 +371,14 @@ function updateApkM4StatusStrip() {
     return;
   }
   const p = state.currentPlayer || 1;
+  const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+  if (playerIds.length > 2) {
+    const current = typeof playerName === "function" ? playerName(p) : `G${p}`;
+    const ps = playerIds.map(side => `G${side}:${typeof countControlledPS === "function" ? countControlledPS(side) : 0}`).join(" Â· ");
+    const pressure = playerIds.map(side => `G${side}:${state.pressure ? state.pressure[side] || 0 : 0}`).join(" Â· ");
+    el.textContent = `R${state.turn || 0} Â· ${current} Â· ENE ${state.energy ? state.energy[p] : 0} Â· PS ${ps} Â· PR ${pressure}`;
+    return;
+  }
   const p1Ps = typeof countControlledPS === "function" ? countControlledPS(1) : 0;
   const p2Ps = typeof countControlledPS === "function" ? countControlledPS(2) : 0;
   const p1 = state.factions && state.factions[1] ? state.factions[1] : "G1";

@@ -96,7 +96,7 @@ ok(game.includes('cameraResetForNewGame'), "reset camera su nuova partita");
 ok(!mobile.includes('centerApkM4CameraOn(selected.pos)'), "render mobile non centra selezioni");
 ok(mobile.includes('preserveCamera:true'), "resize mobile preserva camera");
 ok(camera.includes('active.mode'), "HUD usa camera attiva");
-ok(build.includes('C2-STABLE-1-F9O2e-APK-M4c') || build.includes('C2-STABLE-1-F9O2d-APK-M4c') || build.includes('C2-STABLE-1-F9O2c-APK-M4c') || build.includes('C2-STABLE-1-F9O2b-APK-M4c'), "metadata F9O2b o successiva");
+ok(build.includes('C2-STABLE-1-F9O7g-APK-M4c') || build.includes('C2-STABLE-1-F9O7e-APK-M4c') || build.includes('C2-STABLE-1-F9O6-APK-M4c') || build.includes('C2-STABLE-1-F9O5b-APK-M4c') || build.includes('C2-STABLE-1-F9O5a-APK-M4c') || build.includes('C2-STABLE-1-F9O4f-APK-M4c') || build.includes('C2-STABLE-1-F9O4f-APK-M4c') || build.includes('C2-STABLE-1-F9O4e-APK-M4c') || build.includes('C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c') || build.includes('C2-STABLE-1-F9O4c-APK-M4c') || build.includes('C2-STABLE-1-F9O4b-APK-M4c') || build.includes('C2-STABLE-1-F9O4a-APK-M4c') || build.includes('C2-STABLE-1-F9O4-APK-M4c') || build.includes('C2-STABLE-1-F9O2e-APK-M4c') || build.includes('C2-STABLE-1-F9O2d-APK-M4c') || build.includes('C2-STABLE-1-F9O2c-APK-M4c') || build.includes('C2-STABLE-1-F9O2b-APK-M4c'), "metadata F9O2b o successiva");
 ok(source.includes('CAMERA_INTERACTION_DRAG_THRESHOLD'), "soglia click/drag");
 ok(source.includes('pointercancel'), "gestione pointer cancel");
 ok(source.includes('lostpointercapture'), "gestione perdita capture");

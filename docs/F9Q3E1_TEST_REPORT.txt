@@ -1,0 +1,83 @@
+ARENA RUBRA — F9Q3e1 MATCH TELEMETRY FOUNDATION
+TEST REPORT
+
+Build candidata: C2-STABLE-1-F9Q3e1-APK-M4c
+Baseline validata: C2-STABLE-1-F9S1c1-APK-M4c
+Schema telemetrico: F9Q3e1-1
+Data test: 2026-07-28
+
+RISULTATO GENERALE
+PASS — candidata pronta per il collaudo manuale.
+La build non è ancora validata dall’utente.
+
+1. CONTROLLO SINTASSI
+- 83/83 file JavaScript in src/ e data/: PASS con node --check.
+
+2. SUITE NODE
+- 70/70 suite Node: PASS.
+- Smoke dedicato F9Q3e1: 28/28 controlli.
+
+Controlli dedicati principali:
+- schema e algoritmo RNG espliciti;
+- stessa sequenza con stesso seed;
+- sequenze differenti con seed differenti;
+- contatore chiamate RNG;
+- stato, bootstrap, event pipeline e turn-ready hook;
+- persistenza nello storico;
+- log con seed e schema;
+- pannello e copia JSON;
+- telemetria ENE, mani morte, Pivot e Missioni;
+- file dei 50 deck ufficiali invariato rispetto a F9S1c1.
+
+3. TEST CHROMIUM MIRATI
+- 9/9 suite selezionate: PASS.
+
+Suite eseguite:
+1. F9Q3e1 Match Telemetry Foundation
+2. F9S1c1 Deck Builder UX
+3. F9S1c1 Setup di tutti i 50 deck ufficiali
+4. F9Q3d4 eliminazioni, assist e Pressione
+5. F9R3 nove mappe ufficiali e Pressione proporzionale
+6. F9S1b1 selezione deck custom
+7. F9S1b Pivot alternative
+8. F9O4c stabilità layout Android/WebView
+9. F9O7h1 visibilità tutorial
+
+Esito dei test browser dedicati:
+- 0 page error;
+- 0 console error nel test F9Q3e1;
+- precheck F9Q3e1: 0 problemi, 0 warning;
+- seed F9Q3E1-SMOKE-SEED riprodotto correttamente;
+- stessa iniziativa, stessa mano e stesso ordine superiore del deck;
+- telemetria chiusa alla vittoria e salvata nello storico;
+- schema persistito: F9Q3e1-1.
+
+4. VALIDAZIONE FUNZIONALE OSSERVATA
+- Identità esatta dei deck Bastione Mobile e Doppio Assalto Imperiale: PASS.
+- Conteggio 30 carte per deck: PASS.
+- Turn-ready e snapshot di giocabilità: PASS.
+- Evento ENE, carta giocata, Pivot schierata, danno e Missione: PASS.
+- Chiusura turno e statistiche turno: PASS.
+- Chiusura partita, vincitore e tipo vittoria: PASS.
+- Persistenza nello storico locale: PASS.
+- Copia/snapshot JSON: PASS.
+- Pannello telemetrico renderizzato: PASS.
+
+5. REGRESSIONE CONTENUTI
+Confronto con la baseline F9S1c1:
+- differenze in data/: 0;
+- differenze in assets/: 0;
+- file data/builtin_decks.js invariato;
+- 50 deck ufficiali invariati;
+- nessuna modifica a carte, Missioni, mappe o asset.
+
+6. LIMITI DEL COLLAUDO
+Non eseguiti:
+- APK Android su dispositivo fisico;
+- partita manuale lunga fino alla conclusione naturale;
+- benchmark di centinaia/migliaia di partite;
+- dashboard aggregata ed export CSV;
+- Benchmark Runner automatico.
+
+7. NOTA OPERATIVA
+Prima di avviare il grande ciclo di testing deck, verificare manualmente che il riepilogo JSON di una partita reale rifletta correttamente ENE, carte, Pivot, Missione e risultato osservati. Solo dopo questa verifica conviene produrre campioni estesi.

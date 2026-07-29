@@ -1,0 +1,48 @@
+ARENA RUBRA — F9O7h3 FFA TARGETING & STRUCTURE CAP HOTFIX
+
+Build candidata: C2-STABLE-1-F9O7h3-APK-M4c
+Base tecnica: F9O7h2 Performance Hotfix
+Baseline validata a monte: C2-STABLE-1-F9O7h1-APK-M4c
+
+CONTROLLI STATICI
+- File JavaScript controllati con node --check: 135
+- Errori sintattici: 0
+
+SUITE NODE
+- Suite eseguite: 60
+- Superate: 60
+- Fallite: 0
+- Smoke dedicato F9O7h3: 14/14
+
+VERIFICHE DEDICATE FFA TARGETING
+- Tattiche base: bersagli di G2 e G3 visibili a G1.
+- Tattiche Mano: bersagli di G2 e G3 visibili a G1.
+- Tattiche custom runtime: bersagli di G2 e G3 visibili a G1.
+- Abilità unità: bersagli di G2 e G3 visibili a G1.
+- Unità del giocatore eliminato G4 escluse.
+- Filtri di tipo e regole di validità esistenti conservati.
+
+VERIFICHE DEDICATE STRUTTURE
+- Struttura ordinaria da deck: nessun cap generale di campo.
+- Struttura Elite: nessun cap di campo Elite applicato alla struttura.
+- Struttura Pivot: nessun cap di campo Pivot applicato alla struttura.
+- Limite campo strutture restituito come Infinity.
+- HUD e pannelli regole mostrano la nuova politica.
+- Modalità Tattica: due strutture Starter vive occupano i due slot.
+- Strutture provenienti dal deck non occupano gli slot Starter.
+- Terza struttura Starter bloccata finché entrambe le precedenti sono vive.
+
+REGRESSIONE BROWSER CHROMIUM
+- Tutorial Visibility Hotfix F9O7h1: superato.
+- Tutorial Guidance & Adaptive Framing F9O7h: superato.
+- UI state/resume F9O7b: superato.
+- Errori pagina e console nei test browser eseguiti: 0.
+
+REGRESSIONE PRESTAZIONALE
+- Tutti i marker statici e i test della Performance Hotfix F9O7h2 restano superati.
+- La patch non reintroduce il renderer incrementale respinto in F9O4b.
+
+LIMITI DEL COLLAUDO
+- Non è stato eseguito un test su APK Android fisico.
+- Il test finale deve verificare manualmente tattiche e abilità contro avversari diversi dal bersaglio operativo scelto dall'IA.
+- Gli effetti player-level su mano, deck ed ENE restano fuori da questa patch.

@@ -1,0 +1,50 @@
+ARENA RUBRA — F9Q3b TEST REPORT
+Build: C2-STABLE-1-F9Q3b-APK-M4c
+Baseline: C2-STABLE-1-F9Q3a-APK-M4c
+
+AUTOMAZIONE NODE
+- Suite eseguite: 54
+- Superate: 54
+- Fallite: 0
+- Include tutte le 53 suite presenti nella baseline F9Q3a e la nuova suite F9Q3b.
+
+CONTROLLO SINTATTICO
+- File JavaScript controllati con `node --check`: 128
+- Errori: 0
+
+NUOVA SUITE
+`tests/f9q3b_pressure_battlefield_readability_smoke.js`
+
+Controlli principali:
+- MAP1 Standard: Pressione dal round 30;
+- MAP1 Rapida: Pressione dal round 20;
+- mappe avanzate Standard: Pressione dal round 35;
+- mappe avanzate Rapida: Pressione dal round 25;
+- soglia 70% arrotondata per eccesso: 4→3, 5→4, 7→5;
+- 4/7 PS non genera Pressione;
+- 5/7 PS genera un punto Pressione;
+- MAP1 conserva la regola del leader unico;
+- badge terreno presenti nel renderer;
+- tinta fazione sulle celle occupate;
+- bandiera PS con colore runtime;
+- alpha sfondo token `.28`.
+
+VERIFICA CHROMIUM HEADLESS
+Scenario: MAP2 Triumvirato, 3 giocatori, ritmo Standard.
+
+Esito:
+- build rilevata correttamente come F9Q3b;
+- Pressione dal round 35;
+- HUD: soglia 3/4 PS (70%);
+- marker DOM visibili: ostacolo ×, difficile 2, difensivo +D, scoperto −D;
+- 19 marker terreno speciali presenti nella MAP2;
+- tinte di occupazione create per unità Nexus ed Exordium;
+- bandiera PS Nexus visibile con colore `#2b6fb8`;
+- variabile CSS token faction base: `.28`;
+- page errors: 0;
+- console errors rilevanti: 0.
+
+LIMITI DEL COLLAUDO
+- Non è stato eseguito un test su APK/WebView Android reale.
+- Dimensione e leggibilità effettiva dei badge al minimo zoom devono essere confermate sul telefono.
+- Il bilanciamento della soglia 70% richiede partite reali e batch sulle mappe custom.

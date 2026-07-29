@@ -89,16 +89,27 @@ function handleCellClick(coord) {
         if (selected && pendingAbility) {
           const target = abilityTargets(selected, pendingAbility).find(t => sameCoord(t.pos, coord));
           if (target) {
+            if (["cell_group","cell_line"].includes(pendingAbility.target)) {
+              pendingAbilityCoords.push([...coord]);
+              const required = Math.max(1, Number(pendingAbility.selectionCount) || 1);
+              if (pendingAbilityCoords.length < required) {
+                log(`${pendingAbility.name}: scegli la cella ${pendingAbilityCoords.length + 1}/${required}.`);
+                renderAll();
+                return;
+              }
+              target.selectedCoords = pendingAbilityCoords.map(c => [...c]);
+            }
             useAbility(selected, target, pendingAbility);
             if (shouldEndAfterAbility(selected)) {
               endUnitAction(selected);
               clearSelection();
               postActionChecks();
             } else {
-              mode = "idle";
+              mode = selected.c2c5bDoubleMove ? "move" : "idle";
               pendingAbility = null;
+              pendingAbilityCoords = [];
               selectedId = selected.uid;
-              log(`${selected.name} può ancora attaccare dopo l'abilità.`);
+              log(`${selected.name} può ancora ${selected.c2c5bDoubleMove ? "muovere" : "agire"} dopo l'abilità.`);
               postActionChecks(false);
             }
             return;
@@ -112,6 +123,17 @@ function handleCellClick(coord) {
           if (card) {
             const target = handTacticTargets(state.currentPlayer, card).find(t => t.pos && sameCoord(t.pos, coord));
             if (target) {
+              const normalized = normalizeHandTacticCard(card);
+              const required = Math.max(1, Number(normalized.selectionCount) || 1);
+              if (required > 1) {
+                pendingTacticCoords.push([...coord]);
+                if (pendingTacticCoords.length < required) {
+                  log(`${card.name}: scegli la cella ${pendingTacticCoords.length + 1}/${required}.`);
+                  renderAll();
+                  return;
+                }
+                target.selectedCoords = pendingTacticCoords.map(c => [...c]);
+              }
               const used = useHandTacticCard(state.currentPlayer, card, target);
               clearSelection();
               postActionChecks(false);
@@ -159,7 +181,17 @@ function handleCellClick(coord) {
         const selected = getSelectedUnit();
         if (selected && unit && unit.side !== selected.side && !isUntargetableTo(unit, selected.side) && selected.type !== "QG" && canAttack(selected) && areAdjacent(selected.pos, unit.pos) && selected.side === state.currentPlayer) {
           attackUnit(selected, unit);
-          if (!shouldEndAfterAttack(selected)) {
+          if (selected.postAttackMove && selected.f9s1aPostAttackMoveReady) {
+            selected.f9s1aPostAttackMoveReady = false;
+            selected.f9s1aPostAttackMoveUsed = true;
+            selected.movedThisTurn = false;
+            selected.acted = false;
+            selected.c2c5bMoveOnlyExhaustAfterMove = true;
+            selectedId = selected.uid;
+            mode = "move";
+            log(`${selected.name} attiva Disimpegno: può effettuare un movimento completo, poi termina l'azione.`);
+            postActionChecks(false);
+          } else if (!shouldEndAfterAttack(selected)) {
             selectedId = selected.uid;
             mode = "idle";
             const follow = (selected.attacksMade < selected.attacksPerTurn && adjacentAttackTargets(selected).length > 0) ? "può attaccare ancora" : "può ancora usare l'abilità attiva";
@@ -193,6 +225,10 @@ function selectUnitAndPrimeMovement(unit) {
       if (typeof gameScreenClearInspection === "function") gameScreenClearInspection();
       selectedId = unit.uid;
       pendingAbility = null;
+      pendingAbilityCoords = [];
+      pendingTacticCoords = [];
+      pendingPlayerTargetContext = null;
+      if (typeof closePlayerTargetSelector === "function") closePlayerTargetSelector({ silent:true });
       pendingBuildBlueprintId = null;
       pendingPurchaseBlueprintId = null;
       pendingTacticId = null;
@@ -211,26 +247,48 @@ function selectUnitAndPrimeMovement(unit) {
       mode = canPrimeMove ? "move" : "idle";
     }
 
+function completeAbilityActivation(unit) {
+      if (shouldEndAfterAbility(unit)) {
+        endUnitAction(unit);
+        clearSelection();
+        postActionChecks();
+      } else {
+        mode = unit.c2c5bDoubleMove ? "move" : "idle";
+        pendingAbility = null;
+        pendingAbilityCoords = [];
+        selectedId = unit.uid;
+        log(`${unit.name} può ancora ${unit.c2c5bDoubleMove ? "muovere" : "agire"} dopo l'abilità.`);
+        postActionChecks(false);
+      }
+    }
+
 function toggleAbilityMode(unit) {
       if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
       if (!unit.ability) return;
+      if (typeof abilityRequiresPlayerTarget === "function" && abilityRequiresPlayerTarget(unit.ability)) {
+        const targets = abilityTargets(unit, unit.ability);
+        if (!targets.length) { log(`${unit.ability.name}: nessun avversario attivo valido.`); renderAll(); return; }
+        return requestPlayerTargetSelection({
+          casterSide:unit.side,
+          targets,
+          sourceName:unit.ability.name,
+          context:{ kind:unit.ability.kind, ability:unit.ability, unitUid:unit.uid },
+          onSelect:target => {
+            const liveUnit = state && Array.isArray(state.units) ? (state.units.find(candidate => candidate.uid === unit.uid) || unit) : unit;
+            useAbility(liveUnit, target, liveUnit.ability);
+            completeAbilityActivation(liveUnit);
+          }
+        });
+      }
       if (unit.ability.target === "self") {
+        if (!abilityTargets(unit, unit.ability).length) { log(`${unit.ability.name}: nessun uso valido in questo momento.`); renderAll(); return; }
         useAbility(unit, unit, unit.ability);
-        if (shouldEndAfterAbility(unit)) {
-          endUnitAction(unit);
-          clearSelection();
-          postActionChecks();
-        } else {
-          mode = "idle";
-          pendingAbility = null;
-          selectedId = unit.uid;
-          log(`${unit.name} può ancora attaccare dopo l'abilità.`);
-          postActionChecks(false);
-        }
+        completeAbilityActivation(unit);
         return;
       }
       mode = mode === "ability" ? "idle" : "ability";
       pendingAbility = mode === "ability" ? unit.ability : null;
+      pendingAbilityCoords = [];
       pendingBuildBlueprintId = null;
       pendingPurchaseBlueprintId = null;
       renderAll();
@@ -248,6 +306,10 @@ function clearSelection() {
       selectedId = null;
       mode = "idle";
       pendingAbility = null;
+      pendingAbilityCoords = [];
+      pendingTacticCoords = [];
+      pendingPlayerTargetContext = null;
+      if (typeof closePlayerTargetSelector === "function") closePlayerTargetSelector({ silent:true });
       pendingBuildBlueprintId = null;
       pendingPurchaseBlueprintId = null;
       pendingTacticId = null;

@@ -1,0 +1,55 @@
+ARENA RUBRA — F9O7g TEST REPORT
+Build: C2-STABLE-1-F9O7g-APK-M4c
+Baseline: C2-STABLE-1-F9O7f-APK-M4c
+Date: 2026-07-25
+
+STATIC / NODE
+- JavaScript syntax: 113/113 PASS
+- Node smoke/regression tests: 45/45 PASS
+- Tutorial scenario audit: 5 planned lessons, 5 playable scenarios, 5 portrait sets, 0 errors, 0 warnings
+- Precheck initial/final: PASS
+
+TARGETED BROWSER
+- F9O6 tutorial runtime foundation: PASS
+- F9O7a Lesson 1 complete playthrough: PASS
+- F9O7a checkpoint/resume: PASS
+- F9O7b UI state/resume synchronization: PASS
+- F9O7c Lesson 2 complete playthrough: PASS
+- F9O7d collapsed-hand controls reflow: PASS
+- F9O7e Lesson 3 complete playthrough and resume: PASS
+- F9O7f Lesson 4 complete playthrough, card-choice gate, hover preview and resume: PASS
+- F9O7g Lesson 5 complete playthrough, wrong-card gate, hover preview and resume: PASS
+
+F9O7g SCENARIO RESULTS
+- Five tutorial lessons available: PASS
+- Gerarca applies fabeot_vulnerable: PASS
+- Sentenza Porpora energy 20 -> 18: PASS
+- Vulnerability adds +1 damage: PASS
+- Fante Robot DEF 1 -> 0, HP remains 2: PASS
+- Cittadella conversion energy 18 -> 14: PASS
+- Fante Robot converted Nexus -> Fabeot: PASS
+- Converted unit exhausted and inhibited: PASS
+- Wrong contract blocked without play: PASS
+- Hover preview visible above spotlight: PASS (preview 95, spotlight 94, narrative 96)
+- Hover preview opacity 1 / filter none: PASS
+- Embargo energy 14 -> 11: PASS
+- Single Nexus hand card blocked for one turn: PASS
+- Resume after Embargo checkpoint: PASS
+- Converted unit, blocked card, hands and energy restored: PASS
+- Contratto di Usura energy Fabeot 11 -> 7: PASS
+- Nexus depot 5 -> 4: PASS
+- Nexus income_delta -1 for two incomes: PASS
+- Lesson completion persisted: PASS
+- Page errors: 0
+- Unexpected console errors: 0
+
+REGRESSION
+- Lessons 1–4 complete in downstream F9O7g: PASS
+- Collapsed-hand controls remain below faction abilities: PASS
+- Tutorial card preview remains above spotlight: PASS
+- Tutorial UI-state and checkpoint recovery tests: PASS
+- All 45 Node regression tests: PASS
+- Gameplay/balance source files changed: NONE
+
+MANUAL GATE
+Browser/APK real-device validation remains required before F9O7g becomes the official baseline.

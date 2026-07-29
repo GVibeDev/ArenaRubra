@@ -1,0 +1,77 @@
+ARENA RUBRA — F9Q3d2 TEST REPORT
+================================
+
+Build: C2-STABLE-1-F9Q3d2-APK-M4c
+Nome: FFA Effects & Missions Hardening
+Baseline: C2-STABLE-1-F9Q3d1-APK-M4c
+Data: 2026-07-28
+Stato: CANDIDATA, NON ANCORA VALIDATA DALL'UTENTE
+
+RISULTATI AUTOMATICI
+--------------------
+
+1. Controllo sintattico JavaScript
+   - File controllati: 146
+   - Errori: 0
+
+2. Suite Node
+   - Suite eseguite: 66
+   - Suite superate: 66
+   - Suite fallite: 0
+
+3. Smoke dedicato F9Q3d2
+   - Controlli: 44/44
+   - Copertura principale:
+     * elenco dinamico degli avversari attivi;
+     * esclusione dei giocatori eliminati;
+     * pressione massima fra avversari;
+     * Pivot e Comandante dello stesso avversario;
+     * distanza da qualunque QG nemico attivo;
+     * serie separate per singolo avversario;
+     * distruzioni, perdite e conversioni aggregate;
+     * scelta mirata per Ex Lucis Tenebrae e Cospirazione;
+     * scarto protetto;
+     * bersagli Anatema su più fazioni avversarie;
+     * diagnostica dinamica a quattro giocatori.
+
+4. Smoke Chromium
+   - Smoke superati: 5/5
+   - F9Q3d2 browser FFA Missions: superato.
+   - Regressione selezione deck custom: superata.
+   - Regressione mappe ufficiali e Pressione: superata.
+   - Regressione pool da 40 carte e Pivot alternative: superata.
+   - Regressione tracker Missioni: superata con guardia versione adattata alla candidata.
+   - Errori pagina: 0.
+   - Errori console nel test dedicato: 0.
+
+5. Precheck applicazione
+   - Problemi: 0
+   - Warning: 0
+   - Verificato durante lo smoke Chromium del pool completo.
+
+SCENARI FUNZIONALI VERIFICATI
+-----------------------------
+
+- Partita a tre giocatori: la ricompensa Fabeot mostra G2 e G3, non il proprietario.
+- Giocatore eliminato G4: escluso da selettori, metriche correnti e Anatema.
+- Ex Lucis Tenebrae: scelta G3; solo G3 passa da 9 a 5 ENE.
+- Cospirazione: scelta G2; G2 scarta 2 carte ordinarie su 4, la Missione resta protetta; G3 non cambia.
+- Condizione per turni nemici: G2 completa una serie 3/3 mentre i turni non validi di G3 restano nella serie separata 0/3.
+- Anatema ×3: quota 3 e pool formato dalle unità attive di G2 e G3.
+- Diagnostica: presenti G1, G2, G3 e G4.
+- 1v1: l'unico avversario valido continua a essere scelto automaticamente nelle suite di regressione.
+
+NOTE SUI TEST STORICI
+---------------------
+
+Alcuni smoke Chromium storici contengono un controllo rigido della vecchia stringa di versione. Per usarli come regressione funzionale è stata adattata soltanto la guardia della versione alla candidata F9Q3d2; la logica testata non è stata modificata.
+
+Lo smoke storico F9N6 inserisce artificialmente una seconda carta Missione nella mano dopo la creazione del deck e quindi il suo precheck locale segnala 31/30 carte. Il test continua a verificare correttamente tracker, eventi e renderer; il precheck della build normale, senza quella mutazione sintetica, è 0 problemi e 0 warning.
+
+LIMITI DEL COLLAUDO
+-------------------
+
+- Non è stato eseguito un collaudo su APK Android fisico.
+- Non è stata completata una lunga partita FFA fino a eliminazioni multiple.
+- Il ciclo completo dei giocatori eliminati appartiene a F9Q3d3.
+- Eliminazioni, assist e attribuzione della Pressione appartengono a F9Q3d4.

@@ -26,7 +26,7 @@
 
     function cleanupTurnTactics(player) {
       for (const u of combatUnits(player)) u.warPush = false;
-      for (const u of combatUnits(enemyOf(player))) {
+      for (const u of (typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemyOf(player)))) {
         u.statuses = (u.statuses || []).filter(st => !(st.kind === "raid_mark" && st.owner === player));
       }
     }
@@ -80,6 +80,23 @@
 
     function toggleTacticMode(tactic) {
       if (!canUseTactic(state.currentPlayer, tactic)) return;
+      if (typeof starterTacticRequiresPlayerTarget === "function" && starterTacticRequiresPlayerTarget(tactic)) {
+        const player = state.currentPlayer;
+        const targets = tacticTargets(player, tactic);
+        if (!targets.length) { log(`${tactic.name}: nessun avversario attivo valido.`); renderAll(); return; }
+        return requestPlayerTargetSelection({
+          casterSide:player,
+          targets,
+          sourceName:tactic.name,
+          context:{ kind:tactic.kind, tactic },
+          onSelect:target => {
+            const used = useTactic(player, tactic, target);
+            if (used && typeof closeActionsPanelAfterAcceptedTactic === "function") closeActionsPanelAfterAcceptedTactic();
+            clearSelection();
+            if (used) postActionChecks(false); else renderAll();
+          }
+        });
+      }
       if (tactic.target === "none") {
         useTactic(state.currentPlayer, tactic, null);
         if (typeof closeActionsPanelAfterAcceptedTactic === "function") closeActionsPanelAfterAcceptedTactic();
@@ -114,8 +131,11 @@
 
     function tacticTargets(player, tactic) {
       if (!tactic || tactic.target === "none") return [];
+      if (typeof starterTacticRequiresPlayerTarget === "function" && starterTacticRequiresPlayerTarget(tactic)) {
+        return typeof eligiblePlayerTargets === "function" ? eligiblePlayerTargets(player, { kind:tactic.kind, tactic }) : [];
+      }
       const own = combatUnits(player);
-      const enemy = combatUnits(enemyOf(player));
+      const enemy = typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemyOf(player));
       if (tactic.kind === "healArmorOnPS") return own.filter(u => isOnPS(u) && (u.currentHp < u.maxHp || u.currentDef < u.maxDef));
       if (tactic.kind === "damageNearPS") return enemy.filter(u => isOnOrAdjacentToAnyPS(u.pos));
       if (tactic.kind === "assaultOrder") return own.filter(u => (u.type === "Fanteria" || u.type === "Veicolo") && adjacentAllyOfOtherAssaultType(u));
@@ -312,12 +332,22 @@ function c2c8cPlayableEffectKinds() {
   return new Set(Array.isArray(config.playableTacticEffectKindsC2c8c) ? config.playableTacticEffectKindsC2c8c : ["last_run_sacrifice_aoe", "sanguis_hunter_scaling_bleed", "destroy_non_unique_unit", "enemy_ability_cost_tax"]);
 }
 
+
+function f9s1aPlayableTacticIds() {
+  const config = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : {};
+  return new Set(Array.isArray(config.playableTacticIdsF9S1a) ? config.playableTacticIdsF9S1a : []);
+}
+function f9s1aPlayableEffectKinds() {
+  const config = typeof CARD_CATALOG_CONFIG !== "undefined" ? CARD_CATALOG_CONFIG : {};
+  return new Set(Array.isArray(config.playableTacticEffectKindsF9S1a) ? config.playableTacticEffectKindsF9S1a : []);
+}
+
 function c2cPlayableTacticIds() {
-  return new Set([...c2c1PlayableTacticIds(), ...c2c2PlayableTacticIds(), ...c2c3PlayableTacticIds(), ...c2c4PlayableTacticIds(), ...c2c4aPlayableTacticIds(), ...c2c5PlayableTacticIds(), ...c2c5bPlayableTacticIds(), ...c2c5cPlayableTacticIds(), ...c2c6aPlayableTacticIds(), ...c2c6bPlayableTacticIds(), ...c2c7aPlayableTacticIds(), ...c2c7bPlayableTacticIds(), ...c2c8PlayableTacticIds(), ...c2c8bPlayableTacticIds(), ...c2c8cPlayableTacticIds()]);
+  return new Set([...c2c1PlayableTacticIds(), ...c2c2PlayableTacticIds(), ...c2c3PlayableTacticIds(), ...c2c4PlayableTacticIds(), ...c2c4aPlayableTacticIds(), ...c2c5PlayableTacticIds(), ...c2c5bPlayableTacticIds(), ...c2c5cPlayableTacticIds(), ...c2c6aPlayableTacticIds(), ...c2c6bPlayableTacticIds(), ...c2c7aPlayableTacticIds(), ...c2c7bPlayableTacticIds(), ...c2c8PlayableTacticIds(), ...c2c8bPlayableTacticIds(), ...c2c8cPlayableTacticIds(), ...f9s1aPlayableTacticIds()]);
 }
 
 function c2cPlayableEffectKinds() {
-  return new Set([...c2c1PlayableEffectKinds(), ...c2c2PlayableEffectKinds(), ...c2c3PlayableEffectKinds(), ...c2c4PlayableEffectKinds(), ...c2c4aPlayableEffectKinds(), ...c2c5PlayableEffectKinds(), ...c2c5bPlayableEffectKinds(), ...c2c5cPlayableEffectKinds(), ...c2c6aPlayableEffectKinds(), ...c2c6bPlayableEffectKinds(), ...c2c7aPlayableEffectKinds(), ...c2c7bPlayableEffectKinds(), ...c2c8PlayableEffectKinds(), ...c2c8bPlayableEffectKinds(), ...c2c8cPlayableEffectKinds()]);
+  return new Set([...c2c1PlayableEffectKinds(), ...c2c2PlayableEffectKinds(), ...c2c3PlayableEffectKinds(), ...c2c4PlayableEffectKinds(), ...c2c4aPlayableEffectKinds(), ...c2c5PlayableEffectKinds(), ...c2c5bPlayableEffectKinds(), ...c2c5cPlayableEffectKinds(), ...c2c6aPlayableEffectKinds(), ...c2c6bPlayableEffectKinds(), ...c2c7aPlayableEffectKinds(), ...c2c7bPlayableEffectKinds(), ...c2c8PlayableEffectKinds(), ...c2c8bPlayableEffectKinds(), ...c2c8cPlayableEffectKinds(), ...f9s1aPlayableEffectKinds()]);
 }
 
 function isC2c1SingleDamageTacticCard(card) {
@@ -432,11 +462,12 @@ function isC2c8cFinalAdvancedTacticCard(card) {
 function isHandTacticCellTargetCard(card) {
   const c = normalizeHandTacticCard(card);
   if (typeof customTacticIsCellTarget === "function" && customTacticIsCellTarget(c)) return true;
-  return Boolean(c && (c.targetDomain === "board_cell" || c.targetDomain === "deployment_cell" || c.targetDomain === "deployment_cell_group" || c.targetDomain === "board_edge_cells" || c2c4PlayableEffectKinds().has(c.effectKind)));
+  return Boolean(c && (c.targetDomain === "board_cell" || c.targetDomain === "board_cell_pair" || c.targetDomain === "deployment_cell" || c.targetDomain === "deployment_cell_group" || c.targetDomain === "deployment_cell_pair" || c.targetDomain === "board_edge_cells" || c2c4PlayableEffectKinds().has(c.effectKind)));
 }
 
 function isHandTacticImmediateNoTargetCard(card) {
   const c = normalizeHandTacticCard(card);
+  if (typeof handTacticRequiresPlayerTarget === "function" && handTacticRequiresPlayerTarget(c)) return false;
   if (typeof customTacticIsImmediateNoTarget === "function" && customTacticIsImmediateNoTarget(c)) return true;
   return Boolean(c && c.sourceType === "tactic" && (
     (c2c6aPlayableEffectKinds().has(c.effectKind) && (c.targetDomain === "deck" || c.rangeMode === "none"))
@@ -489,7 +520,12 @@ function normalizeHandTacticCard(card) {
     duration: def.duration || card.duration || "",
     effectKind: def.effectKind || card.effectKind || "",
     implementationStatus: def.implementationStatus || card.implementationStatus || "data_only",
-    notes: def.notes || card.notes || ""
+    notes: def.notes || card.notes || "",
+    damageValue: Number.isFinite(def.damageValue) ? def.damageValue : card.damageValue,
+    hitDamage: Number.isFinite(def.hitDamage) ? def.hitDamage : card.hitDamage,
+    hitCount: Number.isFinite(def.hitCount) ? def.hitCount : card.hitCount,
+    selectionCount: Number.isFinite(def.selectionCount) ? def.selectionCount : card.selectionCount,
+    spawnBlueprintId: def.spawnBlueprintId || card.spawnBlueprintId || null
   };
   if (typeof missionEffectiveCardCost === "function") normalized.cost = missionEffectiveCardCost(card.side || (state && state.currentPlayer), card, normalized.cost || 0);
   return normalized;
@@ -508,7 +544,7 @@ function handTacticDamageAmount(card, target) {
   if (c.effectKind === "damage_structure") return 4;
   if (c.effectKind === "demolition_charge") return 5;
   if (c.effectKind === "damage_and_cleanse_buffs") return 2;
-  if (c.effectKind === "damage_and_permanent_att_debuff") return 2;
+  if (c.effectKind === "damage_and_permanent_att_debuff" || c.effectKind === "damage_and_permanent_attack_debuff") return 2;
   if (c.effectKind === "damage_and_bleed") return 1;
   if (c.tacticId === "NXTAC02") return 4;
   if (c.tacticId === "NXTAC01") return 2;
@@ -677,6 +713,11 @@ function handTacticCandidateCells(player, card) {
       .map(coord => c2c5cCellTargetForCoord(coord, "bordo alleato"));
   }
 
+  if (typeof f9s1aTacticCellTargets === "function") {
+    const f9s1Targets = f9s1aTacticCellTargets(player, c);
+    if (Array.isArray(f9s1Targets)) return f9s1Targets;
+  }
+
   return (state.cells || [])
     .filter(cell => cell && Array.isArray(cell.coord))
     .filter(cell => (!(c2c5IsCellTerrainEffect(c) || c2c5bIsCellMovementBoost(c)) || isCellValidForTerrainTactic(cell.coord, c.effectKind)))
@@ -772,6 +813,7 @@ function handTacticTargetUnitFilter(player, card, target) {
   if (sideRule === "both" && target.type === "QG") return false;
   const effectKind = c.effectKind;
 
+  if (f9s1aPlayableEffectKinds().has(effectKind) && typeof f9s1aTacticTargetUnitFilter === "function") return f9s1aTacticTargetUnitFilter(player, c, target);
   if (effectKind === "damage_structure" || effectKind === "demolition_charge") return target.side !== player && handTacticIsStructure(target);
   if (effectKind === "damage_and_cleanse_buffs") return target.side !== player && target.type !== "QG" && target.type !== "Struttura";
   if (effectKind === "damage_and_permanent_att_debuff" || effectKind === "damage_and_permanent_attack_debuff") return target.side !== player && target.type !== "QG" && target.type !== "Struttura";
@@ -793,7 +835,7 @@ function handTacticTargetUnitFilter(player, card, target) {
   if (effectKind === "spawn_militia_around_commander") return target.side === player && target.type === "Comandante" && c2c5cCommanderMilitiaCoords(player, target).length > 0;
   if (effectKind === "structure_income_seed") return target.side === player && handTacticIsStructure(target) && !(typeof hasStatus === "function" && hasStatus(target, "agathoi_income_seed"));
   if (effectKind === "enemy_kill_gives_fabeot_energy") return target.side !== player && target.type !== "QG" && !handTacticIsStructure(target) && !handTacticIsCommanderOrPivot(target);
-  if (effectKind === "bounce_unit_to_owner_hand_clean") return (target.side === player || target.side === enemyOf(player)) && (handTacticIsInfantry(target) || handTacticIsVehicle(target)) && !handTacticIsCommanderOrPivot(target);
+  if (effectKind === "bounce_unit_to_owner_hand_clean") return (target.side === player || (typeof isEnemySide === "function" ? isEnemySide(player, target.side) : target.side !== player)) && (handTacticIsInfantry(target) || handTacticIsVehicle(target)) && !handTacticIsCommanderOrPivot(target);
   if (effectKind === "bounty_copy_on_death") return target.side !== player && (handTacticIsInfantry(target) || handTacticIsVehicle(target)) && !handTacticIsCommanderOrPivot(target);
   if (effectKind === "extra_attack_on_kill") return target.side === player && target.type !== "QG" && !handTacticIsStructure(target);
   if (effectKind === "grant_ambush") return target.side === player && handTacticIsInfantry(target) && !handTacticIsCommanderOrPivot(target);
@@ -817,12 +859,15 @@ function handTacticCandidateUnits(player, card) {
   if (c.customTacticRuntime && typeof customTacticCandidateUnits === "function") return customTacticCandidateUnits(player, c);
   if (c.targetSide === "ally") return combatUnits(player);
   if (c.targetSide === "both") return combatUnits(null);
-  return combatUnits(enemyOf(player));
+  return typeof enemyCombatUnits === "function" ? enemyCombatUnits(player) : combatUnits(enemyOf(player));
 }
 
 function handTacticTargets(player, card) {
   const c = normalizeHandTacticCard(card);
   if (!isC2c1SingleDamageTacticCard(c)) return [];
+  if (typeof handTacticRequiresPlayerTarget === "function" && handTacticRequiresPlayerTarget(c)) {
+    return typeof eligiblePlayerTargets === "function" ? eligiblePlayerTargets(player, { kind:c.effectKind, effectKind:c.effectKind, card:c }) : [];
+  }
   if (c.customTacticRuntime && typeof customTacticTargets === "function") return customTacticTargets(player, c);
   if (isHandTacticCellTargetCard(c)) return handTacticCandidateCells(player, c);
   return handTacticCandidateUnits(player, c)
@@ -855,14 +900,12 @@ function canUseHandTacticCard(player, card) {
   }
 
   if (isC2c7aFabeotHandTheftTacticCard(c)) {
-    const enemy = enemyOf(player);
-    const enemyHand = state.hand && state.hand[enemy] ? state.hand[enemy] : [];
     const ownDeck = state.deck && state.deck[player] ? state.deck[player] : [];
-    const enemyDeck = state.deck && state.deck[enemy] ? state.deck[enemy] : [];
+    const playerTargets = typeof eligiblePlayerTargets === "function" ? eligiblePlayerTargets(player, { kind:c.effectKind, card:c }) : [];
     if (c.effectKind === "mutual_draw_conditional_steal" && ownDeck.length <= 0) return { ok:false, reason:"Deck Fabeot vuoto" };
-    if (c.effectKind === "mutual_draw_conditional_steal" && enemyDeck.length <= 0) return { ok:false, reason:"Deck avversario vuoto" };
+    if (c.effectKind === "mutual_draw_conditional_steal" && playerTargets.length <= 0) return { ok:false, reason:"Nessun deck avversario attivo da bersagliare" };
     if (c.effectKind === "block_enemy_hand_cards_by_ps" && countControlledPS(player) <= 0) return { ok:false, reason:"Serve almeno 1 PS controllato da Fabeot" };
-    if (c.effectKind === "block_enemy_hand_cards_by_ps" && enemyHand.filter(x => !(typeof handCardBlocked === "function" && handCardBlocked(x))).length <= 0) return { ok:false, reason:"Nessuna carta avversaria sbloccata in mano" };
+    if (c.effectKind === "block_enemy_hand_cards_by_ps" && playerTargets.length <= 0) return { ok:false, reason:"Nessuna carta avversaria sbloccata in mano" };
   }
 
   if (isC2c7bFabeotConversionTacticCard(c)) {
@@ -879,9 +922,8 @@ function canUseHandTacticCard(player, card) {
 
   if (isC2c8cFinalAdvancedTacticCard(c)) {
     if (c.effectKind === "enemy_ability_cost_tax") {
-      const enemy = enemyOf(player);
-      const targets = combatUnits(enemy).filter(u => u && u.ability && !u.ability.passive && (u.ability.cost || 0) > 0);
-      if (!targets.length) return { ok:false, reason:"Nessuna abilità nemica non gratuita da tassare" };
+      const targets = handTacticTargets(player, c);
+      if (!targets.length) return { ok:false, reason:"Nessun avversario attivo con abilità non gratuite da tassare" };
     } else if (!handTacticTargets(player, c).length) {
       return { ok:false, reason:"Nessun bersaglio valido per tattica avanzata entro raggio" };
     }
@@ -909,6 +951,28 @@ function beginHandTacticCardPlay(cardUid) {
   }
 
   const targets = handTacticTargets(player, card);
+  if (typeof handTacticRequiresPlayerTarget === "function" && handTacticRequiresPlayerTarget(card)) {
+    if (!targets.length) {
+      log(`Carta ${card.name}: nessun avversario attivo valido per questo effetto.`);
+      renderAll();
+      return false;
+    }
+    return requestPlayerTargetSelection({
+      casterSide:player,
+      targets,
+      sourceName:card.name,
+      context:{ kind:card.effectKind, effectKind:card.effectKind, card },
+      onSelect:target => {
+        const liveCard = handCardByUid(player, cardUid);
+        const used = useHandTacticCard(player, liveCard, target);
+        if (used && typeof closeHandPanelAfterAcceptedCardPlay === "function") closeHandPanelAfterAcceptedCardPlay();
+        else if (used && typeof apkM4CloseHandAfterCardPlay === "function") apkM4CloseHandAfterCardPlay();
+        clearSelection();
+        if (used && typeof postActionChecks === "function") postActionChecks(false);
+        else renderAll();
+      }
+    });
+  }
   if (isHandTacticImmediateNoTargetCard(card)) {
     const used = useHandTacticCard(player, card, null);
     if (used && typeof closeHandPanelAfterAcceptedCardPlay === "function") closeHandPanelAfterAcceptedCardPlay();
@@ -934,6 +998,7 @@ function beginHandTacticCardPlay(cardUid) {
 
   pendingHandCardUid = card.cardUid;
   pendingTacticId = card.tacticId || card.sourceId;
+  pendingTacticCoords = [];
   pendingAbility = null;
   pendingBuildBlueprintId = null;
   pendingPurchaseBlueprintId = null;
@@ -1236,7 +1301,8 @@ function c2c5cSpawnUnitFromTactic(player, bp, coord, source, options={}) {
     source: "C2c-5c-tactic-spawn",
     spawnSource: "tactic",
     cost: bp.cost,
-    exhausted: unit.acted
+    exhausted: unit.acted,
+    instanceNo: unit.instanceNo
   });
   return unit;
 }
@@ -1291,7 +1357,10 @@ function c2c6aDrawCardsForTactic(player, count, source) {
     });
     return [];
   }
-  log(`${source}: ${playerName(player)} pesca ${drawn.length} carta${drawn.length > 1 ? "e" : ""}: ${drawn.map(c => `${c.name} (${c2c6aCardTypeName(c)})`).join(", ")}.`, EventTypes.LOG_MESSAGE, {
+  const drawnVisibleLabel = typeof cardPresentationVisibleCardsLabel === "function"
+    ? cardPresentationVisibleCardsLabel(player, drawn, { formatter:c => `${c.name} (${c2c6aCardTypeName(c)})` })
+    : drawn.map(c => `${c.name} (${c2c6aCardTypeName(c)})`).join(", ");
+  log(`${source}: ${playerName(player)} pesca ${drawn.length} carta${drawn.length > 1 ? "e" : ""}: ${drawnVisibleLabel}.`, EventTypes.LOG_MESSAGE, {
     player, faction: state.factions[player], requested:count, drawn:drawn.length, cards: drawn.map(c => ({ cardUid:c.cardUid, id:c.id, name:c.name, sourceType:c.sourceType, cardType:c.cardType, unitType:c.unitType, cost:c.cost })), source:"C2c-6a-draw"
   });
   return drawn;
@@ -1313,7 +1382,9 @@ function resolveHandTacticDrawCardEconomyEffect(player, card) {
     }
     let discounts = 0;
     for (const d of drawn) discounts += c2c6aApplyCardDiscount(d, -1, c.name, 1);
-    if (discounts > 0) log(`${c.name}: ${drawn.length} carta${drawn.length === 1 ? "" : "e"} pescata${drawn.length === 1 ? "" : "e"} riceve costo -1 ENE permanente sull'istanza, minimo 1.`);
+    if (discounts > 0) log(typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(player)
+      ? `${c.name}: applica il proprio sconto alle carte pescate.`
+      : `${c.name}: ${drawn.length} carta${drawn.length === 1 ? "" : "e"} pescata${drawn.length === 1 ? "" : "e"} riceve costo -1 ENE permanente sull'istanza, minimo 1.`);
     return { damage:0, extra:`pescate ${drawn.length}, sconto totale ${discounts}` };
   }
 
@@ -1321,7 +1392,9 @@ function resolveHandTacticDrawCardEconomyEffect(player, card) {
     const drawn = c2c6aDrawCardsForTactic(player, 2, c.name);
     let buffed = 0;
     for (const d of drawn) buffed += c2c6aApplyVehicleAttackBonusToCard(d, 1, c.name);
-    if (buffed > 0) log(`${c.name}: ${buffed} veicolo/i pescato/i riceve/ricevono +1 ATT permanente quando schierato/i.`);
+    if (buffed > 0) log(typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(player)
+      ? `${c.name}: applica il proprio potenziamento alle carte pescate valide.`
+      : `${c.name}: ${buffed} veicolo/i pescato/i riceve/ricevono +1 ATT permanente quando schierato/i.`);
     return { damage:0, extra:`pescate ${drawn.length}, veicoli buffati ${buffed}` };
   }
 
@@ -1347,8 +1420,8 @@ function resolveHandTacticDrawCardEconomyEffect(player, card) {
   return null;
 }
 
-function c2c6bDiscardRandomEnemyCard(player, sourceName) {
-  const enemy = enemyOf(player);
+function c2c6bDiscardRandomEnemyCard(player, sourceName, targetSide=null) {
+  const enemy = Number(targetSide) || enemyOf(player);
   const hand = typeof discardableHandCards === "function"
     ? discardableHandCards(enemy)
     : (state && state.hand ? (state.hand[enemy] || []).filter(card => card && card.cardType !== "commander" && card.deckRole !== "commander" && card.sourceType !== "mission" && card.cardType !== "mission" && card.deckRole !== "mission") : []);
@@ -1356,11 +1429,12 @@ function c2c6bDiscardRandomEnemyCard(player, sourceName) {
     log(`${sourceName}: ${playerName(enemy)} non ha carte ordinarie scartabili.`);
     return null;
   }
-  const index = Math.floor(Math.random() * hand.length);
+  const index = Math.floor((typeof matchRandom === "function" ? matchRandom() : Math.random()) * hand.length);
   const card = hand[index];
   const discarded = typeof discardCard === "function" ? discardCard(enemy, card.cardUid) : null;
   if (discarded) {
-    log(`${sourceName}: ${playerName(enemy)} scarta casualmente ${discarded.name}.`, EventTypes.LOG_MESSAGE, {
+    const discardedVisibleName = typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(enemy) ? "una carta coperta" : discarded.name;
+    log(`${sourceName}: ${playerName(enemy)} scarta casualmente ${discardedVisibleName}.`, EventTypes.LOG_MESSAGE, {
       player: enemy,
       faction: state.factions && state.factions[enemy],
       cardUid: discarded.cardUid,
@@ -1413,13 +1487,14 @@ function resolveHandTacticEnergyEconomyEffect(player, card, target) {
   }
 
   if (c.effectKind === "usury_energy_income_debuff") {
-    const enemy = enemyOf(player);
+    const enemy = (typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side)) || (typeof enemyOf === "function" ? enemyOf(player) : null);
+    if (!enemy) return { damage:0, extra:"bersaglio giocatore assente" };
     const before = state.energy[enemy] || 0;
     state.energy[enemy] = Math.max(0, before - 1);
-    addPlayerEffect(enemy, { kind:"income_delta", value:-1, minIncome:0, turns:2, timing:"afterIncome", source:c.name });
-    const discarded = before === 0 ? c2c6bDiscardRandomEnemyCard(player, c.name) : null;
+    addPlayerEffect(enemy, { kind:"income_delta", value:-1, minIncome:0, turns:2, timing:"afterIncome", source:c.name, casterSide:player });
+    const discarded = before === 0 ? c2c6bDiscardRandomEnemyCard(player, c.name, enemy) : null;
     log(`${c.name}: ${playerName(enemy)} perde ${before > 0 ? 1 : 0} ENE depot e subisce -1 income per 2 turni${discarded ? ", più 1 scarto casuale" : ""}.`, EventTypes.ECONOMY_CHANGED, {
-      player: enemy, faction: state.factions[enemy], caster: player, energyBefore: before, energyAfter: state.energy[enemy], incomeDelta:-1, turns:2, discarded: discarded ? discarded.name : null, source:"C2c-6b-usury"
+      player: enemy, faction: state.factions[enemy], caster: player, energyBefore: before, energyAfter: state.energy[enemy], incomeDelta:-1, turns:2, discarded: discarded ? (typeof cardPresentationCanViewHand === "function" && !cardPresentationCanViewHand(enemy) ? "Carta coperta" : discarded.name) : null, source:"C2c-6b-usury"
     });
     return { damage:0, extra:`usura su ${playerName(enemy)}` };
   }
@@ -1531,7 +1606,10 @@ function c2c7aApplyBountyCopy(player, card, target) {
 function c2c7aDrawOne(player, source) {
   const drawn = typeof drawCards === "function" ? drawCards(player, 1) : [];
   const card = drawn && drawn[0] ? drawn[0] : null;
-  if (card) log(`${source}: ${playerName(player)} pesca ${card.name}.`, EventTypes.LOG_MESSAGE, { player, cardUid:card.cardUid, cardName:card.name, source:"C2c-7a-draw-one" });
+  if (card) {
+    const visibleDrawName = typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(player, card) : card.name;
+    log(`${source}: ${playerName(player)} pesca ${visibleDrawName}.`, EventTypes.LOG_MESSAGE, { player, cardUid:card.cardUid, cardName:card.name, source:"C2c-7a-draw-one" });
+  }
   else log(`${source}: ${playerName(player)} non pesca, deck vuoto.`);
   return card;
 }
@@ -1540,30 +1618,35 @@ function c2c7aIsTacticCard(card) {
   return Boolean(card && !card.overdrawDiscarded && card.zone === "hand" && (card.sourceType === "tactic" || card.cardType === "tactic" || card.deckRole === "tactic"));
 }
 
-function c2c7aResolveMutualDrawSteal(player, card) {
+function c2c7aResolveMutualDrawSteal(player, card, target=null) {
   const c = normalizeHandTacticCard(card);
-  const enemy = enemyOf(player);
+  const enemy = (typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side)) || (typeof enemyOf === "function" ? enemyOf(player) : null);
+  if (!enemy) return { damage:0, extra:"bersaglio giocatore assente" };
   const ownDraw = c2c7aDrawOne(player, c.name);
   const enemyDraw = c2c7aDrawOne(enemy, c.name);
   let stolen = null;
   if (ownDraw && enemyDraw && c2c7aIsTacticCard(ownDraw) && typeof moveHandCardBetweenPlayers === "function") {
     stolen = moveHandCardBetweenPlayers(enemy, player, enemyDraw.cardUid, c.name);
   }
-  log(`${c.name}: ${playerName(player)} pesca ${ownDraw ? ownDraw.name : "niente"}; ${playerName(enemy)} pesca ${enemyDraw ? enemyDraw.name : "niente"}${stolen ? `; Fabeot ruba ${stolen.name}` : "; nessun furto"}.`, EventTypes.LOG_MESSAGE, {
+  const ownVisibleName = ownDraw ? (typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(player, ownDraw) : ownDraw.name) : "niente";
+  const enemyVisibleName = enemyDraw ? (typeof cardPresentationVisibleCardName === "function" ? cardPresentationVisibleCardName(enemy, enemyDraw) : enemyDraw.name) : "niente";
+  const stolenVisibleName = stolen ? (typeof cardPresentationEventCardName === "function" ? cardPresentationEventCardName({ fromSide:enemy, toSide:player, cardName:stolen.name }, "una carta coperta") : stolen.name) : "";
+  log(`${c.name}: ${playerName(player)} pesca ${ownVisibleName}; ${playerName(enemy)} pesca ${enemyVisibleName}${stolen ? `; Fabeot ruba ${stolenVisibleName}` : "; nessun furto"}.`, EventTypes.LOG_MESSAGE, {
     player, enemy, ownDraw: ownDraw ? ownDraw.name : null, enemyDraw: enemyDraw ? enemyDraw.name : null, stolen: stolen ? stolen.name : null, source:"C2c-7a-mutual-draw-steal"
   });
   return { damage:0, extra: stolen ? `rubata ${stolen.name}` : "pesca reciproca" };
 }
 
-function c2c7aBlockRandomEnemyHandCards(player, card) {
+function c2c7aBlockRandomEnemyHandCards(player, card, target=null) {
   const c = normalizeHandTacticCard(card);
-  const enemy = enemyOf(player);
+  const enemy = (typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side)) || (typeof enemyOf === "function" ? enemyOf(player) : null);
+  if (!enemy) return { damage:0, extra:"bersaglio giocatore assente" };
   const ps = Math.max(0, countControlledPS(player));
   const pool = (state.hand && state.hand[enemy] ? state.hand[enemy] : []).filter(x => !(typeof handCardBlocked === "function" && handCardBlocked(x)));
   const count = Math.min(ps, pool.length);
   const blocked = [];
   for (let i = 0; i < count; i += 1) {
-    const idx = Math.floor(Math.random() * pool.length);
+    const idx = Math.floor((typeof matchRandom === "function" ? matchRandom() : Math.random()) * pool.length);
     const [selected] = pool.splice(idx, 1);
     if (!selected) continue;
     selected.c2c7aBlockedTurns = Math.max(selected.c2c7aBlockedTurns || 0, 1);
@@ -1572,7 +1655,9 @@ function c2c7aBlockRandomEnemyHandCards(player, card) {
     blocked.push(selected);
   }
   if (typeof syncCardDebugState === "function") syncCardDebugState();
-  log(`${c.name}: ${playerName(player)} controlla ${ps} PS e blocca ${blocked.length} carta${blocked.length !== 1 ? "e" : ""} nella mano di ${playerName(enemy)}: ${blocked.map(x => x.name).join(", ") || "nessuna"}.`, EventTypes.CARD_BLOCKED, {
+  const blockedNamesVisible = typeof cardPresentationCanViewHand === "function" && cardPresentationCanViewHand(enemy);
+  const blockedSummary = blockedNamesVisible ? (blocked.map(x => x.name).join(", ") || "nessuna") : `${blocked.length} carta/e coperte`;
+  log(`${c.name}: ${playerName(player)} controlla ${ps} PS e blocca ${blocked.length} carta${blocked.length !== 1 ? "e" : ""} nella mano di ${playerName(enemy)}: ${blockedSummary}.`, EventTypes.CARD_BLOCKED, {
     player, enemy, faction:state.factions && state.factions[player], enemyFaction:state.factions && state.factions[enemy], ps, count:blocked.length, blocked:blocked.map(x => ({ cardUid:x.cardUid, name:x.name })), source:c.name
   });
   return { damage:0, extra:`${blocked.length} carte bloccate` };
@@ -1737,17 +1822,17 @@ function c2c8ReactionAttack(attacker, defender, source="Reazione", options={}) {
   let specialBleedApplied = false;
   if (bleedTwo) {
     if (defender.alive && typeof canBleed === "function" && canBleed(defender)) {
-      applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis", attacker.side);
+      applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis", attacker.side, attacker);
       specialBleedApplied = true;
     }
     removeStatusKind(attacker, "next_attack_bleed_two", "attacco base consumato");
   }
-  if (attacker.faction === "Liberti" && typeof hasBleedingAttackRule === "function" && hasBleedingAttackRule(attacker) && defender.alive && typeof canBleed === "function" && canBleed(defender) && !specialBleedApplied) applyBleed(defender, 1 + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name, attacker.side);
+  if (attacker.faction === "Liberti" && typeof hasBleedingAttackRule === "function" && hasBleedingAttackRule(attacker) && defender.alive && typeof canBleed === "function" && canBleed(defender) && !specialBleedApplied) applyBleed(defender, 1 + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name, attacker.side, attacker);
   if (lastRunStatus && typeof c2c8cResolveLastRunAfterAttack === "function") c2c8cResolveLastRunAfterAttack(attacker, defender, lastRunStatus);
   if (thorns && attacker.alive && attacker.type !== "QG") {
     const thornDamage = Math.max(1, thorns.value || 1);
     log(`${attacker.name} viene ferito dalle Spine di ${defender.name}.`);
-    applyDamage(attacker, thornDamage, "Spine", { directHp:true, reaction:true, skipC2c8Reactions:true, sourceSide:defender.side, damageKind:"thorns" });
+    applyDamage(attacker, thornDamage, "Spine", { directHp:true, reaction:true, skipC2c8Reactions:true, sourceSide:defender.side, sourceUnit:defender, damageKind:"thorns" });
   }
   return true;
 }
@@ -1921,6 +2006,9 @@ function c2c8cResolveFinalAdvancedTactic(player, card, target) {
     if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(target, null, c.name, { tactic:true, sourceCardUid:c.cardUid });
     target.alive = false;
     target.acted = true;
+    const attributionData = typeof ffaUnitDestroyedEventData === "function"
+      ? ffaUnitDestroyedEventData(target, { sourceSide:player, source:c.name, damageKind:"tactic", options:{tactic:true,directDestruction:true} })
+      : { destroyedBySide:player, killerSide:player, assistSides:[], attributionType:"direct", damageKind:"tactic" };
     log(`${c.name}: ${target.name} viene eliminato.`, EventTypes.UNIT_DESTROYED, {
       player,
       faction: state.factions[player],
@@ -1932,7 +2020,7 @@ function c2c8cResolveFinalAdvancedTactic(player, card, target) {
       unitType: target.type,
       unitWeight: target.weight,
       unitRole: target.role || target.deckRole || null,
-      destroyedBySide: player,
+      ...attributionData,
       source:"C2c-8c-obliterator"
     });
     handleUnitDestroyed(target);
@@ -1940,8 +2028,9 @@ function c2c8cResolveFinalAdvancedTactic(player, card, target) {
   }
 
   if (c.effectKind === "enemy_ability_cost_tax") {
-    const enemy = enemyOf(player);
-    addPlayerEffect(enemy, { kind:"ability_cost_tax", value:1, turns:1, timing:"endTurn", source:c.name });
+    const enemy = (typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side)) || (typeof enemyOf === "function" ? enemyOf(player) : null);
+    if (!enemy) return { damage:0, extra:"bersaglio giocatore assente" };
+    addPlayerEffect(enemy, { kind:"ability_cost_tax", value:1, turns:1, timing:"endTurn", source:c.name, casterSide:player });
     log(`${c.name}: le abilità non gratuite di ${playerName(enemy)} costano +1 ENE fino alla fine del suo turno. Le abilità gratuite restano gratuite.`, EventTypes.ECONOMY_CHANGED, {
       player: enemy,
       faction: state.factions[enemy],
@@ -1966,13 +2055,14 @@ function resolveHandTacticFabeotHandTheftEffect(player, card, target) {
   if (!c || !c2c7aPlayableEffectKinds().has(c.effectKind)) return null;
   if (c.effectKind === "bounce_unit_to_owner_hand_clean") return c2c7aBounceUnitToOwnerHand(player, c, target);
   if (c.effectKind === "bounty_copy_on_death") return c2c7aApplyBountyCopy(player, c, target);
-  if (c.effectKind === "mutual_draw_conditional_steal") return c2c7aResolveMutualDrawSteal(player, c);
-  if (c.effectKind === "block_enemy_hand_cards_by_ps") return c2c7aBlockRandomEnemyHandCards(player, c);
+  if (c.effectKind === "mutual_draw_conditional_steal") return c2c7aResolveMutualDrawSteal(player, c, target);
+  if (c.effectKind === "block_enemy_hand_cards_by_ps") return c2c7aBlockRandomEnemyHandCards(player, c, target);
   return null;
 }
 
 function resolveHandTacticEffect(player, card, target) {
   const c = normalizeHandTacticCard(card);
+  if (c && f9s1aPlayableEffectKinds().has(c.effectKind) && typeof f9s1aResolveTactic === "function") return f9s1aResolveTactic(player, c, target);
   if (c && c.customTacticRuntime && typeof resolveCustomTacticEffect === "function") return resolveCustomTacticEffect(player, c, target);
   const finalAdvanced = c2c8cResolveFinalAdvancedTactic(player, c, target);
   if (finalAdvanced) return finalAdvanced;
@@ -2058,6 +2148,7 @@ function resolveHandTacticEffect(player, card, target) {
 
 function handTacticLogSource(card) {
   const c = normalizeHandTacticCard(card);
+  if (c && f9s1aPlayableEffectKinds().has(c.effectKind)) return "F9S1a-faction-expansion";
   if (c && c.customTacticRuntime) return "F9N1-custom-tactic-runtime";
   if (isC2c8cFinalAdvancedTacticCard(card)) return "C2c-8c-hand-tactic";
   if (isC2c8bBuffHealTacticCard(card)) return "C2c-8b-hand-tactic";
@@ -2096,7 +2187,7 @@ function useHandTacticCard(player, rawCard, target) {
 
   state.energy[player] -= card.cost || 0;
   const predictedDamage = target ? handTacticDamageAmount(card, target) : 0;
-  const targetLabelText = target ? ` su ${target.name}` : "";
+  const targetLabelText = target ? ` su ${typeof targetLabel === "function" ? targetLabel(target) : target.name}` : "";
   log(`${playerName(player)} gioca dalla mano ${card.name} (${card.cost || 0} ENE)${targetLabelText}${predictedDamage ? `: ${predictedDamage} danni` : ""}.`, EventTypes.TACTIC_USED, {
     player,
     faction: state.factions[player],
@@ -2106,7 +2197,7 @@ function useHandTacticCard(player, rawCard, target) {
     cardUid: card.cardUid,
     cost: card.cost || 0,
     targetId: target && target.uid ? target.uid : null,
-    targetName: target ? target.name : null,
+    targetName: target ? (typeof targetLabel === "function" ? targetLabel(target) : target.name) : null,
     targetSide: target ? (target.side || null) : null,
     damage: predictedDamage,
     custom: Boolean(card.custom === true),
@@ -2162,6 +2253,8 @@ const TACTIC_HANDLERS = Object.freeze({
       },
       logisticChoke(player, target) { applyStatus(target, { kind:"logistic_choke", value:2, turns:1, owner:player, source:"Strozzatura Logistica" }); },
       contractTrap(player, target, tactic) {
-        addPlayerEffect(enemyOf(player), { kind:"cost_delta", value:1, minCost:1, turns:1, timing:"endTurn", filterSpec:"all", source:tactic.name });
+        const enemy = typeof playerTargetSide === "function" ? playerTargetSide(target) : (target && target.side);
+        if (!enemy) return;
+        addPlayerEffect(enemy, { kind:"cost_delta", value:1, minCost:1, turns:1, timing:"endTurn", filterSpec:"all", source:tactic.name, casterSide:player });
       }
     });

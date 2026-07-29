@@ -1,0 +1,71 @@
+ARENA RUBRA — F9U2b TEST REPORT
+
+Build candidata: C2-STABLE-1-F9U2b-APK-M4c
+Baseline validata: C2-STABLE-1-F9U2a-APK-M4c
+Build name: Card Editor & Map Editor Layout Reorganization
+Schema telemetrico: F9Q3e1-2
+Data verifica: 2026-07-29
+
+RISULTATI AUTOMATICI
+
+1. Sintassi JavaScript
+   - 161/161 file JavaScript validi con `node --check`.
+
+2. Suite Node
+   - 76/76 suite superate.
+   - 0 fallimenti.
+
+3. Smoke dedicato F9U2b
+   - 62/62 verifiche superate.
+   - Controllati struttura HTML, ID univoci, gruppi toolbar, pannelli laterali,
+     barra live, preservazione handler e metadati build.
+
+4. Suite Chromium mirate
+   - 10/10 suite superate:
+     - F9U2b Card Editor & Map Editor layout;
+     - F9U2a Pool carte;
+     - F9U1b Inspector e barre PS/unità;
+     - F9U1a1 Inspector, mano e controlli header;
+     - F9U1a Map HUD;
+     - F9Q3e1a telemetria hotfix;
+     - F9Q3d4 attribuzioni eliminazione/assist/Pressione;
+     - F9Q3c sfondo custom Map Editor/runtime;
+     - F9S1c1 Deck Builder UX;
+     - F9S1b1 selezione deck nel Setup.
+   - 0 errori pagina.
+   - 0 errori console.
+
+5. Verifica browser dedicata F9U2b
+   - Card Editor verificato a 1440×1000.
+   - Map Editor verificato a 1440×1000.
+   - Reflow browser verificato a 820×1000.
+   - Nessun overflow orizzontale rilevato.
+   - Cambio strumento e selezione cella aggiornano la barra live.
+   - Precheck: 0 problemi, 0 warning.
+
+6. Integrità contenuti
+   - `data/` identica alla baseline F9U2a.
+   - `assets/` identica alla baseline F9U2a.
+   - 50 deck ufficiali invariati.
+   - Telemetria F9Q3e1-2 invariata.
+   - Nessun ID HTML duplicato: 364 ID univoci.
+
+FILE RUNTIME MODIFICATI
+
+- index.html
+- css/style.css
+- src/build_info.js
+- src/map_editor.js
+- src/renderer_calibration_lab.js
+
+SCOPE NON ESEGUITO
+
+- Nessun collaudo su APK Android fisico.
+- Nessun intervento specifico Android.
+- Come deciso nel progetto, compatibilità e ottimizzazione Android saranno raccolte
+  in una patch dedicata dopo la chiusura della beta dello Starter.
+
+ESITO
+
+La candidata supera le verifiche automatiche e browser previste ed è pronta per il
+collaudo manuale. La validazione finale resta in attesa del riscontro dell’utente.

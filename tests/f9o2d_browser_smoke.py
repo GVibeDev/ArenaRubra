@@ -48,8 +48,8 @@ with sync_playwright() as p:
         statOpacity:Number(style('acted','.statMini').opacity)
       };
     }''')
-    assert abs(styles['readyBase']-.22) < .02, styles
-    assert abs(styles['actedBase']-.22) < .02, styles
+    assert abs(styles['readyBase']-.28) < .02, styles
+    assert abs(styles['actedBase']-.28) < .02, styles
     assert styles['readyArt'] > styles['actedArt'], styles
     assert abs(styles['actedArt']-.50) < .03, styles
     assert styles['actedShell'] == 1, styles

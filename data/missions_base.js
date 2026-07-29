@@ -5,6 +5,7 @@
 // F9N9 rende giocabili tutte le Missioni: 10 ordinarie e 5 disperate con moltiplicatore x1-x3.
 
 const MISSION_BALANCE_PROFILE = "F9O2e-starter-accessibility-v1";
+const MISSION_FFA_PROFILE = "F9Q3d2-ffa-mission-semantics-v1";
 
 const MISSION_DEFINITIONS = Object.freeze([
   {
@@ -28,9 +29,9 @@ const MISSION_DEFINITIONS = Object.freeze([
   {
     id:"NXMSND01", faction:"Nexus", name:"Punto di Ripristino", missionClass:"desperate", cost:0,
     conditions:[
-      { id:"c1", metric:"enemy_controls_central_ps", operator:"eq", value:true, consecutive:5, durationMode:"rounds", text:"Il nemico controlla il PS centrale da 5 round consecutivi." },
-      { id:"c2", metric:"enemy_pressure", operator:"gte", value:3, text:"L’avversario ha almeno 3 Pressione." },
-      { id:"c3", metric:"enemy_pivot_and_commander_in_play", operator:"all", pivot:true, commander:true, text:"L’avversario ha contemporaneamente Pivot e Comandante in gioco." }
+      { id:"c1", metric:"enemy_controls_central_ps", enemyScope:"any_active", operator:"eq", value:true, consecutive:5, durationMode:"rounds", text:"Almeno un avversario attivo controlla il PS centrale per 5 round consecutivi." },
+      { id:"c2", metric:"enemy_pressure", enemyScope:"max_active", operator:"gte", value:3, text:"Almeno un avversario attivo ha 3 o più Pressione." },
+      { id:"c3", metric:"enemy_pivot_and_commander_in_play", enemyScope:"same_active_enemy", operator:"all", pivot:true, commander:true, text:"Uno stesso avversario attivo mantiene contemporaneamente Pivot e Comandante in gioco." }
     ],
     reward:{ kind:"energy_and_draw_per_condition", energyPerCondition:3, drawPerCondition:1, multiplierMax:3, text:"Per ogni condizione rispettata: guadagna 3 ENE e pesca 1 carta (massimo ×3)." }
   },
@@ -55,9 +56,9 @@ const MISSION_DEFINITIONS = Object.freeze([
   {
     id:"EXMSND01", faction:"Exordium", name:"Ultimo Assalto", missionClass:"desperate", cost:0,
     conditions:[
-      { id:"c1", metric:"own_heavy_vehicles_destroyed_by_enemy", operator:"gte", value:2, cumulative:true, text:"Il nemico ha distrutto 2 tuoi veicoli pesanti." },
-      { id:"c2", metric:"enemy_controlled_ps", operator:"gte", value:2, consecutive:3, durationMode:"enemy_turns", text:"Il nemico controlla almeno 2 PS per 3 suoi turni consecutivi." },
-      { id:"c3", metric:"own_commander_destroyed", operator:"eq", value:true, text:"L’avversario ha distrutto il tuo Comandante." }
+      { id:"c1", metric:"own_heavy_vehicles_destroyed_by_enemy", enemyScope:"aggregate_all", operator:"gte", value:2, cumulative:true, text:"Gli avversari hanno distrutto complessivamente 2 tuoi veicoli pesanti." },
+      { id:"c2", metric:"enemy_controlled_ps", enemyScope:"same_enemy_turns", operator:"gte", value:2, consecutive:3, durationMode:"enemy_turns", text:"Uno stesso avversario controlla almeno 2 PS per 3 suoi turni personali consecutivi." },
+      { id:"c3", metric:"own_commander_destroyed", enemyScope:"any_enemy_event", operator:"eq", value:true, text:"Un avversario ha distrutto il tuo Comandante." }
     ],
     reward:{ kind:"distinct_units_per_condition", multiplierMax:3, distinctTargets:true, vehicleEffect:"ignore_defense_next_attack", infantryEffect:"double_action_current_round", durationMode:"current_round", text:"Per ogni condizione: 1 veicolo distinto ignora la DEF nel prossimo attacco e 1 fanteria distinta può agire due volte nel round corrente." }
   },
@@ -75,16 +76,16 @@ const MISSION_DEFINITIONS = Object.freeze([
     objectives:[
       { id:"o1", metric:"bleed_damage_dealt", operator:"gte", value:10, cumulative:true, text:"Infliggi 10 danni totali da Sanguinamento." },
       { id:"o2", metric:"units_deployed_by_tactics", operator:"gte", value:2, cumulative:true, text:"Metti in gioco almeno 2 unità tramite tattiche." },
-      { id:"o3", metric:"unit_distance_from_enemy_hq", operator:"lte", value:6, text:"Porta una tua unità entro R6 dal QG nemico." }
+      { id:"o3", metric:"unit_distance_from_enemy_hq", enemyScope:"any_active", operator:"lte", value:6, text:"Porta una tua unità entro R6 da almeno un QG avversario attivo." }
     ],
     reward:{ kind:"gain_energy", value:5, text:"Guadagna immediatamente 5 ENE." }
   },
   {
     id:"LBMSND01", faction:"Liberti", name:"Ultima Possibilità", missionClass:"desperate", cost:0,
     conditions:[
-      { id:"c1", metric:"own_units_destroyed_by_enemy", operator:"gte", value:8, cumulative:true, text:"Il nemico ha distrutto 8 tue unità." },
-      { id:"c2", metric:"enemy_has_more_units", operator:"eq", value:true, consecutive:3, durationMode:"enemy_turns", text:"Il nemico ha più unità in gioco per 3 suoi turni consecutivi." },
-      { id:"c3", metric:"own_commander_or_pivot_destroyed", operator:"any", commander:true, pivot:true, text:"L’avversario ha distrutto il tuo Comandante o una tua Pivot." }
+      { id:"c1", metric:"own_units_destroyed_by_enemy", enemyScope:"aggregate_all", operator:"gte", value:8, cumulative:true, text:"Gli avversari hanno distrutto complessivamente 8 tue unità." },
+      { id:"c2", metric:"enemy_has_more_units", enemyScope:"same_enemy_turns", operator:"eq", value:true, consecutive:3, durationMode:"enemy_turns", text:"Uno stesso avversario ha più unità di te per 3 suoi turni personali consecutivi." },
+      { id:"c3", metric:"own_commander_or_pivot_destroyed", enemyScope:"any_enemy_event", operator:"any", commander:true, pivot:true, text:"Un avversario ha distrutto il tuo Comandante o una tua Pivot." }
     ],
     reward:{ kind:"repeat_attacks_current_round", attacksPerCondition:1, multiplierMax:3, durationMode:"current_round", text:"Nel round corrente puoi ripetere 1 attacco per ogni condizione rispettata (massimo 3)." }
   },
@@ -109,9 +110,9 @@ const MISSION_DEFINITIONS = Object.freeze([
   {
     id:"AGMSND01", faction:"Agathoi", name:"Primo Verae", missionClass:"desperate", cost:0,
     conditions:[
-      { id:"c1", metric:"own_structures_destroyed_by_enemy", operator:"gte", value:2, cumulative:true, text:"Il nemico ha distrutto 2 tue strutture." },
-      { id:"c2", metric:"enemy_controls_central_ps", operator:"eq", value:true, consecutive:5, durationMode:"enemy_turns", text:"Il nemico controlla il PS centrale per 5 suoi turni consecutivi." },
-      { id:"c3", metric:"own_commander_or_pivot_destroyed", operator:"any", commander:true, pivot:true, text:"L’avversario ha distrutto il tuo Comandante o una tua Pivot." }
+      { id:"c1", metric:"own_structures_destroyed_by_enemy", enemyScope:"aggregate_all", operator:"gte", value:2, cumulative:true, text:"Gli avversari hanno distrutto complessivamente 2 tue strutture." },
+      { id:"c2", metric:"enemy_controls_central_ps", enemyScope:"same_enemy_turns", operator:"eq", value:true, consecutive:5, durationMode:"enemy_turns", text:"Uno stesso avversario controlla il PS centrale per 5 suoi turni personali consecutivi." },
+      { id:"c3", metric:"own_commander_or_pivot_destroyed", enemyScope:"any_enemy_event", operator:"any", commander:true, pivot:true, text:"Un avversario ha distrutto il tuo Comandante o una tua Pivot." }
     ],
     reward:{ kind:"phase_shield_per_condition", statusKind:"untargetable", unitsPerCondition:1, multiplierMax:3, distinctTargets:true, durationMode:"current_round", text:"Per ogni condizione, 1 unità distinta ottiene Scudo Fasico e non è bersagliabile nel round corrente." }
   },
@@ -122,25 +123,25 @@ const MISSION_DEFINITIONS = Object.freeze([
       { id:"o2", metric:"marks_applied", operator:"gte", value:3, cumulative:true, text:"Applica un Marchio 3 volte." },
       { id:"o3", metric:"controls_central_ps", operator:"eq", value:true, consecutive:2, durationMode:"owner_turns", text:"Controlla il PS centrale per 2 turni personali consecutivi." }
     ],
-    reward:{ kind:"enemy_loses_energy_fraction", numerator:1, denominator:2, rounding:"floor", text:"L’avversario perde metà del proprio deposito ENE, arrotondata per difetto." }
+    reward:{ kind:"enemy_loses_energy_fraction", targetScope:"chosen_active_enemy", numerator:1, denominator:2, rounding:"floor", text:"Scegli un avversario attivo: perde metà del proprio deposito ENE, arrotondata per difetto." }
   },
   {
     id:"FBMSN02", faction:"Fabeot", name:"Cospirazione", missionClass:"ordinary", cost:0,
     objectives:[
       { id:"o1", metric:"energy_gained_from_doctrine", doctrine:"fabeot", operator:"gte", value:3, cumulative:true, text:"Guadagna 3 ENE tramite la dottrina Fabeot." },
-      { id:"o2", metric:"enemy_faction_units_controlled", operator:"gte", value:2, cumulative:true, text:"Metti sotto il tuo controllo 2 unità appartenenti alla fazione avversaria." },
-      { id:"o3", metric:"enemy_energy_manipulations", operator:"gte", value:5, cumulative:true, text:"Manipola il deposito ENE avversario 5 volte." }
+      { id:"o2", metric:"enemy_faction_units_controlled", operator:"gte", value:2, cumulative:true, text:"Metti sotto il tuo controllo 2 unità appartenenti a una qualsiasi fazione avversaria." },
+      { id:"o3", metric:"enemy_energy_manipulations", operator:"gte", value:5, cumulative:true, text:"Manipola il deposito ENE di uno o più avversari 5 volte complessive." }
     ],
-    reward:{ kind:"enemy_discards_hand_fraction", numerator:1, denominator:2, rounding:"floor", excludesProtectedCards:true, chooser:"enemy", text:"L’avversario sceglie e scarta metà delle proprie carte ordinarie in mano, arrotondata per difetto." }
+    reward:{ kind:"enemy_discards_hand_fraction", targetScope:"chosen_active_enemy", numerator:1, denominator:2, rounding:"floor", excludesProtectedCards:true, chooser:"enemy", text:"Scegli un avversario attivo: quel giocatore sceglie e scarta metà delle proprie carte ordinarie in mano, arrotondata per difetto." }
   },
   {
     id:"FBMSND01", faction:"Fabeot", name:"Anatema", missionClass:"desperate", cost:0,
     conditions:[
-      { id:"c1", metric:"enemy_energy_greater_than_owner", operator:"gt", consecutive:3, durationMode:"enemy_turns", text:"Il nemico possiede più ENE di te per 3 suoi turni consecutivi." },
-      { id:"c2", metric:"own_units_destroyed_by_enemy", operator:"gte", value:6, cumulative:true, text:"Il nemico ha distrutto 6 tue unità." },
-      { id:"c3", metric:"enemy_pressure", operator:"gte", value:3, text:"L’avversario ha almeno 3 Pressione." }
+      { id:"c1", metric:"enemy_energy_greater_than_owner", enemyScope:"same_enemy_turns", operator:"eq", value:true, consecutive:3, durationMode:"enemy_turns", text:"Uno stesso avversario possiede più ENE di te per 3 suoi turni personali consecutivi." },
+      { id:"c2", metric:"own_units_destroyed_by_enemy", enemyScope:"aggregate_all", operator:"gte", value:6, cumulative:true, text:"Gli avversari hanno distrutto complessivamente 6 tue unità." },
+      { id:"c3", metric:"enemy_pressure", enemyScope:"max_active", operator:"gte", value:3, text:"Almeno un avversario attivo ha 3 o più Pressione." }
     ],
-    reward:{ kind:"stun_enemy_per_condition", statusKind:"inhibit_action", turns:1, durationMode:"enemy_turns", unitsPerCondition:1, multiplierMax:3, distinctTargets:true, text:"Per ogni condizione, 1 unità nemica distinta è stordita per 1 turno personale nemico." }
+    reward:{ kind:"stun_enemy_per_condition", targetScope:"all_active_enemy_units", statusKind:"inhibit_action", turns:1, durationMode:"enemy_turns", unitsPerCondition:1, multiplierMax:3, distinctTargets:true, text:"Per ogni condizione, scegli 1 unità distinta appartenente a qualsiasi avversario attivo: è stordita per 1 turno del suo proprietario." }
   }
 ]);
 

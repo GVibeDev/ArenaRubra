@@ -1,0 +1,50 @@
+"use strict";
+const fs=require("fs"),path=require("path"),vm=require("vm"),assert=require("assert");
+const root=path.resolve(__dirname,"..");
+const source=fs.readFileSync(path.join(root,"src/camera_interaction.js"),"utf8");
+const mobile=fs.readFileSync(path.join(root,"src/mobile.js"),"utf8");
+const css=fs.readFileSync(path.join(root,"css/style.css"),"utf8");
+const build=fs.readFileSync(path.join(root,"src/build_info.js"),"utf8");
+const config=fs.readFileSync(path.join(root,"data/cards_base.js"),"utf8");
+const precheck=fs.readFileSync(path.join(root,"src/precheck.js"),"utf8");
+let checks=0;const ok=(v,m)=>{assert.ok(v,m);checks++};const eq=(a,b,m)=>{assert.strictEqual(a,b,m);checks++};
+
+let rectReads=0,applyCalls=[],rafQueue=[];
+const surface={classList:{toggle(){}},setPointerCapture(){}};
+const wrap={classList:{toggle(){}},getBoundingClientRect(){rectReads++;return {left:0,top:0,width:800,height:500};}};
+const controls={dataset:{},querySelectorAll(){return [];}};
+const document={body:{classList:{contains:name=>name==="mobile-apk-m4"}},getElementById(id){if(id==="boardWrap")return wrap;if(id==="boardVisualStack")return surface;if(id==="mapCameraControls")return controls;if(id==="mapCameraZoomLabel")return {textContent:""};return null;}};
+const window={requestAnimationFrame(fn){rafQueue.push(fn);return rafQueue.length;},visualViewport:null};
+const context=vm.createContext({console,Date,Math,Map,Set,Number,Array,Object,String,Boolean,JSON,setTimeout,clearTimeout,BOARD_CAMERA_W:920,BOARD_CAMERA_H:780});
+vm.runInContext(source,context,{filename:"camera_interaction.js"});
+context.document=document;context.window=window;context.apkM4Camera={mobile:true,x:0,y:0,zoom:1,fitScale:.6,mode:"fit"};context.applyApkM4Camera=opts=>applyCalls.push(opts||{});context.updateBoardCameraHud=()=>{};
+const run=code=>vm.runInContext(code,context);
+
+const down={pointerType:"touch",button:0,pointerId:1,clientX:100,clientY:100,cancelable:true,preventDefault(){}};context.down=down;run("cameraInteractionHandlePointerDown(down)");
+const readsAfterDown=rectReads;
+for(let x=112;x<=172;x+=12){context.move={pointerId:1,clientX:x,clientY:100,cancelable:true,preventDefault(){}};run("cameraInteractionHandlePointerMove(move)");}
+eq(rectReads,readsAfterDown,"pointermove non rilegge la geometria");
+eq(rafQueue.length,1,"più pointermove coalescono in un frame");
+eq(applyCalls.length,0,"nessuna scrittura camera prima del frame");
+rafQueue.shift()();
+eq(applyCalls.length,1,"una sola applicazione nel frame");
+eq(applyCalls[0].skipClamp,true,"clamp DOM mobile saltato nel frame caldo");
+eq(applyCalls[0].skipLayoutSize,true,"dimensioni wrapper rinviate durante gesto");
+context.up={pointerId:1};run("cameraInteractionFinishPointer(up)");
+eq(rafQueue.length,1,"rilascio accoda frame finale");
+rafQueue.shift()();
+eq(applyCalls.at(-1).skipLayoutSize,false,"rilascio sincronizza dimensioni wrapper");
+
+ok(source.includes("cameraInteractionViewportRect"),"geometry cache presente");
+ok(source.includes("cameraInteractionScheduleApply"),"rAF scheduler presente");
+ok(source.includes("updateControls:false"),"HUD differito nel gesto");
+ok(mobile.includes("appliedCamera"),"deduplicazione scritture mobile");
+ok(mobile.includes("skipLayoutSize"),"fast path mobile senza layout size");
+ok(css.includes("translate3d(var(--board-camera-x"),"transform composito translate3d");
+ok(css.includes("#boardWrap.cameraDragging .mapBgLayer::after"),"blend ridotto durante gesto");
+ok(css.includes("animation-play-state: paused"),"animazioni interne sospese durante gesto");
+ok(build.includes("C2-STABLE-1-F9O7g-APK-M4c") || build.includes("C2-STABLE-1-F9O7e-APK-M4c") || build.includes("C2-STABLE-1-F9O6-APK-M4c") || build.includes("C2-STABLE-1-F9O5b-APK-M4c") || build.includes("C2-STABLE-1-F9O5a-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4f-APK-M4c") || build.includes("C2-STABLE-1-F9O4e-APK-M4c") || build.includes("C2-STABLE-1-F9O4d-APK-M4c") || build.includes("C2-STABLE-1-F9O4c-APK-M4c") || build.includes("C2-STABLE-1-F9O4b-APK-M4c") || build.includes("C2-STABLE-1-F9O4a-APK-M4c"),"metadata F9O4a");
+ok(config.includes("cameraFrameCoalescingF9O4a: true"),"flag frame coalescing");
+ok(config.includes("cameraGeometryCacheF9O4a: true"),"flag geometry cache");
+ok(precheck.includes("contratto prestazioni camera Android"),"precheck F9O4a");
+console.log(`F9O4a Android camera performance smoke: ${checks}/${checks} OK`);

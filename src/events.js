@@ -30,6 +30,7 @@ const EventTypes = Object.freeze({
   CARD_DISCARDED: "CARD_DISCARDED",
   CARD_STOLEN: "CARD_STOLEN",
   CARD_BLOCKED: "CARD_BLOCKED",
+  CARD_UNBLOCKED: "CARD_UNBLOCKED",
 
   ABILITY_USED: "ABILITY_USED",
   TACTIC_USED: "TACTIC_USED",
@@ -39,7 +40,9 @@ const EventTypes = Object.freeze({
   ECONOMY_CHANGED: "ECONOMY_CHANGED",
   PS_CONTROL_CHANGED: "PS_CONTROL_CHANGED",
   PRESSURE_CHANGED: "PRESSURE_CHANGED",
+  PRESSURE_EVALUATED: "PRESSURE_EVALUATED",
   HQ_THREATENED: "HQ_THREATENED",
+  PLAYER_ELIMINATED: "PLAYER_ELIMINATED",
   DECK_EXHAUSTED: "DECK_EXHAUSTED",
   AI_PLAN_CHANGED: "AI_PLAN_CHANGED",
 
@@ -91,9 +94,22 @@ function emitGameEvent(event) {
       catch (err) { console.warn("Arena Rubra matchStats update failed", err); }
     }
 
+    if (typeof updateMatchTelemetryFromEvent === "function") {
+      try { updateMatchTelemetryFromEvent(normalized); }
+      catch (err) { console.warn("Arena Rubra F9Q3e1a telemetry update failed", err); }
+    }
+
     if (typeof missionTrackerHandleEvent === "function") {
       try { missionTrackerHandleEvent(normalized); }
       catch (err) { console.warn("Arena Rubra F9N6 mission tracker update failed", err); }
+    }
+
+    // F9O4d: gli eventi Missione invalidano esplicitamente le firme UI dopo
+    // l'aggiornamento del tracker. Il renderer resta incrementale, ma non può
+    // conservare markup con contatori, conferme o ricompense ormai superati.
+    if (typeof missionUiHandleGameEvent === "function") {
+      try { missionUiHandleGameEvent(normalized); }
+      catch (err) { console.warn("Arena Rubra F9O4d mission UI invalidation failed", err); }
     }
   }
 
@@ -105,6 +121,26 @@ function emitGameEvent(event) {
   if (typeof eventOverlayEnqueueGameEvent === "function") {
     try { eventOverlayEnqueueGameEvent(normalized); }
     catch (err) { console.warn("Arena Rubra F9O3 event overlay enqueue failed", err); }
+  }
+
+  if (typeof cardMotionEnqueueGameEvent === "function") {
+    try { cardMotionEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O4 card motion enqueue failed", err); }
+  }
+
+  if (typeof tokenFxEnqueueGameEvent === "function") {
+    try { tokenFxEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O5a token FX enqueue failed", err); }
+  }
+
+  if (typeof arenaSfxEnqueueGameEvent === "function") {
+    try { arenaSfxEnqueueGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O5a SFX enqueue failed", err); }
+  }
+
+  if (typeof tutorialRuntimeHandleGameEvent === "function") {
+    try { tutorialRuntimeHandleGameEvent(normalized); }
+    catch (err) { console.warn("Arena Rubra F9O6 tutorial event handling failed", err); }
   }
 
   return normalized;

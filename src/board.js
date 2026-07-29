@@ -18,7 +18,49 @@ function currentPace() {
       return PACE_PRESETS[key] || PACE_PRESETS.standard;
     }
 
-function pressureStartRound() { return currentPace().pressureStartRound; }
+function isStarterPressureMap() {
+      const definition = typeof getActiveMapDefinition === "function" ? getActiveMapDefinition() : (state && state.mapDefinition ? state.mapDefinition : null);
+      const mapId = state && state.mapId ? state.mapId : (definition && definition.id ? definition.id : "map1_starter");
+      return mapId === "map1_starter";
+    }
+
+function pressureMapDefinition() {
+      return typeof getActiveMapDefinition === "function"
+        ? getActiveMapDefinition()
+        : (state && state.mapDefinition ? state.mapDefinition : null);
+    }
+
+function pressureMapScale() {
+      const definition = pressureMapDefinition();
+      const ps = definition && Array.isArray(definition.strategicPoints)
+        ? definition.strategicPoints.length
+        : (state && Array.isArray(state.cells) ? state.cells.filter(cell => cell && cell.ps).length : 3);
+      const players = definition && Number.isFinite(Number(definition.playerCount))
+        ? Number(definition.playerCount)
+        : (state && Array.isArray(state.playerIds)
+            ? state.playerIds.length
+            : (state && Array.isArray(state.players) ? state.players.length : 2));
+      return Math.ceil((Math.max(0, ps) + Math.max(2, players)) / 2);
+    }
+
+function pressureStartRound() {
+      const pace = currentPace();
+      const scale = pressureMapScale();
+      const standardRound = Number(pace.pressureBaseRound || 20) + scale;
+      return pace.key === "competitive" ? standardRound - scale : standardRound;
+    }
+
+function pressureWinLimit() {
+      const pace = currentPace();
+      return Math.max(1, Math.trunc(Number(pace.pressureWin) || (pace.key === "competitive" ? 5 : 7)));
+    }
+
+function maxRoundLimit() {
+      const pace = currentPace();
+      return pace.key === "competitive"
+        ? Math.max(1, Math.trunc(Number(pace.maxRoundBase) || 30) + pressureMapScale())
+        : Math.max(1, Math.trunc(Number(pace.maxRound) || 50));
+    }
 
 function paceLabel() { return currentPace().label; }
 
@@ -86,8 +128,13 @@ function agathoiStructureAdjacencyDefBonus(unit) {
     }
 
 function hqSideAt(coord) {
-      if (sameCoord(coord, HQ_POS[1])) return 1;
-      if (sameCoord(coord, HQ_POS[2])) return 2;
+      const playerIds = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2];
+      for (const playerId of playerIds) {
+        const hqCoord = typeof getMapHeadquarters === "function"
+          ? getMapHeadquarters(playerId, state && state.mapDefinition)
+          : HQ_POS[playerId];
+        if (hqCoord && sameCoord(coord, hqCoord)) return playerId;
+      }
       return null;
     }
 
@@ -139,11 +186,15 @@ function isCellBlockedByEffect(coord) {
 }
 
 function isCellEnterable(coord) {
-  return isInsideMap(coord) && !isCellBlockedByEffect(coord);
+  if (!isInsideMap(coord) || isCellBlockedByEffect(coord)) return false;
+  const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+  return !terrain || (!terrain.blocksMovement && !terrain.blocksOccupation);
 }
 
 function isCellValidForTerrainTactic(coord, effectKind) {
   if (!coord || !getCellAt(coord) || getUnitAt(coord)) return false;
+  const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
+  if (terrain && (terrain.blocksDeployment || terrain.blocksOccupation)) return false;
   if (isCellBlockedByEffect(coord) && effectKind !== "temporary_block_cell") return false;
   if (hqSideAt(coord)) return false;
   if (effectKind === "temporary_block_cell") {

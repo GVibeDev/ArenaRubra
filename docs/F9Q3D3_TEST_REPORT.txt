@@ -1,0 +1,78 @@
+ARENA RUBRA — F9Q3d3 TEST REPORT
+================================
+
+Build candidata
+---------------
+Versione: C2-STABLE-1-F9Q3d3-APK-M4c
+Nome: Player Elimination & Active State Foundation
+Baseline: C2-STABLE-1-F9Q3d2-APK-M4c
+Data: 2026-07-28
+
+Controlli statici
+-----------------
+File JavaScript controllati: 148
+Errori sintattici: 0
+
+Suite Node
+----------
+Suite eseguite: 67
+Suite superate: 67
+Suite fallite: 0
+
+Smoke dedicato F9Q3d3
+----------------------
+tests/f9q3d3_player_elimination_state_smoke.js
+Esito: 38/38 OK
+
+Copertura dedicata:
+- stati active/eliminated/winner;
+- metadati di eliminazione;
+- rimozione unità e strutture;
+- QG conservato come riferimento inattivo;
+- conservazione di unità convertite e carte rubate;
+- rimozione degli stati posseduti dalla fonte eliminata;
+- bonifica e neutralizzazione dei pericoli;
+- rimozione controllo e lock PS;
+- rimozione effetti player-level della fonte eliminata;
+- chiusura delle selezioni obsolete;
+- riconciliazione delle Missioni pendenti;
+- evento PLAYER_ELIMINATED;
+- vittoria dell’ultimo giocatore attivo;
+- cursore turno non ricorsivo e singola risoluzione del confine round.
+
+Smoke Chromium
+---------------
+Test mirati eseguiti: 6
+Test superati: 6
+Test falliti: 0
+
+1. f9q3d3_browser_player_elimination_smoke.py
+2. f9q3d2_browser_ffa_missions_smoke.py
+3. f9q3d1_browser_target_player_smoke.py
+4. f9s1b1_browser_deck_selection_smoke.py
+5. f9r3_browser_official_maps_pressure_smoke.py
+6. f9s1b_browser_alternative_pivots_smoke.py
+
+Il test browser dedicato ha verificato il flusso reale dell’app con quattro giocatori, selettore FFA aperto, eliminazione, bonifica, salto turno, eliminazioni successive e vittoria finale.
+
+Precheck
+--------
+Problemi: 0
+Warning: 0
+
+Pacchetto
+---------
+Archivio ZIP verificato: nessun errore di integrità
+Elementi archivio: 756
+File effettivi: 704
+Cache Python incluse: 0
+
+Esclusioni dichiarate
+---------------------
+- Nessun collaudo su APK Android fisico.
+- Nessuna partita FFA completa giocata manualmente fino al termine.
+- Attribuzione completa di eliminazioni, assist e Pressione rinviata a F9Q3d4.
+
+Esito
+-----
+Candidata tecnicamente pronta per il collaudo manuale. Non è una baseline validata finché l’utente non conclude i test reali.

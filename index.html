@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/renderer_calibration_lab.css">
 </head>
+<!-- F9R3 · Official Map & Pressure Lab (validated baseline compatibility marker) -->
 <body>
 
   <div id="appSplash" class="appSplash" role="dialog" aria-modal="true" aria-label="Intro Arena Rubra" data-splash-phase="boot">
@@ -25,51 +26,208 @@
   </div>
   <audio id="introMusic" src="assets/audio/432-hertz-rift.mp3" preload="auto" autoplay loop playsinline aria-label="Musica Arena Rubra"></audio>
 
+  <!-- Frozen static regression markers: data-arena-music-control data-arena-music-toggle data-arena-music-volume data-arena-music-volume-output data-arena-card-motion-toggle -->
   <section id="mainMenuScreen" class="appScreen mainMenuScreen" data-app-screen-panel="mainMenu" aria-label="Menu principale Arena Rubra">
     <div class="mainMenuBackdrop"></div>
-    <div class="mainMenuCard">
-      <div class="mainMenuKicker">G Vibe Dev presenta</div>
-      <h1><span id="buildAppName">Arena Rubra</span></h1>
-      <div class="mainMenuStage" id="buildStage">Starter Game ALPHA</div>
-      <div class="mainMenuBuildBox">
-        <div><strong>Build</strong> <span id="menuBuildVersion">C2-STABLE-1-F9O2d-APK-M4c</span></div>
-        <div><strong>Patch</strong> <span id="menuBuildName">Token Layering & Active Unit Cues</span></div>
-        <div><strong>Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></div>
-        <div><strong>Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></div>
-        <div><strong>Data</strong> <span id="menuBuildDate">2026-06-27</span></div>
+    <div class="mainMenuCard mainMenuCardF9Q3a">
+      <header class="mainMenuHero">
+        <div class="mainMenuHeroBrand">
+          <div class="mainMenuKicker">G Vibe Dev presenta</div>
+          <h1><span id="buildAppName">Arena Rubra</span></h1>
+          <p class="mainMenuTagline">Tattica, carte e controllo del territorio su campo esagonale.</p>
+        </div>
+        <div class="mainMenuHeroStatus" aria-label="Stato applicazione">
+          <span class="mainMenuStage" id="buildStage">Starter Game ALPHA</span>
+          <span class="mainMenuBuildChip"><span id="menuBuildVersion">C2-STABLE-1-F9S1b1-APK-M4c</span></span>
+          <span class="mainMenuStorageChip" id="menuStorageStatus">Archivio locale: inizializzazione…</span>
+        </div>
+      </header>
+
+      <div class="mainMenuDashboard controlCenterDashboard" aria-label="Centro di controllo Arena Rubra">
+        <section class="mainMenuActionGroup mainMenuActionGroupPlay mainMenuPlayPanel controlCenterArea controlCenterAreaPlay" aria-labelledby="controlCenterPlayTitle">
+          <div class="mainMenuSectionHeading">
+            <span class="mainMenuSectionEyebrow">Gioca</span>
+            <h2 id="controlCenterPlayTitle">Entra nell’Arena</h2>
+            <p>Avvia un match, riprendi la sessione corrente o accedi alle cinque lezioni guidate.</p>
+          </div>
+          <div class="controlCenterActionGrid controlCenterActionGridPlay">
+            <button class="primary mainMenuPrimaryAction controlCenterActionPrimary" id="mainMenuNewGameBtn" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">▶</span>
+              <span><strong>Nuova partita</strong><small>Setup e Custom Match</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuTutorialBtn" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">◆</span>
+              <span><strong>Tutorial</strong><small>Cinque lezioni guidate</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuResumeBtn" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">↻</span>
+              <span><strong>Riprendi</strong><small>Sessione runtime corrente</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="mainMenuStudioPanel controlCenterArea controlCenterAreaCards" aria-labelledby="controlCenterCardsTitle">
+          <div class="mainMenuSectionHeading">
+            <span class="mainMenuSectionEyebrow">Carte e deck</span>
+            <h2 id="controlCenterCardsTitle">Libreria tattica</h2>
+            <p>Costruisci i mazzi, consulta il catalogo e crea carte custom senza alterare i contenuti ufficiali.</p>
+          </div>
+          <div class="controlCenterActionGrid">
+            <button class="ghost mainMenuStudioTile" data-app-open-deck-builder type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">▤</span>
+              <span><strong>Deck Builder</strong><small>50 deck ufficiali e libreria locale</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" data-app-open-card-pool type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">◫</span>
+              <span><strong>Pool carte</strong><small>Catalogo, filtri e focus carta</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" data-app-open-card-editor type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">✦</span>
+              <span><strong>Card Editor</strong><small>Creazione e archivio custom</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="controlCenterArea controlCenterAreaMaps" aria-labelledby="controlCenterMapsTitle">
+          <div class="mainMenuSectionHeading">
+            <span class="mainMenuSectionEyebrow">Mappe</span>
+            <h2 id="controlCenterMapsTitle">Campi di battaglia</h2>
+            <p>Consulta mappe ufficiali e custom oppure apri l’editor tecnico con validazione live.</p>
+          </div>
+          <div class="controlCenterActionGrid">
+            <button class="ghost mainMenuStudioTile" id="mainMenuMapArchiveBtn" data-control-center-panel="mapArchive" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">▦</span>
+              <span><strong>Archivio mappe</strong><small>Geometria, PS, validazione e avvio</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" data-app-open-map-editor type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">⬡</span>
+              <span><strong>Map Editor</strong><small>Terreni, sfondi e Match Lab</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="controlCenterArea controlCenterAreaAnalysis" aria-labelledby="controlCenterAnalysisTitle">
+          <div class="mainMenuSectionHeading">
+            <span class="mainMenuSectionEyebrow">Analisi</span>
+            <h2 id="controlCenterAnalysisTitle">Dati di gioco</h2>
+            <p>Leggi record persistenti e dati runtime senza dover entrare nel pannello Debug della partita.</p>
+          </div>
+          <div class="controlCenterActionGrid controlCenterActionGridCompact">
+            <button class="ghost mainMenuStudioTile" id="mainMenuStatsBtn" data-control-center-panel="statistics" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">Σ</span>
+              <span><strong>Statistiche</strong><small>Registro matchup</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuHistoryBtn" data-control-center-panel="history" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">◷</span>
+              <span><strong>Cronologia</strong><small>Storico completo</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuTelemetryBtn" data-control-center-panel="telemetry" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">⌁</span>
+              <span><strong>Telemetria</strong><small>Schema F9Q3e1-2</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuLogBtn" data-control-center-panel="log" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">≡</span>
+              <span><strong>Log</strong><small>Eventi tipizzati runtime</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="mainMenuPresentationPanel controlCenterArea controlCenterAreaSystem" aria-labelledby="controlCenterSystemTitle">
+          <div class="mainMenuSectionHeading">
+            <span class="mainMenuSectionEyebrow">Sistema</span>
+            <h2 id="controlCenterSystemTitle">Applicazione e archivio</h2>
+            <p>Versione, preferenze, diagnostica di sviluppo e backup sono riuniti in un unico punto.</p>
+          </div>
+          <div class="controlCenterActionGrid controlCenterActionGridCompact">
+            <button class="ghost mainMenuStudioTile" id="mainMenuAboutBtn" data-control-center-panel="version" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">i</span>
+              <span><strong>Versione</strong><small>Build e baseline</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuSettingsBtn" data-control-center-panel="settings" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">⚙</span>
+              <span><strong>Impostazioni</strong><small>Audio e presentazione</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuOptionsBtn" data-control-center-panel="debug" data-control-center-dev-only type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">⌘</span>
+              <span><strong>Debug</strong><small>Precheck e diagnostica completa</small></span>
+            </button>
+            <button class="ghost mainMenuStudioTile" id="mainMenuTransferBtn" data-control-center-panel="transfer" type="button">
+              <span class="mainMenuTileIcon" aria-hidden="true">⇄</span>
+              <span><strong>Import / Export</strong><small>Backup completo del vault</small></span>
+            </button>
+          </div>
+        </section>
       </div>
-      <section class="arenaMusicControl arenaMusicControlMenu" data-arena-music-control aria-label="Controlli musica menu">
-        <button class="ghost arenaMusicToggle" type="button" data-arena-music-toggle aria-pressed="true">Musica ON</button>
-        <label class="arenaMusicVolumeLabel">
-          <span>Volume</span>
-          <input type="range" min="0" max="100" step="1" value="65" data-arena-music-volume aria-label="Volume musica">
-          <output data-arena-music-volume-output>65%</output>
-        </label>
+
+      <section class="controlCenterStatusBoard" aria-label="Stato del sistema">
+        <article class="controlCenterStatusCard" id="controlCenterVersionCard" data-tone="neutral">
+          <span>Versione completa</span><strong id="controlCenterVersion">—</strong><small id="controlCenterVersionMeta">—</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterLogicBaselineCard" data-tone="neutral">
+          <span>Baseline logica</span><strong id="controlCenterLogicBaseline">—</strong><small id="controlCenterLogicBaselineMeta">—</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterTelemetrySchemaCard" data-tone="neutral">
+          <span>Schema telemetrico</span><strong id="controlCenterTelemetrySchema">—</strong><small id="controlCenterTelemetrySchemaMeta">—</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterOfficialDecksCard" data-tone="neutral">
+          <span>Deck ufficiali</span><strong id="controlCenterOfficialDecks">—</strong><small id="controlCenterOfficialDecksMeta">—</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterOfficialMapsCard" data-tone="neutral">
+          <span>Mappe ufficiali</span><strong id="controlCenterOfficialMaps">—</strong><small id="controlCenterOfficialMapsMeta">—</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterStorageSpaceCard" data-tone="neutral">
+          <span>Spazio archivio</span><strong id="controlCenterStorageSpace">Calcolo…</strong><small id="controlCenterStorageSpaceMeta">Stima archivio in corso</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterLastMatchCard" data-tone="neutral">
+          <span>Ultimo match registrato</span><strong id="controlCenterLastMatch">—</strong><small id="controlCenterLastMatchMeta">—</small>
+        </article>
+        <article class="controlCenterStatusCard" id="controlCenterDiagnosticCard" data-tone="neutral">
+          <span>Errori diagnostici</span><strong id="controlCenterDiagnosticErrors">Verifica…</strong><small id="controlCenterDiagnosticErrorsMeta">Precheck in corso</small>
+        </article>
       </section>
-      <div class="mainMenuActions mainMenuActionsF9K7" aria-label="Azioni principali Arena Rubra">
-        <section class="mainMenuActionGroup mainMenuActionGroupPlay" aria-label="Gioca">
-          <h2>Gioca</h2>
-          <p>Avvio partita, ripresa sessione e Custom Match Lab.</p>
-          <button class="primary" id="mainMenuNewGameBtn" type="button">Nuova partita / Custom Match</button>
-          <button class="ghost" id="mainMenuResumeBtn" type="button">Riprendi schermata partita</button>
-        </section>
-        <section class="mainMenuActionGroup mainMenuActionGroupLab" aria-label="Laboratorio carte e deck">
-          <h2>Laboratorio</h2>
-          <p>Crea carte, costruisci deck e controlla il pool completo.</p>
-          <button class="ghost" data-app-open-card-editor type="button">Crea carta custom</button>
-          <button class="ghost" data-app-open-deck-builder type="button">Costruisci deck</button>
-          <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
-        </section>
-        <section class="mainMenuActionGroup mainMenuActionGroupDebug" aria-label="Debug export e informazioni">
-          <h2>Debug / Export</h2>
-          <p>Strumenti diagnostici e informazioni build.</p>
-          <button class="ghost" data-app-placeholder-screen="stats" type="button">Statistiche / log test</button>
-          <button class="ghost" data-app-open-layout-lab type="button">Layout calibration lab</button>
-          <button class="ghost" data-app-placeholder-screen="options" type="button">Opzioni / debug</button>
-          <button class="ghost" data-app-placeholder-screen="about" type="button">Informazioni versione</button>
-        </section>
+
+      <div class="mainMenuLocalSummary" id="mainMenuLocalSummary" aria-live="polite">Dati locali in caricamento…</div>
+
+      <section id="controlCenterPanel" class="controlCenterPanel" aria-hidden="true" hidden>
+        <div id="controlCenterPanelScrim" class="controlCenterPanelScrim" aria-hidden="true"></div>
+        <div class="controlCenterPanelSheet" role="dialog" aria-modal="true" aria-labelledby="controlCenterPanelTitle">
+          <header class="controlCenterPanelHeader">
+            <div>
+              <span class="mainMenuSectionEyebrow">Centro di controllo</span>
+              <h2 id="controlCenterPanelTitle">Dettaglio</h2>
+            </div>
+            <button class="ghost compactIconBtn" id="controlCenterPanelCloseBtn" type="button" aria-label="Chiudi pannello Centro di controllo">×</button>
+          </header>
+          <div id="controlCenterPanelBody" class="controlCenterPanelBody"></div>
+        </div>
+      </section>
+
+      <footer class="mainMenuFooter">
+        <p class="mainMenuNotes" id="menuBuildNotes">Fondazione mappe, terreni ed editor multigiocatore.</p>
+        <div class="mainMenuBuildMeta" aria-label="Metadati build">
+          <span><strong>Patch</strong> <span id="menuBuildName">Camera, Storage & Menu</span></span>
+          <span><strong>Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></span>
+          <span><strong>Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></span>
+          <span><strong>Data</strong> <span id="menuBuildDate">2026-07-26</span></span>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <section id="tutorialScreen" class="appScreen tutorialScreen" data-app-screen-panel="tutorial" aria-label="Tutorial Arena Rubra">
+    <div class="mainMenuBackdrop"></div>
+    <div class="tutorialScreenCard">
+      <div class="mainMenuKicker">Accademia di Arena Rubra</div>
+      <h2>Tutorial in cinque lezioni</h2>
+      <p class="setupIntro">Cinque lezioni progressive insegnano le regole fondamentali attraverso brevi scenari guidati. Sono disponibili Exordium per combattimento e tattiche, Nexus per Starter, tipi di unità, rete di sbarco e Avanguardia, e Agathoi per Spine, Contrattacco, fortificazione e difesa del Punto Strategico.</p>
+      <div id="tutorialLessonGrid" class="tutorialLessonGrid"></div>
+      <div class="tutorialMenuActions">
+        <button class="primary" id="tutorialRuntimeDemoBtn" type="button">Avvia Lezione 1</button>
+        <button class="ghost" id="tutorialResumeBtn" type="button">Riprendi Lezione 1</button>
+        <button class="ghost" id="tutorialResetProgressBtn" type="button">Azzera progressi tutorial</button>
+        <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
       </div>
-      <p class="mainMenuNotes" id="menuBuildNotes">Fase 9D: PanelManager foundation, pannelli richiamabili con scrim senza modifiche alla logica Starter.</p>
+      <div id="tutorialRuntimeStatus" class="tutorialRuntimeStatus" aria-live="polite"></div>
     </div>
   </section>
 
@@ -77,7 +235,7 @@
     <div class="mainMenuBackdrop"></div>
     <div class="setupScreenCard">
       <div class="mainMenuKicker">Nuova partita</div>
-      <h2>Setup Starter MAP1</h2>
+      <h2 id="setupMapHeading">Setup Starter MAP1</h2>
       <p class="setupIntro">F9K7 separa identità giocatore, deck runtime e regole partita. I deck custom restano nel Custom Match Lab: nessuna modifica a gameplay, AI o bilanciamento.</p>
 
       <div class="setupScreenGrid">
@@ -156,6 +314,82 @@
             <div class="setupDeckInfo" id="setupP2DeckInfo">Deck automatico Starter.</div>
           </div>
         </section>
+
+        <section class="setupSideBox setupPlayerBox" id="setupPlayer3Box" hidden>
+          <div class="setupSideHeader">
+            <h3>Giocatore 3</h3>
+            <span class="setupDeckBadge" id="setupP3DeckBadge">Deck Starter</span>
+          </div>
+          <div class="setupPlayerSubsection">
+            <h4>Identità</h4>
+            <div class="setupFieldGrid">
+              <label for="setupP3Faction">Fazione</label>
+              <select id="setupP3Faction">
+                <option value="Liberti">Liberti</option>
+                <option value="Nexus">Nexus</option>
+                <option value="Exordium">Exordium</option>
+                <option value="Agathoi">Agathoi</option>
+                <option value="Fabeot">Fabeot</option>
+              </select>
+              <label for="setupP3Commander">Comandante</label>
+              <select id="setupP3Commander"></select>
+              <label for="setupP3Mode">Controllo</label>
+              <select id="setupP3Mode">
+                <option value="bot">Bot</option>
+                <option value="human">Umano</option>
+              </select>
+            </div>
+          </div>
+          <div class="setupPlayerSubsection setupDeckRuntimeBox">
+            <h4>Deck runtime</h4>
+            <label for="setupP3DeckMode">Modalità deck</label>
+            <select id="setupP3DeckMode">
+              <option value="template" selected>Deck automatico Starter</option>
+              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+            </select>
+            <label for="setupP3DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <select id="setupP3DeckSavedKey" class="setupDeckSavedSelect"></select>
+            <div class="setupDeckInfo" id="setupP3DeckInfo">Deck automatico Starter.</div>
+          </div>
+        </section>
+
+        <section class="setupSideBox setupPlayerBox" id="setupPlayer4Box" hidden>
+          <div class="setupSideHeader">
+            <h3>Giocatore 4</h3>
+            <span class="setupDeckBadge" id="setupP4DeckBadge">Deck Starter</span>
+          </div>
+          <div class="setupPlayerSubsection">
+            <h4>Identità</h4>
+            <div class="setupFieldGrid">
+              <label for="setupP4Faction">Fazione</label>
+              <select id="setupP4Faction">
+                <option value="Agathoi">Agathoi</option>
+                <option value="Nexus">Nexus</option>
+                <option value="Exordium">Exordium</option>
+                <option value="Liberti">Liberti</option>
+                <option value="Fabeot">Fabeot</option>
+              </select>
+              <label for="setupP4Commander">Comandante</label>
+              <select id="setupP4Commander"></select>
+              <label for="setupP4Mode">Controllo</label>
+              <select id="setupP4Mode">
+                <option value="bot">Bot</option>
+                <option value="human">Umano</option>
+              </select>
+            </div>
+          </div>
+          <div class="setupPlayerSubsection setupDeckRuntimeBox">
+            <h4>Deck runtime</h4>
+            <label for="setupP4DeckMode">Modalità deck</label>
+            <select id="setupP4DeckMode">
+              <option value="template" selected>Deck automatico Starter</option>
+              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+            </select>
+            <label for="setupP4DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <select id="setupP4DeckSavedKey" class="setupDeckSavedSelect"></select>
+            <div class="setupDeckInfo" id="setupP4DeckInfo">Deck automatico Starter.</div>
+          </div>
+        </section>
       </div>
 
       <section class="setupMatchBox">
@@ -185,9 +419,10 @@
           </div>
           <div>
             <label for="setupMapName">Mappa</label>
-            <select id="setupMapName" disabled>
+            <select id="setupMapName" aria-describedby="setupMapMeta">
               <option>Starter MAP1 · radius 6</option>
             </select>
+            <div id="setupMapMeta" class="setupMapMeta"></div>
           </div>
           <div>
             <label for="setupBotAiMode">AI dei bot</label>
@@ -210,6 +445,201 @@
     </div>
   </section>
 
+  <section id="mapEditorScreen" class="appScreen mapEditorScreen" data-app-screen-panel="mapEditor" aria-label="Editor mappe Arena Rubra">
+    <div class="mainMenuBackdrop"></div>
+    <div class="mapEditorCard">
+      <header class="mapEditorHeader mapEditorHeaderF9U2b">
+        <div class="mapEditorHeading">
+          <div class="mainMenuKicker">F9U2b · Editor Layout Reorganization</div>
+          <h2>Editor mappe</h2>
+          <p>Progetto e sfondo a sinistra, strumenti e validazione a destra, stato live sempre visibile sopra la mappa.</p>
+        </div>
+        <nav class="mapEditorHeaderActions" aria-label="Azioni principali editor mappe">
+          <div class="mapEditorActionGroup mapEditorProjectActions" aria-label="Progetto">
+            <button class="ghost" id="mapEditorNewBtn" type="button">Nuova</button>
+            <button class="primary" id="mapEditorSaveBtn" type="button">Salva</button>
+            <button class="ghost" id="mapEditorImportBtn" type="button">Importa</button>
+            <input id="mapEditorImportFile" type="file" accept="application/json,.json" hidden>
+          </div>
+          <details class="mapEditorActionDetails">
+            <summary>Esporta</summary>
+            <div class="mapEditorActionDetailsBody">
+              <button class="ghost" id="mapEditorExportBtn" type="button">JSON leggero</button>
+              <button class="ghost" id="mapEditorPortableExportBtn" type="button">JSON portatile</button>
+            </div>
+          </details>
+          <div class="mapEditorActionGroup mapEditorHistoryActions" aria-label="Cronologia e vista">
+            <button class="ghost" id="mapEditorUndoBtn" type="button">Annulla</button>
+            <button class="ghost" id="mapEditorRedoBtn" type="button">Ripeti</button>
+            <button class="ghost" id="mapEditorFitBtn" type="button">Adatta</button>
+          </div>
+          <button class="ghost" data-app-back-menu type="button">Menu</button>
+        </nav>
+      </header>
+
+      <div class="mapEditorLiveBar" aria-label="Informazioni live editor mappa" aria-live="polite">
+        <div id="mapEditorValidationSummary" class="mapEditorValidationSummary">In attesa di validazione…</div>
+        <div class="mapEditorLiveMetric"><span>Mappa</span><strong id="mapEditorLiveName">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>Giocatori</span><strong id="mapEditorLivePlayers">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>Celle</span><strong id="mapEditorLiveCells">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>QG</span><strong id="mapEditorLiveHq">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>PS</span><strong id="mapEditorLivePs">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>Mov.</span><strong id="mapEditorLiveMovement">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>Zoom</span><strong id="mapEditorLiveZoom">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>Strumento</span><strong id="mapEditorLiveTool">—</strong></div>
+        <div class="mapEditorLiveMetric"><span>Selezione</span><strong id="mapEditorLiveSelection">—</strong></div>
+      </div>
+
+      <div class="mapEditorWorkspace mapEditorWorkspaceF9U2b">
+        <aside class="mapEditorSidebar mapEditorProjectPanel" aria-label="Progetto e proprietà mappa">
+          <section class="mapEditorSideSection">
+            <div class="mapEditorSideTitleRow"><h3>Progetto</h3><span class="help">Dati generali</span></div>
+            <label for="mapEditorMapSelect">Mappa / progetto</label>
+            <select id="mapEditorMapSelect"></select>
+            <label for="mapEditorTemplateSelect">Modello nuova mappa</label>
+            <select id="mapEditorTemplateSelect">
+              <option value="single">Esagono singolo</option>
+              <option value="double">Doppio esagono</option>
+              <option value="triple">Triplo esagono</option>
+              <option value="empty">Vuota</option>
+            </select>
+            <label for="mapEditorNameInput">Nome</label>
+            <input id="mapEditorNameInput" type="text" maxlength="72">
+            <label for="mapEditorDescriptionInput">Descrizione</label>
+            <textarea id="mapEditorDescriptionInput" rows="3" maxlength="500"></textarea>
+            <label for="mapEditorTagsInput">Tag <span class="help">separati da virgola</span></label>
+            <input id="mapEditorTagsInput" type="text" maxlength="240">
+            <div class="mapEditorTwoColumns">
+              <label>Giocatori
+                <select id="mapEditorPlayerCount">
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </label>
+              <label>Movimento
+                <select id="mapEditorMovementMultiplier">
+                  <option value="1">×1</option>
+                  <option value="2">×2</option>
+                  <option value="3">×3</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <fieldset class="mapEditorBackgroundPanel">
+            <legend>Sfondo custom</legend>
+            <div class="mapEditorBackgroundActions">
+              <button class="ghost" id="mapEditorBackgroundChooseBtn" type="button">Scegli immagine</button>
+              <button class="ghost" id="mapEditorBackgroundRemoveBtn" type="button">Rimuovi</button>
+              <input id="mapEditorBackgroundFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            </div>
+            <div id="mapEditorBackgroundStatus" class="mapEditorBackgroundStatus">Nessuno sfondo custom.</div>
+            <label for="mapEditorBackgroundFit">Adattamento</label>
+            <select id="mapEditorBackgroundFit">
+              <option value="cover">Copri area</option>
+              <option value="contain">Contieni intera immagine</option>
+              <option value="native">Dimensione nativa</option>
+            </select>
+            <label for="mapEditorBackgroundOpacity">Opacità <output id="mapEditorBackgroundOpacityValue">90%</output></label>
+            <input id="mapEditorBackgroundOpacity" type="range" min="0" max="1" step="0.01" value="0.9">
+            <label for="mapEditorBackgroundScale">Scala <output id="mapEditorBackgroundScaleValue">1.00×</output></label>
+            <input id="mapEditorBackgroundScale" type="range" min="0.25" max="4" step="0.05" value="1">
+            <div class="mapEditorBackgroundOffsets">
+              <label for="mapEditorBackgroundOffsetX">Offset X %</label>
+              <input id="mapEditorBackgroundOffsetX" type="number" min="-100" max="100" step="1" value="0">
+              <label for="mapEditorBackgroundOffsetY">Offset Y %</label>
+              <input id="mapEditorBackgroundOffsetY" type="number" min="-100" max="100" step="1" value="0">
+            </div>
+            <p class="help">PNG, JPEG o WebP fino a 12 MiB. Il JSON leggero conserva solo il riferimento.</p>
+          </fieldset>
+
+          <fieldset class="mapEditorComponentPanel">
+            <legend>Geometria e componenti</legend>
+            <label for="mapEditorComponentSelect">Componente</label>
+            <select id="mapEditorComponentSelect"></select>
+            <div class="mapEditorComponentGrid">
+              <label for="mapEditorComponentRadius">Raggio</label>
+              <input id="mapEditorComponentRadius" type="number" min="1" max="12" step="1">
+              <label for="mapEditorComponentOriginX">Origine X</label>
+              <input id="mapEditorComponentOriginX" type="number" min="-30" max="30" step="1">
+              <label for="mapEditorComponentOriginY">Origine Y</label>
+              <input id="mapEditorComponentOriginY" type="number" min="-30" max="30" step="1">
+              <label for="mapEditorComponentOriginZ">Origine Z</label>
+              <input id="mapEditorComponentOriginZ" type="number" readonly>
+              <label for="mapEditorComponentRotation">Rotazione</label>
+              <select id="mapEditorComponentRotation">
+                <option value="0">0°</option>
+                <option value="60">60°</option>
+                <option value="120">120°</option>
+                <option value="180">180°</option>
+                <option value="240">240°</option>
+                <option value="300">300°</option>
+              </select>
+            </div>
+            <button class="ghost" id="mapEditorNormalizeComponentsBtn" type="button">Rigenera e unisci celle</button>
+          </fieldset>
+        </aside>
+
+        <main class="mapEditorCanvasPanel">
+          <div class="mapEditorCanvasHelp">Trascina per spostare · rotella per zoom · clicca una cella per applicare lo strumento.</div>
+          <div id="mapEditorCanvasViewport" class="mapEditorCanvasViewport">
+            <svg id="mapEditorCanvas" viewBox="0 0 1200 800" role="img" aria-label="Anteprima modificabile della mappa"></svg>
+          </div>
+        </main>
+
+        <aside class="mapEditorSidebar mapEditorToolsPanel" aria-label="Strumenti e validazione mappa">
+          <section class="mapEditorSideSection">
+            <div class="mapEditorSideTitleRow"><h3>Modifica</h3><span class="help">Cella e simmetria</span></div>
+            <fieldset>
+              <legend>Strumento</legend>
+              <div class="mapEditorToolGrid" id="mapEditorToolGrid">
+                <button class="ghost isActive" type="button" data-map-tool="inspect">Ispeziona</button>
+                <button class="ghost" type="button" data-map-tool="cell">Cella</button>
+                <button class="ghost" type="button" data-map-tool="terrain">Terreno</button>
+                <button class="ghost" type="button" data-map-tool="role">Ruolo</button>
+                <button class="ghost" type="button" data-map-tool="hazard">Pericolo</button>
+              </div>
+            </fieldset>
+            <div id="mapEditorToolOptions" class="mapEditorToolOptions"></div>
+            <fieldset>
+              <legend>Simmetria</legend>
+              <select id="mapEditorSymmetry">
+                <option value="none">Nessuna</option>
+                <option value="hq">Rispetto ai QG</option>
+                <option value="rotate3">Replica radiale 3 settori</option>
+                <option value="rotate4">Replica radiale 4 QG</option>
+                <option value="mirror">Specchio</option>
+                <option value="rotate2">Rotazione 180°</option>
+                <option value="rotate60">Rotazione 60°</option>
+              </select>
+              <p class="help">Passa sopra una cella per vedere le repliche; clicca per applicarle con un solo Undo.</p>
+            </fieldset>
+          </section>
+
+          <section class="mapEditorSideSection mapEditorSelectionSection">
+            <div class="mapEditorSideTitleRow"><h3>Cella selezionata</h3><span class="help">Dati live</span></div>
+            <div id="mapEditorSelection" class="mapEditorSelection">Nessuna cella selezionata.</div>
+          </section>
+
+          <details class="mapEditorValidationPanel" open>
+            <summary>Validazione e legenda</summary>
+            <div class="mapEditorValidationBody">
+              <ol id="mapEditorValidationList"></ol>
+              <h3>Legenda terreni</h3>
+              <div id="mapEditorTerrainLegend"></div>
+            </div>
+          </details>
+
+          <div class="mapEditorSideActions">
+            <button class="primary" id="mapEditorLabBtn" type="button">Avvia nel Match Lab</button>
+            <button class="danger" id="mapEditorDeleteBtn" type="button">Elimina mappa custom</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
   <section id="deckBuilderScreen" class="appScreen deckBuilderScreen" data-app-screen-panel="deckBuilder" aria-label="Costruisci deck Arena Rubra">
     <div class="mainMenuBackdrop"></div>
     <div class="deckBuilderCard">
@@ -217,25 +647,32 @@
         <div>
           <div class="mainMenuKicker">Deck Builder</div>
           <h2>Costruisci deck</h2>
-          <p class="deckBuilderIntro">F9K7 mantiene il runtime F9K6b validato e riorganizza navigazione, setup e libreria deck senza toccare gameplay.</p>
+          <p class="deckBuilderIntro">F9S1c1 integra il roster ufficiale da 50 deck e rende la costruzione più compatta: controllo copie unificato, libreria a nomi e analisi immediata della curva ENE.</p>
         </div>
         <div class="deckBuilderHeaderActions">
-          <button class="ghost" id="deckBuilderCopyJsonBtn" type="button">Copia report JSON</button>
-          <button class="ghost" id="deckBuilderCopyDeckJsonBtn" type="button">Copia deck JSON</button>
-          <button class="ghost" id="deckBuilderSaveBtn" type="button">Salva deck valido</button>
-          <button class="ghost" id="deckBuilderLoadSavedBtn" type="button">Carica salvato</button>
-          <button class="danger" id="deckBuilderDeleteSavedBtn" type="button">Elimina salvato</button>
-          <button class="ghost" id="deckBuilderExportAllDecksBtn" type="button">Scarica tutti deck .json</button>
-          <button class="ghost" id="deckBuilderCopyAllDecksBtn" type="button">Copia tutti deck JSON</button>
-          <button class="ghost" id="deckBuilderImportDecksBtn" type="button">Importa da file .json</button>
-          <button class="ghost" id="deckBuilderPasteImportBtn" type="button">Incolla JSON</button>
+          <div class="deckBuilderQuickActions" aria-label="Azioni principali Deck Builder">
+            <button class="primary" id="deckBuilderSaveBtn" type="button">Salva</button>
+            <button class="ghost" id="deckBuilderLoadSavedBtn" type="button">Carica scelto</button>
+            <button class="ghost" id="deckBuilderResetTemplateBtn" type="button">Ripristina</button>
+            <button class="ghost" id="deckBuilderClearBtn" type="button">Svuota</button>
+            <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
+            <button class="ghost" data-app-open-card-editor type="button">Carta custom</button>
+            <button class="primary" data-app-back-menu type="button">Menu</button>
+          </div>
+          <details class="deckBuilderAdvancedTools">
+            <summary>Strumenti avanzati</summary>
+            <div class="deckBuilderAdvancedActions">
+              <button class="ghost" id="deckBuilderCopyJsonBtn" type="button">Copia report JSON</button>
+              <button class="ghost" id="deckBuilderCopyDeckJsonBtn" type="button">Copia deck JSON</button>
+              <button class="danger" id="deckBuilderDeleteSavedBtn" type="button">Elimina deck scelto</button>
+              <button class="ghost" id="deckBuilderExportAllDecksBtn" type="button">Scarica tutti i deck</button>
+              <button class="ghost" id="deckBuilderCopyAllDecksBtn" type="button">Copia tutti i deck</button>
+              <button class="ghost" id="deckBuilderImportDecksBtn" type="button">Importa file JSON</button>
+              <button class="ghost" id="deckBuilderPasteImportBtn" type="button">Incolla JSON</button>
+              <button class="ghost" id="deckBuilderAssetManifestBtn" type="button">Manifest asset carte</button>
+            </div>
+          </details>
           <input id="deckBuilderImportDecksFile" type="file" accept="application/json,.json" hidden>
-          <button class="ghost" id="deckBuilderAssetManifestBtn" type="button">Copia manifest asset carte</button>
-          <button class="ghost" data-app-open-card-editor type="button">Crea carta custom</button>
-          <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
-          <button class="ghost" id="deckBuilderResetTemplateBtn" type="button">Ripristina template</button>
-          <button class="ghost" id="deckBuilderClearBtn" type="button">Svuota draft</button>
-          <button class="primary" data-app-back-menu type="button">Torna al menu</button>
         </div>
       </div>
 
@@ -265,8 +702,8 @@
 
       <section class="deckBuilderBox deckBuilderSavedGalleryBox">
         <div class="deckBuilderBoxTitleRow">
-          <h3>Deck salvati / importati</h3>
-          <span class="help">Gallery persistente locale. Carica un deck per richiamarlo nel draft.</span>
+          <h3>Deck disponibili</h3>
+          <span class="help">Seleziona un nome per vedere i dettagli; il caricamento nel draft resta un’azione separata.</span>
         </div>
         <div id="deckBuilderSavedGallery" class="deckBuilderSavedGallery" aria-live="polite"></div>
       </section>
@@ -288,7 +725,7 @@
         <h3>Pool legale della fazione</h3><p class="deckBuilderCustomHelp">Il toggle CUSTOM aggiunge al pool le carte salvate nel Card Editor. I deck con custom sono salvati come NON UFFICIALI.</p>
         <div class="deckBuilderTableWrap deckBuilderPoolTableWrap">
           <table class="deckBuilderTable">
-            <thead><tr><th></th><th>ID</th><th>Carta</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>Nel draft</th><th>Testo / nota</th></tr></thead>
+            <thead><tr><th>Copie</th><th>ID</th><th>Carta</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>Testo / nota</th></tr></thead>
             <tbody id="deckBuilderPoolBody"></tbody>
           </table>
         </div>
@@ -319,7 +756,7 @@
           <h3>Deck draft locale</h3>
           <div class="deckBuilderTableWrap">
             <table class="deckBuilderTable">
-              <thead><tr><th></th><th>ID</th><th>Carta</th><th>Ruolo</th><th>ENE</th><th>Copie</th><th>Tipo</th></tr></thead>
+              <thead><tr><th>Copie</th><th>ID</th><th>Carta</th><th>Ruolo</th><th>ENE</th><th>Tipo</th></tr></thead>
               <tbody id="deckBuilderDeckBody"></tbody>
             </table>
           </div>
@@ -336,41 +773,52 @@
   <section id="cardEditorScreen" class="appScreen cardEditorScreen" data-app-screen-panel="cardEditor" aria-label="Card Editor custom Arena Rubra">
     <div class="mainMenuBackdrop"></div>
     <div class="deckBuilderCard cardEditorCard">
-      <header class="deckBuilderHeader">
-        <div>
-          <div class="mainMenuKicker">Card Editor</div>
+      <header class="deckBuilderHeader cardEditorHeader">
+        <div class="cardEditorHeading">
+          <div class="mainMenuKicker">F9U2b · Card Editor Layout Reorganization</div>
           <h2>Card Editor custom</h2>
-          <p class="deckBuilderIntro">F9K7 collega il laboratorio: Card Editor, Deck Builder e Pool restano raggiungibili tra loro senza passare sempre dal menu.</p>
+          <p class="deckBuilderIntro">Creazione, preview, libreria e strumenti dati sono separati in aree operative chiare.</p>
         </div>
-        <div class="deckBuilderHeaderActions">
-          <button class="primary" id="cardEditorSaveBtn" type="button">Salva custom</button>
-          <button class="ghost" id="cardEditorCopyJsonBtn" type="button">Copia JSON carta</button>
-          <button class="ghost" id="cardEditorCopyAllBtn" type="button">Copia libreria</button>
-          <button class="ghost" id="cardEditorNewBtn" type="button">Nuova custom</button>
-          <button class="ghost" data-app-open-deck-builder type="button">Apri Deck Builder</button>
-          <button class="ghost" data-app-open-card-pool type="button">Apri Pool</button>
-          <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
-        </div>
+        <nav class="deckBuilderHeaderActions cardEditorHeaderActions" aria-label="Azioni Card Editor">
+          <div class="cardEditorActionGroup cardEditorPrimaryActions">
+            <button class="ghost" id="cardEditorNewBtn" type="button">Nuova</button>
+            <button class="primary" id="cardEditorSaveBtn" type="button">Salva</button>
+            <button class="ghost" id="cardEditorDuplicateBtn" type="button">Duplica</button>
+            <button class="danger" id="cardEditorDeleteBtn" type="button">Elimina</button>
+          </div>
+          <details class="cardEditorHeaderTools">
+            <summary>Strumenti dati</summary>
+            <div class="cardEditorHeaderToolsBody">
+              <button class="ghost" id="cardEditorCopyJsonBtn" type="button">Copia JSON carta</button>
+              <button class="ghost" id="cardEditorCopyAllBtn" type="button">Copia libreria</button>
+            </div>
+          </details>
+          <div class="cardEditorActionGroup cardEditorNavigationActions">
+            <button class="ghost" data-app-open-deck-builder type="button">Deck Builder</button>
+            <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
+            <button class="ghost" data-app-back-menu type="button">Menu</button>
+          </div>
+        </nav>
       </header>
 
-      <section class="deckBuilderSummary cardEditorPolicyBox">
+      <section class="deckBuilderSummary cardEditorPolicyBox cardEditorLivePolicyBar" aria-label="Regole e stato Card Editor">
         <div class="deckBuilderStatus good">
-          <strong>Regola F9K3c</strong>
-          <span>Ufficiali read-only · Custom separate · max 7 ENE · nessuna integrazione automatica nel gameplay.</span>
+          <strong>Custom separate</strong>
+          <span>Ufficiali read-only · massimo 7 ENE · integrazione nel gameplay solo tramite Deck Builder.</span>
         </div>
         <div class="deckBuilderRuleBox">
-          Budget unità custom: 1 ENE max 4 HP+DEF+ATT + passiva; 2 ENE max 7 + passiva o attiva; 3 ENE max 10 + passiva o attiva; 4 ENE max 14 + passiva e/o attiva; 5 ENE max 18; 6 ENE max 22; 7 ENE max 27.
+          <strong>Budget unità</strong> · 1 ENE: 4 punti · 2 ENE: 7 · 3 ENE: 10 · 4 ENE: 14 · 5 ENE: 18 · 6 ENE: 22 · 7 ENE: 27.
         </div>
       </section>
 
-      <div class="cardEditorLayout">
-        <section class="deckBuilderBox cardEditorFormBox">
+      <div class="cardEditorLayout cardEditorLayoutF9U2b">
+        <section class="deckBuilderBox cardEditorFormBox" aria-label="Modulo carta custom">
           <div class="deckBuilderBoxTitleRow">
-            <h3>Dati carta</h3>
+            <h3>Creazione carta</h3>
             <span class="help" id="cardEditorBudgetLine">Budget non calcolato.</span>
           </div>
 
-          <div class="cardEditorFormGrid">
+          <div class="cardEditorFormGrid cardEditorIdentityGrid">
             <label>
               <span>Tipo carta</span>
               <select id="cardEditorKind">
@@ -407,7 +855,7 @@
             </label>
           </div>
 
-          <div class="cardEditorFormGrid" data-card-editor-unit-only>
+          <div class="cardEditorFormGrid cardEditorStatsGrid" data-card-editor-unit-only>
             <label>
               <span>Tipo unità</span>
               <select id="cardEditorUnitType">
@@ -440,7 +888,7 @@
             </label>
           </div>
 
-          <div class="cardEditorFormGrid" data-card-editor-tactic-only hidden>
+          <div class="cardEditorFormGrid cardEditorStatsGrid" data-card-editor-tactic-only hidden>
             <label>
               <span>Categoria tattica</span>
               <select id="cardEditorTacticCategory">
@@ -469,7 +917,7 @@
             <textarea id="cardEditorDescription" rows="4"></textarea>
           </label>
 
-          <section class="cardEditorArtBox" id="cardEditorArtBox">
+          <details class="cardEditorArtBox cardEditorWorkbenchDetails" id="cardEditorArtBox" open><summary>Illustrazione e allineamento</summary><div class="cardEditorWorkbenchDetailsBody">
             <div class="deckBuilderBoxTitleRow">
               <h3>Illustrazione custom</h3>
               <span class="help" id="cardEditorArtResolutionHint">Unità: 800×780px · Tattiche: 800×670px</span>
@@ -535,7 +983,7 @@
                 <div id="cardEditorArtMeta" class="cardEditorArtMeta">Nessuna immagine caricata.</div>
               </div>
             </div>
-          </section>
+          </div></details>
 
           <div class="cardEditorAbilityGrid">
             <section class="cardEditorAbilityBox">
@@ -620,15 +1068,11 @@
           </div>
 
           <div id="cardEditorValidation" class="cardEditorValidation"></div>
-          <div class="cardEditorActions">
-            <button class="ghost" id="cardEditorDuplicateBtn" type="button">Duplica custom selezionata</button>
-            <button class="danger" id="cardEditorDeleteBtn" type="button">Elimina custom selezionata</button>
-          </div>
         </section>
 
-        <section class="deckBuilderBox cardEditorPreviewBox">
+        <section class="deckBuilderBox cardEditorPreviewBox" aria-label="Preview e libreria custom">
           <div class="deckBuilderBoxTitleRow">
-            <h3>Preview renderer live</h3>
+            <h3>Preview live</h3>
             <span class="help">La preview usa lo stesso renderer del Pool e del GameScreen.</span>
           </div>
           <div class="cardEditorPreviewLayout">
@@ -641,7 +1085,7 @@
             </div>
           </div>
 
-          <div class="deckBuilderBoxTitleRow cardEditorSavedTitle">
+          <section class="cardEditorLibrarySection"><div class="deckBuilderBoxTitleRow cardEditorSavedTitle">
             <h3>Libreria custom</h3>
             <span class="help" id="cardEditorLibraryCount">0/0 custom</span>
           </div>
@@ -654,10 +1098,13 @@
             </select>
             <select id="cardEditorLibraryFaction"></select>
           </div>
-          <div id="cardEditorSavedList" class="cardEditorSavedList"></div>
+          <div id="cardEditorSavedList" class="cardEditorSavedList"></div></section>
 
-          <div class="deckBuilderBoxTitleRow cardEditorSavedTitle">
-            <h3>Import / export libreria</h3>
+          <details class="cardEditorDataExchange" open>
+            <summary>Import / export libreria</summary>
+            <div class="cardEditorDataExchangeBody">
+              <div class="deckBuilderBoxTitleRow cardEditorSavedTitle">
+            <h3>Scambio dati custom</h3>
             <span class="help">Importa JSON custom F9K1/F9K2/F9K2b/F9K2c validi. Le carte ufficiali restano read-only.</span>
           </div>
           <div class="cardEditorImportBox">
@@ -669,6 +1116,8 @@
             </div>
             <div id="cardEditorImportStatus" class="cardEditorImportStatus"></div>
           </div>
+            </div>
+          </details>
         </section>
       </div>
     </div>
@@ -678,20 +1127,18 @@
   <section id="cardPoolScreen" class="appScreen cardPoolScreen" data-app-screen-panel="cardPool" aria-label="Pool carte Arena Rubra">
     <div class="mainMenuBackdrop"></div>
     <div class="deckBuilderCard cardPoolCard">
-      <header class="deckBuilderHeader">
+      <header class="deckBuilderHeader cardPoolHeader">
         <div>
           <div class="mainMenuKicker">Card Pool</div>
           <h2>Pool carte</h2>
-          <p class="deckBuilderIntro">F9K7 rende il laboratorio più navigabile: Pool, Card Editor e Deck Builder condividono accessi rapidi e setup deck più leggibile.</p>
+          <p class="deckBuilderIntro">Consulta il catalogo ufficiale e custom, confronta statistiche e abilità e apri gli strumenti tecnici soltanto quando servono.</p>
         </div>
-        <div class="deckBuilderHeaderActions">
-          <button class="primary" data-app-open-deck-builder type="button">Apri Deck Builder</button>
-          <button class="ghost" data-app-open-card-editor type="button">Apri Card Editor</button>
-          <button class="ghost" id="cardPoolCopySelectedBtn" type="button">Copia carta JSON</button>
-          <button class="ghost" id="cardPoolDuplicateSelectedBtn" type="button">Duplica in Editor</button>
-          <button class="ghost" id="cardPoolCopyManifestBtn" type="button">Copia manifest asset</button>
-          <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
-        </div>
+        <nav class="deckBuilderHeaderActions cardPoolHeaderActions" aria-label="Azioni Pool carte">
+          <button class="primary" data-app-open-deck-builder type="button">Deck Builder</button>
+          <button class="ghost" data-app-open-card-editor type="button">Card Editor</button>
+          <button class="ghost" id="cardPoolDuplicateSelectedBtn" type="button">Duplica selezionata</button>
+          <button class="ghost" data-app-back-menu type="button">Menu principale</button>
+        </nav>
       </header>
 
       <section class="deckBuilderControls cardPoolControls" aria-label="Filtri pool carte">
@@ -742,29 +1189,42 @@
       <section class="deckBuilderBox cardPoolPreviewBox">
         <div class="deckBuilderBoxTitleRow">
           <h3>Anteprima renderer</h3>
-          <span class="help">Preview più ampia, scorrimento con frecce e fullscreen utile soprattutto su mobile.</span>
+          <span class="help">Carta, statistiche e abilità allineate; i dati tecnici restano nel pannello Debug.</span>
         </div>
-        <div class="cardPoolPreviewToolbar">
+        <div class="cardPoolPreviewToolbar" aria-label="Controlli anteprima carte">
           <div class="cardPoolViewModeGroup" role="group" aria-label="Modalità vista pool carte">
+            <span class="cardPoolToolbarLabel">Vista</span>
             <button class="ghost active" id="cardPoolViewGalleryBtn" type="button">Galleria</button>
             <button class="ghost" id="cardPoolViewTableBtn" type="button">Tabella</button>
           </div>
           <div class="cardPoolNavGroup" role="group" aria-label="Navigazione carte filtrate">
-            <button class="ghost" id="cardPoolPrevBtn" type="button">← Prec.</button>
+            <button class="ghost" id="cardPoolPrevBtn" type="button">← Precedente</button>
             <span class="deckBuilderMeta compactMeta" id="cardPoolSelectionCounter">0/0</span>
-            <button class="ghost" id="cardPoolNextBtn" type="button">Succ. →</button>
-            <button class="primary" id="cardPoolFullscreenOpenBtn" type="button">Fullscreen</button>
-            <button class="ghost cardPoolFocusCloseBtn" id="cardPoolFullscreenCloseBtn" type="button">Chiudi fullscreen</button>
+            <button class="ghost" id="cardPoolNextBtn" type="button">Successiva →</button>
+          </div>
+          <div class="cardPoolFocusGroup" role="group" aria-label="Modalità focus anteprima">
+            <button class="primary" id="cardPoolFullscreenOpenBtn" type="button">Apri focus</button>
+            <button class="ghost cardPoolFocusCloseBtn" id="cardPoolFullscreenCloseBtn" type="button">Chiudi focus</button>
           </div>
         </div>
         <div class="cardPoolPreviewLayout">
           <div class="deckBuilderPreviewCanvasWrap cardPoolPreviewCanvasWrap">
             <canvas id="cardPoolPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta dal pool"></canvas>
           </div>
-          <div class="deckBuilderPreviewInfo">
-            <div id="cardPoolPreviewMeta" class="deckBuilderMeta">Nessuna carta selezionata.</div>
-            <div id="cardPoolPreviewBody" class="deckBuilderPreviewBody"></div>
-          </div>
+          <aside class="deckBuilderPreviewInfo cardPoolSelectedInfoBox" aria-label="Statistiche e abilità carta selezionata">
+            <div id="cardPoolPreviewMeta" class="deckBuilderMeta cardPoolPreviewMeta">Nessuna carta selezionata.</div>
+            <div id="cardPoolPreviewBody" class="deckBuilderPreviewBody cardPoolPreviewBody"></div>
+            <details id="cardPoolDebugDetails" class="cardPoolDebugDetails">
+              <summary class="ghost cardPoolDebugSummary">Debug</summary>
+              <div class="cardPoolDebugContent">
+                <div id="cardPoolDebugBody" class="deckBuilderPreviewPaths cardPoolDebugBody">Nessuna informazione tecnica disponibile.</div>
+                <div class="cardPoolDebugActions">
+                  <button class="ghost" id="cardPoolCopySelectedBtn" type="button">Copia carta JSON</button>
+                  <button class="ghost" id="cardPoolCopyManifestBtn" type="button">Copia manifest asset</button>
+                </div>
+              </div>
+            </details>
+          </aside>
         </div>
       </section>
 
@@ -813,13 +1273,21 @@
       <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9O2d-APK-M4c</span>)</span></h1>
     </div>
     <div class="topBarAction topBarRight">
-      <section class="arenaMusicControl arenaMusicControlGame" data-arena-music-control aria-label="Controlli musica partita">
-        <button class="ghost arenaMusicToggle" type="button" data-arena-music-toggle aria-pressed="true">Musica ON</button>
-        <label class="arenaMusicVolumeLabel">
-          <span class="srOnly">Volume musica</span>
-          <input type="range" min="0" max="100" step="1" value="65" data-arena-music-volume aria-label="Volume musica">
-          <output data-arena-music-volume-output>65%</output>
-        </label>
+      <button class="ghost topBarBtn gameDebugHeaderBtn" id="gameDebugHeaderBtn" type="button" aria-haspopup="menu" aria-controls="gameDebugMenu" aria-expanded="false">Debug</button>
+      <section class="arenaMusicControl arenaMusicControlGame" data-arena-music-control aria-label="Controlli audio e presentazione partita">
+        <div class="arenaGameAudioRow">
+          <button class="ghost arenaMusicToggle" type="button" data-arena-music-toggle aria-pressed="true">Musica ON</button>
+          <label class="arenaMusicVolumeLabel">
+            <span class="srOnly">Volume musica</span>
+            <input type="range" min="0" max="100" step="1" value="65" data-arena-music-volume aria-label="Volume musica">
+            <output data-arena-music-volume-output>65%</output>
+          </label>
+        </div>
+        <div class="arenaGamePresentationToggles" role="group" aria-label="Effetti, miniature e carte animate">
+          <button class="ghost arenaCardMotionToggle compact" type="button" data-arena-card-motion-toggle aria-pressed="false">Carte animate ON</button>
+          <button class="ghost arenaTokenFxToggle compact" type="button" data-arena-token-fx-toggle aria-pressed="true">Miniature FX ON</button>
+          <button class="ghost arenaSfxToggle compact" type="button" data-arena-sfx-toggle aria-pressed="true">Effetti ON</button>
+        </div>
       </section>
       <button class="danger topBarBtn" id="endTurnBtn" type="button">Fine turno</button>
     </div>
@@ -835,7 +1303,45 @@
     <span class="hudChip hudMode" id="gameHudMode">Pronto</span>
     <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
     <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9O2d-APK-M4c</span>
+    <button class="ghost hudDebugBtn" id="gameDebugBtn" type="button" aria-haspopup="menu" aria-controls="gameDebugMenu" aria-expanded="false">Debug</button>
+    <div class="gameComparisonBars" id="gameComparisonBars" aria-label="Confronto controllo PS e presenza unità" aria-live="polite">
+      <div class="gameComparisonRow" data-comparison-kind="ps">
+        <span class="gameComparisonLabel">PS</span>
+        <div class="gameComparisonTrack" role="img" aria-label="Controllo dei Punti Strategici">
+          <div class="gameComparisonSegments" id="gameComparisonPsSegments"></div>
+        </div>
+        <div class="gameComparisonCounters" id="gameComparisonPsCounters" aria-label="Contatori Punti Strategici"></div>
+      </div>
+      <div class="gameComparisonRow" data-comparison-kind="units">
+        <span class="gameComparisonLabel">Unità</span>
+        <div class="gameComparisonTrack" role="img" aria-label="Unità e strutture sul campo">
+          <div class="gameComparisonSegments" id="gameComparisonUnitSegments"></div>
+        </div>
+        <div class="gameComparisonCounters" id="gameComparisonUnitCounters" aria-label="Contatori unità e strutture"></div>
+      </div>
+    </div>
   </section>
+
+  <aside class="gameDebugMenu" id="gameDebugMenu" role="menu" aria-label="Debug partita" hidden>
+    <div class="gameDebugMenuHeader">
+      <div>
+        <strong>Debug partita</strong>
+        <span>Log, statistiche e diagnostica</span>
+      </div>
+      <button class="ghost compactIconBtn" id="closeGameDebugMenuBtn" type="button" aria-label="Chiudi menu Debug">×</button>
+    </div>
+    <div class="gameDebugMenuGrid">
+      <button class="ghost" type="button" data-game-debug-action="hand" role="menuitem">Mano</button>
+      <button class="ghost" type="button" data-game-debug-action="log" role="menuitem">Log</button>
+      <button class="ghost" type="button" data-game-debug-action="stats" role="menuitem">Statistiche</button>
+      <button class="ghost" type="button" data-game-debug-action="telemetry" role="menuitem">Telemetria</button>
+    </div>
+    <div class="gameDebugVersionBox">
+      <span>Build</span>
+      <strong id="gameDebugBuildLabel">—</strong>
+      <small id="gameDebugSchemaLabel">Schema telemetrico: F9Q3e1-2</small>
+    </div>
+  </aside>
 
   <main class="app mapFirstGameApp" id="mapFirstGameApp">
     <section class="panel setupPanel" data-game-panel="setup">
@@ -949,7 +1455,7 @@
 
         <div class="unitCard" id="turnInfo"></div>
         <div class="help">
-          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9N2a-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 30, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Pesanti 2 in campo per blueprint; elite/pivot e comandante 1; massimo 6 strutture, Agathoi 7. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
+          <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9S1b1-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 20 + ceil((PS+giocatori)/2), 7 incrementi, limite round 50, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, 5 incrementi, limite round 30 + ceil((PS+giocatori)/2), cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Per avanzare serve il PS centrale designato incluso in almeno ceil(PS/2) PS controllati. Pesanti 2 in campo per blueprint; elite/pivot non-struttura e comandante 1. Le strutture da deck non hanno cap generale; in modalità Tattica resta il cap di 2 strutture Starter vive per giocatore. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
         </div>
 
 
@@ -975,11 +1481,16 @@
           <div class="help">F9P1 usa uno storage layer unico: matchStats resta in memoria per la partita corrente, mentre storico matchup e storico partite leggero sono persistenti nel browser/app con export/import JSON.</div>
           <div class="statsToolbar">
             <button class="ghost" id="copyMatchStatsJsonBtn" type="button">Copia statistiche JSON</button>
+            <button class="ghost" id="copyMatchTelemetryJsonBtn" type="button">Copia telemetria F9Q3e1a</button>
             <button class="ghost" id="copyMatchReportBtn" type="button">Copia report sintetico</button>
             <button class="ghost" id="copyEventsJsonBtn" type="button">Copia eventi JSON</button>
             <button class="ghost" id="copyStatsFullLogBtn" type="button">Copia log completo</button>
           </div>
           <div id="currentMatchStatsPanel"></div>
+          <details open>
+            <summary>Telemetria testing F9Q3e1a</summary>
+            <div id="matchTelemetryPanel"></div>
+          </details>
           <details open>
             <summary>Storico partite persistente</summary>
             <div class="statsToolbar">
@@ -1037,7 +1548,7 @@
         </aside>
         <aside id="selectedUnitFloat" class="selectedUnitFloat isCollapsed" aria-label="Unità selezionata e azioni disponibili">
           <div class="selectedUnitFloatHeader">
-            <strong>Unità selezionata</strong>
+            <strong id="selectedUnitFloatTitle">Unità selezionata</strong>
             <button class="ghost compactIconBtn" id="toggleSelectedUnitFloatBtn" type="button" aria-label="Riduci o ingrandisci unità selezionata">+</button>
           </div>
           <div class="selectedUnitFloatBody">
@@ -1095,20 +1606,13 @@
 
   <div id="gamePanelScrim" class="gamePanelScrim" aria-hidden="true" hidden></div>
 
-  <nav class="gameActionBar" id="gameActionBar" aria-label="Azioni rapide partita">
-    <button class="ghost" type="button" data-game-action="fit">Fit</button>
-    <button class="ghost" type="button" data-game-action="focus">Focus</button>
-    <button class="ghost" type="button" data-game-action="hand">Mano</button>
-    <button class="ghost" type="button" data-game-action="actions">Azioni</button>
-    <button class="ghost" type="button" data-game-action="log">Log</button>
-    <button class="ghost" type="button" data-game-action="setup">Setup</button>
-    <button class="ghost" type="button" data-game-action="stats">Stats</button>
-  </nav>
+  <!-- F9U1b: HUD map-first con dock sinistro, inspector verticale e barre comparative PS/unità. -->
   </div>
 
   <script src="data/maps.js"></script>
 <script src="src/build_info.js"></script>
 <script src="src/constants.js"></script>
+<script src="src/data_store.js"></script>
 <script src="src/storage.js"></script>
 <script src="src/map_skins.js"></script>
 <script src="src/audio_manager.js"></script>
@@ -1116,16 +1620,26 @@
 <script src="src/visual_assets.js"></script>
 <script src="src/enums.js"></script>
 <script src="src/hex.js"></script>
+<script src="src/board_geometry.js"></script>
+<script src="data/terrain_registry.js"></script>
+<script src="data/official_maps_f9r3.js"></script>
+<script src="data/official_maps_f9s1b1.js"></script>
+<script src="data/map_definitions.js"></script>
+<script src="src/map_runtime.js"></script>
+<script src="src/map_backgrounds.js"></script>
 <script src="src/events.js"></script>
 <script src="src/board.js"></script>
 <script src="src/ai.js"></script>
 <script src="data/factions.js"></script>
 <script src="data/units_base.js"></script>
+<script src="data/unit_taxonomy.js"></script>
+<script src="data/token_fx_profiles.js"></script>
 <script src="data/tactics_base.js"></script>
   <script src="data/tactics_cards_c2.js"></script>
 <script src="data/missions_base.js"></script>
 <script src="data/builtin_decks.js"></script>
 <script src="data/cards_base.js"></script>
+<script src="data/tutorial_scenarios.js"></script>
 <script src="src/state.js"></script>
 <script src="src/missions.js"></script>
 <script src="src/mission_ui.js"></script>
@@ -1133,13 +1647,18 @@
 <script src="src/cards.js"></script>
 <script src="src/deck.js"></script>
 <script src="src/card_assets.js"></script>
+<script src="src/card_motion.js"></script>
 <script src="src/card_renderer.js"></script>
 <script src="src/renderer_calibration_lab.js"></script>
 <script src="src/menu_layout_calibration_lab.js"></script>
 <script src="src/deck_builder.js"></script>
 <script src="src/card_editor.js"></script>
 <script src="src/card_pool.js"></script>
+<script src="src/map_editor.js"></script>
+<script src="src/player_lifecycle.js"></script>
+<script src="src/ffa_attribution.js"></script>
 <script src="src/rules.js"></script>
+<script src="src/player_targeting.js"></script>
 <script src="src/economy.js"></script>
 <script src="src/statuses.js"></script>
 <script src="src/movement.js"></script>
@@ -1148,12 +1667,18 @@
 <script src="src/custom_tactics.js"></script>
 <script src="src/tactics.js"></script>
 <script src="src/deployment.js"></script>
+<script src="src/f9s1_runtime.js"></script>
+<script src="src/f9s1b_runtime.js"></script>
 <script src="src/mission_rewards.js"></script>
 <script src="src/mission_ai.js"></script>
 <script src="src/stats.js"></script>
+<script src="src/match_telemetry.js"></script>
 <script src="src/render.js"></script>
 <script src="src/combat_feedback.js"></script>
+<script src="src/token_fx.js"></script>
+<script src="src/sfx_manager.js"></script>
 <script src="src/event_overlay.js"></script>
+<script src="src/tutorial_runtime.js"></script>
 <script src="src/main.js"></script>
 <script src="src/game.js"></script>
 <script src="src/turns.js"></script>
@@ -1162,6 +1687,9 @@
 <script src="src/panel_manager.js"></script>
 <script src="src/camera.js"></script>
 <script src="src/game_screen.js"></script>
+<script src="src/f9u1a_ui.js"></script>
+<script src="src/f9u1b_ui.js"></script>
+<script src="src/control_center.js"></script>
 <script src="src/app.js"></script>
 <script src="src/ui.js"></script>
 <script src="src/splash.js"></script>

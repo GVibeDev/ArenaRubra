@@ -1,0 +1,45 @@
+ARENA RUBRA — F9O5 TEST REPORT
+Build: C2-STABLE-1-F9O5-APK-M4c
+Baseline: C2-STABLE-1-F9O4f-APK-M4c
+Data: 23 luglio 2026
+
+AUDIT TASSONOMIA
+- Blueprint: 96
+- Starter: 15
+- Leggere: 15
+- Pesanti: 31
+- Elite: 20
+- Pivot: 5
+- Comandanti: 10
+- Errori: 0
+- Avvisi: 0
+
+STARTER
+- 5 Starter Fanteria
+- 5 Starter Veicolo
+- 5 Starter Struttura
+- Esattamente 3 Starter per fazione
+
+PRESET FABEOT
+- Ex Lucis Tenebrae: 30 carte; 1 Spia Silente; 2 Agenti Opportunisti
+- Cospirazione: 30 carte; 1 Spia Silente; 2 Agenti Espropriatori
+- Architetto Nero resta Pivot
+- Cittadella Fabeot resta Elite
+
+TEST AUTOMATICI
+- JavaScript syntax: 98/98
+- Suite Node: 35/35
+- Suite Python/Chromium: 15/15
+- Test dedicato F9O5: superato
+- Riferimenti HTML: 68 verificati
+- Script duplicati: 0
+
+RIFERIMENTI LITE VOLUTAMENTE ASSENTI
+- assets/intro/g-vibe-dev-logo.png
+- assets/intro/arena-rubra-title.png
+- assets/audio/432-hertz-rift.mp3
+
+NOTE
+- La build LITE omette gli asset binari delle miniature.
+- La copertura reale deve essere riesaminata dopo la fusione con il deploy FULL.
+- Nessun test automatico sostituisce la verifica visiva su APK Android reale.

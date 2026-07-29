@@ -1,0 +1,27 @@
+"use strict";
+const fs = require("fs");
+const path = require("path");
+const root = path.resolve(__dirname, "..");
+const tutorial = fs.readFileSync(path.join(root,"src/tutorial_runtime.js"),"utf8");
+const camera = fs.readFileSync(path.join(root,"src/camera_interaction.js"),"utf8");
+const css = fs.readFileSync(path.join(root,"css/style.css"),"utf8");
+const build = fs.readFileSync(path.join(root,"src/build_info.js"),"utf8");
+const cards = fs.readFileSync(path.join(root,"data/cards_base.js"),"utf8");
+let checks=0;
+function ok(value,label){ checks++; if(!value) throw new Error(label); }
+ok(build.includes('version: "C2-STABLE-1-F9O7h-APK-M4c"'),"metadata F9O7h");
+ok(cards.includes("tutorialFullCardPreviewVisibilityF9O7h: true"),"flag preview");
+ok(cards.includes("tutorialRequiredActionPulseF9O7h: true"),"flag pulse");
+ok(cards.includes("tutorialAdaptiveCameraSafeViewportF9O7h: true"),"flag camera");
+ok(tutorial.includes("function tutorialRuntimeApplyAttention"),"attention runtime");
+ok(tutorial.includes(".narrativeNextBtn:not([hidden]):not(:disabled)"),"Avanti pulsante richiesto");
+ok(tutorial.includes("function tutorialRuntimeLargestFreeRect"),"safe viewport solver");
+ok(tutorial.includes("tutorialRuntimeOccluderRects"),"occluder vignetta/mano");
+ok(tutorial.includes("tutorialRuntimeStepNeedsAdaptiveFocus"),"focus automatico map target");
+ok(tutorial.includes("viewportPoint = safe.point"),"safe point camera");
+ok(camera.includes("options.viewportPoint"),"camera viewport point API");
+ok(css.includes("F9O7h — Tutorial Guidance & Adaptive Framing"),"css milestone");
+ok(css.includes("body.tutorial-runtime-active .mapHandSelectionPreview.isVisible"),"preview sopra scrim");
+ok(css.includes("tutorialRequiredActionPulse"),"animazione click richiesto");
+ok(css.includes("prefers-reduced-motion: reduce"),"reduced motion");
+console.log(`F9O7h tutorial guidance smoke: ${checks}/${checks} OK`);

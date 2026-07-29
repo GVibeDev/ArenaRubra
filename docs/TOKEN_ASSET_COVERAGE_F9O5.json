@@ -1,0 +1,1740 @@
+{
+  "schema": "arena-rubra-token-coverage-f9o5-v1",
+  "build": "C2-STABLE-1-F9O5-APK-M4c",
+  "generatedAt": "2026-07-23T18:08:36.104Z",
+  "assetRoot": "assets/tokens/",
+  "assetFormat": "webp",
+  "fallbackOrder": [
+    "dedicated",
+    "faction-type-class",
+    "faction-class",
+    "fallback-class",
+    "legacy-faction-type",
+    "procedural"
+  ],
+  "note": "La build LITE omette gli asset binari. presentInLite non misura la copertura del deploy FULL.",
+  "summary": {
+    "units": 96,
+    "dedicatedPresentInLite": 0,
+    "proceduralFallbackInLite": 96
+  },
+  "coverage": [
+    {
+      "id": "NX2B01",
+      "faction": "Nexus",
+      "name": "Droide di Sicurezza",
+      "type": "Fanteria",
+      "unitClass": "starter",
+      "tokenAssetId": "nx2b01",
+      "candidates": [
+        "assets/tokens/nexus/units/nx2b01.webp",
+        "assets/tokens/nexus/infantry/starter.webp",
+        "assets/tokens/nexus/starter.webp",
+        "assets/tokens/nexus/infantry/light.webp",
+        "assets/tokens/nexus/light.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NX2B04",
+      "faction": "Nexus",
+      "name": "Drone Militare Pesante",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "nx2b04",
+      "candidates": [
+        "assets/tokens/nexus/units/nx2b04.webp",
+        "assets/tokens/nexus/infantry/heavy.webp",
+        "assets/tokens/nexus/heavy.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NX2B05",
+      "faction": "Nexus",
+      "name": "Cyborg Incursore",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "nx2b05",
+      "candidates": [
+        "assets/tokens/nexus/units/nx2b05.webp",
+        "assets/tokens/nexus/infantry/elite.webp",
+        "assets/tokens/nexus/elite.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NX3B01",
+      "faction": "Nexus",
+      "name": "Quad Ricognitore",
+      "type": "Veicolo",
+      "unitClass": "starter",
+      "tokenAssetId": "nx3b01",
+      "candidates": [
+        "assets/tokens/nexus/units/nx3b01.webp",
+        "assets/tokens/nexus/vehicle/starter.webp",
+        "assets/tokens/nexus/starter.webp",
+        "assets/tokens/nexus/vehicle/light.webp",
+        "assets/tokens/nexus/light.webp",
+        "assets/tokens/nexus/vehicle.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NX3B03",
+      "faction": "Nexus",
+      "name": "Mech Pesante",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "nx3b03",
+      "candidates": [
+        "assets/tokens/nexus/units/nx3b03.webp",
+        "assets/tokens/nexus/vehicle/heavy.webp",
+        "assets/tokens/nexus/heavy.webp",
+        "assets/tokens/nexus/vehicle.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NX4B03",
+      "faction": "Nexus",
+      "name": "Bunker",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "nx4b03",
+      "candidates": [
+        "assets/tokens/nexus/units/nx4b03.webp",
+        "assets/tokens/nexus/structure/heavy.webp",
+        "assets/tokens/nexus/heavy.webp",
+        "assets/tokens/nexus/structure.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXPIV01",
+      "faction": "Nexus",
+      "name": "Fortezza Mobile",
+      "type": "Veicolo",
+      "unitClass": "pivot",
+      "tokenAssetId": "nxpiv01",
+      "candidates": [
+        "assets/tokens/nexus/units/nxpiv01.webp",
+        "assets/tokens/nexus/vehicle/pivot.webp",
+        "assets/tokens/nexus/pivot.webp",
+        "assets/tokens/nexus/vehicle.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXCMD01",
+      "faction": "Nexus",
+      "name": "Avatex",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "nxcmd01",
+      "candidates": [
+        "assets/tokens/nexus/units/nxcmd01.webp",
+        "assets/tokens/nexus/commander/commander.webp",
+        "assets/tokens/nexus/commander.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXCMD02",
+      "faction": "Nexus",
+      "name": "Unità Comando",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "nxcmd02",
+      "candidates": [
+        "assets/tokens/nexus/units/nxcmd02.webp",
+        "assets/tokens/nexus/commander/commander.webp",
+        "assets/tokens/nexus/commander.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NX0B00",
+      "faction": "Nexus",
+      "name": "Nodo Comando Nexus",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "nx0b00",
+      "candidates": [
+        "assets/tokens/nexus/units/nx0b00.webp",
+        "assets/tokens/nexus/structure/heavy.webp",
+        "assets/tokens/nexus/heavy.webp",
+        "assets/tokens/nexus/structure.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F01",
+      "faction": "Nexus",
+      "name": "Fante Robot",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "nxc1f01",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f01.webp",
+        "assets/tokens/nexus/infantry/light.webp",
+        "assets/tokens/nexus/light.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F02",
+      "faction": "Nexus",
+      "name": "Drone Geniere",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "nxc1f02",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f02.webp",
+        "assets/tokens/nexus/infantry/heavy.webp",
+        "assets/tokens/nexus/heavy.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F03",
+      "faction": "Nexus",
+      "name": "Mech Leggero",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "nxc1f03",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f03.webp",
+        "assets/tokens/nexus/vehicle/light.webp",
+        "assets/tokens/nexus/light.webp",
+        "assets/tokens/nexus/vehicle.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F04",
+      "faction": "Nexus",
+      "name": "Corazzato Assalto",
+      "type": "Veicolo",
+      "unitClass": "elite",
+      "tokenAssetId": "nxc1f04",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f04.webp",
+        "assets/tokens/nexus/vehicle/elite.webp",
+        "assets/tokens/nexus/elite.webp",
+        "assets/tokens/nexus/vehicle.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F05",
+      "faction": "Nexus",
+      "name": "Corazzato Posamine",
+      "type": "Veicolo",
+      "unitClass": "elite",
+      "tokenAssetId": "nxc1f05",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f05.webp",
+        "assets/tokens/nexus/vehicle/elite.webp",
+        "assets/tokens/nexus/elite.webp",
+        "assets/tokens/nexus/vehicle.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F06",
+      "faction": "Nexus",
+      "name": "Barriera Difensiva",
+      "type": "Struttura",
+      "unitClass": "light",
+      "tokenAssetId": "nxc1f06",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f06.webp",
+        "assets/tokens/nexus/structure/light.webp",
+        "assets/tokens/nexus/light.webp",
+        "assets/tokens/nexus/structure.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F07",
+      "faction": "Nexus",
+      "name": "Barriera Armata",
+      "type": "Struttura",
+      "unitClass": "starter",
+      "tokenAssetId": "nxc1f07",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f07.webp",
+        "assets/tokens/nexus/structure/starter.webp",
+        "assets/tokens/nexus/starter.webp",
+        "assets/tokens/nexus/structure/light.webp",
+        "assets/tokens/nexus/light.webp",
+        "assets/tokens/nexus/structure.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F08",
+      "faction": "Nexus",
+      "name": "Fabbrica Automatizzata",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "nxc1f08",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f08.webp",
+        "assets/tokens/nexus/structure/heavy.webp",
+        "assets/tokens/nexus/heavy.webp",
+        "assets/tokens/nexus/structure.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "NXC1F09",
+      "faction": "Nexus",
+      "name": "Torre Difensiva",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "nxc1f09",
+      "candidates": [
+        "assets/tokens/nexus/units/nxc1f09.webp",
+        "assets/tokens/nexus/structure/elite.webp",
+        "assets/tokens/nexus/elite.webp",
+        "assets/tokens/nexus/structure.webp",
+        "assets/tokens/nexus/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX1B01",
+      "faction": "Exordium",
+      "name": "Guardia di Aurex",
+      "type": "Fanteria",
+      "unitClass": "starter",
+      "tokenAssetId": "ex1b01",
+      "candidates": [
+        "assets/tokens/exordium/units/ex1b01.webp",
+        "assets/tokens/exordium/infantry/starter.webp",
+        "assets/tokens/exordium/starter.webp",
+        "assets/tokens/exordium/infantry/light.webp",
+        "assets/tokens/exordium/light.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX1B04",
+      "faction": "Exordium",
+      "name": "Legionario Pesante",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "ex1b04",
+      "candidates": [
+        "assets/tokens/exordium/units/ex1b04.webp",
+        "assets/tokens/exordium/infantry/heavy.webp",
+        "assets/tokens/exordium/heavy.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX2B01",
+      "faction": "Exordium",
+      "name": "Veicolo Ricognitore",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "ex2b01",
+      "candidates": [
+        "assets/tokens/exordium/units/ex2b01.webp",
+        "assets/tokens/exordium/vehicle/light.webp",
+        "assets/tokens/exordium/light.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX2B03",
+      "faction": "Exordium",
+      "name": "Carro Medio Exordium",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "ex2b03",
+      "candidates": [
+        "assets/tokens/exordium/units/ex2b03.webp",
+        "assets/tokens/exordium/vehicle/heavy.webp",
+        "assets/tokens/exordium/heavy.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX2B04",
+      "faction": "Exordium",
+      "name": "Artiglieria Exordium",
+      "type": "Veicolo",
+      "unitClass": "elite",
+      "tokenAssetId": "ex2b04",
+      "candidates": [
+        "assets/tokens/exordium/units/ex2b04.webp",
+        "assets/tokens/exordium/vehicle/elite.webp",
+        "assets/tokens/exordium/elite.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX4B02",
+      "faction": "Exordium",
+      "name": "Bastione Armato",
+      "type": "Struttura",
+      "unitClass": "starter",
+      "tokenAssetId": "ex4b02",
+      "candidates": [
+        "assets/tokens/exordium/units/ex4b02.webp",
+        "assets/tokens/exordium/structure/starter.webp",
+        "assets/tokens/exordium/starter.webp",
+        "assets/tokens/exordium/structure/light.webp",
+        "assets/tokens/exordium/light.webp",
+        "assets/tokens/exordium/structure.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXPIV01",
+      "faction": "Exordium",
+      "name": "Orgoglio di Aurex",
+      "type": "Veicolo",
+      "unitClass": "pivot",
+      "tokenAssetId": "expiv01",
+      "candidates": [
+        "assets/tokens/exordium/units/expiv01.webp",
+        "assets/tokens/exordium/vehicle/pivot.webp",
+        "assets/tokens/exordium/pivot.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EX0B00",
+      "faction": "Exordium",
+      "name": "Varran",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "ex0b00",
+      "candidates": [
+        "assets/tokens/exordium/units/ex0b00.webp",
+        "assets/tokens/exordium/commander/commander.webp",
+        "assets/tokens/exordium/commander.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXCMD02",
+      "faction": "Exordium",
+      "name": "Nemira",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "excmd02",
+      "candidates": [
+        "assets/tokens/exordium/units/excmd02.webp",
+        "assets/tokens/exordium/commander/commander.webp",
+        "assets/tokens/exordium/commander.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F01",
+      "faction": "Exordium",
+      "name": "Il Tribuno",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "exc1f01",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f01.webp",
+        "assets/tokens/exordium/infantry/light.webp",
+        "assets/tokens/exordium/light.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F02",
+      "faction": "Exordium",
+      "name": "Legionario d'Assedio",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "exc1f02",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f02.webp",
+        "assets/tokens/exordium/infantry/heavy.webp",
+        "assets/tokens/exordium/heavy.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F03",
+      "faction": "Exordium",
+      "name": "Legionario Scelto",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "exc1f03",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f03.webp",
+        "assets/tokens/exordium/infantry/elite.webp",
+        "assets/tokens/exordium/elite.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F04",
+      "faction": "Exordium",
+      "name": "Cursor",
+      "type": "Veicolo",
+      "unitClass": "starter",
+      "tokenAssetId": "exc1f04",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f04.webp",
+        "assets/tokens/exordium/vehicle/starter.webp",
+        "assets/tokens/exordium/starter.webp",
+        "assets/tokens/exordium/vehicle/light.webp",
+        "assets/tokens/exordium/light.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F05",
+      "faction": "Exordium",
+      "name": "Carro Leggero",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "exc1f05",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f05.webp",
+        "assets/tokens/exordium/vehicle/light.webp",
+        "assets/tokens/exordium/light.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F06",
+      "faction": "Exordium",
+      "name": "Testudo",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "exc1f06",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f06.webp",
+        "assets/tokens/exordium/vehicle/heavy.webp",
+        "assets/tokens/exordium/heavy.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F07",
+      "faction": "Exordium",
+      "name": "Iupiter",
+      "type": "Veicolo",
+      "unitClass": "elite",
+      "tokenAssetId": "exc1f07",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f07.webp",
+        "assets/tokens/exordium/vehicle/elite.webp",
+        "assets/tokens/exordium/elite.webp",
+        "assets/tokens/exordium/vehicle.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F08",
+      "faction": "Exordium",
+      "name": "Avamposto Exordium",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "exc1f08",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f08.webp",
+        "assets/tokens/exordium/structure/heavy.webp",
+        "assets/tokens/exordium/heavy.webp",
+        "assets/tokens/exordium/structure.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F09",
+      "faction": "Exordium",
+      "name": "Caserma Fanteria",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "exc1f09",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f09.webp",
+        "assets/tokens/exordium/structure/heavy.webp",
+        "assets/tokens/exordium/heavy.webp",
+        "assets/tokens/exordium/structure.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "EXC1F10",
+      "faction": "Exordium",
+      "name": "Torretta Lanciafiamme",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "exc1f10",
+      "candidates": [
+        "assets/tokens/exordium/units/exc1f10.webp",
+        "assets/tokens/exordium/structure/elite.webp",
+        "assets/tokens/exordium/elite.webp",
+        "assets/tokens/exordium/structure.webp",
+        "assets/tokens/exordium/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX2B01",
+      "faction": "Liberti",
+      "name": "Miliziano Liberto",
+      "type": "Fanteria",
+      "unitClass": "starter",
+      "tokenAssetId": "lx2b01",
+      "candidates": [
+        "assets/tokens/liberti/units/lx2b01.webp",
+        "assets/tokens/liberti/infantry/starter.webp",
+        "assets/tokens/liberti/starter.webp",
+        "assets/tokens/liberti/infantry/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX2B02",
+      "faction": "Liberti",
+      "name": "Predone Liberto",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "lx2b02",
+      "candidates": [
+        "assets/tokens/liberti/units/lx2b02.webp",
+        "assets/tokens/liberti/infantry/heavy.webp",
+        "assets/tokens/liberti/heavy.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX3B02",
+      "faction": "Liberti",
+      "name": "Moto Guerriglia",
+      "type": "Veicolo",
+      "unitClass": "starter",
+      "tokenAssetId": "lx3b02",
+      "candidates": [
+        "assets/tokens/liberti/units/lx3b02.webp",
+        "assets/tokens/liberti/vehicle/starter.webp",
+        "assets/tokens/liberti/starter.webp",
+        "assets/tokens/liberti/vehicle/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX3B01",
+      "faction": "Liberti",
+      "name": "Buggy Predone",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "lx3b01",
+      "candidates": [
+        "assets/tokens/liberti/units/lx3b01.webp",
+        "assets/tokens/liberti/vehicle/heavy.webp",
+        "assets/tokens/liberti/heavy.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX3B03",
+      "faction": "Liberti",
+      "name": "Carro Recuperato Titanus",
+      "type": "Veicolo",
+      "unitClass": "elite",
+      "tokenAssetId": "lx3b03",
+      "candidates": [
+        "assets/tokens/liberti/units/lx3b03.webp",
+        "assets/tokens/liberti/vehicle/elite.webp",
+        "assets/tokens/liberti/elite.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX4B01",
+      "faction": "Liberti",
+      "name": "Punto di Raccolta",
+      "type": "Struttura",
+      "unitClass": "starter",
+      "tokenAssetId": "lx4b01",
+      "candidates": [
+        "assets/tokens/liberti/units/lx4b01.webp",
+        "assets/tokens/liberti/structure/starter.webp",
+        "assets/tokens/liberti/starter.webp",
+        "assets/tokens/liberti/structure/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/structure.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXPIV01",
+      "faction": "Liberti",
+      "name": "Bestia della Fossa",
+      "type": "Veicolo",
+      "unitClass": "pivot",
+      "tokenAssetId": "lxpiv01",
+      "candidates": [
+        "assets/tokens/liberti/units/lxpiv01.webp",
+        "assets/tokens/liberti/vehicle/pivot.webp",
+        "assets/tokens/liberti/pivot.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LX0B00",
+      "faction": "Liberti",
+      "name": "Rauk del Ripudio",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "lx0b00",
+      "candidates": [
+        "assets/tokens/liberti/units/lx0b00.webp",
+        "assets/tokens/liberti/commander/commander.webp",
+        "assets/tokens/liberti/commander.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXCMD02",
+      "faction": "Liberti",
+      "name": "Pravus dei Sanguis",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "lxcmd02",
+      "candidates": [
+        "assets/tokens/liberti/units/lxcmd02.webp",
+        "assets/tokens/liberti/commander/commander.webp",
+        "assets/tokens/liberti/commander.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1F01",
+      "faction": "Liberti",
+      "name": "Avanguardia Liberta",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "lxc1f01",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1f01.webp",
+        "assets/tokens/liberti/infantry/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1F02",
+      "faction": "Liberti",
+      "name": "Predone Sanguis",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "lxc1f02",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1f02.webp",
+        "assets/tokens/liberti/infantry/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1F03",
+      "faction": "Liberti",
+      "name": "Buggy Demolitore",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "lxc1f03",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1f03.webp",
+        "assets/tokens/liberti/vehicle/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1HA01",
+      "faction": "Liberti",
+      "name": "Predone cacciacarri",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "lxc1ha01",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1ha01.webp",
+        "assets/tokens/liberti/infantry/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1HA02",
+      "faction": "Liberti",
+      "name": "Predone corazzato",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "lxc1ha02",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1ha02.webp",
+        "assets/tokens/liberti/infantry/heavy.webp",
+        "assets/tokens/liberti/heavy.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1HA03",
+      "faction": "Liberti",
+      "name": "Buggy da Sbarco",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "lxc1ha03",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1ha03.webp",
+        "assets/tokens/liberti/vehicle/light.webp",
+        "assets/tokens/liberti/light.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1HA04",
+      "faction": "Liberti",
+      "name": "Ariete Liberto",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "lxc1ha04",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1ha04.webp",
+        "assets/tokens/liberti/vehicle/heavy.webp",
+        "assets/tokens/liberti/heavy.webp",
+        "assets/tokens/liberti/vehicle.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "LXC1HA05",
+      "faction": "Liberti",
+      "name": "Forte di Rottami",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "lxc1ha05",
+      "candidates": [
+        "assets/tokens/liberti/units/lxc1ha05.webp",
+        "assets/tokens/liberti/structure/heavy.webp",
+        "assets/tokens/liberti/heavy.webp",
+        "assets/tokens/liberti/structure.webp",
+        "assets/tokens/liberti/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG1B01",
+      "faction": "Agathoi",
+      "name": "Custode Agathoi",
+      "type": "Fanteria",
+      "unitClass": "starter",
+      "tokenAssetId": "ag1b01",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag1b01.webp",
+        "assets/tokens/agathoi/infantry/starter.webp",
+        "assets/tokens/agathoi/starter.webp",
+        "assets/tokens/agathoi/infantry/light.webp",
+        "assets/tokens/agathoi/light.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG1B02",
+      "faction": "Agathoi",
+      "name": "Oplita di Confine",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "ag1b02",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag1b02.webp",
+        "assets/tokens/agathoi/infantry/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG1B03",
+      "faction": "Agathoi",
+      "name": "Lancia Verde",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "ag1b03",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag1b03.webp",
+        "assets/tokens/agathoi/infantry/elite.webp",
+        "assets/tokens/agathoi/elite.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG2B01",
+      "faction": "Agathoi",
+      "name": "Carro Falange",
+      "type": "Veicolo",
+      "unitClass": "starter",
+      "tokenAssetId": "ag2b01",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag2b01.webp",
+        "assets/tokens/agathoi/vehicle/starter.webp",
+        "assets/tokens/agathoi/starter.webp",
+        "assets/tokens/agathoi/vehicle/light.webp",
+        "assets/tokens/agathoi/light.webp",
+        "assets/tokens/agathoi/vehicle.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG2B02",
+      "faction": "Agathoi",
+      "name": "Aratro Corazzato",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "ag2b02",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag2b02.webp",
+        "assets/tokens/agathoi/vehicle/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/vehicle.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG4B01",
+      "faction": "Agathoi",
+      "name": "Radura Curativa",
+      "type": "Struttura",
+      "unitClass": "starter",
+      "tokenAssetId": "ag4b01",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag4b01.webp",
+        "assets/tokens/agathoi/structure/starter.webp",
+        "assets/tokens/agathoi/starter.webp",
+        "assets/tokens/agathoi/structure/light.webp",
+        "assets/tokens/agathoi/light.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG4B02",
+      "faction": "Agathoi",
+      "name": "Bastione di Pietra Viva",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "ag4b02",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag4b02.webp",
+        "assets/tokens/agathoi/structure/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGPIV01",
+      "faction": "Agathoi",
+      "name": "Selva Simbiotica",
+      "type": "Struttura",
+      "unitClass": "pivot",
+      "tokenAssetId": "agpiv01",
+      "candidates": [
+        "assets/tokens/agathoi/units/agpiv01.webp",
+        "assets/tokens/agathoi/structure/pivot.webp",
+        "assets/tokens/agathoi/pivot.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AG0B00",
+      "faction": "Agathoi",
+      "name": "Alexandros",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "ag0b00",
+      "candidates": [
+        "assets/tokens/agathoi/units/ag0b00.webp",
+        "assets/tokens/agathoi/commander/commander.webp",
+        "assets/tokens/agathoi/commander.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGCMD02",
+      "faction": "Agathoi",
+      "name": "Dycaios",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "agcmd02",
+      "candidates": [
+        "assets/tokens/agathoi/units/agcmd02.webp",
+        "assets/tokens/agathoi/commander/commander.webp",
+        "assets/tokens/agathoi/commander.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F01",
+      "faction": "Agathoi",
+      "name": "Theron",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "agc1f01",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f01.webp",
+        "assets/tokens/agathoi/infantry/light.webp",
+        "assets/tokens/agathoi/light.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F02",
+      "faction": "Agathoi",
+      "name": "Apheton",
+      "type": "Fanteria",
+      "unitClass": "light",
+      "tokenAssetId": "agc1f02",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f02.webp",
+        "assets/tokens/agathoi/infantry/light.webp",
+        "assets/tokens/agathoi/light.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F03",
+      "faction": "Agathoi",
+      "name": "Phylax Difensore",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "agc1f03",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f03.webp",
+        "assets/tokens/agathoi/infantry/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F04",
+      "faction": "Agathoi",
+      "name": "Anthropos di Pietra",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "agc1f04",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f04.webp",
+        "assets/tokens/agathoi/infantry/elite.webp",
+        "assets/tokens/agathoi/elite.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F05",
+      "faction": "Agathoi",
+      "name": "Aratron Camminatore",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "agc1f05",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f05.webp",
+        "assets/tokens/agathoi/vehicle/light.webp",
+        "assets/tokens/agathoi/light.webp",
+        "assets/tokens/agathoi/vehicle.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F06",
+      "faction": "Agathoi",
+      "name": "Karyon Mobile",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "agc1f06",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f06.webp",
+        "assets/tokens/agathoi/vehicle/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/vehicle.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F07",
+      "faction": "Agathoi",
+      "name": "Oplon da Raccolto",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "agc1f07",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f07.webp",
+        "assets/tokens/agathoi/vehicle/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/vehicle.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F08",
+      "faction": "Agathoi",
+      "name": "Tholos Sacro",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "agc1f08",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f08.webp",
+        "assets/tokens/agathoi/structure/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F09",
+      "faction": "Agathoi",
+      "name": "Peribolos Murario",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "agc1f09",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f09.webp",
+        "assets/tokens/agathoi/structure/heavy.webp",
+        "assets/tokens/agathoi/heavy.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F10",
+      "faction": "Agathoi",
+      "name": "Ekklesion del Raccolto",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "agc1f10",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f10.webp",
+        "assets/tokens/agathoi/structure/elite.webp",
+        "assets/tokens/agathoi/elite.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F11",
+      "faction": "Agathoi",
+      "name": "Cisterna Radicata",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "agc1f11",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f11.webp",
+        "assets/tokens/agathoi/structure/elite.webp",
+        "assets/tokens/agathoi/elite.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "AGC1F12",
+      "faction": "Agathoi",
+      "name": "Domos Cosmico",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "agc1f12",
+      "candidates": [
+        "assets/tokens/agathoi/units/agc1f12.webp",
+        "assets/tokens/agathoi/structure/elite.webp",
+        "assets/tokens/agathoi/elite.webp",
+        "assets/tokens/agathoi/structure.webp",
+        "assets/tokens/agathoi/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB1B01",
+      "faction": "Fabeot",
+      "name": "Adepto Fabeot",
+      "type": "Fanteria",
+      "unitClass": "starter",
+      "tokenAssetId": "fb1b01",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb1b01.webp",
+        "assets/tokens/fabeot/infantry/starter.webp",
+        "assets/tokens/fabeot/starter.webp",
+        "assets/tokens/fabeot/infantry/light.webp",
+        "assets/tokens/fabeot/light.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB1B02",
+      "faction": "Fabeot",
+      "name": "Iniziato Fabeot",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "fb1b02",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb1b02.webp",
+        "assets/tokens/fabeot/infantry/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB1B03",
+      "faction": "Fabeot",
+      "name": "Maestro Fabeot",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "fb1b03",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb1b03.webp",
+        "assets/tokens/fabeot/infantry/elite.webp",
+        "assets/tokens/fabeot/elite.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB2B01",
+      "faction": "Fabeot",
+      "name": "Inseguitore Fabeot",
+      "type": "Veicolo",
+      "unitClass": "starter",
+      "tokenAssetId": "fb2b01",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb2b01.webp",
+        "assets/tokens/fabeot/vehicle/starter.webp",
+        "assets/tokens/fabeot/starter.webp",
+        "assets/tokens/fabeot/vehicle/light.webp",
+        "assets/tokens/fabeot/light.webp",
+        "assets/tokens/fabeot/vehicle.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB2B02",
+      "faction": "Fabeot",
+      "name": "Persecutore Fabeot",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "fb2b02",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb2b02.webp",
+        "assets/tokens/fabeot/vehicle/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/vehicle.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB4B01",
+      "faction": "Fabeot",
+      "name": "Avamposto Fabeot",
+      "type": "Struttura",
+      "unitClass": "starter",
+      "tokenAssetId": "fb4b01",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb4b01.webp",
+        "assets/tokens/fabeot/structure/starter.webp",
+        "assets/tokens/fabeot/starter.webp",
+        "assets/tokens/fabeot/structure/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/structure.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBPIV01",
+      "faction": "Fabeot",
+      "name": "Cittadella Fabeot",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "fbpiv01",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbpiv01.webp",
+        "assets/tokens/fabeot/structure/elite.webp",
+        "assets/tokens/fabeot/elite.webp",
+        "assets/tokens/fabeot/structure.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FB0B00",
+      "faction": "Fabeot",
+      "name": "Gerarca Fabeot",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "fb0b00",
+      "candidates": [
+        "assets/tokens/fabeot/units/fb0b00.webp",
+        "assets/tokens/fabeot/commander/commander.webp",
+        "assets/tokens/fabeot/commander.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBCMD02",
+      "faction": "Fabeot",
+      "name": "Emissario della Torre",
+      "type": "Comandante",
+      "unitClass": "commander",
+      "tokenAssetId": "fbcmd02",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbcmd02.webp",
+        "assets/tokens/fabeot/commander/commander.webp",
+        "assets/tokens/fabeot/commander.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F01",
+      "faction": "Fabeot",
+      "name": "Spia Silente",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "fbc1f01",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f01.webp",
+        "assets/tokens/fabeot/infantry/elite.webp",
+        "assets/tokens/fabeot/elite.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F02",
+      "faction": "Fabeot",
+      "name": "Agente Opportunista",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "fbc1f02",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f02.webp",
+        "assets/tokens/fabeot/infantry/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F03",
+      "faction": "Fabeot",
+      "name": "Agente Espropriatore",
+      "type": "Fanteria",
+      "unitClass": "heavy",
+      "tokenAssetId": "fbc1f03",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f03.webp",
+        "assets/tokens/fabeot/infantry/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F04",
+      "faction": "Fabeot",
+      "name": "Architetto Nero",
+      "type": "Fanteria",
+      "unitClass": "pivot",
+      "tokenAssetId": "fbc1f04",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f04.webp",
+        "assets/tokens/fabeot/infantry/pivot.webp",
+        "assets/tokens/fabeot/pivot.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F05",
+      "faction": "Fabeot",
+      "name": "Agente Sabotatore",
+      "type": "Fanteria",
+      "unitClass": "elite",
+      "tokenAssetId": "fbc1f05",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f05.webp",
+        "assets/tokens/fabeot/infantry/elite.webp",
+        "assets/tokens/fabeot/elite.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F06",
+      "faction": "Fabeot",
+      "name": "Matrice Multigenica",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "fbc1f06",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f06.webp",
+        "assets/tokens/fabeot/structure/elite.webp",
+        "assets/tokens/fabeot/elite.webp",
+        "assets/tokens/fabeot/structure.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F07",
+      "faction": "Fabeot",
+      "name": "Cabina Dislocante",
+      "type": "Struttura",
+      "unitClass": "heavy",
+      "tokenAssetId": "fbc1f07",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f07.webp",
+        "assets/tokens/fabeot/structure/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/structure.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1F08",
+      "faction": "Fabeot",
+      "name": "Modulo di Duplicazione",
+      "type": "Struttura",
+      "unitClass": "elite",
+      "tokenAssetId": "fbc1f08",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1f08.webp",
+        "assets/tokens/fabeot/structure/elite.webp",
+        "assets/tokens/fabeot/elite.webp",
+        "assets/tokens/fabeot/structure.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1HA01",
+      "faction": "Fabeot",
+      "name": "Lancia Fabeot",
+      "type": "Veicolo",
+      "unitClass": "light",
+      "tokenAssetId": "fbc1ha01",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1ha01.webp",
+        "assets/tokens/fabeot/vehicle/light.webp",
+        "assets/tokens/fabeot/light.webp",
+        "assets/tokens/fabeot/vehicle.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    },
+    {
+      "id": "FBC1HA02",
+      "faction": "Fabeot",
+      "name": "Prima Linea Fabeot",
+      "type": "Veicolo",
+      "unitClass": "heavy",
+      "tokenAssetId": "fbc1ha02",
+      "candidates": [
+        "assets/tokens/fabeot/units/fbc1ha02.webp",
+        "assets/tokens/fabeot/vehicle/heavy.webp",
+        "assets/tokens/fabeot/heavy.webp",
+        "assets/tokens/fabeot/vehicle.webp",
+        "assets/tokens/fabeot/infantry.webp"
+      ],
+      "presentInLite": [],
+      "resolutionInLite": "procedural-fallback",
+      "fullBuildStatus": "to-audit-after-asset-merge"
+    }
+  ]
+}

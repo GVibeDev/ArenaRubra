@@ -6,6 +6,7 @@
 // Non modifica celle, coordinate, terrain, PS/QG, gameplay, AI o regole.
 
 const MAP_SKIN_STORAGE_KEY = "arenaRubra.mapSkin.v1";
+let mapSkinAssetRequestToken = 0;
 
 const MAP_SKIN_DEFAULT_KEY = "red_dust";
 const MAP_BACKGROUND_ASSET_ROOT = "assets/maps/backgrounds/";
@@ -80,9 +81,15 @@ function mapSkinSetAssetStatus(status, src, skin=null) {
   }
 }
 
+function mapSkinCancelAssetProbe() {
+  mapSkinAssetRequestToken += 1;
+}
+
 function mapSkinProbeAsset(skin) {
   if (typeof document === "undefined" || !skin || !skin.asset || !skin.asset.backgroundImage) return;
+  const requestToken = ++mapSkinAssetRequestToken;
   const root = document.documentElement;
+  root.dataset.mapBgMode = "skin";
   const filename = mapSkinAssetFilename(skin);
   const candidates = mapSkinAssetCandidates(filename);
   const img = mapSkinEnsureAssetImage();
@@ -94,13 +101,19 @@ function mapSkinProbeAsset(skin) {
     stack.dataset.mapSkinAsset = skin.asset.backgroundImage;
   }
 
-  img.classList.remove("loaded", "missing");
+  img.classList.remove("loaded", "missing", "customMapBackground");
+  img.style.objectFit = "";
+  img.style.objectPosition = "";
+  img.style.opacity = "";
+  img.style.transform = "";
+  img.style.transformOrigin = "";
   img.removeAttribute("src");
   img.hidden = true;
   root.style.setProperty("--map-bg-image", "none");
 
   let index = 0;
   const tryNext = () => {
+    if (requestToken !== mapSkinAssetRequestToken || root.dataset.mapBgMode !== "skin") return;
     const src = candidates[index];
     if (!src) {
       img.hidden = true;
@@ -110,6 +123,7 @@ function mapSkinProbeAsset(skin) {
     }
     mapSkinSetAssetStatus("checking", src, skin);
     img.onload = () => {
+      if (requestToken !== mapSkinAssetRequestToken || root.dataset.mapBgMode !== "skin") return;
       img.hidden = false;
       img.classList.add("loaded");
       img.classList.remove("missing");
@@ -117,6 +131,7 @@ function mapSkinProbeAsset(skin) {
       mapSkinSetAssetStatus("loaded", src, skin);
     };
     img.onerror = () => {
+      if (requestToken !== mapSkinAssetRequestToken || root.dataset.mapBgMode !== "skin") return;
       index += 1;
       tryNext();
     };

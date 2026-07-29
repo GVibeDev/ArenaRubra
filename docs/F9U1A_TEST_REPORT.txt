@@ -1,0 +1,94 @@
+ARENA RUBRA — F9U1a TEST REPORT
+
+Build: C2-STABLE-1-F9U1a-APK-M4c
+Nome: Map HUD Layout Foundation
+Baseline: C2-STABLE-1-F9Q3e1a-APK-M4c
+Schema telemetrico: F9Q3e1-2
+Stato: candidata, non ancora validata dall’utente
+
+1. CONTROLLO SINTATTICO
+
+- File JavaScript complessivi controllati con node --check: 156
+- Validati: 156
+- Errori: 0
+- File runtime/data: 84, tutti validi
+
+2. SUITE NODE
+
+- Suite JavaScript eseguite: 72
+- Superate: 72
+- Fallite: 0
+- Smoke dedicato F9U1a: 36/36 verifiche superate
+
+Il test storico F9O7d è stato riallineato alla modifica deliberata F9U1a: i controlli Mano/Fine turno non sono più visibili soltanto a mano ridotta, ma restano permanenti nel dock sinistro. I test di compatibilità telemetrica e FFA continuano a verificare le rispettive fondazioni.
+
+3. TEST CHROMIUM MIRATI
+
+Superati individualmente:
+
+1. F9U1a Map HUD desktop/mobile
+2. F9Q3e1a attribuzione PS, Pivot multi-istanza e sovrapesca
+3. F9S1c1 Deck Builder UX
+4. F9S1c1 avvio di tutti i 50 deck ufficiali
+5. F9R3 nove mappe ufficiali e Pressione
+6. F9O7h1 visibilità tutorial
+7. F9O4c stabilità layout Android/WebView
+
+Totale: 7/7 test mirati superati.
+
+4. VERIFICHE DEL TEST DEDICATO F9U1a
+
+Desktop:
+
+- build e baseline corrette;
+- schema F9Q3e1-2 invariato;
+- barra inferiore gameActionBar assente;
+- barra mobile legacy nascosta;
+- dock sinistro posizionato in alto a sinistra della mappa;
+- Missione, abilità di fazione, Mano e Fine turno presenti;
+- pannelli Setup, Mano legacy, Tattiche legacy e Mercato nascosti;
+- pulsante Debug visibile;
+- Debug apre Log, Statistiche e Telemetria;
+- Mostra/Nascondi mano funziona in entrambi i sensi;
+- precheck: 0 problemi, 0 warning;
+- nessun errore pagina o console.
+
+Mobile 820×480:
+
+- classe mobile-apk-m4 applicata;
+- pulsante Debug superiore visibile;
+- vecchie barre mobile nascoste;
+- controlli camera visibili;
+- dock sinistro presente con i due controlli fissi;
+- menu Debug apribile;
+- nessun errore pagina o console.
+
+5. INTEGRITÀ DATI
+
+Confronto binario/ricorsivo con la baseline F9Q3e1a:
+
+- cartella data/: nessuna differenza;
+- cartella assets/: nessuna differenza;
+- roster ufficiale: 50 deck invariati;
+- schema telemetrico: F9Q3e1-2 invariato.
+
+File runtime modificati intenzionalmente:
+
+- index.html
+- css/style.css
+- src/build_info.js
+- src/render.js
+- src/game.js, soltanto testo informativo di avvio
+- src/f9u1a_ui.js, nuovo modulo UI
+- README.md
+- test di compatibilità e smoke F9U1a
+
+6. LIMITI DEL COLLAUDO AUTOMATICO
+
+Non eseguiti:
+
+- test su APK Android fisico;
+- partita manuale lunga con più pannelli aperti durante targeting complesso;
+- validazione visiva su tutte le risoluzioni e densità Android;
+- rework dell’Inspector unità, previsto in F9U1b;
+- barre comparative PS/unità, previste in F9U1b.

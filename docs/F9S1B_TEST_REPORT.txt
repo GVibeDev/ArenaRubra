@@ -1,0 +1,106 @@
+ARENA RUBRA — F9S1b TEST REPORT
+================================
+
+Build
+-----
+Versione: C2-STABLE-1-F9S1b-APK-M4c
+Build name: Alternative Pivots & Complete 40-Card Pools
+Canale: f9s1b-candidate
+Baseline: C2-STABLE-1-F9S1a-APK-M4c
+Data: 2026-07-27
+
+Scopo
+-----
+Integrazione di cinque Pivot alternative, una per fazione, fino a 40 carte esatte per ciascun pool. I deck ufficiali restano intenzionalmente invariati.
+
+Controlli dati
+--------------
+- Nexus: 23 unità, 14 tattiche, 3 Missioni, 40 carte, 2 Pivot
+- Exordium: 23 unità, 14 tattiche, 3 Missioni, 40 carte, 2 Pivot
+- Liberti: 23 unità, 14 tattiche, 3 Missioni, 40 carte, 2 Pivot
+- Agathoi: 23 unità, 14 tattiche, 3 Missioni, 40 carte, 2 Pivot
+- Fabeot: 23 unità, 14 tattiche, 3 Missioni, 40 carte, 2 Pivot
+- Blueprint unità totali: 115
+- Tattiche da deck totali: 70
+- Missioni totali: 15
+- ID catalogo duplicati: 0
+- Nuove Pivot presenti nel catalogo: 5/5
+- Nuove Pivot inserite silenziosamente nei deck ufficiali: 0
+- Limite massimo di una Pivot totale per deck: conservato
+- Precheck applicazione: OK, 0 problemi, 0 warning
+
+Sintassi
+--------
+- File JavaScript controllati con node --check: 141
+- Superati: 141
+- Errori: 0
+
+Suite Node
+----------
+- Suite eseguite: 63
+- Superate: 63
+- Fallite: 0
+
+Smoke dedicato F9S1b
+---------------------
+- Verifiche: 62/62
+- Conteggio 23 unità / 14 tattiche / 3 Missioni / 40 carte per fazione
+- Due Pivot per fazione
+- Statistiche e abilità delle cinque nuove Pivot
+- Mancata modifica dei deck ufficiali
+- Conservazione del limite di una Pivot complessiva
+- Tramonto a fine turno su tutti i nemici FFA adiacenti
+- Trappola e Inibizione Movimento ad area
+- Costruzione di una linea esagonale di tre celle entro R2
+- Rifiuto di linee non collineari, fuori gittata o comprendenti il Mech
+- Schianto basato sugli HP correnti e riduzione DEF dei bersagli Pesanti
+- Erkos: danno e blocco movimento
+- Geometria della Sofferenza e Corazza Reattiva nell’ordine previsto
+- Collegamenti runtime, controller, combat, abilities, turn flow e IA
+
+Smoke Chromium eseguiti
+------------------------
+1. F9S1b alternative pivots/catalog/precheck: PASS
+2. F9S1a faction expansion regression: PASS
+3. F9R3 official maps/pressure regression: PASS
+4. F9O7h1 tutorial visibility regression: PASS
+
+Esito browser:
+- Smoke eseguiti: 4
+- Superati: 4
+- Falliti: 0
+- Errori pagina: 0
+- Errori console inattesi: 0
+- Precheck: OK
+
+Copertura tutorial
+------------------
+- Le suite Node delle lezioni tutorial 1–5 sono state eseguite nel gruppo completo e risultano tutte verdi.
+- Le cinque campagne browser complete delle lezioni non sono state tutte rieseguite in F9S1b: i tentativi raggruppati hanno superato il limite temporale dell’ambiente di test.
+- La regressione browser F9O7h1 su visibilità, anteprime e pulsante guida è stata eseguita singolarmente e superata.
+
+Correzioni emerse durante i test
+--------------------------------
+- Aggiornati i conteggi attesi della tassonomia da 110 a 115 blueprint e da 5 a 10 Pivot totali.
+- Aggiornate le regressioni F9S1a per riconoscere 23 unità per fazione senza alterare le 14 tattiche.
+- La selezione di Soppressione è stata resa difensiva: la linea deve contenere tre celle distinte, collineari, esistenti e tutte entro R2.
+- È stato impedito che la linea di Soppressione comprenda la cella occupata dal Mech d’Assalto.
+- La riduzione del Mech viene applicata soltanto quando fonte e tipo di danno sono esplicitamente compatibili.
+
+Limiti del collaudo
+-------------------
+- Nessun test su APK installato su dispositivo Android fisico.
+- Nessuna partita completa lunga con ciascuna nuova Pivot.
+- Nessun benchmark bot-vs-bot dedicato alle combinazioni Torre + multi-hit o Mech + cure/bonus permanenti.
+- Le cinque nuove Pivot non dispongono ancora di asset grafici dedicati; usano i fallback esistenti.
+- I deck ufficiali saranno costruiti e testati in F9S1c.
+
+Esito
+-----
+CANDIDATA TECNICAMENTE PRONTA PER IL COLLAUDO MANUALE.
+NON ANCORA VALIDATA DALL'UTENTE.
+
+Pacchetto
+---------
+ZIP integrity: OK
+SHA-256: registrato nel file .sha256 distribuito insieme al pacchetto
