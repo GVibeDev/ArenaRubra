@@ -1,0 +1,139 @@
+ARENA RUBRA — F9T2c TEST REPORT
+================================
+
+Build candidata
+C2-STABLE-1-F9T2c-APK-M4c
+
+Baseline logica
+C2-STABLE-1-F9T2b-APK-M4c
+
+Milestone
+F9T2c — Exordium Expert · Forward Strategic Deployment
+
+Data test
+1 agosto 2026
+
+ESITO GENERALE AUTOMATICO
+-------------------------
+Candidata tecnicamente idonea al collaudo manuale.
+La milestone non è dichiarata validata: mancano partite lunghe multi-seed, confronto comportamentale F9T2b/F9T2c, benchmark RAM/CPU su dispositivo e test APK reale.
+
+1. SINTASSI
+-----------
+File JavaScript verificati in src/ e data/: 94
+Superati: 94
+Falliti: 0
+
+Comando:
+node --check <file>
+
+2. SUITE NODE
+-------------
+Test JavaScript eseguiti: 82
+Superati: 82
+Falliti: 0
+
+Test dedicato F9T2c:
+F9T2c Exordium Forward Pivot smoke: 33/33 verifiche superate.
+
+Regressioni Expert principali:
+- F9T0 Advanced AI Finalization: 36/36
+- F9T1 Architecture & Telemetry: 62/62
+- F9T2a Bastion Relay: 25/25
+- F9T2b Territorial Conversion: 24/24
+
+3. TEST BROWSER SELEZIONATI
+---------------------------
+Test Chromium/Playwright eseguiti: 7
+Superati: 7
+Falliti: 0
+
+- F9T2 Bastion Relay browser: PASS
+- F9T2b Territorial Conversion browser: PASS
+- F9T2c Forward Pivot Deployment browser: PASS
+- F9T1 Expert Architecture browser: PASS
+- F9T1 Expert Turn Integration browser: PASS
+- F9U3 Control Center browser: PASS
+- F9U2b Card/Map Editor browser: PASS
+
+4. RISULTATO MIRATO F9T2c
+-------------------------
+Modulo: expert-exordium-f9t2c
+Piano: EXORDIUM_FORWARD_PIVOT_DEPLOYMENT
+Sequenza: deploy_pivot_forward
+Obiettivo: PS
+Pivot osservata: EXPIV02_1_1
+Primo impatto: ATTACK
+Round all'impatto: 1
+
+Contatori:
+- forwardPivotPlans: 1
+- forwardPivotsDeployed: 1
+- forwardPivotImpacts: 1
+- budgetExhaustions: 0
+- pageErrors: 0
+- consoleErrors: 0
+
+Tempi osservati nel test mirato:
+- contesto Expert: 0,8 ms
+- modulo Exordium: 4,0 ms
+- durata complessiva dell'harness browser: 88,6 ms
+
+La durata complessiva dell'harness include browser, eventi, rendering e strumentazione; non rappresenta il solo costo della dottrina. Il dato pertinente al budget di modulo è 4,0 ms, inferiore al limite F9T1 di 8 ms nel caso sintetico verificato.
+
+5. REGRESSIONE F9T2a/F9T2b
+--------------------------
+Bastion Relay:
+- sequenza move_guard → build_bastion preservata;
+- modulo 4,0 ms nel test mirato;
+- budget esauriti 0.
+
+Territorial Conversion:
+- piano EXORDIUM_CLEAR_OCCUPY_FORTIFY preservato;
+- sequenza attack_ps_target → build_roster_clear_ps;
+- PS liberati 1;
+- PS fortificati 1;
+- classificazione UNSUSTAINABLE verificata;
+- modulo 2,8 ms;
+- budget esauriti 0.
+
+6. DISCIPLINA RAM/TELEMETRIA
+----------------------------
+- audit candidati F9T2c emessi in batch;
+- massimo 24 audit dettagliati emessi dal modulo per batch;
+- massimo 12 audit conservati nella lista decisioni del turno;
+- auditTotal e rejectionCounts conservano i totali aggregati;
+- massimo un record di impatto Pivot attivo per giocatore;
+- finestra d'impatto limitata a due round;
+- record attivo rimosso dopo impatto, distruzione o scadenza;
+- nessuna ricorsione o sottopiano introdotto.
+
+7. INTEGRITÀ FUNZIONALE
+-----------------------
+Confermato:
+- un solo modulo di fazione instradato;
+- Pivot selezionata soltanto dalla mano;
+- mercato non usato dal piano;
+- nodo avanzato strutturale richiesto;
+- supporto mobile richiesto;
+- rischio locale e rischio QG ricontrollati;
+- costo effettivo riservato;
+- cella ricontrollata prima dello schieramento;
+- fallback Advanced F9T0 preservato;
+- nessuna modifica a carte, statistiche, deck, mappe, Missioni o bilanciamento.
+
+8. TEST NON ESEGUITI / LIMITI
+-----------------------------
+Non sono stati eseguiti automaticamente:
+- 10 seed bot–bot;
+- iniziativa invertita 5/5;
+- confronto F9T2b–F9T2c sullo stesso seed;
+- almeno tre mappe con movimento ×1/×2/×3;
+- partita lunga fino al limite round;
+- benchmark affidabile RAM/CPU su Android;
+- verifica APK fisica;
+- misurazione statistica della percentuale di Pivot con impatto entro due round.
+
+VERDETTO
+--------
+La candidata F9T2c supera i controlli automatici e preserva le regressioni F9T2a/F9T2b. È pronta per il test comportamentale reale, ma non deve essere dichiarata baseline validata prima del collaudo manuale.

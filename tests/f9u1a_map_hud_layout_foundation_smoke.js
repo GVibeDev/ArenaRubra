@@ -18,10 +18,10 @@ vm.createContext(context);
 vm.runInContext(`${buildSource}\n;globalThis.__build=BUILD_INFO;`, context, { filename:"build_info.js" });
 const build = context.__build;
 
-assert.equal(build.version, "C2-STABLE-1-F9T0-APK-M4c", "versione candidata corretta");
-assert.equal(build.buildName, "Advanced AI Finalization · Expert AI Preparation", "nome build corretto");
-assert.equal(build.buildChannel, "f9t0-candidate", "canale candidato corretto");
-assert.equal(build.logicBaseline, "C2-STABLE-1-F9U3-APK-M4c", "baseline logica validata corretta");
+assert.equal(build.version, "C2-STABLE-1-F9T2d3-APK-M4c", "versione candidata corretta");
+assert.equal(build.buildName, "Commander Deployment Commitment", "nome build corretto");
+assert.equal(build.buildChannel, "f9t2d3-candidate", "canale candidato corretto");
+assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c", "baseline logica validata corretta");
 assert.ok(build.notes.includes("F9Q3e1-2"), "schema telemetrico dichiarato invariato");
 
 assert.ok(html.includes('id="gameDebugBtn"'), "pulsante Debug desktop presente nella barra stato");

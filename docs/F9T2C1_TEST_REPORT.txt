@@ -1,0 +1,128 @@
+ARENA RUBRA — F9T2c1 TEST REPORT
+=================================
+
+Build candidata
+C2-STABLE-1-F9T2c1-APK-M4c
+
+Baseline ufficiale
+C2-STABLE-1-F9T2b-APK-M4c
+
+Milestone
+F9T2c1 — Forward Pivot Candidate & Expert Execution Integrity Hotfix
+
+Data test
+1 agosto 2026
+
+ESITO GENERALE AUTOMATICO
+-------------------------
+La candidata supera i controlli automatici e i test browser mirati. Non è dichiarata validata: manca il retest completo del match reale F9T2c e il collaudo APK.
+
+1. SINTASSI
+-----------
+File JavaScript verificati nell'intero pacchetto: 177
+Superati: 177
+Falliti: 0
+
+Comando:
+node --check <file>
+
+2. SUITE NODE
+-------------
+Test JavaScript eseguiti: 83
+Superati: 83
+Falliti: 0
+
+Test dedicato F9T2c1:
+F9T2c1 Execution Integrity smoke: 23/23 verifiche superate.
+
+Regressioni mirate:
+- F9T2 Bastion Relay: 25/25
+- F9T2b Territorial Conversion: 24/24
+- F9T2c Forward Pivot: 33/33
+
+3. TEST BROWSER MIRATI
+----------------------
+Superati:
+- F9T2 Bastion Relay browser
+- F9T2b Territorial Conversion browser
+- F9T2c Forward Pivot Deployment browser
+- F9T1 Expert Architecture browser
+
+Errori pagina osservati: 0
+Errori console osservati: 0
+
+Ripetizioni prestazionali dopo l'ottimizzazione F9T2c1:
+
+Bastion Relay
+- modulo: 6,5–7,8 ms
+- budget exhaustion: 0
+- sequenza: move_guard → build_bastion
+
+Territorial Conversion
+- modulo: 5,5–6,9 ms in tre ripetizioni
+- budget exhaustion: 0
+- sequenza: attack_ps_target → build_roster_clear_ps
+- PS liberati: 1
+- PS fortificati: 1
+
+Forward Pivot
+- modulo: 5,8–6,3 ms in due ripetizioni
+- budget exhaustion: 0
+- obiettivo: PS
+- impatto: ATTACK
+- round all'impatto: 1
+
+Il limite del modulo F9T1 è 8 ms.
+
+4. VERIFICHE F9T2c1
+--------------------
+Superate:
+- centro autorevole non geometrico [0,5,-5];
+- gate comune Bastione su PS;
+- blocco fallback su PS UNSUSTAINABLE;
+- limite reale di 24 decisioni;
+- audit separati dalle decisioni;
+- riconciliazione autorevole del piano territoriale;
+- monitoraggio di Pivot schierata dal fallback;
+- registrazione del mancato impatto;
+- schema telemetrico F9T2c1-1;
+- spawnSource preciso;
+- contatori Expert/fallback/totali distinti.
+
+5. OTTIMIZZAZIONI
+-----------------
+- i PS senza presidio nemico non eseguono il Survival Check completo durante la scansione Clear;
+- i PS con bersaglio e il centro vengono valutati per primi;
+- la scansione si interrompe dopo un candidato P0 ad alto valore;
+- una sola proiezione di movimento viene calcolata per il candidato Pivot;
+- record decisionali e audit sono separati e limitati;
+- nessuna ricorsione o sottopiano introdotto.
+
+6. INTEGRITÀ FUNZIONALE
+-----------------------
+Preservato:
+- Bastion Relay F9T2a;
+- Clear–Occupy–Fortify F9T2b;
+- Relay Survival F9T2b;
+- riserva ENE;
+- fallback Advanced F9T0;
+- isolamento dei moduli F9T1;
+- carte, costi, statistiche, deck, mappe, Missioni e bilanciamento.
+
+7. TEST NON COMPLETATI
+----------------------
+Non eseguiti o non conclusivi:
+- replay completo di 70 turni con seed AR-msa55oq9-8rh612;
+- batch multi-seed;
+- confronto statistico F9T2b/F9T2c1;
+- benchmark RAM/CPU su Android;
+- test APK reale;
+- correzioni Nexus, mine, congestione, Varran, tattiche e spareggio.
+
+8. NOTA SUI TEST BROWSER GENERALI
+---------------------------------
+I test browser di Control Center/editor non sono stati usati come criterio specifico della patch. La suite Node completa, che include le regressioni corrispondenti, è 83/83. Le modifiche F9T2c1 sono confinate al runtime Expert, alla telemetria, al deployment e ai gate Exordium.
+
+VERDETTO
+--------
+F9T2c1 è tecnicamente pronta per il retest comportamentale reale. La baseline ufficiale resta C2-STABLE-1-F9T2b-APK-M4c finché l'utente non valida la candidata.

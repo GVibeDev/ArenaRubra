@@ -70,7 +70,7 @@ const ai=fs.readFileSync(path.join(root,"src","ai.js"),"utf8");
 assert.match(app,/newGame\(setupOverrides\)/);
 assert.match(game,/function newGame\(setupOverrides = null\)/);
 assert.match(deployment,/function spawnUnit\(bp, side, coord, options=\{\}\)/);
-assert.match(deployment,/options\.spawnSource === "starter" \? options\.starterRole : null/);
-assert.match(ai,/spawnSource:"starter", starterRole:choice\.starterRole/);
+assert.match(deployment,/\["starter", "starter_roster"\]\.includes\(resolvedSpawnSource\) \? options\.starterRole : null/);
+assert.match(ai,/spawnSource:resolvedSource, starterRole:choice\.starterRole/);
 
 console.log("F9N3a mode/cap reliability smoke: 20/20 OK");

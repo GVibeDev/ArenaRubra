@@ -568,7 +568,9 @@
       const paid = effectiveHandUnitCardCost(side, costCard, bp, coord);
       if (state.energy[side] < paid || (playerEnergyLocked(side) && paid > 0)) { log(`${playerName(side)} non può pagare ${paid} ENE per piazzare ${bp.name} in questa cella.`); return false; }
       const unit = createUnitFromBlueprint(bp, side);
-      const starterRole = options.spawnSource === "starter" ? options.starterRole : null;
+      const resolvedSpawnSource = String(options.spawnSource || unit.spawnSource || "unknown");
+      unit.spawnSource = resolvedSpawnSource;
+      const starterRole = ["starter", "starter_roster"].includes(resolvedSpawnSource) ? options.starterRole : null;
       if (starterRole && typeof tacticalStarterCapState === "function" && tacticalStarterCapState(side, starterRole).blocked) {
         if (typeof noteTacticalStarterCapBlocked === "function") noteTacticalStarterCapBlocked(side, starterRole);
         log(`Cap modalità Tattica raggiunto per ${starterRole}.`);
@@ -601,7 +603,9 @@
         cost: paid,
         coord: [...coord],
         exhausted: !unit.vanguard,
-        spawnSource: unit.spawnSource || "deck_or_market",
+        spawnSource: unit.spawnSource || "unknown",
+        expertPlanId: options.expertPlanId || null,
+        expertDoctrine: options.expertDoctrine || null,
         starterRole: unit.starterRole || null,
         deployedOnOwnHq: Boolean(ownHq && sameCoord(coord, ownHq.pos)),
         instanceNo: unit.instanceNo
@@ -639,19 +643,30 @@
       const side = buildSource === "own_hq" ? Number(options.side) : (builder && builder.side);
       const hqCell = buildSource === "own_hq" && typeof ownHqBuildCell === "function" ? ownHqBuildCell(side) : null;
       if (!side || !bp || !isCellEnterable(coord) || getUnitAt(coord) || (buildSource === "unit" && !builder) || (buildSource === "own_hq" && (!hqCell || !sameCoord(coord, hqCell)))) return false;
+      if (typeof expertExordiumCanBuildBastionOnPsF9T2c1 === "function") {
+        const expertGate = expertExordiumCanBuildBastionOnPsF9T2c1(side, bp, coord, {
+          source:options.expertDoctrine ? "expert_plan_runtime" : "runtime_build",
+          emit:true,
+          expertPlanId:options.expertPlanId || null,
+          expertDoctrine:options.expertDoctrine || null
+        });
+        if (expertGate && expertGate.allowBuild === false) return false;
+      }
       const buildTerrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(coord) : null;
       if (buildTerrain && buildTerrain.blocksDeployment) return false;
       const handCard = c2c6aPendingHandCardFor(side, bp);
       const starterCard = !handCard && pendingStarterCardUid ? starterCardByUid(side, pendingStarterCardUid) : null;
       const costCard = handCard || starterCard;
       const paid = effectiveHandUnitCardCost(side, costCard, bp, coord);
-      const starterRole = options.spawnSource === "starter" ? options.starterRole : null;
+      const resolvedSpawnSource = String(options.spawnSource || "unknown");
+      const starterRole = ["starter", "starter_roster"].includes(resolvedSpawnSource) ? options.starterRole : null;
       if (starterRole && typeof tacticalStarterCapState === "function" && tacticalStarterCapState(side, starterRole).blocked) {
         if (typeof noteTacticalStarterCapBlocked === "function") noteTacticalStarterCapBlocked(side, starterRole);
         return false;
       }
       if ((playerEnergyLocked(side) && paid > 0) || state.energy[side] < paid || purchaseLimitReached(side, bp)) return false;
       const structure = createUnitFromBlueprint(bp, side);
+      structure.spawnSource = resolvedSpawnSource;
       state.energy[side] -= paid;
       structure.pos = [...coord];
       structure.acted = true;
@@ -672,6 +687,9 @@
         blueprintId: bp.id,
         cost: paid,
         coord: [...coord],
+        spawnSource: structure.spawnSource || "unknown",
+        expertPlanId: options.expertPlanId || null,
+        expertDoctrine: options.expertDoctrine || null,
         instanceNo: structure.instanceNo
       });
       return true;

@@ -1,0 +1,53 @@
+ARENA RUBRA — F9T2d2a TEST REPORT
+
+BUILD
+C2-STABLE-1-F9T2d2a-APK-M4c
+
+BASELINE LOGICA
+C2-STABLE-1-F9T2c4-APK-M4c
+
+SCOPO
+Correggere la proprietà dell'attacco Varran quando l'attore è già a portata e moveCell è nullo.
+
+VERIFICHE
+- Sintassi JavaScript src: 79/79
+- Suite Node completa: 89/89
+- Smoke Varran/ownership dedicato: 80/80
+- Smoke Clear Effective Damage Preview: 39/39
+- Browser Varran stazionario: PASS
+- Browser regressioni selezionate: 7/7
+- Errori pagina nel browser dedicato: 0
+- Errori console nel browser dedicato: 0
+- Budget exhaustion nel browser dedicato: 0
+- moduleDurationMs osservato nel browser dedicato: 2,1 ms
+
+CASO DEDICATO
+- candidate goal: EXORDIUM_VARRAN_ASSAULT_CHAIN
+- sequence: use_varran_order -> execute_varran_assault
+- stationaryAttackBranch: true
+- movementRequired: false
+- movementSkippedReason: already_in_attack_range
+- attackOwnership: expert_executor
+- emergencyCalls prima dell'ownership: 0
+- predictedBonusEffectiveDamage: 1
+- actualBonusEffectiveDamage: 1
+- targetDestroyed: true
+- microplan completed: true
+
+REGRESSIONI BROWSER
+- Bastion Relay: PASS
+- Territorial Conversion: PASS
+- Forward Pivot: PASS
+- First-turn bootstrap G2: PASS
+- Telemetry aggregation: PASS
+- Control Center: PASS
+- Card Editor / Map Editor: PASS
+
+NON ESEGUITO
+- match bot-bot completo sul seed del report F9T2d2
+- batch multi-seed
+- collaudo APK reale
+- benchmark Android su dispositivo datato
+
+VERDETTO
+Candidata tecnicamente pronta per il test gameplay. La baseline ufficiale resta F9T2c4 fino alla validazione dell'utente.

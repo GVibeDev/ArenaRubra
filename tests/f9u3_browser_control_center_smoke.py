@@ -160,8 +160,8 @@ with sync_playwright() as p:
     }
     browser.close()
 
-assert desktop['build'] == 'C2-STABLE-1-F9T0-APK-M4c', desktop
-assert desktop['baseline'] == 'C2-STABLE-1-F9U3-APK-M4c', desktop
+assert desktop['build'] == 'C2-STABLE-1-F9T2d3-APK-M4c', desktop
+assert desktop['baseline'] == 'C2-STABLE-1-F9T2c4-APK-M4c', desktop
 assert desktop['areas'] == ['Gioca', 'Carte e deck', 'Mappe', 'Analisi', 'Sistema'], desktop
 assert desktop['version'] == desktop['build'] and desktop['logic'] == desktop['baseline'], desktop
 assert desktop['schema'] == 'F9Q3e1-2', desktop

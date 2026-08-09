@@ -1,0 +1,5 @@
+run=1 PASS moduleDurationMs=1.6
+run=2 PASS moduleDurationMs=1.8
+run=3 PASS moduleDurationMs=1.8
+run=4 PASS moduleDurationMs=3
+run=5 PASS moduleDurationMs=1.7

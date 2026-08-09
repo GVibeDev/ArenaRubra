@@ -1,0 +1,54 @@
+ARENA RUBRA — F9T2c3 TEST REPORT
+
+Build
+C2-STABLE-1-F9T2c3-APK-M4c
+
+Baseline ufficiale
+C2-STABLE-1-F9T2b-APK-M4c
+
+Ambito
+Riconciliazione degli aggregati telemetrici Expert. Nessuna modifica strategica.
+
+TEST AUTOMATICI
+
+Sintassi JavaScript src+data
+94/94 PASS
+
+Suite Node
+85/85 PASS
+
+Smoke dedicato F9T2c3
+21/21 PASS
+
+Browser selezionati
+7/7 PASS
+- architettura Expert
+- Bastion Relay
+- Territorial Conversion
+- Forward Pivot
+- Forward Pivot controllato con movimento reale
+- aggregazione telemetrica integrata
+- Control Center desktop/mobile
+
+RISULTATI DEDICATI
+
+Audit candidati controllati
+22 totali · 12 conservati · 10 scartati
+Scanner: Relay 15 · Clear 4 · Forward 3
+
+Decisioni controllate
+31 totali · 24 conservate · 7 scartate
+
+Conversione territoriale tramite fallback
+psClearedDuringExpertPlan = 1
+psClearedDirectlyByExpertStep = 0
+psOccupiedAfterClear = 1
+
+Forward Pivot controllato
+Piano 1 · deployment Expert 1 · impatto PS_CONTROL entro 1 round · miss 0
+
+Errori pagina/console nei browser test mirati
+0 / 0
+
+NOTE
+Non sono stati eseguiti batch multi-seed completi, benchmark APK reale o partite lunghe su tutte le mappe. La build resta candidata fino alla validazione dell’autore.

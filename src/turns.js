@@ -14,61 +14,80 @@ function postActionChecks(autoEnd=true) {
       maybeRunBot();
     }
 
-function endTurn() {
-      if (state.winner) return;
-      if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) { if (typeof log === "function") log("Completa la scelta della ricompensa Missione prima di terminare il turno."); if (typeof renderAll === "function") renderAll(); return; }
-      updateControlFromOccupants();
-      log(`${playerName(state.currentPlayer)} chiude il turno.`, EventTypes.TURN_ENDED, {
-        player: state.currentPlayer,
-        faction: state.factions[state.currentPlayer],
-        round: state.turn
-      });
-      applyEndTurnStatuses(state.currentPlayer);
-      if (typeof tickPlayerLocksAtEnd === "function") tickPlayerLocksAtEnd(state.currentPlayer);
-      applyAgathoiIdleGuardThorns(state.currentPlayer);
-      if (typeof applyC1fEndTurnPassives === "function") applyC1fEndTurnPassives(state.currentPlayer);
-      cleanupTurnTactics(state.currentPlayer);
-      if (typeof c2c7aCleanupEndTurnEffects === "function") c2c7aCleanupEndTurnEffects(state.currentPlayer);
-      if (typeof tickHandCardLocksAtEnd === "function") tickHandCardLocksAtEnd(state.currentPlayer);
-      tickCooldownsAndBuffs(state.currentPlayer);
-      checkVictory();
-      if (state.winner) { renderAll(); return; }
-      if (state.orderIndex >= state.turnOrder.length - 1) {
-        resolveEndOfRound();
-        if (typeof missionCheckpointRoundEnd === "function") missionCheckpointRoundEnd(state.turn);
-        if (typeof missionCleanupEndOfRound === "function") missionCleanupEndOfRound(state.turn);
-        if (state.winner) { renderAll(); return; }
-        // v1.8.6: niente inversione automatica dell'ordine a fine round.
-        // La vecchia reverse() produceva sequenze tipo G2→G2 o G1→G1 ai confini del round.
-        // Manteniamo l'iniziativa scelta a inizio partita, ma i turni restano sempre alternati.
-        state.orderIndex = 0;
-        state.turn += 1;
-      } else {
-        state.orderIndex += 1;
-      }
-      state.currentPlayer = state.turnOrder[state.orderIndex];
-      if (typeof isPlayerEliminated === "function" && isPlayerEliminated(state.currentPlayer)) {
-        log(`G${state.currentPlayer} eliminato: turno saltato.`, EventTypes.LOG_MESSAGE, {
-          player: state.currentPlayer,
-          round: state.turn,
-          source: "F9Q-turn-skip"
+function resolveRoundBoundaryForTurnAdvance() {
+      if (typeof f9s1aRestoreGreenFury === "function") f9s1aRestoreGreenFury(state.turn);
+      resolveEndOfRound();
+      if (typeof missionCheckpointRoundEnd === "function") missionCheckpointRoundEnd(state.turn);
+      if (typeof missionCleanupEndOfRound === "function") missionCleanupEndOfRound(state.turn);
+      if (!state.winner) state.turn += 1;
+}
+
+function advanceToNextActivePlayer() {
+      const order = Array.isArray(state.turnOrder) ? state.turnOrder.map(Number) : [];
+      if (!order.length) return null;
+      let index = Math.max(0, Number(state.orderIndex) || 0);
+      for (let step = 1; step <= order.length; step += 1) {
+        index += 1;
+        if (index >= order.length) {
+          index = 0;
+          resolveRoundBoundaryForTurnAdvance();
+          if (state.winner) return null;
+        }
+        const candidate = order[index];
+        if (typeof isPlayerEliminated !== "function" || !isPlayerEliminated(candidate)) {
+          state.orderIndex = index;
+          state.currentPlayer = candidate;
+          return candidate;
+        }
+        log(`G${candidate} eliminato: turno saltato.`, EventTypes.LOG_MESSAGE, {
+          player:candidate, round:state.turn, source:"F9Q3d3-turn-skip"
         });
-        endTurn();
-        return;
       }
-      startTurn(state.currentPlayer, false);
+      checkVictory();
+      return null;
+}
+
+function endTurn(options={}) {
+      if (state.winner) return;
+      const eliminatedCurrent = options.eliminatedCurrent === true || (typeof isPlayerEliminated === "function" && isPlayerEliminated(state.currentPlayer));
+      if (!eliminatedCurrent && typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) { if (typeof log === "function") log("Completa la scelta della ricompensa Missione prima di terminare il turno."); if (typeof renderAll === "function") renderAll(); return; }
+      updateControlFromOccupants();
+      if (!eliminatedCurrent) {
+        log(`${playerName(state.currentPlayer)} chiude il turno.`, EventTypes.TURN_ENDED, {
+          player: state.currentPlayer,
+          faction: state.factions[state.currentPlayer],
+          round: state.turn
+        });
+        applyEndTurnStatuses(state.currentPlayer);
+        if (typeof tickPlayerLocksAtEnd === "function") tickPlayerLocksAtEnd(state.currentPlayer);
+        applyAgathoiIdleGuardThorns(state.currentPlayer);
+        if (typeof applyC1fEndTurnPassives === "function") applyC1fEndTurnPassives(state.currentPlayer);
+        if (typeof f9s1bApplyEndTurnPassives === "function") f9s1bApplyEndTurnPassives(state.currentPlayer);
+        cleanupTurnTactics(state.currentPlayer);
+        if (typeof c2c7aCleanupEndTurnEffects === "function") c2c7aCleanupEndTurnEffects(state.currentPlayer);
+        if (typeof tickHandCardLocksAtEnd === "function") tickHandCardLocksAtEnd(state.currentPlayer);
+        tickCooldownsAndBuffs(state.currentPlayer);
+        checkVictory();
+        if (state.winner) { renderAll(); return; }
+      }
+      const next = advanceToNextActivePlayer();
+      if (!next || state.winner) { renderAll(); return; }
+      startTurn(next, false);
       renderAll();
-      maybeRunBot();
+      maybeRunBot({ skipInitialRender:true });
     }
 
 function startTurn(player, first=false) {
       if (typeof isPlayerEliminated === "function" && isPlayerEliminated(player)) {
-        const next = typeof getNextActivePlayerId === "function" ? getNextActivePlayerId(player) : null;
-        if (next && next !== player) {
-          state.currentPlayer = next;
-          state.orderIndex = Math.max(0, state.turnOrder.indexOf(next));
-          return startTurn(next, first);
+        const order = Array.isArray(state.turnOrder) ? state.turnOrder.map(Number) : [];
+        const playerId = Number(player);
+        const playerIndex = order.indexOf(playerId);
+        if (playerIndex >= 0) {
+          state.currentPlayer = playerId;
+          state.orderIndex = playerIndex;
         }
+        const next = typeof advanceToNextActivePlayer === "function" ? advanceToNextActivePlayer() : null;
+        if (next && next !== playerId) return startTurn(next, first);
         checkVictory();
         return;
       }
@@ -95,6 +114,9 @@ function startTurn(player, first=false) {
         u.builtThisTurn = false;
         u.c2c5bMoveBonus = 0;
         u.c2c5bDoubleMove = false;
+        u.f9s1aPostAttackMoveReady = false;
+        u.f9s1aPostAttackMoveUsed = false;
+        u.f9s1aKeepActionAfterAbility = false;
         u.c2c5bPassageContinue = false;
         u.c2c5bMoveOnlyExhaustAfterMove = false;
       }
@@ -117,7 +139,12 @@ function startTurn(player, first=false) {
       if (typeof drawCardForTurn === "function") drawCardForTurn(player, { first });
       if (typeof applyC1fAfterDrawPassives === "function") applyC1fAfterDrawPassives(player, first);
       if (typeof missionCheckpointTurnStart === "function") missionCheckpointTurnStart(player);
+      if (typeof telemetryTurnReady === "function") telemetryTurnReady(player);
       maybeAutoResign(player);
+      if (!state.winner && typeof isPlayerEliminated === "function" && isPlayerEliminated(player)) {
+        endTurn({ eliminatedCurrent:true });
+        return;
+      }
     }
 
 function applyStartTurnStatuses(player) {

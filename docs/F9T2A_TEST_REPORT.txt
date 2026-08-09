@@ -1,0 +1,96 @@
+ARENA RUBRA — F9T2a TEST REPORT
+================================
+
+Build candidata
+C2-STABLE-1-F9T2a-APK-M4c — Bastion Relay Candidate & Legal Sequence Hotfix
+
+Baseline ufficiale conservata
+C2-STABLE-1-F9T1-APK-M4c
+
+Data test
+30 luglio 2026
+
+SCOPO
+-----
+Correggere il candidato impossibile di F9T2 senza ampliare la dottrina Exordium:
+- riconoscere un PS controllato e occupato dalla guarnigione mobile da liberare;
+- identificare un builder distinto e adiacente;
+- riservare l'ENE;
+- muovere la guarnigione prima degli acquisti;
+- verificare la cella liberata;
+- costruire il Bastione Armato sul PS;
+- completare il micro-piano e restituire il turno all'Advanced.
+
+RISULTATI AUTOMATICI
+--------------------
+JavaScript syntax check: 174/174 file superati.
+Suite Node completa: 80/80 test superati.
+Smoke dedicato F9T2a: 25/25 verifiche superate.
+
+Browser Chromium:
+- F9T2a Bastion Relay mirato: SUPERATO.
+- F9T1 Expert Architecture: SUPERATO.
+- F9T1 Expert Turn Integration: SUPERATO.
+- F9U3 Control Center: SUPERATO.
+- F9U2b Editor Layout Reorganization: SUPERATO.
+
+SCENARIO BROWSER MIRATO F9T2a
+-----------------------------
+Seed configurato: AR-ms73t56g-yyyzl3.
+Il test usa il runtime reale e predispone deterministicamente una finestra con:
+- PS Exordium occupato da guardia mobile;
+- builder Exordium adiacente;
+- Bastione disponibile;
+- ENE sufficiente;
+- destinazione di rilascio con guadagno di distanza.
+
+Esito osservato:
+- modulo: expert-exordium-f9t2a;
+- un solo modulo eseguito;
+- candidato valido generato;
+- sequenza: move_guard -> build_bastion;
+- guarnigione rimossa dalla cella PS;
+- Bastione costruito sul PS;
+- micro-piano completato;
+- fallback non usato;
+- audit candidati: 3;
+- budget exhaustion: 0;
+- errori pagina: 0;
+- errori console: 0.
+
+Misurazione dell'ultima esecuzione browser:
+- contesto: 0,9 ms;
+- modulo: 1,8 ms;
+- totale fondazione Expert: 8,6 ms.
+
+La smoke F9T2a è stata ripetuta cinque volte consecutive dopo l'ottimizzazione dell'audit in batch: 5/5 superate senza superamento del budget.
+
+TELEMETRIA
+----------
+Schema principale: F9Q3e1-2.
+Contratto Expert: F9T1-1.
+Estensione dottrinale: F9T2a-1.
+
+Ogni PS mantiene un record diagnostico distinto, ma gli audit del turno vengono emessi in un unico evento batch e poi espansi dalla telemetria. Questo conserva le ragioni di esclusione riducendo il costo sincrono del modulo.
+
+REGRESSIONI ESCLUSE
+-------------------
+Nessuna modifica a:
+- carte, statistiche, costi o bilanciamento;
+- mappe, Missioni, Pressione o targeting;
+- dottrine Expert delle altre quattro fazioni;
+- fallback Advanced F9T0;
+- schema telemetrico principale.
+
+LIMITI DELLA VERIFICA
+---------------------
+Non è stata simulata automaticamente l'intera partita di 24 round del rapporto originale sulla mappa Plains 2G large rev.169. Il browser test valida in modo mirato il punto di rottura, la sequenza legale e il costo del modulo. Restano obbligatori:
+- retest manuale completo con seed AR-ms73t56g-yyyzl3;
+- partite lunghe multi-seed;
+- verifica APK reale di RAM, CPU e stabilità;
+- valutazione comportamentale della staffetta nel corso della partita.
+
+VERDETTO
+--------
+Candidata tecnicamente pronta per il collaudo manuale F9T2a.
+Non ancora validata come nuova baseline.

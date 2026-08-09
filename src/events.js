@@ -46,6 +46,19 @@ const EventTypes = Object.freeze({
   DECK_EXHAUSTED: "DECK_EXHAUSTED",
   AI_PLAN_CHANGED: "AI_PLAN_CHANGED",
 
+  // F9T1 — contratto eventi Expert. In F9T1 i moduli non alterano ancora il gameplay.
+  AI_EXPERT_TURN_STARTED: "AI_EXPERT_TURN_STARTED",
+  AI_EXPERT_CONTEXT_CREATED: "AI_EXPERT_CONTEXT_CREATED",
+  AI_EXPERT_MODULE_ROUTED: "AI_EXPERT_MODULE_ROUTED",
+  AI_MICROPLAN_SELECTED: "AI_MICROPLAN_SELECTED",
+  AI_MICROPLAN_STEP: "AI_MICROPLAN_STEP",
+  AI_MICROPLAN_COMPLETED: "AI_MICROPLAN_COMPLETED",
+  AI_MICROPLAN_ABORTED: "AI_MICROPLAN_ABORTED",
+  AI_EXPERT_DECISION: "AI_EXPERT_DECISION",
+  AI_EXPERT_FALLBACK: "AI_EXPERT_FALLBACK",
+  AI_EXPERT_BUDGET_EXHAUSTED: "AI_EXPERT_BUDGET_EXHAUSTED",
+  AI_EXPERT_TURN_COMPLETED: "AI_EXPERT_TURN_COMPLETED",
+
   VICTORY: "VICTORY",
   MATCH_STATS_RECORDED: "MATCH_STATS_RECORDED",
 
@@ -97,6 +110,16 @@ function emitGameEvent(event) {
     if (typeof updateMatchTelemetryFromEvent === "function") {
       try { updateMatchTelemetryFromEvent(normalized); }
       catch (err) { console.warn("Arena Rubra F9Q3e1a telemetry update failed", err); }
+    }
+
+    // F9T2c: memoria Expert limitata. Preserva le perdite Relay F9T2b e
+    // aggiunge la finestra d'impatto della Pivot avanzata senza doppio handler.
+    if (typeof expertAiHandleGameEventF9T2c === "function") {
+      try { expertAiHandleGameEventF9T2c(normalized); }
+      catch (err) { console.warn("Arena Rubra F9T2c Expert event memory failed", err); }
+    } else if (typeof expertAiHandleGameEventF9T2b === "function") {
+      try { expertAiHandleGameEventF9T2b(normalized); }
+      catch (err) { console.warn("Arena Rubra F9T2b Expert event memory failed", err); }
     }
 
     if (typeof missionTrackerHandleEvent === "function") {

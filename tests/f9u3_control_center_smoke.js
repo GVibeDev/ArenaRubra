@@ -16,11 +16,11 @@ let checks = 0;
 const ok = (value, message) => { assert.ok(value, message); checks += 1; };
 const once = id => (index.match(new RegExp(`id=["']${id}["']`, "g")) || []).length === 1;
 
-ok(build.includes('version: "C2-STABLE-1-F9T0-APK-M4c"'), "versione F9T0");
-ok(build.includes('buildName: "Advanced AI Finalization · Expert AI Preparation"'), "nome build F9T0");
-ok(build.includes('logicBaseline: "C2-STABLE-1-F9U3-APK-M4c"'), "baseline logica F9U3");
-ok(build.includes('buildChannel: "f9t0-candidate"'), "canale candidato F9T0");
-ok(build.includes('schema telemetrico F9Q3e1-2 restano invariati'), "schema telemetrico dichiarato invariato");
+ok(build.includes('version: "C2-STABLE-1-F9T2d3-APK-M4c"'), "versione F9T2c");
+ok(build.includes('buildName: "Commander Deployment Commitment"'), "nome build F9T2d");
+ok(build.includes('logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'), "baseline logica F9T2c4");
+ok(build.includes('buildChannel: "f9t2d3-candidate"'), "canale candidato F9T2c");
+ok(build.includes("F9Q3e1-2") && build.includes("F9T1-1") && build.includes("F9T2d3-1"), "schema base, contratto Expert ed estensione dottrinale dichiarati");
 
 [
   "mainMenuNewGameBtn", "mainMenuTutorialBtn", "mainMenuResumeBtn", "mainMenuMapArchiveBtn",

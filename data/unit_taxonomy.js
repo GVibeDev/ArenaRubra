@@ -142,7 +142,8 @@ function unitTaxonomyAuditF9O5(list = (typeof BLUEPRINTS !== "undefined" ? BLUEP
 
     const cost = Number(bp.cost);
     if (!Number.isFinite(cost)) errors.push(`${bp.id}: costo ENE non numerico.`);
-    else if (cls === "light" && cost > 2) errors.push(`${bp.id}: Leggera con costo ${cost} > 2.`);
+    else if (cls === "light" && bp.type === "Struttura" && cost > 3) errors.push(`${bp.id}: Struttura Leggera con costo ${cost} > 3.`);
+    else if (cls === "light" && bp.type !== "Struttura" && cost > 2) errors.push(`${bp.id}: Leggera con costo ${cost} > 2.`);
     else if (cls === "heavy" && (cost < 2 || cost > 4)) errors.push(`${bp.id}: Pesante con costo ${cost}, atteso 2–4.`);
     else if (cls === "elite" && (cost < 3 || cost > 5)) errors.push(`${bp.id}: Elite con costo ${cost}, atteso 3–5.`);
     else if (cls === "pivot" && cost < 4) errors.push(`${bp.id}: Pivot con costo ${cost} < 4.`);

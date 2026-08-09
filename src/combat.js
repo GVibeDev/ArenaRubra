@@ -26,7 +26,7 @@
       }
       const bounty = getStatus(unit, "fabeot_bounty");
       if (bounty && bounty.owner && state.currentPlayer === bounty.owner) {
-        addPlayerEffect(bounty.owner, { kind:"income_delta", value:bounty.value || 2, minIncome:0, turns:1, timing:"afterIncome", source:"Contratto di Riscossione" });
+        addPlayerEffect(bounty.owner, { kind:"income_delta", value:bounty.value || 2, minIncome:0, turns:1, timing:"afterIncome", source:"Contratto di Riscossione", casterSide:bounty.owner });
         log(`Contratto di Riscossione riesce: ${playerName(bounty.owner)} guadagnerà +${bounty.value || 2} ENE al prossimo income.`);
       }
       // v1.8.11c: le unità distrutte vengono rimosse dal campo logico.
@@ -213,6 +213,9 @@
         applyDamage(u, dmg, "Ultima Corsa", { tactic:true, directHp:false, skipC2c8Reactions:true, sourceSide:attacker.side });
       }
       if (attacker.alive) {
+        const sacrificeAttribution = typeof ffaUnitDestroyedEventData === "function"
+          ? ffaUnitDestroyedEventData(attacker, { sourceSide:attacker.side, source:"C2c-8c-last-run-sacrifice", damageKind:"self", options:{sacrifice:true} })
+          : { destroyedBySide:null, killerSide:null, assistSides:[], attributionType:"self", damageKind:"self" };
         log(`${attacker.name} completa l'Ultima Corsa e viene distrutto dal sacrificio.`, EventTypes.UNIT_DESTROYED, {
           unitId: attacker.uid,
           unitName: attacker.name,
@@ -221,7 +224,7 @@
           unitType: attacker.type,
           unitWeight: attacker.weight,
           unitRole: attacker.role || attacker.deckRole || null,
-          destroyedBySide: null,
+          ...sacrificeAttribution,
           source:"C2c-8c-last-run-sacrifice"
         });
         if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(attacker, null, "Ultima Corsa", { tactic:true, sacrifice:true });
@@ -250,6 +253,90 @@
         if (typeof c2c8ReactionAttack === "function" && c2c8ReactionAttack(ambusher, movedUnit, "Agguato", { ambush:true })) triggered += 1;
       }
       return triggered;
+    }
+
+
+    // F9T2d1: anteprima pura dell'attacco base. Usa le stesse regole ATT -> blocchi -> DEF/HP
+    // di attackUnit/applyDamage, ma non modifica stato, log, status o telemetria.
+    function previewBasicAttackOutcome(attacker, defender, options={}) {
+      if (!attacker || !defender || defender.alive === false) return null;
+      const originalDefender = defender;
+      const interceptor = options.ignoreInterception ? null : findFrontLineInterceptor(attacker, defender);
+      if (interceptor) defender = interceptor;
+
+      const effectiveAttack = options.effectiveAttack == null
+        ? Math.max(0, Number(effectiveAtt(attacker) || 0))
+        : Math.max(0, Number(options.effectiveAttack || 0));
+      const superiority = numericalSuperiorityBonus(attacker, defender);
+      const context = attackContextBonus(attacker, defender);
+      const lastRunStatus = c2c8cLastRunStatus(attacker);
+      const lastRunBonus = lastRunStatus ? Math.max(0, Number(lastRunStatus.value || 1)) : 0;
+      const doubleStatus = typeof getStatus === "function" ? getStatus(attacker, "double_attack_next_attack") : null;
+      const multiplier = doubleStatus ? Math.max(2, Number(doubleStatus.value || 2)) : 1;
+      const rawAmount = effectiveAttack + superiority + context + lastRunBonus;
+      let amount = Math.max(0, rawAmount * multiplier);
+
+      const vulnerable = typeof getStatus === "function" ? getStatus(defender, "fabeot_vulnerable") : null;
+      if (vulnerable) amount += Math.max(0, Number(vulnerable.value || 1));
+      if (typeof f9s1bAdjacentEnemyTower === "function") {
+        const tower = f9s1bAdjacentEnemyTower(defender);
+        if (tower) amount += Math.max(0, Number(tower.adjacentDamageAmp || 0));
+      }
+
+      const ignoreDefense = options.directHp == null ? attackerHasIgnoreDefenseOnBasicAttack(attacker) : Boolean(options.directHp);
+      let auraBlock = 0, structureDefBlock = 0, dynamicBlock = 0, terrainModifier = 0, terrainBlock = 0;
+      let defLoss = 0, hpLoss = 0, overflowLost = 0;
+      const currentHp = Math.max(0, Number(defender.currentHp || 0));
+      const currentDef = Math.max(0, Number(defender.currentDef || 0));
+
+      if (ignoreDefense) {
+        hpLoss = Math.min(currentHp, amount);
+      } else {
+        let remaining = amount;
+        auraBlock = Math.min(Math.max(0, Number(typeof defenseAuraBonus === "function" ? defenseAuraBonus(defender) : 0)), remaining);
+        remaining -= auraBlock;
+        structureDefBlock = Math.min(Math.max(0, Number(typeof agathoiStructureAdjacencyDefBonus === "function" ? agathoiStructureAdjacencyDefBonus(defender) : 0)), remaining);
+        remaining -= structureDefBlock;
+        dynamicBlock = Math.min(Math.max(0, Number(typeof dynamicDefenseBonus === "function" ? dynamicDefenseBonus(defender, attacker, { attacker, baseAttack:true }) : 0)), remaining);
+        remaining -= dynamicBlock;
+        terrainModifier = typeof getTerrainDefenseModifier === "function" ? Number(getTerrainDefenseModifier(defender) || 0) : 0;
+        terrainBlock = terrainModifier > 0 ? Math.min(terrainModifier, remaining) : 0;
+        remaining -= terrainBlock;
+        const effectiveCurrentDef = Math.max(0, currentDef + Math.min(0, terrainModifier));
+        if (effectiveCurrentDef > 0) {
+          defLoss = Math.min(effectiveCurrentDef, remaining);
+          overflowLost = Math.max(0, remaining - defLoss);
+        } else {
+          hpLoss = Math.min(currentHp, remaining);
+        }
+      }
+
+      const remainingDef = Math.max(0, currentDef - defLoss);
+      const remainingHp = Math.max(0, currentHp - hpLoss);
+      return {
+        originalTargetUnitId:String(originalDefender.uid || originalDefender.id || ""),
+        targetUnitId:String(defender.uid || defender.id || ""),
+        intercepted:Boolean(interceptor),
+        effectiveAttack,
+        rawAmount,
+        amount,
+        multiplier,
+        superiorityBonus:superiority,
+        contextBonus:context,
+        lastRunBonus,
+        auraBlock,
+        structureDefBlock,
+        dynamicBlock,
+        terrainModifier,
+        terrainBlock,
+        defLoss,
+        hpLoss,
+        effectiveDamage:defLoss + hpLoss,
+        overflowLost,
+        remainingDef,
+        remainingHp,
+        targetDestroyed:remainingHp <= 0
+      };
     }
 
     function attackUnit(attacker, defender) {
@@ -329,17 +416,17 @@
       let specialBleedApplied = false;
       if (bleedTwo) {
         if (defender.alive && typeof canBleed === "function" && canBleed(defender)) {
-          applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis", attacker.side);
+          applyBleed(defender, bleedTwo.value || 2, 2, bleedTwo.source || "Marchio dei Sanguis", attacker.side, attacker);
           specialBleedApplied = true;
         }
         removeStatusKind(attacker, "next_attack_bleed_two", "attacco base consumato");
       }
-      if (attacker.faction === "Liberti" && hasBleedingAttackRule(attacker) && defender.alive && canBleed(defender) && !specialBleedApplied) applyBleed(defender, (attacker.bleedValue || 1) + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name, attacker.side);
+      if (attacker.faction === "Liberti" && hasBleedingAttackRule(attacker) && defender.alive && canBleed(defender) && !specialBleedApplied) applyBleed(defender, (attacker.bleedValue || 1) + (attacker.c2c8cSanguisBleedBonus || 0), 2, attacker.name, attacker.side, attacker);
       if (lastRunStatus) c2c8cResolveLastRunAfterAttack(attacker, defender, lastRunStatus);
       if (thorns && attacker.alive && attacker.type !== "QG") {
         const thornDamage = Math.max(1, thorns.value || 1);
         log(`${attacker.name} viene ferito dalle Spine di ${defender.name}.`);
-        applyDamage(attacker, thornDamage, "Spine", { directHp:true, sourceSide:defender.side, damageKind:"thorns" });
+        applyDamage(attacker, thornDamage, "Spine", { directHp:true, sourceSide:defender.side, sourceUnit:defender, damageKind:"thorns" });
       }
       if (!defenderDiedFromAttack && defender.alive && attacker.alive) c2c8MaybeCounterattack(defender, attacker);
       if (typeof missionMaybeOfferRepeatAttack === "function") missionMaybeOfferRepeatAttack(attacker, defender);
@@ -360,7 +447,10 @@
 
 
     function applyDamage(target, amount, source="danno", options={}) {
-      const sourceSide = Number(options.sourceSide || (options.attacker && options.attacker.side) || ((!options.status && state) ? state.currentPlayer : 0)) || null;
+      const sourceUnit = options.sourceUnit || options.attacker || null;
+      const sourceUnitId = options.sourceUnitId || (sourceUnit && sourceUnit.uid) || null;
+      const sourceBlueprintId = options.sourceBlueprintId || (sourceUnit && (sourceUnit.blueprintId || sourceUnit.id)) || null;
+      const sourceSide = Number(options.sourceSide || (sourceUnit && sourceUnit.side) || ((!options.status && state) ? state.currentPlayer : 0)) || null;
       let damageKind = options.damageKind || "effect";
       if (!options.damageKind) {
         if (options.status && /sanguinamento/i.test(String(source))) damageKind = "bleed";
@@ -379,9 +469,15 @@
           extraDamage: vulnerable.value || 1
         });
       }
+      if (typeof f9s1bAdjustIncomingDamage === "function") {
+        amount = f9s1bAdjustIncomingDamage(target, amount, source, options, damageKind, sourceSide);
+      }
       if (options.directHp) {
         const hpLoss = Math.min(target.currentHp, amount);
         target.currentHp -= hpLoss;
+        if (typeof ffaAttributionRecordDamage === "function") ffaAttributionRecordDamage(target, {
+          sourceSide, source, damageKind, defLoss:0, hpLoss, options
+        });
         log(`${target.name} subisce ${amount} da ${source}: -${hpLoss} HP diretti, DEF ignorata.`, EventTypes.UNIT_DAMAGED, {
           targetId: target.uid,
           targetName: target.name,
@@ -390,6 +486,8 @@
           amount,
           source,
           sourceSide,
+          sourceUnitId,
+          sourceBlueprintId,
           damageKind,
           defLoss: 0,
           hpLoss,
@@ -399,6 +497,9 @@
           if (typeof c2c6bRecordUnitDestroyed === "function") c2c6bRecordUnitDestroyed(target, options.attacker || null, source, options);
           target.alive = false;
           target.acted = true;
+          const attributionData = typeof ffaUnitDestroyedEventData === "function"
+            ? ffaUnitDestroyedEventData(target, { sourceSide, source, damageKind, options })
+            : { destroyedBySide:sourceSide, killerSide:sourceSide, assistSides:[], attributionType:"direct", damageKind };
           log(`${target.name} è distrutto.`, EventTypes.UNIT_DESTROYED, {
           unitId: target.uid,
           unitName: target.name,
@@ -407,7 +508,7 @@
           unitType: target.type,
           unitWeight: target.weight,
           unitRole: target.role || target.deckRole || null,
-          destroyedBySide: sourceSide,
+          ...attributionData,
           source
         });
           if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(target, options.attacker || null, source, options);
@@ -447,6 +548,9 @@
       const dynamicText = dynamicBlock ? `, -${dynamicBlock} bloccato da bonus condizionale` : "";
       const terrainText = terrainBlock ? `, -${terrainBlock} bloccato dal terreno difensivo` : (terrainModifier < 0 ? `, DEF ${terrainModifier} da terreno scoperto` : "");
       const overflowText = overflowLost ? `, ${overflowLost} danno non perforante perso` : "";
+      if (typeof ffaAttributionRecordDamage === "function") ffaAttributionRecordDamage(target, {
+        sourceSide, source, damageKind, defLoss, hpLoss, options
+      });
       log(`${target.name} subisce ${amount} da ${source}: -${defLoss} DEF, -${hpLoss} HP${auraText}${structureText}${dynamicText}${terrainText}${overflowText}.`, EventTypes.UNIT_DAMAGED, {
         targetId: target.uid,
         targetName: target.name,
@@ -455,6 +559,8 @@
         amount,
         source,
         sourceSide,
+        sourceUnitId,
+        sourceBlueprintId,
         damageKind,
         defLoss,
         hpLoss,
@@ -471,6 +577,9 @@
         if (typeof c2c6bRecordUnitDestroyed === "function") c2c6bRecordUnitDestroyed(target, options.attacker || null, source, options);
         target.alive = false;
         target.acted = true;
+        const attributionData = typeof ffaUnitDestroyedEventData === "function"
+          ? ffaUnitDestroyedEventData(target, { sourceSide, source, damageKind, options })
+          : { destroyedBySide:sourceSide, killerSide:sourceSide, assistSides:[], attributionType:"direct", damageKind };
         log(`${target.name} è distrutto.`, EventTypes.UNIT_DESTROYED, {
           unitId: target.uid,
           unitName: target.name,
@@ -479,7 +588,7 @@
           unitType: target.type,
           unitWeight: target.weight,
           unitRole: target.role || target.deckRole || null,
-          destroyedBySide: sourceSide,
+          ...attributionData,
           source
         });
         if (typeof c1fBeforeUnitDestroyed === "function") c1fBeforeUnitDestroyed(target, options.attacker || null, source, options);
@@ -505,6 +614,10 @@
 
 
     function shouldEndAfterAttack(unit) {
+      if (unit && unit.postAttackMove && !unit.f9s1aPostAttackMoveUsed && unit.alive && typeof movableCells === "function" && movableCells(unit).length > 0) {
+        unit.f9s1aPostAttackMoveReady = true;
+        return false;
+      }
       if ((unit.attacksMade || 0) < (unit.attacksPerTurn || 1) && adjacentAttackTargets(unit).length > 0) return false;
       if (vehicleHasFollowupAfterAttack(unit)) return false;
       return true;
@@ -516,8 +629,12 @@
 
 
 
-    function applyBleed(target, value, turns, source, owner=null) {
-      applyStatus(target, { kind:"bleed", value, turns, source, owner });
+    function applyBleed(target, value, turns, source, owner=null, sourceUnit=null) {
+      applyStatus(target, {
+        kind:"bleed", value, turns, source, owner,
+        sourceUnitId:sourceUnit && sourceUnit.uid ? sourceUnit.uid : null,
+        sourceBlueprintId:sourceUnit && (sourceUnit.blueprintId || sourceUnit.id) ? (sourceUnit.blueprintId || sourceUnit.id) : null
+      });
     }
 
 
@@ -589,7 +706,7 @@ function c1fBeforeUnitDestroyed(unit, attacker=null, source="distruzione", optio
       log(`${attacker.name} espropria risorse: +${attacker.eneOnAttackKill || 1} ENE immediato.`);
     }
     if (attacker.enemyIncomeLossOnKill) {
-      addPlayerEffect(unit.side, { kind:"income_delta", value:-(attacker.enemyIncomeLossOnKill || 1), minIncome:0, turns:1, timing:"afterIncome", source:attacker.name });
+      addPlayerEffect(unit.side, { kind:"income_delta", value:-(attacker.enemyIncomeLossOnKill || 1), minIncome:0, turns:1, timing:"afterIncome", source:attacker.name, casterSide:attacker.side });
       log(`${attacker.name} sabota l'economia nemica: ${playerName(unit.side)} avrà -${attacker.enemyIncomeLossOnKill || 1} ENE al prossimo income.`);
     }
   }
@@ -622,5 +739,5 @@ function triggerMinesAt(coord, unit) {
   const dmg = unit.type === "Veicolo" ? (mine.vehicleDamage || 3) : (mine.infantryDamage || 1);
   if (typeof recordAiHazardTrigger === "function") recordAiHazardTrigger(unit.side, "mine", mine.owner === unit.side);
   log(`${unit.name} attiva una mina in [${coord.join(",")}]: ${dmg} danni diretti.`);
-  applyDamage(unit, dmg, mine.name || "Mina", { directHp:true, status:true });
+  applyDamage(unit, dmg, mine.name || "Mina", { directHp:true, status:true, sourceSide:Number(mine.owner || 0) || null, damageKind:"hazard", hazard:true });
 }

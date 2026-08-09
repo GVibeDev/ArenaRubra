@@ -20,6 +20,8 @@ const apkM4Camera = {
   panel: null,
   lastSelectedId: null,
   renderPatched: false,
+  geometryVersion: -1,
+  geometryMapId: "",
   appliedCamera: { mobile:null, scale:"", x:"", y:"", visualW:"", visualH:"" }
 };
 
@@ -78,6 +80,19 @@ function apkM4IsLandscape() {
 
 function apkM4Clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function apkM4BoardGeometry() {
+  return typeof getBoardGeometry === "function"
+    ? getBoardGeometry()
+    : {
+        version: 0,
+        mapId: "map1_starter",
+        nativeWidth: APK_M4_BOARD_W,
+        nativeHeight: APK_M4_BOARD_H,
+        renderOriginX: typeof CENTER_X !== "undefined" ? CENTER_X : APK_M4_BOARD_W / 2,
+        renderOriginY: typeof CENTER_Y !== "undefined" ? CENTER_Y : APK_M4_BOARD_H / 2
+      };
 }
 
 function setApkM4BodyClasses() {
@@ -188,12 +203,14 @@ function apkM4CloseHandAfterCardPlay() {
 }
 
 function apkM4BoardPointForCoord(coord) {
-  if (!Array.isArray(coord)) return { x: APK_M4_BOARD_W / 2, y: APK_M4_BOARD_H / 2 };
+  if (typeof getBoardRenderPoint === "function") return getBoardRenderPoint(coord);
+  const geometry = apkM4BoardGeometry();
+  if (!Array.isArray(coord)) return { x: geometry.nativeWidth / 2, y: geometry.nativeHeight / 2 };
   const q = coord[0];
   const r = coord[2];
   return {
-    x: CENTER_X + HEX_SIZE * Math.sqrt(3) * (q + r / 2),
-    y: CENTER_Y + HEX_SIZE * 1.5 * r
+    x: geometry.renderOriginX + HEX_SIZE * Math.sqrt(3) * (q + r / 2),
+    y: geometry.renderOriginY + HEX_SIZE * 1.5 * r
   };
 }
 
@@ -206,7 +223,7 @@ function apkM4FocusCoord() {
     const hq = getHq(state.currentPlayer);
     if (hq && hq.pos) return hq.pos;
   }
-  return CENTER_PS_COORD;
+  return typeof getCentralStrategicPointCoord === "function" ? getCentralStrategicPointCoord(state && state.mapDefinition) : CENTER_PS_COORD;
 }
 
 function clampApkM4Camera(options = {}) {
@@ -217,13 +234,20 @@ function clampApkM4Camera(options = {}) {
     : wrap.getBoundingClientRect();
   if (!rect) return;
   const scale = apkM4Camera.fitScale * apkM4Camera.zoom;
-  const visualW = APK_M4_BOARD_W * scale;
-  const visualH = APK_M4_BOARD_H * scale;
+  const margin = 18;
+  if (typeof clampBoardGeometryTranslation === "function") {
+    const clamped = clampBoardGeometryTranslation(apkM4Camera.x, apkM4Camera.y, rect.width, rect.height, scale, margin);
+    apkM4Camera.x = clamped.x;
+    apkM4Camera.y = clamped.y;
+    return;
+  }
+  const geometry = apkM4BoardGeometry();
+  const visualW = geometry.nativeWidth * scale;
+  const visualH = geometry.nativeHeight * scale;
   const extraX = Math.max(0, (visualW - rect.width) / 2);
   const extraY = Math.max(0, (visualH - rect.height) / 2);
-  const margin = 18;
-  apkM4Camera.x = apkM4Clamp(apkM4Camera.x, -(extraX + margin), extraX + margin);
-  apkM4Camera.y = apkM4Clamp(apkM4Camera.y, -(extraY + margin), extraY + margin);
+  apkM4Camera.x = extraX > 0 ? apkM4Clamp(apkM4Camera.x, -(extraX + margin), extraX + margin) : 0;
+  apkM4Camera.y = extraY > 0 ? apkM4Clamp(apkM4Camera.y, -(extraY + margin), extraY + margin) : 0;
 }
 
 function applyApkM4Camera(options = {}) {
@@ -252,8 +276,9 @@ function applyApkM4Camera(options = {}) {
   let visualW = applied.visualW;
   let visualH = applied.visualH;
   if (!options.skipLayoutSize) {
-    visualW = `${Math.round(APK_M4_BOARD_W * totalScale)}px`;
-    visualH = `${Math.round(APK_M4_BOARD_H * totalScale)}px`;
+    const geometry = apkM4BoardGeometry();
+    visualW = `${Math.round(geometry.nativeWidth * totalScale)}px`;
+    visualH = `${Math.round(geometry.nativeHeight * totalScale)}px`;
     if (applied.mobile !== true || applied.visualW !== visualW) wrap.style.setProperty("--board-visual-width", visualW);
     if (applied.mobile !== true || applied.visualH !== visualH) wrap.style.setProperty("--board-visual-height", visualH);
   }
@@ -279,7 +304,8 @@ function fitApkM4Board(options = {}) {
   const pad = apkM4IsLandscape() ? 8 : 12;
   const availableW = Math.max(220, rect.width - pad);
   const availableH = Math.max(180, rect.height - pad);
-  apkM4Camera.fitScale = Math.max(0.26, Math.min(1, availableW / APK_M4_BOARD_W, availableH / APK_M4_BOARD_H));
+  const geometry = apkM4BoardGeometry();
+  apkM4Camera.fitScale = Math.max(0.14, Math.min(1, availableW / geometry.nativeWidth, availableH / geometry.nativeHeight));
 
   if (!options.preserveCamera) {
     apkM4Camera.zoom = APK_M4_CAMERA_ZOOMS[apkM4Camera.mode] || 1;
@@ -309,9 +335,28 @@ function centerApkM4CameraOn(coord, options = {}) {
   if (!options.keepZoom) apkM4Camera.zoom = APK_M4_CAMERA_ZOOMS.focus;
   const p = apkM4BoardPointForCoord(coord || CENTER_PS_COORD);
   const scale = apkM4Camera.fitScale * apkM4Camera.zoom;
-  apkM4Camera.x = (APK_M4_BOARD_W / 2 - p.x) * scale;
-  apkM4Camera.y = (APK_M4_BOARD_H / 2 - p.y) * scale;
+  const geometry = apkM4BoardGeometry();
+  apkM4Camera.x = (geometry.nativeWidth / 2 - p.x) * scale;
+  apkM4Camera.y = (geometry.nativeHeight / 2 - p.y) * scale;
   applyApkM4Camera();
+}
+
+function apkM4HandleBoardGeometry(options = {}) {
+  const geometry = apkM4BoardGeometry();
+  const geometryChanged = options.geometryChanged === true || apkM4Camera.geometryVersion !== geometry.version;
+  const mapChanged = options.mapChanged === true || apkM4Camera.geometryMapId !== geometry.mapId;
+  if (!geometryChanged) {
+    applyApkM4Camera();
+    return;
+  }
+  apkM4Camera.geometryVersion = geometry.version;
+  apkM4Camera.geometryMapId = geometry.mapId;
+  if (typeof cameraInteractionInvalidateGeometry === "function") cameraInteractionInvalidateGeometry();
+  if (mapChanged || apkM4Camera.mode === "fit") {
+    fitApkM4Board({ preserveCamera:false });
+  } else {
+    applyApkM4Camera({ refreshGeometry:true });
+  }
 }
 
 function updateApkM4StatusStrip() {

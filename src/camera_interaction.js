@@ -54,6 +54,7 @@ function cameraInteractionSurface() {
 }
 
 function cameraInteractionNativeSize() {
+  if (typeof getBoardNativeSize === "function") return getBoardNativeSize();
   return {
     width: typeof BOARD_CAMERA_W === "number" ? BOARD_CAMERA_W : 920,
     height: typeof BOARD_CAMERA_H === "number" ? BOARD_CAMERA_H : 780
@@ -120,15 +121,21 @@ function cameraInteractionClampModel(model = cameraInteractionModel(), options =
   if (!model) return model;
   const rect = options.rect || cameraInteractionViewportRect({ refresh: options.refreshGeometry === true });
   if (!rect) return model;
-  const native = cameraInteractionNativeSize();
   const scale = cameraInteractionTotalScale(model);
-  const visualW = native.width * scale;
-  const visualH = native.height * scale;
-  const extraX = Math.max(0, (visualW - rect.width) / 2);
-  const extraY = Math.max(0, (visualH - rect.height) / 2);
   const margin = cameraInteractionIsMobile() ? 18 : CAMERA_INTERACTION_MIN_VISIBLE_MARGIN;
-  model.x = cameraInteractionClampValue(Number(model.x) || 0, -(extraX + margin), extraX + margin);
-  model.y = cameraInteractionClampValue(Number(model.y) || 0, -(extraY + margin), extraY + margin);
+  if (typeof clampBoardGeometryTranslation === "function") {
+    const clamped = clampBoardGeometryTranslation(model.x, model.y, rect.width, rect.height, scale, margin);
+    model.x = clamped.x;
+    model.y = clamped.y;
+  } else {
+    const native = cameraInteractionNativeSize();
+    const visualW = native.width * scale;
+    const visualH = native.height * scale;
+    const extraX = Math.max(0, (visualW - rect.width) / 2);
+    const extraY = Math.max(0, (visualH - rect.height) / 2);
+    model.x = cameraInteractionClampValue(Number(model.x) || 0, -(extraX + margin), extraX + margin);
+    model.y = cameraInteractionClampValue(Number(model.y) || 0, -(extraY + margin), extraY + margin);
+  }
   return model;
 }
 
@@ -486,8 +493,14 @@ function cameraFocusHex(hexIdOrCoord, options = {}) {
   const native = cameraInteractionNativeSize();
   const scale = cameraInteractionTotalScale(model);
   if (point) {
-    model.x = (native.width / 2 - point.x) * scale;
-    model.y = (native.height / 2 - point.y) * scale;
+    const viewport = cameraInteractionViewportCenter({ refresh:true });
+    const desired = options.viewportPoint && Number.isFinite(options.viewportPoint.x) && Number.isFinite(options.viewportPoint.y)
+      ? options.viewportPoint
+      : { x:viewport.x, y:viewport.y };
+    const offsetX = viewport.rect ? desired.x - viewport.x : 0;
+    const offsetY = viewport.rect ? desired.y - viewport.y : 0;
+    model.x = (native.width / 2 - point.x) * scale + offsetX;
+    model.y = (native.height / 2 - point.y) * scale + offsetY;
     cameraInteractionApply({ animate: options.animate !== false });
     return true;
   }

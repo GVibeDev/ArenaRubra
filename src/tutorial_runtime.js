@@ -22,10 +22,13 @@ let tutorialRuntimeState = {
   step:null,
   target:null,
   allowedTargets:[],
+  attentionTargets:[],
+  previewPortals:[],
   spotlightDom:null,
   retryTimer:null,
   updateFrame:null,
   hintTimer:null,
+  focusTimer:null,
   timers:new Set(),
   sessionToken:0,
   stepToken:0,
@@ -460,6 +463,199 @@ function tutorialRuntimeResolveAllowedTargets(step) {
   return specs.flatMap(tutorialRuntimeResolveTargets).filter(Boolean);
 }
 
+
+function tutorialRuntimePortalPreviewElement(element) {
+  if (typeof document === "undefined" || !document.body || !element || !element.parentNode) return false;
+  if (tutorialRuntimeState.previewPortals.some(item => item && item.element === element)) return true;
+  const originalParent = element.parentNode;
+  const marker = document.createComment(`tutorial-preview-portal:${element.id || element.className || "preview"}`);
+  originalParent.insertBefore(marker, element);
+  document.body.appendChild(element);
+  element.classList.add("tutorialPreviewPortal");
+  tutorialRuntimeState.previewPortals.push({ element, marker, originalParent });
+  return true;
+}
+
+function tutorialRuntimePortalCardPreviews() {
+  if (typeof document === "undefined") return false;
+  const previews = Array.from(document.querySelectorAll("#mapHandSelectionPreview,.mapHandHoverPreview"));
+  let moved = false;
+  for (const preview of previews) moved = tutorialRuntimePortalPreviewElement(preview) || moved;
+  return moved;
+}
+
+function tutorialRuntimeRestoreCardPreviews() {
+  const portals = Array.isArray(tutorialRuntimeState.previewPortals) ? [...tutorialRuntimeState.previewPortals] : [];
+  tutorialRuntimeState.previewPortals = [];
+  for (const item of portals) {
+    const element = item && item.element;
+    const marker = item && item.marker;
+    if (!element) continue;
+    element.classList.remove("tutorialPreviewPortal");
+    if (marker && marker.parentNode) {
+      marker.parentNode.insertBefore(element, marker);
+      marker.remove();
+    } else if (item.originalParent && item.originalParent.isConnected) {
+      item.originalParent.appendChild(element);
+    }
+  }
+  return portals.length > 0;
+}
+
+function tutorialRuntimeClearAttentionTargets() {
+  if (typeof document !== "undefined") {
+    document.querySelectorAll(".tutorialAttentionTarget,.tutorialAttentionContext").forEach(element => {
+      element.classList.remove("tutorialAttentionTarget", "tutorialAttentionContext");
+      element.removeAttribute("data-tutorial-attention");
+    });
+  }
+  tutorialRuntimeState.attentionTargets = [];
+}
+
+function tutorialRuntimeMarkAttentionTarget(element, kind="action") {
+  if (!element || !element.classList) return false;
+  const className = kind === "context" ? "tutorialAttentionContext" : "tutorialAttentionTarget";
+  element.classList.add(className);
+  element.setAttribute("data-tutorial-attention", kind);
+  tutorialRuntimeState.attentionTargets.push(element);
+  return true;
+}
+
+function tutorialRuntimeApplyAttention(step) {
+  tutorialRuntimePortalCardPreviews();
+  tutorialRuntimeClearAttentionTargets();
+  if (!step || typeof document === "undefined") return false;
+  const informative = step.mode === TUTORIAL_STEP_MODES.INFORMATIVE;
+  if (informative) {
+    const next = document.querySelector("#narrativeOverlayRoot:not([hidden]) .narrativeNextBtn:not([hidden]):not(:disabled)");
+    if (next) tutorialRuntimeMarkAttentionTarget(next, "action");
+    const context = step.spotlight && step.spotlight.target ? tutorialRuntimeResolveTarget(step.spotlight.target) : null;
+    if (context) tutorialRuntimeMarkAttentionTarget(context, "context");
+  } else {
+    const targets = tutorialRuntimeResolveAllowedTargets(step);
+    for (const target of targets) tutorialRuntimeMarkAttentionTarget(target, "action");
+  }
+  return tutorialRuntimeState.attentionTargets.length > 0;
+}
+
+function tutorialRuntimeRect(element, padding=0) {
+  if (!tutorialRuntimeElementIsVisible(element)) return null;
+  const rect = element.getBoundingClientRect();
+  const p = Math.max(0, Number(padding) || 0);
+  const left = Math.max(0, rect.left - p);
+  const top = Math.max(0, rect.top - p);
+  const right = Math.min(window.innerWidth, rect.right + p);
+  const bottom = Math.min(window.innerHeight, rect.bottom + p);
+  return { left, top, right, bottom, width:Math.max(0, right-left), height:Math.max(0, bottom-top) };
+}
+
+function tutorialRuntimeRectIntersection(a, b) {
+  if (!a || !b) return null;
+  const left = Math.max(a.left, b.left);
+  const top = Math.max(a.top, b.top);
+  const right = Math.min(a.right, b.right);
+  const bottom = Math.min(a.bottom, b.bottom);
+  if (right <= left || bottom <= top) return null;
+  return { left, top, right, bottom, width:right-left, height:bottom-top };
+}
+
+function tutorialRuntimeRectOverlaps(a, b, tolerance=2) {
+  const hit = tutorialRuntimeRectIntersection(a, b);
+  return Boolean(hit && hit.width > tolerance && hit.height > tolerance);
+}
+
+function tutorialRuntimeBoardViewportRect() {
+  const wrap = typeof cameraInteractionViewportRect === "function"
+    ? cameraInteractionViewportRect({ refresh:true })
+    : tutorialRuntimeRect(document.getElementById("boardWrap"));
+  if (!wrap) return null;
+  const left = Math.max(0, wrap.left);
+  const top = Math.max(0, wrap.top);
+  const right = Math.min(window.innerWidth, wrap.right);
+  const bottom = Math.min(window.innerHeight, wrap.bottom);
+  return { left, top, right, bottom, width:Math.max(0,right-left), height:Math.max(0,bottom-top) };
+}
+
+function tutorialRuntimeOccluderRects() {
+  if (typeof document === "undefined") return [];
+  const selectors = [
+    "#narrativeOverlayRoot:not([hidden]) .narrativeDialog",
+    "#mapHandOverlay:not([hidden]):not(.isCollapsed)",
+    ".mapHandSelectionPreview.isVisible",
+    ".apkM4Panel.isOpen",
+    "#mobileGameBar"
+  ];
+  return selectors.flatMap(selector => Array.from(document.querySelectorAll(selector)))
+    .map(element => tutorialRuntimeRect(element, 10))
+    .filter(Boolean);
+}
+
+function tutorialRuntimeLargestFreeRect(base, occluders) {
+  if (!base) return null;
+  const clipped = (occluders || []).map(rect => tutorialRuntimeRectIntersection(base, rect)).filter(Boolean);
+  if (!clipped.length) return { ...base };
+  const xs = new Set([base.left, base.right]);
+  const ys = new Set([base.top, base.bottom]);
+  for (const rect of clipped) {
+    xs.add(Math.max(base.left, Math.min(base.right, rect.left)));
+    xs.add(Math.max(base.left, Math.min(base.right, rect.right)));
+    ys.add(Math.max(base.top, Math.min(base.bottom, rect.top)));
+    ys.add(Math.max(base.top, Math.min(base.bottom, rect.bottom)));
+  }
+  const xValues = [...xs].sort((a,b)=>a-b);
+  const yValues = [...ys].sort((a,b)=>a-b);
+  let best = null;
+  let bestScore = -Infinity;
+  const baseCx = base.left + base.width/2;
+  const baseCy = base.top + base.height/2;
+  for (let xi=0; xi<xValues.length-1; xi++) {
+    for (let xj=xi+1; xj<xValues.length; xj++) {
+      for (let yi=0; yi<yValues.length-1; yi++) {
+        for (let yj=yi+1; yj<yValues.length; yj++) {
+          const rect = { left:xValues[xi], right:xValues[xj], top:yValues[yi], bottom:yValues[yj] };
+          rect.width = rect.right-rect.left;
+          rect.height = rect.bottom-rect.top;
+          if (rect.width < 96 || rect.height < 84) continue;
+          if (clipped.some(block => tutorialRuntimeRectOverlaps(rect, block))) continue;
+          const area = rect.width*rect.height;
+          const cx = rect.left+rect.width/2;
+          const cy = rect.top+rect.height/2;
+          const distance = Math.hypot(cx-baseCx, cy-baseCy);
+          const score = area - distance*42;
+          if (score > bestScore) { bestScore=score; best=rect; }
+        }
+      }
+    }
+  }
+  return best || { ...base };
+}
+
+function tutorialRuntimeSafeViewport() {
+  const board = tutorialRuntimeBoardViewportRect();
+  if (!board) return null;
+  const free = tutorialRuntimeLargestFreeRect(board, tutorialRuntimeOccluderRects());
+  if (!free) return null;
+  const padding = Math.min(36, Math.max(14, Math.min(free.width, free.height)*0.06));
+  const rect = {
+    left:free.left+padding,
+    top:free.top+padding,
+    right:free.right-padding,
+    bottom:free.bottom-padding
+  };
+  rect.width = Math.max(1, rect.right-rect.left);
+  rect.height = Math.max(1, rect.bottom-rect.top);
+  return { rect, point:{ x:rect.left+rect.width/2, y:rect.top+rect.height/2 } };
+}
+
+function tutorialRuntimeStepNeedsAdaptiveFocus(step) {
+  if (!step || !step.spotlight || !step.spotlight.target || step.focus === false) return false;
+  if (step.focus === true) return true;
+  const spec = step.spotlight.target;
+  if (spec && ["hex","unit","hq","ps"].includes(spec.type)) return true;
+  const target = tutorialRuntimeResolveTarget(spec);
+  return Boolean(target && target.closest && target.closest("#boardVisualStack,#board"));
+}
+
 function tutorialRuntimeTargetRect(target, padding=8) {
   if (!target || typeof target.getBoundingClientRect !== "function") return null;
   const rect = target.getBoundingClientRect();
@@ -479,6 +675,9 @@ function tutorialRuntimePositionSpotlight() {
   if (!dom || !target) return false;
   tutorialRuntimeState.target = target;
   tutorialRuntimeState.allowedTargets = tutorialRuntimeResolveAllowedTargets(tutorialRuntimeState.step);
+  if (!tutorialRuntimeState.attentionTargets.length || tutorialRuntimeState.attentionTargets.some(item => !item || !item.isConnected)) {
+    tutorialRuntimeApplyAttention(tutorialRuntimeState.step);
+  }
   const rect = tutorialRuntimeTargetRect(target, tutorialRuntimeState.step.spotlight.padding);
   if (!rect) return false;
   Object.assign(dom.hole.style, { left:`${rect.left}px`, top:`${rect.top}px`, width:`${rect.width}px`, height:`${rect.height}px` });
@@ -522,8 +721,11 @@ function tutorialRuntimeShowSpotlight(step) {
 function tutorialRuntimeHideSpotlight() {
   tutorialRuntimeCancelTimer(tutorialRuntimeState.retryTimer);
   tutorialRuntimeCancelTimer(tutorialRuntimeState.hintTimer);
+  tutorialRuntimeCancelTimer(tutorialRuntimeState.focusTimer);
   tutorialRuntimeState.retryTimer = null;
   tutorialRuntimeState.hintTimer = null;
+  tutorialRuntimeState.focusTimer = null;
+  tutorialRuntimeClearAttentionTargets();
   if (tutorialRuntimeState.updateFrame) cancelAnimationFrame(tutorialRuntimeState.updateFrame);
   tutorialRuntimeState.updateFrame = null;
   const dom = tutorialRuntimeEnsureSpotlightDom();
@@ -542,21 +744,24 @@ function tutorialRuntimeShowHint(text) {
   tutorialRuntimeState.hintTimer = tutorialRuntimeSchedule(() => dom.hint.classList.remove("isVisible"), 1500);
 }
 
-function tutorialRuntimeFocusTarget(spec) {
+function tutorialRuntimeFocusTarget(spec, options={}) {
   if (!spec) return false;
   try {
-    if (spec.type === "hex" && typeof cameraFocusHex === "function") return cameraFocusHex(spec.coord || spec.id, { animate:true, zoom:1.28 });
-    if (spec.type === "hq" && typeof cameraFocusHQ === "function") return cameraFocusHQ(spec.side, { animate:true, zoom:1.25 });
+    const safe = options.adaptive === false ? null : tutorialRuntimeSafeViewport();
+    const cameraOptions = { animate:true, zoom:Number(options.zoom) || 1.28 };
+    if (safe && safe.point) cameraOptions.viewportPoint = safe.point;
+    if (spec.type === "hex" && typeof cameraFocusHex === "function") return cameraFocusHex(spec.coord || spec.id, cameraOptions);
+    if (spec.type === "hq" && typeof cameraFocusHQ === "function") return cameraFocusHQ(spec.side, { ...cameraOptions, zoom:Number(options.zoom) || 1.25 });
     if (spec.type === "unit" && typeof state !== "undefined" && state && Array.isArray(state.units) && typeof cameraFocusUnit === "function") {
       const unit = spec.uid ? state.units.find(item => item && item.uid === spec.uid) : state.units.find(item => item && item.alive && item.type !== "QG" && (!spec.side || item.side === Number(spec.side)) && (!spec.blueprintId || item.id === spec.blueprintId));
-      return unit ? cameraFocusUnit(unit, { animate:true, zoom:1.32 }) : false;
+      return unit ? cameraFocusUnit(unit, { ...cameraOptions, zoom:Number(options.zoom) || 1.32 }) : false;
     }
     const target = tutorialRuntimeResolveTarget(spec);
     const boardHex = target && target.closest ? target.closest(".hex[data-coord-key]") : null;
     if (boardHex && typeof cameraFocusHex === "function") {
-      return cameraFocusHex(boardHex.dataset.coordKey, { animate:true, zoom:1.28 });
+      return cameraFocusHex(boardHex.dataset.coordKey, cameraOptions);
     }
-    if (target && typeof target.scrollIntoView === "function" && !target.closest("#board")) {
+    if (target && typeof target.scrollIntoView === "function" && !target.closest("#boardVisualStack,#board")) {
       target.scrollIntoView({ behavior:"smooth", block:"center", inline:"center" });
       return true;
     }
@@ -587,6 +792,14 @@ function tutorialRuntimeNarrativeForStep(step) {
     closeLabel:"Esci",
     nextLabel:informative ? "Avanti" : "Continua",
     stepLabel:`Passo ${tutorialRuntimeState.stepIndex + 1}/${tutorialRuntimeState.scenario.steps.length}`,
+    onRender:() => {
+      tutorialRuntimeSchedule(() => {
+        if (!tutorialRuntimeState.active || tutorialRuntimeState.step !== step) return;
+        tutorialRuntimeApplyAttention(step);
+        if (tutorialRuntimeStepNeedsAdaptiveFocus(step)) tutorialRuntimeFocusTarget(step.spotlight.target, { adaptive:true });
+        tutorialRuntimePositionSpotlight();
+      }, 30);
+    },
     onClose:(_index, reason) => {
       if (tutorialRuntimeState.closing) return;
       if (reason === "complete" && informative) tutorialRuntimeCompleteStep("next");
@@ -872,7 +1085,6 @@ function tutorialRuntimeEnterStep(index) {
   tutorialRuntimeHideSpotlight();
   tutorialRuntimeRunCommands(step.onEnter);
   tutorialRuntimeApplyStepUiState(step, { force:true });
-  if (step.focus && step.spotlight && step.spotlight.target) tutorialRuntimeFocusTarget(step.spotlight.target);
 
   let attempts = 0;
   const renderStep = () => {
@@ -893,8 +1105,8 @@ function tutorialRuntimeEnterStep(index) {
       return tutorialRuntimeAbortForMissingTarget(step);
     }
     tutorialRuntimeState.preparingStep = false;
-    tutorialRuntimeShowSpotlight(step);
     tutorialRuntimeNarrativeForStep(step);
+    tutorialRuntimeShowSpotlight(step);
     tutorialRuntimeSetStatus(`${tutorialRuntimeState.scenario.title} · passo ${index + 1}/${tutorialRuntimeState.scenario.steps.length}`);
   };
   tutorialRuntimeState.retryTimer = tutorialRuntimeSchedule(renderStep, step.focus ? 220 : 20, { sessionToken, stepToken });
@@ -932,6 +1144,7 @@ function tutorialRuntimeStartScenario(id, options={}) {
   tutorialRuntimeState.botPaused = true;
   tutorialRuntimeState.preparingStep = false;
   if (typeof document !== "undefined" && document.body) document.body.classList.add("tutorial-runtime-active");
+  tutorialRuntimePortalCardPreviews();
   if (!tutorialRuntimeApplyScenarioSetup(scenario)) {
     tutorialRuntimeAbort({ returnToTutorial:true, reason:"setup-failed" });
     return false;
@@ -958,6 +1171,7 @@ function tutorialRuntimeFinish() {
   tutorialRuntimeState.botPaused = false;
   if (state) state.tutorialBotPaused = false;
   if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-runtime-active");
+  tutorialRuntimeRestoreCardPreviews();
   const lessonPlanItem = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" ? TUTORIAL_LESSON_PLAN_F9O6.find(item => item && item.id === (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.lessonId)) : null;
   const completionMessage = lessonPlanItem && lessonPlanItem.title ? lessonPlanItem.title : (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.title || "Lezione guidata");
   if (typeof eventOverlayEnqueue === "function") eventOverlayEnqueue({ title:"LEZIONE COMPLETATA", message:completionMessage, icon:"✓", priority:"high", durationMs:1100, key:`tutorial-complete:${Date.now()}` });
@@ -983,6 +1197,7 @@ function tutorialRuntimeAbort(options={}) {
   tutorialRuntimeState.closing = false;
   if (state) state.tutorialBotPaused = false;
   if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-runtime-active");
+  tutorialRuntimeRestoreCardPreviews();
   if (!options.silent && options.returnToTutorial !== false && !options.keepScreen) {
     if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
     tutorialRuntimeRenderMenu();
@@ -1011,6 +1226,7 @@ function tutorialRuntimeDiagnostics() {
     targetRecoveryCount:tutorialRuntimeState.targetRecoveryCount,
     targetResolved:Boolean(tutorialRuntimeState.target && tutorialRuntimeState.target.isConnected),
     allowedTargets:tutorialRuntimeState.allowedTargets.length,
+    previewPortals:tutorialRuntimeState.previewPortals.length,
     botPaused:tutorialRuntimeState.botPaused,
     progress:tutorialRuntimeState.scenarioId ? tutorialRuntimeProgressForScenario(tutorialRuntimeState.scenarioId) : null,
     lastAction:tutorialRuntimeState.lastAction

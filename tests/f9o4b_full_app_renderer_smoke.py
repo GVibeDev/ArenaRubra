@@ -51,7 +51,7 @@ with sync_playwright() as p:
 unexpected_console_errors=[msg for msg in console_errors if not msg.startswith('Arena AppShell: inizializzazione GameScreen non bloccante fallita')]
 result={'ok':True,'base':{'build':base['build'],'preOk':base['pre']['ok'],'problems':base['pre']['problems']},'started':started,'injected':injected,'updated':updated,'moved':moved,'delegatedMove':delegated_move,'post':{'ok':post['ok'],'problems':post['problems']},'pageErrors':errors,'consoleErrors':unexpected_console_errors,'ignoredBaselineConsoleErrors':len(console_errors)-len(unexpected_console_errors)}
 print(json.dumps(result,ensure_ascii=False,indent=2))
-assert base['build'] in {'C2-STABLE-1-F9O4b-APK-M4c','C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c'},base
+assert base['build'] in {'C2-STABLE-1-F9O4b-APK-M4c','C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c','C2-STABLE-1-F9S1b1-APK-M4c'},base
 assert base['pre']['ok'],base['pre']['problems']
 assert started['cells']==127 and started['marker'] in {'incremental-f9o4b','incremental-f9o4c'},started
 assert injected['token'] and updated['same'] and moved['same'] and moved['parent']=='1,-1,0',(injected,updated,moved)

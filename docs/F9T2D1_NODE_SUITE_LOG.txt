@@ -1,0 +1,88 @@
+PASS f9n10_builtin_decks_smoke.js | F9S1c1 official roster smoke: 50/50 validi · 40 tattici · 10 Missione · 10/fazione · 5/Comandante · Starter assenti · legacy rimossi
+PASS f9n10_mission_ai_smoke.js | F9N10 Mission AI smoke: gioco/wait, acquisti, abilità, movimento e tattiche OK
+PASS f9n10_recovery_cycle_smoke.js | F9N10 recovery/cycle smoke: Missione+4, lock/unlock, secondo completamento e recupero legacy OK
+PASS f9n10_runtime_integration_smoke.js | F9N10 runtime integration smoke: 29/29 OK
+PASS f9n1_card_editor_schema_smoke.js | }
+PASS f9n1_custom_tactics_smoke.js | }
+PASS f9n3_game_scale_hq_smoke.js | F9N3 game scale/HQ smoke: 14/14 OK
+PASS f9n3a_mode_cap_reliability_smoke.js | F9N3a mode/cap reliability smoke: 20/20 OK
+PASS f9n4_mission_contract_smoke.js | F9N4 mission data/deck/asset smoke: 15 Missioni + contratto 29+1 OK
+PASS f9n5_opening_protection_smoke.js | F9N5 opening hand/protection smoke: 36/36 OK
+PASS f9n6_mission_progress_tracker_smoke.js | F9N6 mission tracker smoke: 92/92 OK
+PASS f9n7_mission_ui_smoke.js | F9N7a mission UI smoke: 14/14 OK
+PASS f9n7a_visibility_hud_smoke.js | F9N7a visibility/HUD smoke: 18/18 OK
+PASS f9n8_ordinary_missions_smoke.js | F9N8 ordinary missions smoke: 36/36 OK
+PASS f9n8_runtime_integration_smoke.js | F9N8 runtime integration smoke: 28/28 OK
+PASS f9n9_desperate_missions_smoke.js | F9N9 desperate missions smoke: 41/41 OK
+PASS f9n9_runtime_integration_smoke.js | F9N9 runtime integration smoke: 28/28 OK
+PASS f9o1_presentation_runtime_smoke.js | F9O1 presentation runtime smoke: 13/13 OK
+PASS f9o1_theme_audio_integration_smoke.js | F9O1 theme/audio integration smoke: 73/73 OK
+PASS f9o1a_live_layout_calibration_smoke.js | F9O1a live layout calibration smoke: 20/20 OK
+PASS f9o1b_music_controls_smoke.js | F9O1b music controls smoke: 31/31 OK
+PASS f9o2_camera_interaction_smoke.js | F9O2 camera interaction smoke: 60/60
+PASS f9o2b_camera_autonomy_inspection_smoke.js | F9O2b camera autonomy/inspection smoke: 25/25
+PASS f9o2c_bot_camera_freeze_smoke.js | F9O2c bot camera freeze smoke: 21/21
+PASS f9o2d_token_layering_active_cues_smoke.js | F9O2d token layering & active cues smoke: 32/32
+PASS f9o2e_mission_build_cap_smoke.js | F9O2e mission/build/cap smoke: 24/24 OK
+PASS f9o3_event_narrative_overlay_smoke.js | F9O3 event/narrative overlay smoke: 38/38 OK
+PASS f9o4_hidden_hand_card_backs_motion_smoke.js | F9O4 hidden hand/card backs/motion smoke: 44/44 OK
+PASS f9o4a_android_camera_performance_smoke.js | F9O4a Android camera performance smoke: 20/20 OK
+PASS f9o4b_incremental_dom_renderer_smoke.js | F9O4b incremental DOM renderer smoke: 21/21 OK
+PASS f9o4c_android_render_stability_smoke.js | F9O4c Android render stability smoke: 26/26 OK
+PASS f9o4d_mission_render_signature_smoke.js | F9O4d mission render signature smoke: 14/14 OK
+PASS f9o4e_public_bot_card_thumbnail_stability_smoke.js | F9O4e public bot card thumbnail stability smoke: 20/20 OK
+PASS f9o4f_real_art_thumbnail_cache_finalization_smoke.js | F9O4f real art thumbnail cache finalization smoke: 20/20 OK
+PASS f9o5_miniature_taxonomy_asset_completion_smoke.js | }
+PASS f9o5a_token_motion_sfx_evaluation_smoke.js | }
+PASS f9o5b_hq_empty_objective_visual_hotfix_smoke.js | F9O5b HQ empty objective visual hotfix smoke: 9/9 OK
+PASS f9o6_tutorial_runtime_foundation_smoke.js | }
+PASS f9o7a_lesson1_exordium_smoke.js | }
+PASS f9o7b_tutorial_ui_state_resume_smoke.js | }
+PASS f9o7c_lesson2_nexus_smoke.js | }
+PASS f9o7d_collapsed_hand_controls_reflow_smoke.js | }
+PASS f9o7e_lesson3_agathoi_smoke.js | }
+PASS f9o7f_lesson4_liberti_smoke.js | }
+PASS f9o7g_lesson5_fabeot_smoke.js | }
+PASS f9o7h1_tutorial_visibility_hotfix_smoke.js | F9O7h1 tutorial visibility hotfix smoke: 15/15 OK
+PASS f9o7h2_performance_hotfix_smoke.js | F9O7h2 performance hotfix smoke: deterministic reachability, cached geometry, O(units) occupancy and bounded log OK
+PASS f9o7h3_ffa_targeting_structure_cap_smoke.js | F9O7h3 FFA targeting & structure-cap smoke: 14/14 OK
+PASS f9o7h_tutorial_guidance_adaptive_framing_smoke.js | F9O7h tutorial guidance smoke: 15/15 OK
+PASS f9q1_map_data_foundation_smoke.js | F9Q1 map data foundation smoke: official F9R3 set and legacy compatibility OK
+PASS f9q2_multiplayer_elimination_smoke.js | F9Q2 multiplayer elimination smoke: OK
+PASS f9q2_multiplayer_telemetry_smoke.js | F9Q2 multiplayer telemetry smoke: OK
+PASS f9q2_multiplayer_terrain_smoke.js | F9Q2 multiplayer terrain smoke: OK
+PASS f9q3_map_editor_smoke.js | F9Q3 map editor smoke: OK
+PASS f9q3a_dynamic_board_geometry_smoke.js | F9Q3a dynamic board geometry smoke: 24/24 OK
+PASS f9q3a_local_data_vault_smoke.js | F9Q3a local data vault smoke: 24/24 OK
+PASS f9q3a_main_menu_smoke.js | F9Q3a/F9T0 main menu regression smoke: 20/20 OK
+PASS f9q3b_pressure_battlefield_readability_smoke.js | F9Q3b/F9R3 pressure & battlefield readability smoke: 23/23 OK
+PASS f9q3c1_obstacle_readability_smoke.js | F9Q3c1 obstacle readability smoke: 11/11 OK
+PASS f9q3c_custom_map_backgrounds_smoke.js | F9Q3c custom map backgrounds smoke: 34/34 OK
+PASS f9q3d1_target_player_foundation_smoke.js | F9Q3d1 Target Player Foundation smoke: 28/28 OK
+PASS f9q3d2_ffa_effects_missions_smoke.js | F9Q3d2 FFA Effects & Missions smoke: 44/44 OK
+PASS f9q3d3_player_elimination_state_smoke.js | F9Q3d3 Player Elimination & Active State smoke: 38/38 OK
+PASS f9q3d4_elimination_assist_pressure_attribution_smoke.js | F9Q3d4 Elimination, Assist & Pressure Attribution smoke: 44/44 OK
+PASS f9q3e1_match_telemetry_foundation_smoke.js | }
+PASS f9q3e1a_telemetry_attribution_pivot_instances_smoke.js | }
+PASS f9r3_proportional_pressure_official_maps_smoke.js | F9R3 proportional pressure & official maps smoke: 63/63 OK
+PASS f9s1a_faction_units_tactics_expansion_smoke.js | F9S1a faction units & tactics expansion smoke: 64/64 OK
+PASS f9s1b1_deck_selection_official_maps_smoke.js | F9S1b1 deck selection + official maps smoke: 45/45 OK
+PASS f9s1b_alternative_pivots_complete_pools_smoke.js | F9S1b alternative pivots smoke: 62/62 OK
+PASS f9s1c1_official_roster_deck_builder_ux_smoke.js | F9S1c1 roster/Deck Builder UX smoke: 32/32 verifiche superate
+PASS f9t0_advanced_ai_finalization_smoke.js | F9T0 Advanced AI Finalization smoke: 36/36 verifiche superate
+PASS f9t1_expert_ai_architecture_telemetry_smoke.js | F9T1 Expert AI Architecture & Telemetry smoke: 62/62 verifiche superate
+PASS f9t2_exordium_bastion_relay_smoke.js | F9T2b Exordium Bastion Relay regression smoke: 25/25 verifiche superate
+PASS f9t2b_exordium_territorial_conversion_smoke.js | F9T2b Exordium Territorial Conversion smoke: 24/24 verifiche superate
+PASS f9t2c1_execution_integrity_smoke.js | F9T2c1 Execution Integrity smoke: 24/24 verifiche superate
+PASS f9t2c2_bootstrap_forward_pivot_impact_smoke.js | F9T2c2 Bootstrap & Forward Pivot Impact smoke: 29/29 verifiche superate
+PASS f9t2c3_telemetry_aggregation_reconciliation_smoke.js | F9T2c3 Telemetry Aggregation Reconciliation smoke: 21/21 verifiche superate
+PASS f9t2c3a_turn_ownership_audit_units_smoke.js | F9T2c3a Turn Ownership & Audit Unit Consistency smoke: 35/35 verifiche superate
+PASS f9t2c4_clear_occupation_commitment_smoke.js | F9T2c4 Clear Occupation Commitment smoke: 20/20 verifiche superate
+PASS f9t2c_exordium_forward_pivot_deployment_smoke.js | F9T2c Exordium Forward Pivot smoke: 33/33 verifiche superate
+PASS f9t2d_varran_assault_chain_smoke.js | F9T2d1 Effective Assault Value smoke: 65/65 verifiche superate
+PASS f9u1a1_inspector_hand_header_controls_smoke.js | F9U1a1 Inspector/Hand/Header Controls smoke: 29/29 verifiche superate
+PASS f9u1a_map_hud_layout_foundation_smoke.js | F9U1a Map HUD Layout Foundation smoke: 36/36 verifiche superate
+PASS f9u1b_unit_inspector_ps_unit_bars_smoke.js | F9U1b Unit Inspector & PS/Unit Bars smoke: 42/42 verifiche superate
+PASS f9u2a_card_pool_reorganization_smoke.js | F9U2a Card Pool Reorganization smoke: 54/54 verifiche superate
+PASS f9u2b_editor_layout_reorganization_smoke.js | F9U2b Editor Layout Reorganization smoke: 62/62 verifiche superate
+PASS f9u3_control_center_smoke.js | F9U3 Control Center smoke: 61/61 verifiche superate

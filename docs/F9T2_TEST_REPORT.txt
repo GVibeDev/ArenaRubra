@@ -1,0 +1,108 @@
+ARENA RUBRA — F9T2 TEST REPORT
+================================
+
+Build candidata
+C2-STABLE-1-F9T2-APK-M4c — Exordium Expert · Bastion Relay Doctrine
+
+Baseline
+C2-STABLE-1-F9T1-APK-M4c
+
+Data
+29 luglio 2026
+
+AMBITO
+------
+Prima dottrina Expert reale, esclusiva di Exordium. Micro-piano Bastion Relay:
+Bastione Armato su PS controllato e rilascio di una unità mobile verso il
+successivo obiettivo. Nessuna dottrina Expert per le altre fazioni.
+
+VERIFICHE STATICHE
+------------------
+- File JavaScript controllati con node --check: 174/174 validi.
+- Errori sintattici: 0.
+
+SUITE NODE
+----------
+- Suite eseguite: 80.
+- Suite superate: 80.
+- Suite fallite: 0.
+- Smoke dedicato F9T2: 25/25 verifiche superate.
+
+Lo smoke F9T2 verifica:
+- instradamento del solo modulo Exordium F9T2;
+- selezione del micro-piano relay;
+- piano piatto in due passaggi;
+- riserva ENE;
+- scelta del Bastione Armato e del builder dichiarato;
+- costruzione sul PS;
+- liberazione della riserva;
+- priorità dell’attore mobile;
+- esecuzione diretta del movimento pianificato;
+- completamento del piano;
+- assenza di abort nel percorso valido;
+- cleanup della sessione e della cache.
+
+VERIFICHE CHROMIUM MIRATE
+-------------------------
+5/5 test mirati superati:
+
+1. F9T2 Exordium Bastion Relay browser smoke
+   - modulo: expert-exordium-f9t2;
+   - goal: EXORDIUM_BASTION_RELAY;
+   - Bastione costruito sul PS: sì;
+   - distanza attore mobile dall’obiettivo: 4 -> 3;
+   - piani relay: 1;
+   - Bastioni sui PS: 1;
+   - unità mobili liberate: 1;
+   - budget exhaustion: 0;
+   - errori pagina: 0;
+   - errori console: 0.
+
+2. F9T1 Expert Architecture browser regression
+   - build/baseline corrette;
+   - quattro contratti comuni conservati;
+   - Nexus continua il fallback Advanced F9T0;
+   - un solo modulo invocato;
+   - errori pagina/console: 0.
+
+3. F9T1 runBotTurn integration regression
+   - ciclo bot Expert/fallback completato;
+   - sessione Expert rimossa a fine turno;
+   - errori pagina/console: 0.
+
+4. F9U3 Control Center browser regression
+   - cinque aree e metriche corrette;
+   - 50 deck e 9 mappe ufficiali;
+   - precheck senza problemi;
+   - overflow desktop/mobile: 0.
+
+5. F9U2b Card/Map Editor browser regression
+   - Card Editor desktop/mobile: superato;
+   - Map Editor desktop/mobile: superato;
+   - 127 celle renderizzate nel test;
+   - errori strutturali: 0;
+   - overflow: 0.
+
+PRECHECK
+--------
+- Componenti F9T1 presenti.
+- Modulo e hook F9T2 presenti.
+- Schema base Expert: F9T1-1.
+- Schema dottrinale: F9T2-1.
+- Problemi bloccanti: 0.
+
+LIMITI DEL COLLAUDO
+-------------------
+Non sono stati eseguiti:
+- test su APK Android fisico;
+- benchmark affidabili di RAM e CPU su dispositivo;
+- batch di 10+ seed per matchup;
+- partite lunghe su tutte le mappe ×1/×2/×3;
+- confronto quantitativo Advanced contro Expert;
+- validazione comportamentale dell’efficacia reale della staffetta.
+
+VERDETTO TECNICO
+----------------
+La candidata F9T2 supera i test automatici e browser mirati. L’architettura
+resta monofazione e non ricorsiva. La build non è dichiarata validata finché
+non supera il collaudo comportamentale e prestazionale reale dell’autore.

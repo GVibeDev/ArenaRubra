@@ -1,0 +1,141 @@
+ARENA RUBRA — F9T2d TEST REPORT
+===============================
+
+Build candidata
+---------------
+C2-STABLE-1-F9T2d-APK-M4c
+
+Baseline ufficiale
+------------------
+C2-STABLE-1-F9T2c4-APK-M4c
+
+Scopo
+-----
+Aggiungere il micro-piano Exordium VARRAN_ASSAULT_CHAIN, collegando l'abilità
+Ordine di Varran a un attacco legale e misurabile nello stesso turno, senza
+ricerca ricorsiva o simulazioni estese.
+
+Implementazione verificata
+--------------------------
+- selezione bounded: massimo 8 attori, 32 nemici e 24 opzioni;
+- filtro su abilità, cooldown, ENE e rischio QG;
+- danno incrementale reale obbligatorio;
+- nessun uso se l'attacco base elimina già il bersaglio;
+- catena piatta in due passi;
+- un solo movimento prima dell'attacco;
+- un solo retarget;
+- retarget calcolato sul buff già applicato, senza secondo bonus virtuale;
+- telemetria e aggregati dedicati F9T2d.
+
+Sintassi JavaScript
+-------------------
+94 file controllati in src/ e data/
+94 superati
+0 errori
+
+Suite Node completa
+-------------------
+88 file eseguiti
+88 superati
+0 falliti
+
+Smoke dedicato Node
+-------------------
+f9t2d_varran_assault_chain_smoke.js
+45/45 verifiche superate
+
+Copertura dedicata Node
+-----------------------
+- selezione del micro-piano;
+- ordine dei due passi;
+- riserva e spesa ENE;
+- incremento ATT reale;
+- eliminazione resa possibile dal bonus;
+- priorità Varran e attore;
+- completamento del piano;
+- sorgente e revisione telemetrica;
+- retarget bounded dopo scomparsa del bersaglio;
+- nessun secondo +1 virtuale durante il retarget;
+- movimento singolo seguito da attacco;
+- blocco con rischio QG direct;
+- rifiuto quando il danno base elimina già il bersaglio.
+
+Browser smoke dedicato
+----------------------
+f9t2d_browser_varran_assault_chain_smoke.py
+PASS
+
+Risultato browser dedicato
+--------------------------
+- modulo: expert-exordium-f9t2d
+- goal: EXORDIUM_VARRAN_ASSAULT_CHAIN
+- sequenza: use_varran_order -> execute_varran_assault
+- ENE riservata: 1
+- danno incrementale previsto: 1
+- eliminazione resa possibile dal bonus: sì
+- Ordine eseguito: sì
+- ATT attore: 3 -> 4
+- attacco eseguito: sì
+- bersaglio distrutto: sì
+- varranAssaultPlans: 1
+- varranAssaultScans: 1
+- varranAssaultOrdersCommitted: 1
+- varranAssaultsExecuted: 1
+- contextDurationMs osservato: 1,0 ms
+- moduleDurationMs osservato: 4,7 ms
+- budget exhaustion: 0
+- errori pagina: 0
+- errori console: 0
+
+Browser regressioni selezionate
+-------------------------------
+7 eseguite
+7 superate
+0 fallite
+
+- Varran Assault Chain: PASS
+- Territorial Conversion: PASS
+- Forward Pivot Deployment: PASS
+- First-Turn Bootstrap G2: PASS
+- Telemetry Aggregation: PASS
+- Control Center desktop/mobile: PASS
+- Card Editor / Map Editor layout: PASS
+
+Regressioni Node rilevanti
+--------------------------
+- F9T0 Advanced finalization: PASS
+- F9T1 Expert architecture: PASS
+- Bastion Relay: PASS
+- Territorial Conversion: PASS
+- Execution Integrity: PASS
+- Bootstrap / Forward Pivot Impact: PASS
+- Telemetry Aggregation: PASS
+- Turn Ownership / Audit Units: PASS
+- Clear Occupation Commitment: PASS
+- Forward Pivot: PASS
+- Control Center: PASS
+
+Correzioni emerse durante il test
+---------------------------------
+- aggiornati i test storici alla baseline validata F9T2c4;
+- il retarget ora usa il buff già applicato e non sovrastima il danno;
+- decisioni F9T2d dotate di source, featureOrigin e featureRevision propri;
+- aggiunti aggregati separati per scan, ordine, retarget e assalto.
+
+Limitazioni
+-----------
+- nessun match bot-bot completo eseguito in questo ambiente;
+- nessun batch multi-seed;
+- nessun test APK reale;
+- nessun benchmark su smartphone datato;
+- la frequenza reale di selezione e la qualità dei bersagli devono essere
+  valutate su telemetria gameplay;
+- non sono stati modificati Ordine d'Assalto, mine Nexus, congestione o ruoli
+  persistenti delle Pivot.
+
+Verdetto tecnico
+----------------
+La candidata supera sintassi, suite Node, smoke dedicati e browser regressivi
+selezionati. Il micro-piano è funzionante nei casi controllati, compresi
+movimento, retarget e blocco QG. La build resta candidata fino al collaudo e
+alla validazione dell'utente su match reale.

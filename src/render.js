@@ -34,11 +34,19 @@ const MAP_HAND_OVERLAY_STATE = {
     function syncBoardCssMetrics() {
       if (typeof document === "undefined" || !document.documentElement) return;
       const root = document.documentElement;
-      if (typeof CENTER_X !== "undefined") root.style.setProperty("--hex-center-x", `${CENTER_X}px`);
-      if (typeof CENTER_Y !== "undefined") root.style.setProperty("--hex-center-y", `${CENTER_Y}px`);
+      const geometry = typeof getBoardGeometry === "function"
+        ? getBoardGeometry()
+        : {
+            nativeWidth: 920,
+            nativeHeight: 780,
+            renderOriginX: typeof CENTER_X !== "undefined" ? CENTER_X : 460,
+            renderOriginY: typeof CENTER_Y !== "undefined" ? CENTER_Y : 390
+          };
+      root.style.setProperty("--hex-center-x", `${geometry.renderOriginX}px`);
+      root.style.setProperty("--hex-center-y", `${geometry.renderOriginY}px`);
       if (typeof HEX_SIZE !== "undefined") root.style.setProperty("--hex-size", `${HEX_SIZE}px`);
-      root.style.setProperty("--board-native-width", "920px");
-      root.style.setProperty("--board-native-height", "780px");
+      root.style.setProperty("--board-native-width", `${Math.round(geometry.nativeWidth)}px`);
+      root.style.setProperty("--board-native-height", `${Math.round(geometry.nativeHeight)}px`);
     }
 
     function syncMapVisualLayerState() {
@@ -62,6 +70,7 @@ const MAP_HAND_OVERLAY_STATE = {
       if (typeof renderMapActionDock === "function") renderMapActionDock();
       renderMatchupStats();
       if (typeof renderCurrentMatchStatsPanel === "function") renderCurrentMatchStatsPanel();
+      if (typeof renderMatchTelemetryPanel === "function") renderMatchTelemetryPanel();
       if (typeof renderPersistentMatchHistoryPanel === "function") renderPersistentMatchHistoryPanel();
       if (typeof renderGameHud === "function") renderGameHud();
       if (typeof syncBoardCameraAfterRender === "function") syncBoardCameraAfterRender();
@@ -176,27 +185,26 @@ const MAP_HAND_OVERLAY_STATE = {
       BOARD_DOM_CACHE.unitSignatures.clear();
       BOARD_DOM_CACHE.delegatedClick = boardRenderHandleDelegatedClick;
 
-      const advancedMap = state.mapId && state.mapId !== "map1_starter";
-      const rawPoints = state.cells.map(cell => {
-        const q = cell.coord[0];
-        const r = cell.coord[2];
-        return {
-          x: HEX_SIZE * Math.sqrt(3) * (q + r / 2),
-          y: HEX_SIZE * 1.5 * r
-        };
-      });
-      const minX = rawPoints.length ? Math.min(...rawPoints.map(point => point.x)) : 0;
-      const maxX = rawPoints.length ? Math.max(...rawPoints.map(point => point.x)) : 0;
-      const minY = rawPoints.length ? Math.min(...rawPoints.map(point => point.y)) : 0;
-      const maxY = rawPoints.length ? Math.max(...rawPoints.map(point => point.y)) : 0;
-      const dynamicCenterX = advancedMap ? 70 - minX : CENTER_X;
-      const dynamicCenterY = advancedMap ? 70 - minY : CENTER_Y;
-      const nativeWidth = advancedMap ? Math.ceil(maxX - minX + 140) : 920;
-      const nativeHeight = advancedMap ? Math.ceil(maxY - minY + 140) : 780;
+      const geometry = typeof calculateBoardGeometry === "function"
+        ? calculateBoardGeometry(state.cells, { mapId: state.mapId || "map1_starter" })
+        : {
+            mapId: state.mapId || "map1_starter",
+            nativeWidth: 920,
+            nativeHeight: 780,
+            renderOriginX: typeof CENTER_X !== "undefined" ? CENTER_X : 460,
+            renderOriginY: typeof CENTER_Y !== "undefined" ? CENTER_Y : 390
+          };
+      if (typeof setBoardGeometry === "function") setBoardGeometry(geometry);
+      const dynamicCenterX = geometry.renderOriginX;
+      const dynamicCenterY = geometry.renderOriginY;
+      const nativeWidth = geometry.nativeWidth;
+      const nativeHeight = geometry.nativeHeight;
       board.style.width = `${nativeWidth}px`;
       board.style.height = `${nativeHeight}px`;
       document.documentElement.style.setProperty("--board-native-width", `${nativeWidth}px`);
       document.documentElement.style.setProperty("--board-native-height", `${nativeHeight}px`);
+      document.documentElement.style.setProperty("--hex-center-x", `${dynamicCenterX}px`);
+      document.documentElement.style.setProperty("--hex-center-y", `${dynamicCenterY}px`);
       board.dataset.mapId = state.mapId || "map1_starter";
 
       const fragment = document.createDocumentFragment();
@@ -212,13 +220,32 @@ const MAP_HAND_OVERLAY_STATE = {
         element.dataset.coordKey = boardRenderCoordKey(cell.coord);
         element.style.left = `${left}px`;
         element.style.top = `${top}px`;
+        const occupationTint = document.createElement("span");
+        occupationTint.className = "cellOccupationTint";
+        occupationTint.setAttribute("aria-hidden", "true");
+        occupationTint.hidden = true;
+        const terrainMarker = document.createElement("span");
+        terrainMarker.className = "cellTerrainMarker";
+        terrainMarker.setAttribute("aria-hidden", "true");
+        terrainMarker.hidden = true;
+        const psControlFlag = document.createElement("span");
+        psControlFlag.className = "psControlFlag";
+        psControlFlag.setAttribute("aria-hidden", "true");
+        psControlFlag.textContent = "⚑";
+        psControlFlag.hidden = true;
         const coordLabel = document.createElement("span");
         coordLabel.className = "coord";
         coordLabel.textContent = `${x},${y},${z}`;
+        element.appendChild(occupationTint);
+        element.appendChild(terrainMarker);
+        element.appendChild(psControlFlag);
         element.appendChild(coordLabel);
         fragment.appendChild(element);
         BOARD_DOM_CACHE.cells.set(element.dataset.coordKey, {
           element,
+          occupationTint,
+          terrainMarker,
+          psControlFlag,
           coordLabel,
           cellSignature: "",
           tokenUid: ""
@@ -336,7 +363,7 @@ const MAP_HAND_OVERLAY_STATE = {
       if (flags.buildTarget) classes.push("buildTarget");
       if (flags.spawnTarget) classes.push("spawnTarget");
       if (unit) {
-        classes.push("occupied");
+        classes.push("occupied", `occupiedSide${unit.side}`);
         const occupiedTypeClass = tokenTypeClass(unit);
         const occupiedWeightClass = tokenWeightClass(unit);
         if (occupiedTypeClass) classes.push(`occupied-${occupiedTypeClass}`);
@@ -362,6 +389,46 @@ const MAP_HAND_OVERLAY_STATE = {
       return `${boardRenderCoordKey(cell.coord)} ${notes.length ? "· " + notes.join(" · ") : ""}`;
     }
 
+
+    function boardRenderTerrainMarkerText(terrain) {
+      if (!terrain || terrain.id === "free") return "";
+      if (terrain.id === "obstacle") return "×";
+      if (terrain.id === "difficult") return "2";
+      if (terrain.id === "defensive") return "+D";
+      if (terrain.id === "exposed") return "−D";
+      return terrain.icon || "•";
+    }
+
+    function boardRenderPatchCellOverlays(entry, cell, unit) {
+      if (!entry) return;
+      const terrain = typeof getMapTerrainAt === "function" ? getMapTerrainAt(cell.coord) : null;
+      const markerText = boardRenderTerrainMarkerText(terrain);
+      if (entry.terrainMarker) {
+        entry.terrainMarker.hidden = !markerText;
+        entry.terrainMarker.textContent = markerText;
+        entry.terrainMarker.dataset.terrain = terrain && terrain.id ? terrain.id : "free";
+        entry.terrainMarker.title = terrain && terrain.id !== "free" ? terrain.name : "";
+      }
+
+      if (entry.occupationTint) {
+        const occupantColor = unit ? factionMetaBySide(unit.side).color : "";
+        entry.occupationTint.hidden = !occupantColor;
+        if (occupantColor) entry.occupationTint.style.setProperty("--cell-occupant-color", occupantColor);
+        else entry.occupationTint.style.removeProperty("--cell-occupant-color");
+      }
+
+      if (entry.psControlFlag) {
+        const controlColor = cell.ps && cell.control ? factionMetaBySide(cell.control).color : "";
+        entry.psControlFlag.hidden = !controlColor;
+        if (controlColor) {
+          entry.psControlFlag.style.setProperty("--ps-flag-color", controlColor);
+          entry.psControlFlag.title = `PS controllato da ${playerName(cell.control)}`;
+        } else {
+          entry.psControlFlag.style.removeProperty("--ps-flag-color");
+          entry.psControlFlag.title = "";
+        }
+      }
+    }
 
     function boardRenderTokenSignature(unit, displayedSelectedId, tokenArtPath, tokenArtStatus) {
       return [
@@ -497,6 +564,7 @@ const MAP_HAND_OVERLAY_STATE = {
           entry.cellSignature = signature;
           patchedCells += 1;
         }
+        boardRenderPatchCellOverlays(entry, cell, unit);
 
         if (!unit) {
           const stale = entry.element.querySelector(".unitToken");
@@ -565,13 +633,13 @@ const MAP_HAND_OVERLAY_STATE = {
       $("p2Title").textContent = playerName(2);
       $("p1Title").className = `faction-${factionMetaBySide(1).key}-text`;
       $("p2Title").className = `faction-${factionMetaBySide(2).key}-text`;
-      $("p1Score").textContent = `QG: ${hqOccupancyText(1)} · ENE: ${state.energy[1]} · PS: ${countControlledPS(1)} · Pressione: ${state.pressure[1]}/${PRESSURE_WIN} · Campo: ${field1}`;
-      $("p2Score").textContent = `QG: ${hqOccupancyText(2)} · ENE: ${state.energy[2]} · PS: ${countControlledPS(2)} · Pressione: ${state.pressure[2]}/${PRESSURE_WIN} · Campo: ${field2}`;
+      $("p1Score").textContent = `QG: ${hqOccupancyText(1)} · ENE: ${state.energy[1]} · PS: ${countControlledPS(1)} · Pressione: ${state.pressure[1]}/${typeof pressureWinLimit === "function" ? pressureWinLimit() : PRESSURE_WIN} · Campo: ${field1}`;
+      $("p2Score").textContent = `QG: ${hqOccupancyText(2)} · ENE: ${state.energy[2]} · PS: ${countControlledPS(2)} · Pressione: ${state.pressure[2]}/${typeof pressureWinLimit === "function" ? pressureWinLimit() : PRESSURE_WIN} · Campo: ${field2}`;
       $("turnInfo").innerHTML = `
         <h4>Round ${state.turn} <span>${currentName}</span></h4>
         <div class="stats f9qPlayerStandings">${multiplayerSummary}</div>
         <div class="meta">Mappa: ${escapeHtml(state.mapDefinition ? state.mapDefinition.name : "MAP1")} · ${state.cells.length} celle · movimento ×${state.mapDefinition ? state.mapDefinition.movementMultiplier : 1}${state.mapLabMode ? " · MATCH LAB" : ""}</div>
-        <div class="meta">Giocatore corrente: ${currentMode} · AI bot: ${state.aiMode === "advanced" ? "Avanzata" : "Base"} · Ritmo: ${paceLabel()} · ENE disponibili: ${state.energy[state.currentPlayer]} · PS presidiati: ${countControlledPS(state.currentPlayer)}</div>
+        <div class="meta">Giocatore corrente: ${currentMode} · AI bot: ${typeof aiModeLabel === "function" ? aiModeLabel(state.aiMode) : state.aiMode} · Ritmo: ${paceLabel()} · ENE disponibili: ${state.energy[state.currentPlayer]} · PS presidiati: ${countControlledPS(state.currentPlayer)}</div>
         <div class="meta">Effetti economici: ${economicEffectsSummary(state.currentPlayer)}</div>
         <div class="meta">Dottrina fazione: ${doctrineSummary(state.currentPlayer)}</div>
         <div class="stats">
@@ -580,12 +648,12 @@ const MAP_HAND_OVERLAY_STATE = {
           <span class="pill">Income: ${BASE_INCOME}+PS</span>
           <span class="pill">Leggere campo ${activeLightCount(state.currentPlayer)}/${lightFieldLimit(state.currentPlayer)}</span>
           <span class="pill">Pesanti 2x tipo</span>
-          <span class="pill">Elite/Pivot 1x campo</span>
-          <span class="pill">Pressione ${state.pressure[state.currentPlayer]}/${PRESSURE_WIN}</span>
-          <span class="pill">Round max ${MAX_ROUND}</span>
-          <span class="pill">Pressione dal round ${pressureStartRound()}</span>
+          <span class="pill">Elite/Pivot non-struttura 1x campo</span>
+          <span class="pill">Pressione ${state.pressure[state.currentPlayer]}/${typeof pressureWinLimit === "function" ? pressureWinLimit() : PRESSURE_WIN}</span>
+          <span class="pill">Round max ${typeof maxRoundLimit === "function" ? maxRoundLimit() : MAX_ROUND}</span>
+          <span class="pill">${typeof pressureRequirementSummary === "function" ? pressureRequirementSummary() : `Pressione dal round ${pressureStartRound()}`}</span>
           <span class="pill">Mov. veicoli ${vehicleMoveRange()}</span>
-          <span class="pill">Edifici max ${STRUCTURE_FIELD_LIMIT} · Agathoi ${AGATHOI_STRUCTURE_FIELD_LIMIT}</span>
+          <span class="pill">Edifici: nessun cap generale · Starter Tattica max 2</span>
           <span class="pill">Tattica: ${state.tacticUsedThisTurn[state.currentPlayer] ? "usata" : "disponibile"}</span>
         </div>`;
 
@@ -595,44 +663,58 @@ const MAP_HAND_OVERLAY_STATE = {
       const tactics = $("tacticPanel") || actions;
       actions.innerHTML = "";
       if (tactics !== actions) tactics.innerHTML = "";
+      const inspectorTitle = document.getElementById("selectedUnitFloatTitle");
       if (!selected) {
-        panel.innerHTML = `${selectedUnitPreviewShellHtml()}<h4>Nessuna unità selezionata</h4><div class="meta">Clicca una tua unità attiva sulla mappa, oppure compra dal mercato.</div>`;
+        if (inspectorTitle) inspectorTitle.textContent = "Unità selezionata";
+        panel.style.removeProperty("--selected-unit-accent");
+        panel.innerHTML = `${selectedUnitPreviewShellHtml()}<div class="selectedUnitInspectorEmpty"><h4>Nessuna unità selezionata</h4><div class="meta">Clicca una unità sulla mappa per aprire la scheda.</div></div>`;
         if (typeof renderSelectedUnitCardPreview === "function") renderSelectedUnitCardPreview(null);
       } else {
-        panel.innerHTML = `${selectedUnitPreviewShellHtml()}${unitCardHtml(selected, true)}`;
+        if (inspectorTitle) inspectorTitle.textContent = selected.name || "Unità selezionata";
+        try { panel.style.setProperty("--selected-unit-accent", factionMetaBySide(selected.side).color); } catch (err) { panel.style.removeProperty("--selected-unit-accent"); }
+        panel.innerHTML = `${selectedUnitPreviewShellHtml()}${selectedUnitInspectorDetailsHtml(selected)}`;
         if (typeof renderSelectedUnitCardPreview === "function") renderSelectedUnitCardPreview(selected);
         const isHumanTurn = state.modes[state.currentPlayer] === "human";
         const canCommand = isHumanTurn && selected.side === state.currentPlayer && selected.type !== "QG" && !selected.acted && selected.alive && !state.winner;
+
+        const abilitySlot = document.getElementById("selectedUnitPrimaryAbilitySlot");
+        const ab = selected.ability;
+        const hasPrimaryActiveAbility = Boolean(ab && !ab.passive);
+        if (abilitySlot) abilitySlot.hidden = !hasPrimaryActiveAbility;
+        if (hasPrimaryActiveAbility) {
+          const abilityBtn = document.createElement("button");
+          abilityBtn.dataset.unitAction = "ability";
+          abilityBtn.className = "primary selectedUnitPrimaryAbilityBtn";
+          abilityBtn.textContent = `${ab.name}${ab.cost ? ` · ${ab.cost} ENE` : ""}`;
+          abilityBtn.disabled = !canCommand || !canUseAbility(selected, ab) || abilityTargets(selected, ab).length === 0;
+          abilityBtn.title = selectedUnitAbilityAvailabilityText(selected, canCommand);
+          abilityBtn.addEventListener("click", () => toggleAbilityMode(selected));
+          if (abilitySlot) abilitySlot.appendChild(abilityBtn);
+        }
+
         const moveBtn = document.createElement("button");
         moveBtn.dataset.unitAction = "move";
-        moveBtn.textContent = mode === "move" ? "Annulla movimento" : `Muovi di ${movementRangeFor(selected)} cella${movementRangeFor(selected) > 1 ? "e" : ""}`;
+        moveBtn.textContent = mode === "move" ? "Annulla movimento" : `Muovi unità · ${movementRangeFor(selected)}`;
         moveBtn.disabled = !canCommand || !canMove(selected) || movableCells(selected).length === 0;
         moveBtn.addEventListener("click", () => toggleMoveMode());
         actions.appendChild(moveBtn);
 
-        const abilityBtn = document.createElement("button");
-        abilityBtn.dataset.unitAction = "ability";
-        const ab = selected.ability;
-        abilityBtn.textContent = ab ? `Abilità: ${ab.name}${ab.cost ? ` (${ab.cost} ENE)` : ""}` : "Nessuna abilità";
-        abilityBtn.disabled = !canCommand || !ab || ab.passive || !canUseAbility(selected, ab) || abilityTargets(selected, ab).length === 0;
-        abilityBtn.addEventListener("click", () => toggleAbilityMode(selected));
-        actions.appendChild(abilityBtn);
-
         const structure = structureBlueprintFor(selected.side);
         const buildBtn = document.createElement("button");
         buildBtn.dataset.unitAction = "build";
-        buildBtn.textContent = structure ? `Costruisci: ${structure.name} (${effectiveBlueprintCost(selected.side, structure)} ENE)` : "Struttura non disponibile";
+        buildBtn.textContent = structure ? `Costruisci · ${structure.name}` : "Costruisci";
         buildBtn.disabled = !canCommand || !canBuildStructures(selected) || !structure || state.energy[selected.side] < effectiveBlueprintCost(selected.side, structure) || purchaseLimitReached(selected.side, structure) || buildableCells(selected).length === 0;
+        buildBtn.title = structure ? `${effectiveBlueprintCost(selected.side, structure)} ENE` : "Nessuna struttura disponibile";
         buildBtn.addEventListener("click", () => toggleBuildMode(selected));
         actions.appendChild(buildBtn);
 
-        const passBtn = document.createElement("button");
-        passBtn.dataset.unitAction = "pass";
-        passBtn.className = "ghost";
-        passBtn.textContent = "Passa azione unità";
-        passBtn.disabled = !canCommand;
-        passBtn.addEventListener("click", () => passUnit(selected));
-        actions.appendChild(passBtn);
+        const endBtn = document.createElement("button");
+        endBtn.dataset.unitAction = "end-turn";
+        endBtn.className = "danger selectedUnitEndTurnBtn";
+        endBtn.textContent = "Fine turno";
+        endBtn.disabled = Boolean(state.winner) || botRunning || !isHumanTurn;
+        endBtn.addEventListener("click", () => mapHandOverlayEndTurn());
+        actions.appendChild(endBtn);
       }
       renderTacticPanel(tactics);
 
@@ -710,16 +792,16 @@ const MAP_HAND_OVERLAY_STATE = {
 
     function mapCollapsedHandControlsHtml(disabled = false) {
       const overlay = $("mapHandOverlay");
-      const collapsed = Boolean(
+      const hidden = Boolean(
         overlay &&
-        overlay.classList.contains("isMovementHidden") &&
+        (overlay.classList.contains("isMovementHidden") || MAP_HAND_OVERLAY_STATE.manuallyCollapsed) &&
         !overlay.classList.contains("isTargeting")
       );
-      if (!collapsed) return "";
+      const handLabel = hidden ? "Mostra mano" : "Nascondi mano";
       return `
-        <div class="mapCollapsedHandControls" data-collapsed-hand-controls="true" aria-label="Comandi Mano ridotta">
-          <button class="ghost mapHandShowBtn" type="button" onclick="mapHandOverlayShowHand()">Mostra mano</button>
-          <button class="danger mapHandEndTurnBtn compact" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
+        <div class="mapLeftDockControls" data-map-left-dock-controls="true" aria-label="Comandi principali partita">
+          <button class="ghost mapLeftHandBtn" type="button" onclick="mapHandOverlayToggleVisibility()">${handLabel}</button>
+          <button class="danger mapLeftEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
         </div>`;
     }
 
@@ -738,12 +820,7 @@ const MAP_HAND_OVERLAY_STATE = {
       const income = typeof incomeSummaryForSide === "function" ? incomeSummaryForSide(player) : { total:0, sourceText:"n/d", delta:0, doctrineLabel:"n/d" };
       const currentEnergy = state.energy && Number.isFinite(state.energy[player]) ? state.energy[player] : 0;
       const disabledGlobal = Boolean(state.winner) || !isHuman || botRunning;
-      if (!tactics.length) {
-        dock.innerHTML = `<div class="mapActionDockEmpty">Nessuna tattica fazione.</div>`;
-        dock.classList.add("isEmpty");
-        return;
-      }
-      dock.classList.remove("isEmpty");
+      dock.classList.toggle("isEmpty", !tactics.length);
       if (dock.dataset) dock.dataset.renderSignature = [
         player,
         state.turn || 0,
@@ -782,11 +859,12 @@ ${reason}`);
             </div>
           </div>
           ${typeof missionUiCompactPanelHtml === "function" ? missionUiCompactPanelHtml(player) : ""}
+          <div class="mapActionDockSectionTitle">Abilità di fazione</div>
           <div class="mapActionDockList">
-            ${rows}
+            ${rows || `<div class="mapActionDockEmpty">Nessuna abilità di fazione disponibile.</div>`}
           </div>
-        </div>
-        ${mapCollapsedHandControlsHtml(disabledGlobal)}`;
+          ${mapCollapsedHandControlsHtml(disabledGlobal)}
+        </div>`;
     }
 
 
@@ -1395,6 +1473,16 @@ ${reason}`);
       return true;
     }
 
+    function mapHandOverlayToggleVisibility() {
+      const overlay = $("mapHandOverlay");
+      const hidden = Boolean(
+        MAP_HAND_OVERLAY_STATE.manuallyCollapsed ||
+        MAP_HAND_OVERLAY_STATE.hiddenForMovement ||
+        (overlay && overlay.classList.contains("isMovementHidden"))
+      );
+      return hidden ? mapHandOverlayShowHand() : mapHandOverlayCollapse();
+    }
+
     function mapHandOverlaySelectCard(side, cardUid, source = "hand") {
       if (!state || !cardUid) return false;
       const card = mapHandOverlayCardByUid(side, cardUid, source);
@@ -1540,7 +1628,6 @@ ${reason}`);
               ${cardsHtml}
             </div>
             <div class="mapHandOverlayActions">
-              <button class="danger mapHandEndTurnBtn" id="mapHandEndTurnBtn" type="button" onclick="mapHandOverlayEndTurn()"${disabled ? " disabled" : ""}>Fine turno</button>
               <button class="ghost mapHandMoveUnitsBtn" type="button" onclick="mapHandOverlayMoveUnits()"${disabled ? " disabled" : ""}>Muovi unità</button>
               <button class="ghost mapHandCollapseBtn" type="button" onclick="mapHandOverlayCollapse()">Riduci mano</button>
               ${typeof missionUiMapBadgeHtml === "function" ? missionUiMapBadgeHtml(side) : ""}
@@ -1724,19 +1811,54 @@ ${reason}`);
 
     function selectedUnitPreviewShellHtml() {
       return `
-        <div class="inGameCardPreviewBox compactPreviewBox">
-          <div class="inGameCardPreviewLayout compactPreviewLayout">
-            <div class="inGameCardPreviewCanvasWrap compactPreviewCanvasWrap">
-              <canvas id="selectedUnitCardPreviewCanvas" aria-label="Anteprima carta unità selezionata"></canvas>
-            </div>
-            <div class="inGameCardPreviewInfo compactPreviewInfo">
-              <div class="meta" id="selectedUnitCardPreviewMeta">Seleziona una unità sulla mappa per vedere la miniatura renderizzata.</div>
-              <div class="deckBuilderPreviewBody compactPreviewBody" id="selectedUnitCardPreviewBody">
-                <div class="deckBuilderPreviewHelp">Anteprima carta in-game F9I2.</div>
-              </div>
-            </div>
+        <div class="selectedUnitPreviewShell">
+          <div class="inGameCardPreviewCanvasWrap selectedUnitPreviewCanvasWrap">
+            <canvas id="selectedUnitCardPreviewCanvas" aria-label="Anteprima carta unità selezionata"></canvas>
           </div>
+          <div class="selectedUnitPrimaryAbilitySlot" id="selectedUnitPrimaryAbilitySlot"></div>
+          <div class="srOnly" id="selectedUnitCardPreviewMeta">Anteprima carta dell'unità selezionata.</div>
+          <div class="srOnly" id="selectedUnitCardPreviewBody"></div>
         </div>`;
+    }
+
+    function selectedUnitAbilityAvailabilityText(unit, canCommand) {
+      const ab = unit && unit.ability;
+      if (!ab) return "Questa unità non possiede abilità attive.";
+      if (ab.passive) return `${ab.name} è una abilità passiva.`;
+      if (!canCommand) return "Unità non comandabile in questo momento.";
+      if (unit.cooldownLeft > 0) return `Cooldown: ${unit.cooldownLeft}.`;
+      if (state.energy[unit.side] < Number(ab.cost || 0)) return "ENE insufficiente.";
+      if (!canUseAbility(unit, ab)) return "Abilità non disponibile.";
+      if (abilityTargets(unit, ab).length === 0) return "Nessun bersaglio valido.";
+      return ab.description || "Abilità pronta.";
+    }
+
+    function selectedUnitInspectorDetailsHtml(u) {
+      const ability = u && u.ability;
+      const activeHtml = ability && !ability.passive
+        ? `<div class="selectedUnitAbilityRow"><strong>Attiva · ${escapeHtml(ability.name)}</strong><span>${escapeHtml(ability.description || "—")}</span></div>`
+        : `<div class="selectedUnitAbilityRow isMuted"><strong>Attiva</strong><span>Nessuna abilità attiva.</span></div>`;
+      const passiveItems = [];
+      if (ability && ability.passive) passiveItems.push(`<strong>${escapeHtml(ability.name)}</strong>: ${escapeHtml(ability.description || "—")}`);
+      if (Array.isArray(u.factionRules)) u.factionRules.forEach(rule => passiveItems.push(escapeHtml(rule)));
+      if (u.passiveThorns) passiveItems.push(`Spine ${Number(u.passiveThorns)}`);
+      if (u.bleedImmune) passiveItems.push("Immune a Sanguinamento");
+      if (u.guardThornsOnIdle) passiveItems.push("Guardia Spinosa");
+      const passiveHtml = passiveItems.length
+        ? passiveItems.map(item => `<div>${item}</div>`).join("")
+        : `<div class="isMuted">Nessuna abilità passiva.</div>`;
+      return `
+        <section class="selectedUnitDataCard" aria-label="Statistiche e abilità unità">
+          <div class="selectedUnitIdentity"><strong>${escapeHtml(u.name)}</strong><span>${escapeHtml(u.faction)}</span></div>
+          <table class="selectedUnitStatsTable" aria-label="Statistiche unità">
+            <thead><tr><th>HP</th><th>DEF</th><th>ATT</th></tr></thead>
+            <tbody><tr><td>${u.currentHp}/${u.maxHp}</td><td>${u.currentDef}</td><td>${effectiveAtt(u)}</td></tr></tbody>
+          </table>
+          <div class="selectedUnitAbilitiesBox">
+            ${activeHtml}
+            <div class="selectedUnitPassiveBlock"><strong>Passive</strong>${passiveHtml}</div>
+          </div>
+        </section>`;
     }
 
     function handPreviewShellHtml() {
@@ -1975,6 +2097,10 @@ function initials(name) {
       item.innerHTML = `<small>#${state.logSeq}</small> ${escapeHtml(msg)}`;
       const logBox = $("log");
       logBox.prepend(item);
+      // Keep the complete typed history in state.events/export, but bound the
+      // visible DOM so long FFA matches do not accumulate layout work forever.
+      const visibleLimit = 300;
+      while (logBox.children.length > visibleLimit) logBox.lastElementChild.remove();
     }
 
 
@@ -1999,7 +2125,7 @@ function initials(name) {
 // =====================================================
 
 function staticLimitLabel(bp) {
-      if (bp.type === "Struttura") return `max ${structureFieldLimit(state.currentPlayer || 1)} edifici`;
+      if (bp.type === "Struttura") return "deck · nessun cap campo";
       if (bp.type === "Comandante") return `max ${COMMANDER_FIELD_LIMIT}`;
       if (bp.weight === "Pivot") return `max ${PIVOT_FIELD_LIMIT}`;
       if (bp.weight === "Elite") return `max ${ELITE_FIELD_LIMIT}`;

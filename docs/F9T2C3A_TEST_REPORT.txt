@@ -1,0 +1,39 @@
+Arena Rubra — F9T2c3a Test Report
+Build: C2-STABLE-1-F9T2c3a-APK-M4c
+Baseline preservata: C2-STABLE-1-F9T2b-APK-M4c
+
+TEST STATICI
+- JavaScript src: 79/79 sintatticamente validi.
+
+TEST NODE
+- Suite completa: 86/86 superati.
+- Smoke dedicato F9T2c3a: 35/35 superato.
+- Verificati deployment R6, WINDOW_EXPIRED R9 e LATE_IMPACT R12.
+- Verificata immutabilità dei turni finalizzati.
+- Verificato rifiuto diagnostico delle scritture tardive.
+- Verificati audit atomici e container separati.
+
+TEST BROWSER SUPERATI
+- Aggregazione telemetrica F9T2c3: PASS.
+  Audit candidati 22 = 12 conservati + 10 scartati.
+  Decisioni 31 = 24 conservate + 7 scartate.
+  Clear autorevole: duringPlan=1, directExpertStep=0, occupied=1.
+  Errori pagina/console: 0/0.
+- Bootstrap primo turno G2: PASS.
+  started=context=routed=completed=1.
+  Errori pagina/console: 0/0.
+
+REGRESSIONI FUNZIONALI CON AVVISO PRESTAZIONALE
+- Forward Pivot browser: comportamento funzionale corretto.
+  Piano selezionato e completato; ENEMY_PS_CAPTURE; 1 deployment; impatto entro 1 round; riconciliazione decisioni valida.
+  Il test non supera l'asserzione prestazionale perché moduleDurationMs=8.6 ms contro budget 8 ms; 1 budget exhaustion.
+- Clear–Occupy–Fortify browser: comportamento funzionale corretto.
+  Bersaglio eliminato, PS fortificato, metriche territoriali riconciliate.
+  Il test non supera l'asserzione prestazionale perché moduleDurationMs=8.5 ms contro budget 8 ms; 1 budget exhaustion.
+
+TEST NON COMPLETATI
+- Il batch UI Control Center/Card Pool/Editor è stato interrotto da timeout nell'ambiente headless e non viene dichiarato superato.
+- Non eseguiti batch multi-seed, benchmark APK reale o partite lunghe su tutte le mappe.
+
+VERDETTO
+La correzione telemetrica è dimostrata dagli smoke dedicati e dai test browser mirati. La build resta candidata: i due smoke strategici browser hanno superato il comportamento ma non il limite prestazionale da 8 ms nell'ambiente di test.

@@ -18,9 +18,10 @@ assert.ok(/collapsedHandControlsReflowF9O7d\s*:\s*true/.test(config));
 assert.ok(precheck.includes("collapsedHandControlsReflowF9O7d"));
 
 assert.ok(render.includes("function mapCollapsedHandControlsHtml"));
-assert.ok(render.includes('class="mapCollapsedHandControls"'));
-assert.ok(render.includes('class="ghost mapHandShowBtn"'));
-assert.ok(render.includes('class="danger mapHandEndTurnBtn compact"'));
+assert.ok(render.includes('class="mapLeftDockControls"'));
+assert.ok(render.includes('data-map-left-dock-controls="true"'));
+assert.ok(render.includes('class="ghost mapLeftHandBtn"'));
+assert.ok(render.includes('class="danger mapLeftEndTurnBtn"'));
 assert.ok(render.includes('${mapCollapsedHandControlsHtml(disabledGlobal)}'));
 assert.ok(render.includes('overlay.replaceChildren();'));
 assert.ok(render.includes('overlay.setAttribute("aria-hidden", "true")'));
@@ -33,13 +34,14 @@ assert.ok(!compactBranch[1].includes("mapHandShowBtn"), "Mostra mano non deve re
 
 assert.ok(css.includes("/* F9O7d — Collapsed Hand Controls Reflow"));
 assert.ok(css.includes(".mapHandOverlay.isMovementHidden {\n  display: none;"));
-assert.ok(css.includes(".mapCollapsedHandControls"));
-assert.ok(css.includes("body.mobile-apk-m4 .mapCollapsedHandControls"));
+assert.ok(css.includes(".mapLeftDockControls"));
+assert.ok(css.includes("body.mobile-apk-m4 .mapLeftDockControls"));
 
 console.log(JSON.stringify({
   ok: true,
   build: "C2-STABLE-1-F9O7g-APK-M4c",
   baseline: "C2-STABLE-1-F9O7e-APK-M4c",
   compactControlsHost: "mapActionDock",
+  permanentControlsF9U1a: true,
   openHandLayoutPreserved: true
 }, null, 2));

@@ -1,0 +1,103 @@
+ARENA RUBRA — F9T1 TEST REPORT
+
+Build candidata
+C2-STABLE-1-F9T1-APK-M4c — Expert AI Architecture · Telemetry Contract
+
+Baseline validata
+C2-STABLE-1-F9T0-APK-M4c
+
+Data
+29 luglio 2026
+
+SCOPO VERIFICATO
+
+F9T1 introduce soltanto l'architettura del terzo grado IA e il relativo contratto telemetrico. Non introduce ancora dottrine Expert di fazione. In modalità Expert, ciascun modulo risponde architecture_only e il comportamento decisionale ricade esplicitamente sull'Advanced F9T0.
+
+CONTROLLI AUTOMATICI
+
+1. Sintassi JavaScript
+- File verificati: 173
+- Errori: 0
+- Esito: PASS
+
+2. Suite regressione Node
+- Test eseguiti: 79
+- Superati: 79
+- Falliti: 0
+- Esito: PASS
+
+3. Smoke dedicato F9T1
+- Verifiche: 62/62
+- Esito: PASS
+- Copertura principale:
+  * presenza e ordine di caricamento dei componenti Expert;
+  * attivazione esclusiva in modalità expert;
+  * cinque moduli separati;
+  * router con una sola invocazione di fazione;
+  * quattro contratti comuni esatti;
+  * prossimità adattiva al movimento mappa;
+  * protezione strutturale QG;
+  * strutture sui PS;
+  * rischio di occupazione QG;
+  * contratto micro-piano piatto;
+  * rifiuto di passaggi ricorsivi;
+  * contesto unico per turno;
+  * cache e sessione eliminate a fine turno;
+  * fallback Advanced F9T0 esplicito;
+  * telemetria decisionale limitata.
+
+4. Smoke browser Chromium
+- F9T1 architettura e telemetria: PASS
+- F9T1 integrazione nel ciclo reale runBotTurn: PASS
+- F9U3 Control Center desktop/mobile: PASS
+- F9U2a Pool carte: PASS
+- F9U2b Card Editor e Map Editor: PASS
+- Errori pagina nei test F9T1: 0
+- Errori console nei test F9T1: 0
+
+RISULTATI F9T1 OSSERVATI NEL BROWSER
+
+- Build: C2-STABLE-1-F9T1-APK-M4c
+- Baseline: C2-STABLE-1-F9T0-APK-M4c
+- Schema telemetrico base: F9Q3e1-2
+- Estensione Expert: F9T1-1
+- Modulo instradato nel test Nexus: expert-nexus-f9t1
+- Moduli invocati nel turno: 1
+- Fallback: advanced_f9t0
+- Ricerca ricorsiva dichiarata: false
+- Sessioni Expert residue dopo il turno: 0
+- Budget exhaustion nel test architetturale: 0
+
+REGRESSIONI NON INTRODOTTE
+
+- Base e Advanced conservano i rispettivi percorsi.
+- Nessuna modifica a regole, carte, statistiche, deck ufficiali, mappe, Missioni, targeting o bilanciamento.
+- Il Centro di controllo continua a mostrare 50 deck ufficiali, 9 mappe ufficiali, schema F9Q3e1-2 e diagnostica senza errori bloccanti.
+- Pool carte, Card Editor e Map Editor continuano ad aprirsi e usare lo stato autorevole.
+
+LIMITI DEL COLLAUDO
+
+- Nessun test su APK Android reale è stato eseguito in questo ambiente.
+- Nessun benchmark affidabile di RAM, CPU o durata dei turni su mappe grandi è stato eseguito.
+- Nessuna partita lunga Expert è significativa in F9T1, perché le dottrine Expert non sono ancora implementate.
+- Il test di integrazione runBotTurn verifica il ciclo start → contesto → modulo unico → fallback → completamento; non dimostra miglioramenti tattici.
+- La lettura heap resta null nei browser che non espongono performance.memory, come previsto dal contratto.
+
+TEST MANUALI BLOCCANTI PRIMA DELLA VALIDAZIONE
+
+- Avvio e conclusione di partite bot–bot in Expert su browser/APK.
+- Verifica di un solo moduleId per fazione nella telemetria esportata.
+- Confronto visivo Advanced ed Expert: in F9T1 devono comportarsi allo stesso modo.
+- Prova su almeno una mappa movimento x2 o x3.
+- Controllo RAM e durata turni su Android reale.
+- Verifica che cache e record Expert non crescano senza limite durante una partita lunga.
+
+INTEGRITÀ PACCHETTO
+
+- Test archivio ZIP: PASS
+- File corrotti o illeggibili: 0
+- Verifica eseguita con unzip -t sul pacchetto finale.
+
+VERDETTO
+
+Candidata tecnicamente pronta per il collaudo manuale. Non validata automaticamente. F9T1 deve essere dichiarata baseline soltanto dopo il test reale dell'autore.

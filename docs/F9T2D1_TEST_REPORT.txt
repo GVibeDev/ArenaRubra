@@ -1,0 +1,123 @@
+ARENA RUBRA — F9T2d1 TEST REPORT
+=================================
+
+BUILD
+-----
+C2-STABLE-1-F9T2d1-APK-M4c
+
+BASELINE LOGICA
+---------------
+C2-STABLE-1-F9T2c4-APK-M4c
+
+SCOPO
+-----
+Correggere il selettore di VARRAN_ASSAULT_CHAIN affinché usi Ordine di
+Varran soltanto quando il +1 ATT modifica realmente l'esito secondo la
+risoluzione non perforante ATT -> DEF -> HP. Integrare inoltre lo scanner
+Varran negli audit autorevoli e rientrare nel budget da 8 ms senza
+innalzarlo.
+
+MODIFICHE PRINCIPALI
+--------------------
+1. Preview pura previewBasicAttackOutcome coerente con attackUnit.
+2. Confronto baseOutcome / orderedOutcome.
+3. Rifiuto base_attack_already_kills.
+4. Rifiuto no_marginal_bonus_value.
+5. Sostituzione di killEnabled con metriche predette e reali.
+6. Misura actualBonusEffectiveDamage dopo l'attacco.
+7. Audit varranAssault integrati nei totali comuni.
+8. Limite deterministico di 24 coppie attore-bersaglio.
+9. Cache di movimento e contesto strategico riutilizzato.
+10. Serializzazione telemetrica differita fuori dalla durata del modulo.
+
+SINTASSI JAVASCRIPT
+-------------------
+79 / 79 file src superati con node --check.
+
+SUITE NODE
+----------
+88 / 88 smoke JavaScript superati.
+
+Smoke dedicato F9T2d1:
+65 / 65 verifiche superate.
+
+Copertura dedicata:
+- danno marginale nullo contro DEF non perforata;
+- +1 ATT che abilita un'eliminazione reale;
+- attacco base già letale escluso;
+- esecuzione immediata;
+- movimento seguito da attacco;
+- retarget bounded;
+- blocco per rischio QG;
+- audit Varran e metadata.
+
+BROWSER DEDICATO F9T2d1
+-----------------------
+5 / 5 esecuzioni consecutive superate.
+
+Durate modulo:
+- 1,6 ms
+- 1,8 ms
+- 1,8 ms
+- 3,0 ms
+- 1,7 ms
+
+Per ogni esecuzione:
+- predictedBonusEffectiveDamage = 1;
+- actualBonusEffectiveDamage = 1;
+- bonusEnabledKill = true;
+- targetDestroyed = true;
+- caso marginale nullo respinto;
+- audit Varran integrati;
+- budgetExhaustions = 0;
+- errori pagina = 0;
+- errori console = 0.
+
+REGRESSIONI BROWSER SELEZIONATE
+-------------------------------
+7 / 7 aree superate:
+- Varran Assault F9T2d1;
+- aggregazione telemetrica F9T2c3;
+- bootstrap primo turno F9T2c2;
+- Forward Pivot F9T2c;
+- Territorial Conversion F9T2b;
+- Bastion Relay F9T2;
+- Control Center F9U3.
+
+Territorial Conversion è stata ripetuta tre volte dopo una prima
+invocazione headless a freddo variabile:
+- 6,7 ms, zero exhaustion;
+- 4,1 ms, zero exhaustion;
+- 6,5 ms, zero exhaustion.
+
+Bastion Relay browser:
+- moduleDurationMs = 7,5 ms;
+- budgetExhaustions = 0;
+- errori pagina/console = 0.
+
+Card Pool ed Editor hanno superato i rispettivi smoke Node. I batch
+browser completi sono stati interrotti da timeout dell'ambiente headless
+e non vengono dichiarati superati in questo rapporto.
+
+NOTA SULLA VARIANZA A FREDDO
+----------------------------
+Una singola prima esecuzione isolata di una regressione Clear in Chromium
+headless ha registrato 8,6 ms e un exhaustion. Le tre ripetizioni
+indipendenti successive sono rientrate nel budget. Il test dedicato Varran
+include un warm-up equivalente a una partita reale già avviata e ha
+superato 5/5 esecuzioni. Non è stato aumentato il budget da 8 ms.
+
+Questa varianza impone comunque la verifica nel replay reale completo.
+
+NON ESEGUITO
+------------
+- replay completo del seed AR-msav9j6q-mfkmt6;
+- batch multi-seed;
+- test APK reale;
+- benchmark Android/RAM;
+- browser completo Card Pool/Editor a causa del timeout headless.
+
+VERDETTO
+--------
+Candidata tecnicamente pronta per il retest telemetrico. Non è una
+baseline validata. La baseline ufficiale resta C2-STABLE-1-F9T2c4-APK-M4c.

@@ -1,0 +1,122 @@
+ARENA RUBRA — F9T2c2 TEST REPORT
+=====================================
+
+Build
+-----
+C2-STABLE-1-F9T2c2-APK-M4c
+
+Baseline logica
+---------------
+C2-STABLE-1-F9T2b-APK-M4c
+
+Data
+----
+1 agosto 2026
+
+Scopo
+-----
+Verificare il bootstrap simmetrico del primo turno Expert, l’invalidazione dei turni asincroni appartenenti a partite precedenti, la classificazione operativa del Forward Pivot, la guida leggera entro due round e il tracciamento del primo impatto tardivo.
+
+RISULTATI AUTOMATICI
+--------------------
+
+Sintassi JavaScript
+- File controllati: 94
+- Superati: 94
+- Errori: 0
+
+Suite Node
+- Test: 84
+- Superati: 84
+- Falliti: 0
+
+Smoke dedicato F9T2c2
+- Verifiche: 29/29
+- Bootstrap G2: superato
+- Bootstrap G1: superato
+- Completamento orfano: rifiutato
+- Sessione stale dopo cambio match: rifiutata
+- HQ_CORRIDOR distante: rifiutato
+- Obiettivo PS operativo: selezionato
+- Memoria Forward: movimento preferito eseguito
+- Impatto tardivo: round e ritardo conservati
+
+Regressioni Node incluse
+- F9T1 architettura Expert: 62/62
+- Bastion Relay: 25/25
+- Territorial Conversion: 24/24
+- Forward Pivot foundation: 33/33
+- Execution Integrity F9T2c1: 24/24
+
+TEST BROWSER SELEZIONATI
+------------------------
+
+1. First-turn bootstrap G2 + sostituzione match: PASS
+   - turnsStarted: 1
+   - contextsCreated: 1
+   - modulesRouted: 1
+   - turnsCompleted: 1
+   - modulo: expert-exordium-f9t2c2
+   - errori pagina/console: 0/0
+
+2. Forward Pivot Deployment: PASS
+   - obiettivo: ENEMY_PS_CAPTURE
+   - sequenza: deploy_pivot_forward
+   - impatto: ATTACK entro 1 round
+   - context: circa 0,9 ms
+   - module: circa 3,3 ms
+   - budget exhaustion: 0
+
+3. Bastion Relay: PASS
+   - sequenza: move_guard → build_bastion
+   - module: circa 3,6 ms
+   - budget exhaustion: 0
+
+4. Territorial Conversion: PASS
+   - sequenza: attack_ps_target → build_roster_clear_ps
+   - PS liberato e fortificato: 1/1
+   - module: circa 3,4 ms
+   - budget exhaustion: 0
+
+5. Expert turn integration Nexus fallback: PASS
+   - modulo unico: expert-nexus-f9t1
+   - fallback: advanced_f9t0
+   - sessioni residue: 0
+
+6. Control Center: PASS
+   - build e baseline corrette
+   - cinque aree preservate
+   - overflow desktop/mobile: 0
+
+7. Card Pool: PASS
+
+8. Card Editor / Map Editor layout: PASS
+
+Totale browser selezionato: 8/8
+Errori pagina osservati: 0
+Errori console osservati: 0
+
+INTEGRITÀ E LIMITI
+------------------
+
+- Limite decisioni: 24 effettivo
+- Cache Expert: limitata al turno
+- Ricorsione libera: assente
+- Modulo Exordium sotto budget nei test mirati
+- ZIP finale: PASS (verifica unzip -t sul pacchetto finale)
+
+NON TESTATO
+-----------
+
+- replay completo del match telemetrico da 54 turni;
+- batch multi-seed;
+- mappe movimento ×1 e ×3 in partite lunghe;
+- benchmark RAM/CPU su Android reale;
+- APK fisico, sospensione/ripresa e tasto Back;
+- percentuale di vittorie o bilanciamento;
+- Varran, Ordine d’Assalto, mine Nexus e profilo Nexus Expert.
+
+VERDETTO TECNICO
+----------------
+
+La candidata supera sintassi, suite Node, smoke dedicato e browser mirati. Il bootstrap del Giocatore 2 e l’invalidazione del turno appartenente al match precedente sono esercitati direttamente. Forward Pivot genera un obiettivo territoriale operativo, conserva la guida e registra l’impatto. La build resta candidata fino al test comportamentale completo e al collaudo APK reale.

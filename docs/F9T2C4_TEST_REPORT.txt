@@ -1,0 +1,108 @@
+ARENA RUBRA — F9T2c4 TEST REPORT
+================================
+
+Build candidata
+---------------
+C2-STABLE-1-F9T2c4-APK-M4c
+
+Baseline logica
+---------------
+C2-STABLE-1-F9T2c3a-APK-M4c
+
+Scopo
+-----
+Correggere i casi in cui CLEAR_OCCUPY_FORTIFY elimina il presidio nemico ma
+lascia il PS libero perché l'occupante prenotato è già stato consumato o deviato
+dal fallback generico.
+
+Implementazione verificata
+--------------------------
+- conferma dell'occupante prenotato dopo la rimozione del target;
+- riassegnazione bounded a un sostituto legale;
+- aggiornamento delle riserve e dei metadati del piano;
+- priorità di occupazione prima del fallback generico;
+- vittoria immediata sul QG e rischio QG direct/occupied preservati;
+- telemetria di commitment, riassegnazione, differimento ed esecuzione.
+
+Sintassi JavaScript
+-------------------
+79 file controllati
+79 superati
+0 errori
+
+Suite Node completa
+-------------------
+87 file di test eseguiti
+87 superati
+0 falliti
+
+Smoke dedicato F9T2c4
+----------------------
+f9t2c4_clear_occupation_commitment_smoke.js
+20/20 verifiche superate
+
+Verifiche specifiche dello smoke
+--------------------------------
+- attacchi obsoleti saltati dopo la rimozione del target;
+- occupante originario già attivato riconosciuto come indisponibile;
+- sostituto selezionato dall'elenco bounded;
+- reservedActions aggiornato;
+- commitment attivato e telemetrizzato;
+- bonus di priorità 1600;
+- movimento reale sul PS e cambio di controllo;
+- micro-piano completato;
+- rischio QG direct superiore alla conversione;
+- hook presente nel ciclo bot;
+- schema F9T2c4-1.
+
+Browser smoke selezionati
+-------------------------
+5 eseguiti
+5 superati
+0 falliti
+
+- Territorial Conversion: PASS
+- Forward Pivot Deployment: PASS
+- First-Turn Bootstrap G2: PASS
+- Telemetry Aggregation: PASS
+- Control Center desktop/mobile: PASS
+
+Risultati browser principali
+----------------------------
+- modulo Exordium: expert-exordium-f9t2c4
+- Forward Pivot: 1 piano, 1 deployment, 1 impatto, 0 miss
+- bootstrap G2: started/context/routed/completed = 1/1/1/1
+- audit candidati controllati: 22 = 12 stored + 10 dropped
+- decisioni controllate: 31 = 24 stored + 7 dropped
+- conversione autorevole: duringPlan 1, directExpertStep 0, occupied 1
+- errori pagina: 0
+- errori console: 0
+- budget exhaustion nei browser selezionati: 0
+
+Regressioni Node rilevanti
+--------------------------
+- F9T0: 36/36
+- F9T1: 62/62
+- Bastion Relay: 25/25
+- Territorial Conversion: 24/24
+- Execution Integrity: 24/24
+- Bootstrap/Forward Impact: 29/29
+- Telemetry Aggregation: 21/21
+- Turn Ownership/Audit Units: 35/35
+- Forward Pivot: 33/33
+- Control Center: 61/61
+
+Limitazioni del collaudo
+------------------------
+- nessun match completo multi-seed eseguito in questo ambiente;
+- nessun test APK reale;
+- nessun benchmark su smartphone datato;
+- il comportamento va ancora verificato in un match reale che riproduca un
+  bersaglio rimosso e un occupante originario diventato indisponibile.
+
+Verdetto tecnico
+----------------
+La candidata supera i test statici, Node e browser selezionati. Il difetto
+specifico è coperto da uno smoke dedicato e il resto del blocco Expert non mostra
+regressioni nei test eseguiti. La build resta candidata finché non viene testata
+e validata dall'utente in gameplay reale.

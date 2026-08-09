@@ -1,0 +1,1169 @@
+=== f9t2d_browser_varran_assault_chain_smoke.py ===
+{
+  "status": "PASS",
+  "build": "C2-STABLE-1-F9T2d-APK-M4c",
+  "module": "expert-exordium-f9t2d",
+  "goal": "EXORDIUM_VARRAN_ASSAULT_CHAIN",
+  "sequence": [
+    "use_varran_order",
+    "execute_varran_assault"
+  ],
+  "reservedEnergy": 1,
+  "expectedExtraDamage": 1,
+  "killEnabled": true,
+  "orderExecuted": true,
+  "actorAfterBuff": 4,
+  "assaultExecuted": true,
+  "targetDestroyed": true,
+  "varranAssaultPlans": 1,
+  "varranAssaultScans": 1,
+  "varranAssaultOrdersCommitted": 1,
+  "varranAssaultsExecuted": 1,
+  "contextDurationMs": 1,
+  "moduleDurationMs": 4.7,
+  "totalDurationMs": 46.7,
+  "budgetExhaustions": 0,
+  "pageErrors": 0,
+  "consoleErrors": 0
+}
+PASS f9t2d_browser_varran_assault_chain_smoke.py
+=== f9t2b_browser_exordium_territorial_conversion_smoke.py ===
+{
+  "status": "PASS",
+  "module": "expert-exordium-f9t2d",
+  "goal": "EXORDIUM_CLEAR_OCCUPY_FORTIFY",
+  "sequence": [
+    "attack_ps_target",
+    "build_roster_clear_ps"
+  ],
+  "reservedEnergy": 2,
+  "psCleared": 1,
+  "psFortifiedAfterClear": 1,
+  "relaySurvival": "UNSUSTAINABLE",
+  "lossesLast5": 2,
+  "contextDurationMs": 1.1,
+  "moduleDurationMs": 3.2,
+  "totalDurationMs": 49.6,
+  "budgetExhaustions": 0,
+  "pageErrors": 0,
+  "consoleErrors": 0
+}
+PASS f9t2b_browser_exordium_territorial_conversion_smoke.py
+=== f9t2c_browser_forward_pivot_deployment_smoke.py ===
+{
+  "status": "PASS",
+  "build": "C2-STABLE-1-F9T2d-APK-M4c",
+  "module": "expert-exordium-f9t2d",
+  "goal": "EXORDIUM_FORWARD_PIVOT_DEPLOYMENT",
+  "sequence": [
+    "deploy_pivot_forward"
+  ],
+  "objectiveType": "ENEMY_PS_CAPTURE",
+  "pivotId": "EXPIV02_1_1",
+  "impact": {
+    "kind": "ATTACK",
+    "round": 9,
+    "eventType": "UNIT_ATTACKED",
+    "targetUnitId": "synthetic-target",
+    "amount": 5
+  },
+  "forwardPivotPlans": 1,
+  "forwardPivotsDeployed": 1,
+  "forwardPivotImpacts": 1,
+  "expertForwardPivotsDeployed": 1,
+  "allExordiumPivotsTracked": 1,
+  "contextDurationMs": 0.8,
+  "moduleDurationMs": 3.2,
+  "totalDurationMs": 48.4,
+  "budgetExhaustions": 0,
+  "pageErrors": 0,
+  "consoleErrors": 0
+}
+PASS f9t2c_browser_forward_pivot_deployment_smoke.py
+=== f9t2c2_browser_first_turn_bootstrap_smoke.py ===
+{
+  "status": "PASS",
+  "build": "C2-STABLE-1-F9T2d-APK-M4c",
+  "oldMatchId": "1785618315569-7r5s81",
+  "newMatchId": "1785618315766-q6j20c",
+  "turnSide": 2,
+  "moduleId": "expert-exordium-f9t2d",
+  "started": 1,
+  "contexts": 1,
+  "routed": 1,
+  "completed": 1,
+  "pageErrors": 0,
+  "consoleErrors": 0
+}
+PASS f9t2c2_browser_first_turn_bootstrap_smoke.py
+=== f9t2c3_browser_telemetry_aggregation_smoke.py ===
+{
+  "status": "PASS",
+  "build": "C2-STABLE-1-F9T2d-APK-M4c",
+  "candidateAudits": {
+    "total": 22,
+    "stored": 12,
+    "dropped": 10,
+    "byScanner": {
+      "relay": 15,
+      "clearOccupyFortify": 4,
+      "forwardPivot": 3
+    }
+  },
+  "decisions": {
+    "total": 31,
+    "stored": 24,
+    "dropped": 7
+  },
+  "territorial": {
+    "duringPlan": 1,
+    "directExpertStep": 0,
+    "occupied": 1
+  },
+  "pageErrors": 0,
+  "consoleErrors": 0
+}
+PASS f9t2c3_browser_telemetry_aggregation_smoke.py
+=== f9u3_browser_control_center_smoke.py ===
+{
+  "ok": true,
+  "desktop": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "baseline": "C2-STABLE-1-F9T2c4-APK-M4c",
+    "areas": [
+      "Gioca",
+      "Carte e deck",
+      "Mappe",
+      "Analisi",
+      "Sistema"
+    ],
+    "version": "C2-STABLE-1-F9T2d-APK-M4c",
+    "logic": "C2-STABLE-1-F9T2c4-APK-M4c",
+    "schema": "F9Q3e1-2",
+    "decks": "50",
+    "maps": "9",
+    "storage": "0 B",
+    "lastMatch": "Nessun match",
+    "diagnostics": "Nessun errore",
+    "diagnosticTone": "warn",
+    "debugHidden": false,
+    "resumeDisabled": true,
+    "resumeMarkup": "\n              <span class=\"mainMenuTileIcon\" aria-hidden=\"true\">↻</span>\n              <span><strong>Riprendi</strong><small>Nessuna sessione attiva</small></span>\n            ",
+    "overflow": 0,
+    "snap": {
+      "schemaVersion": "F9U3-1",
+      "build": {
+        "appName": "Arena Rubra",
+        "stage": "Starter Game ALPHA",
+        "version": "C2-STABLE-1-F9T2d-APK-M4c",
+        "buildName": "Exordium Varran Assault Chain",
+        "buildDate": "2026-08-01",
+        "buildChannel": "f9t2d-candidate",
+        "logicBaseline": "C2-STABLE-1-F9T2c4-APK-M4c",
+        "map": "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
+        "notes": "Candidata F9T2d basata sulla baseline validata F9T2c4. Aggiunge VARRAN_ASSAULT_CHAIN: Varran usa Ordine di Varran soltanto quando una unità Exordium può convertire il bonus in un attacco legale nello stesso turno. La catena è piatta: selezione bounded del bersaglio, riserva ENE, uso dell’abilità, eventuale singolo movimento e attacco. Un retarget massimo è consentito se il bersaglio scompare. Preserva Clear Occupation Commitment F9T2c4 sullo stato autorevole del PS, aggregati e proprietà temporale F9T2c3a, Bastion Relay, Survival Check, Forward Pivot, bootstrap Expert, fallback Advanced F9T0 e la riorganizzazione del Pool carte F9U2a. Nessuna modifica a carte, costi, statistiche, deck, mappe, Missioni o bilanciamento. Schema principale F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d-1."
+      },
+      "telemetrySchema": "F9Q3e1-2",
+      "officialDecks": 50,
+      "officialMaps": 9,
+      "customCards": 0,
+      "customDecks": 0,
+      "customMaps": 0,
+      "storage": {
+        "usage": 0,
+        "quota": null,
+        "approximate": 2,
+        "source": "navigator.storage"
+      },
+      "latestMatch": null,
+      "diagnostics": {
+        "schemaVersion": "F9U3-1",
+        "at": "2026-08-01T21:05:21.287Z",
+        "source": "control-center-refresh",
+        "build": {
+          "appName": "Arena Rubra",
+          "stage": "Starter Game ALPHA",
+          "version": "C2-STABLE-1-F9T2d-APK-M4c",
+          "buildName": "Exordium Varran Assault Chain",
+          "buildDate": "2026-08-01",
+          "buildChannel": "f9t2d-candidate",
+          "logicBaseline": "C2-STABLE-1-F9T2c4-APK-M4c",
+          "map": "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
+          "notes": "Candidata F9T2d basata sulla baseline validata F9T2c4. Aggiunge VARRAN_ASSAULT_CHAIN: Varran usa Ordine di Varran soltanto quando una unità Exordium può convertire il bonus in un attacco legale nello stesso turno. La catena è piatta: selezione bounded del bersaglio, riserva ENE, uso dell’abilità, eventuale singolo movimento e attacco. Un retarget massimo è consentito se il bersaglio scompare. Preserva Clear Occupation Commitment F9T2c4 sullo stato autorevole del PS, aggregati e proprietà temporale F9T2c3a, Bastion Relay, Survival Check, Forward Pivot, bootstrap Expert, fallback Advanced F9T0 e la riorganizzazione del Pool carte F9U2a. Nessuna modifica a carte, costi, statistiche, deck, mappe, Missioni o bilanciamento. Schema principale F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d-1."
+        },
+        "telemetrySchema": "F9Q3e1-2",
+        "precheck": {
+          "ok": true,
+          "source": "control-center-refresh",
+          "at": "2026-08-01T21:05:21.287Z",
+          "problems": [],
+          "warnings": [],
+          "info": [
+            "Fazioni: 5",
+            "Blueprint unità: 115",
+            "Tattiche starter/base: 10",
+            "Tattiche deck C2-FINAL-C2: 70",
+            "Missioni F9N6: 15",
+            "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+            "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+            "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+            "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+            "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+            "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+            "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+            "F9O4: coda animazioni carta non bloccante disponibile.",
+            "Catalogo carte C2a: 200",
+            "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+            "Tattiche giocabili C2-FINAL-C2: 70/70.",
+            "Deck C2-FINAL-C2 Nexus: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+            "Deck C2-FINAL-C2 Exordium: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+            "Deck C2-FINAL-C2 Liberti: 30/30, pool 36, capacità legale 62, overflow debug 0.",
+            "Deck C2-FINAL-C2 Agathoi: 30/30, pool 36, capacità legale 59, overflow debug 0.",
+            "Deck C2-FINAL-C2 Fabeot: 30/30, pool 36, capacità legale 58, overflow debug 0.",
+            "F9O5 tassonomia unità: 115 blueprint · starter 15, light 23, heavy 36, elite 21, pivot 10, commander 10.",
+            "F9O5a profili FX/SFX: 115 blueprint · energy 3, support 25, ballistic_heavy 29, occult 19, structure 12, ballistic_light 1, melee 6, organic 20.",
+            "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+            "Tutorial: 5 lezioni pianificate · 5 lezioni giocabili · 5 set ritratti.",
+            "F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.",
+            "F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.",
+            "F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.",
+            "F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.",
+            "F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.",
+            "F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.",
+            "F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.",
+            "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+            "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+            "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+            "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+            "F9S1c1: 50 deck ufficiali, 40 tattici, 10 Missione; 10 per fazione e 5 per Comandante; Starter esclusi.",
+            "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+            "F9O1: 5 temi fazione collegati al Giocatore 1.",
+            "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+            "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+            "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+            "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+            "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+            "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+            "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+            "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+            "F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.",
+            "F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.",
+            "F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.",
+            "F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.",
+            "F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.",
+            "F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.",
+            "F9T2d: turni Expert finalizzati e immutabili; Clear Commitment, Forward Pivot e Varran Assault Chain disponibili senza ricerca ricorsiva.",
+            "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+          ]
+        },
+        "storage": {
+          "schemaVersion": 1,
+          "directory": "ArenaRubraData",
+          "backendName": "memory",
+          "initialized": true,
+          "entries": 0,
+          "pendingWrites": 0,
+          "migration": {
+            "migrated": [],
+            "restored": [],
+            "issues": [
+              "IndexedDB non disponibile: Failed to execute 'open' on 'IDBFactory': access to the Indexed Database API is denied in this context."
+            ],
+            "backupPath": null
+          },
+          "error": null
+        },
+        "runtimeErrors": [],
+        "storageErrors": [],
+        "storageWarnings": [
+          "IndexedDB non disponibile: Failed to execute 'open' on 'IDBFactory': access to the Indexed Database API is denied in this context."
+        ],
+        "counts": {
+          "officialDecks": 50,
+          "officialMaps": 9,
+          "customDecks": 0,
+          "customMaps": 0,
+          "customCards": 0
+        },
+        "errorCount": 0,
+        "warningCount": 1,
+        "ok": true
+      },
+      "developerMode": true,
+      "activePanel": ""
+    }
+  },
+  "versionPanel": {
+    "open": true,
+    "title": "Versione",
+    "text": "Identità della buildMetadati letti dalla fonte unica BUILD_INFO; nessuna etichetta duplicata nel Centro di controllo.\n      Copia metadati\n    \n    ApplicazioneArena RubraStadioStarter Game ALPHAVersione completaC2-STABLE-1-F9T2d-APK-M4cNome buildExordium Varran Assault ChainData build2026-08-01Canalef9t2d-candidateBaseline logicaC2-STABLE-1-F9T2c4-APK-M4cSchema Control CenterF9U3-1Schema telemetricoF9Q3e1-2\n    Note buildCandidata F9T2d basata sulla baseline validata F9T2c4. Aggiunge VARRAN_ASSAULT_CHAIN: Varran usa Ordine di Varran soltanto quando una unità Exordium può convertire il bonus in un attacco legale nello stesso turno. La catena è piatta: selezione bounded del bersaglio, riserva ENE, uso dell’abilità, eventuale singolo movimento e attacco. Un retarget massimo è consentito se i",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 108.5625,
+      "width": 1180,
+      "height": 782.875,
+      "top": 108.5625,
+      "right": 1310,
+      "bottom": 891.4375,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "mapPanel": {
+    "open": true,
+    "title": "Archivio mappe",
+    "text": "Mappe disponibiliConsulta geometria, giocatori, PS centrale e validazione; da qui puoi avviare il Setup o aprire una copia modificabile nell’Editor.\n      Apri Map Editor\n    \n    \n      Ufficiali9Mappe integrate attive\n      Custom0Mappe archiviate localmente\n      Totale9Valide e non valide visibili\n    \n    \n      MappaTipoGioc.CellePSCentroStatoAzioni\n      \n      Campo Startermap1_starter\n      Ufficiale\n      2G\n      127\n      3\n      [0,0,0]\n      Valida\n      \n        Gioca\n        Copia in Editor\n      \n    \n      Diamond 4custom_single_ms0nf51r\n      Ufficiale\n      4G\n      469\n      9\n      [0,0,0]\n      Valida\n      \n        Gioca\n        Copia in Editor\n      \n    \n      Claustro Clashmap1_starter_copy\n      Ufficiale\n      4G\n      127\n      7\n      [0,0,0]\n      Valida\n   ",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 50,
+      "width": 1180,
+      "height": 900,
+      "top": 50,
+      "right": 1310,
+      "bottom": 950,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "mapRows": 9,
+  "firstMap": "map1_starter",
+  "setupSelected": "map1_starter",
+  "setupPanelClosed": true,
+  "statsPanel": {
+    "open": true,
+    "title": "Statistiche",
+    "text": "Registro matchupVista sintetica dei record competitivi persistenti. Tutorial e Match Lab restano esclusi dal registro.\n      \n        Copia JSON\n        Esporta JSON\n      \n    \n    \n      Partite0Record matchup\n      Round medi—Su tutti i record\n      Più vittorie—Nessun dato\n    \n    \n      DataMatchupVincitoreEsitoRoundMappa\n      Nessuna statistica registrata.",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 286,
+      "width": 1180,
+      "height": 428,
+      "top": 286,
+      "right": 1310,
+      "bottom": 714,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "historyPanel": {
+    "open": true,
+    "title": "Cronologia",
+    "text": "Storico partiteArchivio completo degli esiti con setup, statistiche finali, attribuzione e telemetria quando disponibili.\n      \n        Copia JSON\n        Esporta JSON\n      \n    \n    \n      Record0Limite archivio 500\n      Ultimo match—Nessun dato\n      Schema telemetricoF9Q3e1-2Ultimo schema disponibile\n    \n    \n      DataGiocatoriVincitoreEsitoRoundMappaTelemetria\n      Nessuna partita nello storico.",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 286,
+      "width": 1180,
+      "height": 428,
+      "top": 286,
+      "right": 1310,
+      "bottom": 714,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "telemetryPanel": {
+    "open": true,
+    "title": "Telemetria",
+    "text": "Telemetria non disponibileAvvia o completa una partita per inizializzare lo schema F9Q3e1-2.",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 356,
+      "width": 1180,
+      "height": 288,
+      "top": 356,
+      "right": 1310,
+      "bottom": 644,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "logPanel": {
+    "open": true,
+    "title": "Log",
+    "text": "Log partita attivaEventi tipizzati completi nello stato runtime; la tabella mostra gli ultimi 200 eventi senza troncare gli export.\n      \n        Copia TXT\n        Esporta TXT\n      \n    \n    \n      Eventi0Partita attiva\n      Sequenza0Ultimo indice evento\n      MatchNessunoAvvia una partita\n    \n    \n      #DataTipoMessaggio\n      Nessun log runtime: non è presente una partita attiva.",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 286,
+      "width": 1180,
+      "height": 428,
+      "top": 286,
+      "right": 1310,
+      "bottom": 714,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "settingsPanel": {
+    "open": true,
+    "title": "Impostazioni",
+    "text": "Preferenze applicazioneLe impostazioni vengono salvate nell’archivio locale e riutilizzano i runtime audio, SFX, animazioni carte e FX miniature già esistenti.\n    \n    \n      \n        Audio\n        Musica ON\n        Volume musica65%\n        Effetti ON\n        Volume effetti38%\n      \n      \n        Presentazione\n        Carte animate ON\n        Miniature FX ON\n        Le preferenze di movimento ridotto del sistema continuano ad avere priorità sugli effetti non essenziali.\n      \n      \n        Modalità sviluppatore\n        Mostra strumenti Debug e laboratori\n        In questa candidata di sviluppo è attiva per impostazione predefinita. Le future build pubbliche potranno disattivarla e nascondere Debug.\n      \n      \n        Archivio\n        0 B utilizzati\n        Apri Import / Export",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 194.96875,
+      "width": 1180,
+      "height": 610.0625,
+      "top": 194.96875,
+      "right": 1310,
+      "bottom": 805.03125,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "debugPanel": {
+    "open": true,
+    "title": "Debug",
+    "text": "Diagnostica di sviluppoPrecheck completo, backend archivio, errori runtime catturati e snapshot esportabile. Questo pannello non modifica il gameplay.\n      \n        Esegui diagnostica\n        Copia JSON\n        Esporta JSON\n      \n    \n    \n      Errori0Nessun errore diagnostico\n      Avvisi1Precheck non bloccanti\n      Storagememory0 scritture pendenti\n      RuntimeInattivoNessuna partita\n    \n    \n      Problemi precheck (0)Nessun problema rilevato.\n      Avvisi precheck (0)Nessun avviso rilevato.\n      Errori runtime catturati (0)Nessun errore runtime catturato.\n      Archivio e migrazione{\n  \"schemaVersion\": 1,\n  \"directory\": \"ArenaRubraData\",\n  \"backendName\": \"memory\",\n  \"initialized\": true,\n  \"entries\": 1,\n  \"pendingWrites\": 0,\n  \"migration\": {\n    \"migrated\": [],\n    \"restored\": []",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 75.75,
+      "width": 1180,
+      "height": 848.5,
+      "top": 75.75,
+      "right": 1310,
+      "bottom": 924.25,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "debugMetrics": 4,
+  "transferPanel": {
+    "open": true,
+    "title": "Import / Export",
+    "text": "Archivio applicazioneEsporta o ripristina un backup versionato di carte custom, deck, mappe, statistiche, cronologia, impostazioni, tutorial e laboratori locali.\n    \n    \n      \n        Esporta\n        Crea un JSON portabile con tutte le 11 chiavi riconosciute dal vault locale.\n        \n          Copia backup JSON\n          Scarica backup JSON\n        \n      \n      \n        Importa\n        Prima del ripristino viene creato un backup di sicurezza. Le chiavi sconosciute vengono ignorate.\n        Seleziona backup JSON\n        \n      \n      \n        Backend\n        \n          Archiviomemory\n          DirectoryArenaRubraData\n          Voci mirror1\n          Scritture pendenti0\n        \n      \n    \n    Nessuna operazione eseguita.\n    Chiavi inclusearenaRubra.customCards.v1\narenaRubraF9H3SavedD",
+    "overflow": 0,
+    "sheet": {
+      "x": 130,
+      "y": 236.96875,
+      "width": 1180,
+      "height": 526.0625,
+      "top": 236.96875,
+      "right": 1310,
+      "bottom": 763.03125,
+      "left": 130
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "transferActions": 3,
+  "debugHiddenAfterOff": true,
+  "debugVisibleAfterOn": true,
+  "mobile": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "baseline": "C2-STABLE-1-F9T2c4-APK-M4c",
+    "areas": [
+      "Gioca",
+      "Carte e deck",
+      "Mappe",
+      "Analisi",
+      "Sistema"
+    ],
+    "version": "C2-STABLE-1-F9T2d-APK-M4c",
+    "logic": "C2-STABLE-1-F9T2c4-APK-M4c",
+    "schema": "F9Q3e1-2",
+    "decks": "50",
+    "maps": "9",
+    "storage": "0 B",
+    "lastMatch": "Nessun match",
+    "diagnostics": "Nessun errore",
+    "diagnosticTone": "warn",
+    "debugHidden": false,
+    "resumeDisabled": true,
+    "resumeMarkup": "\n              <span class=\"mainMenuTileIcon\" aria-hidden=\"true\">↻</span>\n              <span><strong>Riprendi</strong><small>Nessuna sessione attiva</small></span>\n            ",
+    "overflow": 0,
+    "snap": {
+      "schemaVersion": "F9U3-1",
+      "build": {
+        "appName": "Arena Rubra",
+        "stage": "Starter Game ALPHA",
+        "version": "C2-STABLE-1-F9T2d-APK-M4c",
+        "buildName": "Exordium Varran Assault Chain",
+        "buildDate": "2026-08-01",
+        "buildChannel": "f9t2d-candidate",
+        "logicBaseline": "C2-STABLE-1-F9T2c4-APK-M4c",
+        "map": "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
+        "notes": "Candidata F9T2d basata sulla baseline validata F9T2c4. Aggiunge VARRAN_ASSAULT_CHAIN: Varran usa Ordine di Varran soltanto quando una unità Exordium può convertire il bonus in un attacco legale nello stesso turno. La catena è piatta: selezione bounded del bersaglio, riserva ENE, uso dell’abilità, eventuale singolo movimento e attacco. Un retarget massimo è consentito se il bersaglio scompare. Preserva Clear Occupation Commitment F9T2c4 sullo stato autorevole del PS, aggregati e proprietà temporale F9T2c3a, Bastion Relay, Survival Check, Forward Pivot, bootstrap Expert, fallback Advanced F9T0 e la riorganizzazione del Pool carte F9U2a. Nessuna modifica a carte, costi, statistiche, deck, mappe, Missioni o bilanciamento. Schema principale F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d-1."
+      },
+      "telemetrySchema": "F9Q3e1-2",
+      "officialDecks": 50,
+      "officialMaps": 9,
+      "customCards": 0,
+      "customDecks": 0,
+      "customMaps": 0,
+      "storage": {
+        "usage": 0,
+        "quota": null,
+        "approximate": 2,
+        "source": "navigator.storage"
+      },
+      "latestMatch": null,
+      "diagnostics": {
+        "schemaVersion": "F9U3-1",
+        "at": "2026-08-01T21:05:25.581Z",
+        "source": "control-center-refresh",
+        "build": {
+          "appName": "Arena Rubra",
+          "stage": "Starter Game ALPHA",
+          "version": "C2-STABLE-1-F9T2d-APK-M4c",
+          "buildName": "Exordium Varran Assault Chain",
+          "buildDate": "2026-08-01",
+          "buildChannel": "f9t2d-candidate",
+          "logicBaseline": "C2-STABLE-1-F9T2c4-APK-M4c",
+          "map": "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
+          "notes": "Candidata F9T2d basata sulla baseline validata F9T2c4. Aggiunge VARRAN_ASSAULT_CHAIN: Varran usa Ordine di Varran soltanto quando una unità Exordium può convertire il bonus in un attacco legale nello stesso turno. La catena è piatta: selezione bounded del bersaglio, riserva ENE, uso dell’abilità, eventuale singolo movimento e attacco. Un retarget massimo è consentito se il bersaglio scompare. Preserva Clear Occupation Commitment F9T2c4 sullo stato autorevole del PS, aggregati e proprietà temporale F9T2c3a, Bastion Relay, Survival Check, Forward Pivot, bootstrap Expert, fallback Advanced F9T0 e la riorganizzazione del Pool carte F9U2a. Nessuna modifica a carte, costi, statistiche, deck, mappe, Missioni o bilanciamento. Schema principale F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d-1."
+        },
+        "telemetrySchema": "F9Q3e1-2",
+        "precheck": {
+          "ok": true,
+          "source": "control-center-refresh",
+          "at": "2026-08-01T21:05:25.581Z",
+          "problems": [],
+          "warnings": [],
+          "info": [
+            "Fazioni: 5",
+            "Blueprint unità: 115",
+            "Tattiche starter/base: 10",
+            "Tattiche deck C2-FINAL-C2: 70",
+            "Missioni F9N6: 15",
+            "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+            "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+            "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+            "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+            "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+            "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+            "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+            "F9O4: coda animazioni carta non bloccante disponibile.",
+            "Catalogo carte C2a: 200",
+            "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+            "Tattiche giocabili C2-FINAL-C2: 70/70.",
+            "Deck C2-FINAL-C2 Nexus: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+            "Deck C2-FINAL-C2 Exordium: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+            "Deck C2-FINAL-C2 Liberti: 30/30, pool 36, capacità legale 62, overflow debug 0.",
+            "Deck C2-FINAL-C2 Agathoi: 30/30, pool 36, capacità legale 59, overflow debug 0.",
+            "Deck C2-FINAL-C2 Fabeot: 30/30, pool 36, capacità legale 58, overflow debug 0.",
+            "F9O5 tassonomia unità: 115 blueprint · starter 15, light 23, heavy 36, elite 21, pivot 10, commander 10.",
+            "F9O5a profili FX/SFX: 115 blueprint · energy 3, support 25, ballistic_heavy 29, occult 19, structure 12, ballistic_light 1, melee 6, organic 20.",
+            "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+            "Tutorial: 5 lezioni pianificate · 5 lezioni giocabili · 5 set ritratti.",
+            "F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.",
+            "F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.",
+            "F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.",
+            "F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.",
+            "F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.",
+            "F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.",
+            "F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.",
+            "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+            "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+            "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+            "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+            "F9S1c1: 50 deck ufficiali, 40 tattici, 10 Missione; 10 per fazione e 5 per Comandante; Starter esclusi.",
+            "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+            "F9O1: 5 temi fazione collegati al Giocatore 1.",
+            "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+            "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+            "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+            "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+            "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+            "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+            "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+            "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+            "F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.",
+            "F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.",
+            "F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.",
+            "F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.",
+            "F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.",
+            "F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.",
+            "F9T2d: turni Expert finalizzati e immutabili; Clear Commitment, Forward Pivot e Varran Assault Chain disponibili senza ricerca ricorsiva.",
+            "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+          ]
+        },
+        "storage": {
+          "schemaVersion": 1,
+          "directory": "ArenaRubraData",
+          "backendName": "memory",
+          "initialized": true,
+          "entries": 0,
+          "pendingWrites": 0,
+          "migration": {
+            "migrated": [],
+            "restored": [],
+            "issues": [
+              "IndexedDB non disponibile: Failed to execute 'open' on 'IDBFactory': access to the Indexed Database API is denied in this context."
+            ],
+            "backupPath": null
+          },
+          "error": null
+        },
+        "runtimeErrors": [],
+        "storageErrors": [],
+        "storageWarnings": [
+          "IndexedDB non disponibile: Failed to execute 'open' on 'IDBFactory': access to the Indexed Database API is denied in this context."
+        ],
+        "counts": {
+          "officialDecks": 50,
+          "officialMaps": 9,
+          "customDecks": 0,
+          "customMaps": 0,
+          "customCards": 0
+        },
+        "errorCount": 0,
+        "warningCount": 1,
+        "ok": true
+      },
+      "developerMode": true,
+      "activePanel": ""
+    }
+  },
+  "mobileAreas": [
+    {
+      "x": 25,
+      "y": 289.546875,
+      "width": 340,
+      "height": 336.28125,
+      "top": 289.546875,
+      "right": 365,
+      "bottom": 625.828125,
+      "left": 25
+    },
+    {
+      "x": 25,
+      "y": 639.828125,
+      "width": 340,
+      "height": 290.6875,
+      "top": 639.828125,
+      "right": 365,
+      "bottom": 930.515625,
+      "left": 25
+    },
+    {
+      "x": 25,
+      "y": 944.515625,
+      "width": 340,
+      "height": 236.6875,
+      "top": 944.515625,
+      "right": 365,
+      "bottom": 1181.203125,
+      "left": 25
+    },
+    {
+      "x": 25,
+      "y": 1195.203125,
+      "width": 340,
+      "height": 344.6875,
+      "top": 1195.203125,
+      "right": 365,
+      "bottom": 1539.890625,
+      "left": 25
+    },
+    {
+      "x": 25,
+      "y": 1553.890625,
+      "width": 340,
+      "height": 344.6875,
+      "top": 1553.890625,
+      "right": 365,
+      "bottom": 1898.578125,
+      "left": 25
+    }
+  ],
+  "mobilePanel": {
+    "open": true,
+    "title": "Archivio mappe",
+    "text": "Mappe disponibiliConsulta geometria, giocatori, PS centrale e validazione; da qui puoi avviare il Setup o aprire una copia modificabile nell’Editor.\n      Apri Map Editor\n    \n    \n      Ufficiali9Mappe integrate attive\n      Custom0Mappe archiviate localmente\n      Totale9Valide e non valide visibili\n    \n    \n      MappaTipoGioc.CellePSCentroStatoAzioni\n      \n      Campo Startermap1_starter\n      Ufficiale\n      2G\n      127\n      3\n      [0,0,0]\n      Valida\n      \n        Gioca\n        Copia in Editor\n      \n    \n      Diamond 4custom_single_ms0nf51r\n      Ufficiale\n      4G\n      469\n      9\n      [0,0,0]\n      Valida\n      \n        Gioca\n        Copia in Editor\n      \n    \n      Claustro Clashmap1_starter_copy\n      Ufficiale\n      4G\n      127\n      7\n      [0,0,0]\n      Valida\n   ",
+    "overflow": 0,
+    "sheet": {
+      "x": 6,
+      "y": 6,
+      "width": 378,
+      "height": 832,
+      "top": 6,
+      "right": 384,
+      "bottom": 838,
+      "left": 6
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "mobileTableOverflow": {
+    "client": 350,
+    "scroll": 760
+  }
+}
+PASS f9u3_browser_control_center_smoke.py
+=== f9u2b_browser_editor_layout_reorganization_smoke.py ===
+{
+  "ok": true,
+  "card": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Duplica",
+      "Elimina",
+      "Calibra renderer",
+      "Copia JSON carta",
+      "Copia libreria",
+      "Deck Builder",
+      "Pool carte",
+      "Menu"
+    ],
+    "toolsOpen": false,
+    "dataOpen": true,
+    "previewText": "Nexus · Unità custom · CUSTOM:UNIT:CUS_NX_UNIT_NUOVA_UNITA_CUSTOM",
+    "validation": "Carta custom valida\n      max 4 HP+DEF+ATT + passiva · stat 4/4\n    \n    \n    Nessuna abilità: carta valida, ma meno caratterizzata.",
+    "overflow": 0
+  },
+  "cardToolsOpen": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Duplica",
+      "Elimina",
+      "Calibra renderer",
+      "Copia JSON carta",
+      "Copia libreria",
+      "Deck Builder",
+      "Pool carte",
+      "Menu"
+    ],
+    "toolsOpen": true,
+    "dataOpen": true,
+    "previewText": "Nexus · Unità custom · CUSTOM:UNIT:CUS_NX_UNIT_NUOVA_UNITA_CUSTOM",
+    "validation": "Carta custom valida\n      max 4 HP+DEF+ATT + passiva · stat 4/4\n    \n    \n    Nessuna abilità: carta valida, ma meno caratterizzata.",
+    "overflow": 0
+  },
+  "map": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Importa",
+      "JSON leggero",
+      "JSON portatile",
+      "Annulla",
+      "Ripeti",
+      "Adatta",
+      "Menu"
+    ],
+    "live": {
+      "status": "Valida · 127 celle · 3 PS · centro 0,0,0",
+      "name": "Campo Starter · copia",
+      "players": "2",
+      "cells": "127",
+      "hq": "2",
+      "ps": "3",
+      "movement": "×1",
+      "zoom": "141%",
+      "tool": "Ispeziona",
+      "selection": "—"
+    },
+    "cellsRendered": 127,
+    "errors": 0,
+    "warnings": 0,
+    "overflow": 0,
+    "precheck": {
+      "ok": true,
+      "source": "f9u2b-browser",
+      "at": "2026-08-01T21:05:28.927Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 115",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 70",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 200",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 70/70.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 36, capacità legale 62, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 36, capacità legale 59, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 36, capacità legale 58, overflow debug 0.",
+        "F9O5 tassonomia unità: 115 blueprint · starter 15, light 23, heavy 36, elite 21, pivot 10, commander 10.",
+        "F9O5a profili FX/SFX: 115 blueprint · energy 3, support 25, ballistic_heavy 29, occult 19, structure 12, ballistic_light 1, melee 6, organic 20.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "Tutorial: 5 lezioni pianificate · 5 lezioni giocabili · 5 set ritratti.",
+        "F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.",
+        "F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.",
+        "F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.",
+        "F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.",
+        "F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.",
+        "F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.",
+        "F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9S1c1: 50 deck ufficiali, 40 tattici, 10 Missione; 10 per fazione e 5 per Comandante; Starter esclusi.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.",
+        "F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.",
+        "F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.",
+        "F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.",
+        "F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.",
+        "F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.",
+        "F9T2d: turni Expert finalizzati e immutabili; Clear Commitment, Forward Pivot e Varran Assault Chain disponibili senza ricerca ricorsiva.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    }
+  },
+  "mapTool": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Importa",
+      "JSON leggero",
+      "JSON portatile",
+      "Annulla",
+      "Ripeti",
+      "Adatta",
+      "Menu"
+    ],
+    "live": {
+      "status": "Valida · 127 celle · 3 PS · centro 0,0,0",
+      "name": "Campo Starter · copia",
+      "players": "2",
+      "cells": "127",
+      "hq": "2",
+      "ps": "3",
+      "movement": "×1",
+      "zoom": "141%",
+      "tool": "Terreno",
+      "selection": "—"
+    },
+    "cellsRendered": 127,
+    "errors": 0,
+    "warnings": 0,
+    "overflow": 0,
+    "precheck": {
+      "ok": true,
+      "source": "f9u2b-browser",
+      "at": "2026-08-01T21:05:28.995Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 115",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 70",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 200",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 70/70.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 36, capacità legale 62, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 36, capacità legale 59, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 36, capacità legale 58, overflow debug 0.",
+        "F9O5 tassonomia unità: 115 blueprint · starter 15, light 23, heavy 36, elite 21, pivot 10, commander 10.",
+        "F9O5a profili FX/SFX: 115 blueprint · energy 3, support 25, ballistic_heavy 29, occult 19, structure 12, ballistic_light 1, melee 6, organic 20.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "Tutorial: 5 lezioni pianificate · 5 lezioni giocabili · 5 set ritratti.",
+        "F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.",
+        "F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.",
+        "F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.",
+        "F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.",
+        "F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.",
+        "F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.",
+        "F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9S1c1: 50 deck ufficiali, 40 tattici, 10 Missione; 10 per fazione e 5 per Comandante; Starter esclusi.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.",
+        "F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.",
+        "F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.",
+        "F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.",
+        "F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.",
+        "F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.",
+        "F9T2d: turni Expert finalizzati e immutabili; Clear Commitment, Forward Pivot e Varran Assault Chain disponibili senza ricerca ricorsiva.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    }
+  },
+  "mapSelected": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Importa",
+      "JSON leggero",
+      "JSON portatile",
+      "Annulla",
+      "Ripeti",
+      "Adatta",
+      "Menu"
+    ],
+    "live": {
+      "status": "Valida · 127 celle · 3 PS · centro 0,0,0",
+      "name": "Campo Starter · copia",
+      "players": "2",
+      "cells": "127",
+      "hq": "2",
+      "ps": "3",
+      "movement": "×1",
+      "zoom": "141%",
+      "tool": "Terreno",
+      "selection": "-6,0,6"
+    },
+    "cellsRendered": 127,
+    "errors": 0,
+    "warnings": 0,
+    "overflow": 0,
+    "precheck": {
+      "ok": true,
+      "source": "f9u2b-browser",
+      "at": "2026-08-01T21:05:29.089Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 115",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 70",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 200",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 70/70.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 36, capacità legale 62, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 36, capacità legale 59, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 36, capacità legale 58, overflow debug 0.",
+        "F9O5 tassonomia unità: 115 blueprint · starter 15, light 23, heavy 36, elite 21, pivot 10, commander 10.",
+        "F9O5a profili FX/SFX: 115 blueprint · energy 3, support 25, ballistic_heavy 29, occult 19, structure 12, ballistic_light 1, melee 6, organic 20.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "Tutorial: 5 lezioni pianificate · 5 lezioni giocabili · 5 set ritratti.",
+        "F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.",
+        "F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.",
+        "F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.",
+        "F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.",
+        "F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.",
+        "F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.",
+        "F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9S1c1: 50 deck ufficiali, 40 tattici, 10 Missione; 10 per fazione e 5 per Comandante; Starter esclusi.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.",
+        "F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.",
+        "F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.",
+        "F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.",
+        "F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.",
+        "F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.",
+        "F9T2d: turni Expert finalizzati e immutabili; Clear Commitment, Forward Pivot e Varran Assault Chain disponibili senza ricerca ricorsiva.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    }
+  },
+  "mobileCard": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Duplica",
+      "Elimina",
+      "Calibra renderer",
+      "Copia JSON carta",
+      "Copia libreria",
+      "Deck Builder",
+      "Pool carte",
+      "Menu"
+    ],
+    "toolsOpen": false,
+    "dataOpen": true,
+    "previewText": "Nexus · Unità custom · CUSTOM:UNIT:CUS_NX_UNIT_NUOVA_UNITA_CUSTOM",
+    "validation": "Carta custom valida\n      max 4 HP+DEF+ATT + passiva · stat 4/4\n    \n    \n    Nessuna abilità: carta valida, ma meno caratterizzata.",
+    "overflow": 0
+  },
+  "mobileMap": {
+    "build": "C2-STABLE-1-F9T2d-APK-M4c",
+    "headerButtons": [
+      "Nuova",
+      "Salva",
+      "Importa",
+      "JSON leggero",
+      "JSON portatile",
+      "Annulla",
+      "Ripeti",
+      "Adatta",
+      "Menu"
+    ],
+    "live": {
+      "status": "Valida · 127 celle · 3 PS · centro 0,0,0",
+      "name": "Campo Starter · copia",
+      "players": "2",
+      "cells": "127",
+      "hq": "2",
+      "ps": "3",
+      "movement": "×1",
+      "zoom": "141%",
+      "tool": "Ispeziona",
+      "selection": "—"
+    },
+    "cellsRendered": 127,
+    "errors": 0,
+    "warnings": 0,
+    "overflow": 0,
+    "precheck": {
+      "ok": true,
+      "source": "f9u2b-browser",
+      "at": "2026-08-01T21:05:30.489Z",
+      "problems": [],
+      "warnings": [],
+      "info": [
+        "Fazioni: 5",
+        "Blueprint unità: 115",
+        "Tattiche starter/base: 10",
+        "Tattiche deck C2-FINAL-C2: 70",
+        "Missioni F9N6: 15",
+        "F9N10 Mission UI visibile; Missioni su cicli multipli disponibili.",
+        "F9O4: privacy mano avversaria attiva; Missione e Comandante pubblici.",
+        "F9O4 dorso Nexus: assets/cards/art/nexus/nexback.webp.",
+        "F9O4 dorso Exordium: assets/cards/art/exordium/exoback.webp.",
+        "F9O4 dorso Liberti: assets/cards/art/liberti/libback.webp.",
+        "F9O4 dorso Agathoi: assets/cards/art/agathoi/agaback.webp.",
+        "F9O4 dorso Fabeot: assets/cards/art/fabeot/fabback.webp.",
+        "F9O4: coda animazioni carta non bloccante disponibile.",
+        "Catalogo carte C2a: 200",
+        "Tattiche custom F9N1: 0 · runtime 0 · data-only 0.",
+        "Tattiche giocabili C2-FINAL-C2: 70/70.",
+        "Deck C2-FINAL-C2 Nexus: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Exordium: 30/30, pool 36, capacità legale 60, overflow debug 0.",
+        "Deck C2-FINAL-C2 Liberti: 30/30, pool 36, capacità legale 62, overflow debug 0.",
+        "Deck C2-FINAL-C2 Agathoi: 30/30, pool 36, capacità legale 59, overflow debug 0.",
+        "Deck C2-FINAL-C2 Fabeot: 30/30, pool 36, capacità legale 58, overflow debug 0.",
+        "F9O5 tassonomia unità: 115 blueprint · starter 15, light 23, heavy 36, elite 21, pivot 10, commander 10.",
+        "F9O5a profili FX/SFX: 115 blueprint · energy 3, support 25, ballistic_heavy 29, occult 19, structure 12, ballistic_light 1, melee 6, organic 20.",
+        "F9O5a: miniature statiche con FX dinamici e SFX sintetici; nessuna migrazione WebGL o spritesheet massivo.",
+        "Tutorial: 5 lezioni pianificate · 5 lezioni giocabili · 5 set ritratti.",
+        "F9O7a: Lezione 1 Exordium, comandi scenario e checkpoint con ripristino disponibili.",
+        "F9O7b: contratto UI della Mano, ripresa sincronizzata, guardie asincrone e fallback ritratti attivi.",
+        "F9O7c: Lezione 2 Nexus, riserva Starter, rete di sbarco, Avanguardia e menu multi-lezione disponibili.",
+        "F9O7d: con la Mano ridotta, Mostra mano e Fine turno sono sotto le abilità di fazione; Mano aperta invariata.",
+        "F9O7e: Lezione 3 Agathoi disponibile con scelta difensiva, Spine, Contrattacco, fortificazione e tre ondate deterministiche.",
+        "F9O7f: Lezione 4 Liberti disponibile con scelta carte vincolata, anteprime hover leggibili, Sanguinamento, Superiorità Numerica e assalto coordinato.",
+        "F9O7g: Lezione 5 Fabeot disponibile con Marchio, Vulnerabilità, controllo Mano, disturbo ENE, conversione e ripresa deterministica.",
+        "Missioni F9N6: 15 definizioni, 45 condizioni tracciate.",
+        "F9N8: 10 Missioni ordinarie giocabili; 7 famiglie ricompensa supportate.",
+        "F9N9: 5 Missioni disperate giocabili; 5 famiglie ricompensa supportate.",
+        "F9N10: recupero Missione + 4 carte, reset ciclo e blocco fino al turno personale successivo disponibili.",
+        "F9S1c1: 50 deck ufficiali, 40 tattici, 10 Missione; 10 per fazione e 5 per Comandante; Starter esclusi.",
+        "F9N10: IA Missioni attiva su gioco carta, acquisti, movimento, attacchi, abilità e tattiche.",
+        "F9O1: 5 temi fazione collegati al Giocatore 1.",
+        "F9O1: musica menu, 5 temi fazione e playlist vittoria/sconfitta disponibili.",
+        "F9O2c: camera autonoma e congelata durante render/azioni bot; ispezione UI e fit sbarco disponibili.",
+        "F9O2d: livelli token separati; base fazione trasparente con asset ON, asset acted attenuato e indicatori unità selezionata attivi.",
+        "F9O4a: frame coalescing, geometry cache, transform composito ed effetti ridotti durante gesto attivi.",
+        "F9O4b: celle persistenti, input delegato, target cache e token riutilizzabili attivi.",
+        "F9O4c: fallback WebView, containment disattivato, thumbnail a budget e pannelli mobile coalescenti attivi.",
+        "F9O3: coda eventi rapidi attiva, durata 1 secondo e dismiss al click.",
+        "F9O3: dialoghi narrativi con cinque espressioni e controlli di navigazione disponibili.",
+        "F9U3: Centro di controllo con cinque aree, stato sistema, diagnostica e vault Import/Export disponibile.",
+        "F9T0: soglie proporzionali, guarnigioni dinamiche, maturità Nexus/Agathoi, anti-stallo e movimento single-pass disponibili.",
+        "F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.",
+        "F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.",
+        "F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.",
+        "F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.",
+        "F9T2d: turni Expert finalizzati e immutabili; Clear Commitment, Forward Pivot e Varran Assault Chain disponibili senza ricerca ricorsiva.",
+        "Ability handler non usati direttamente da blueprint: armor, incomeSwing, incomeDelta, swapAlly, customDrawCard, customGainEnergy, adjacentDefBuff, agathoiPivotHeal, armorThorns"
+      ]
+    }
+  }
+}
+PASS f9u2b_browser_editor_layout_reorganization_smoke.py
+TOTAL=7 PASS=7 FAIL=0

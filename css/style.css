@@ -124,7 +124,7 @@
     .faction-agathoi-text { color: #8fe09a; }
     .faction-fabeot-text { color: #d5a3ff; }
     #boardWrap { min-height: 830px; position: relative; display: grid; place-items: center; padding: 16px; }
-    #board { position: relative; width: 920px; height: 780px; max-width: 100%; border-radius: 18px; background: radial-gradient(circle at center, rgba(214,179,90,.08), rgba(255,255,255,.025) 40%, rgba(0,0,0,.14) 100%); border: 1px solid rgba(255,255,255,.06); overflow: hidden; }
+    #board { position: relative; width: var(--board-native-width, 920px); height: var(--board-native-height, 780px); max-width: 100%; border-radius: 18px; background: radial-gradient(circle at center, rgba(214,179,90,.08), rgba(255,255,255,.025) 40%, rgba(0,0,0,.14) 100%); border: 1px solid rgba(255,255,255,.06); overflow: hidden; }
     .hex { position: absolute; width: 54px; height: 62px; transform: translate(-50%, -50%); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: #222937; border: none; outline: 1px solid rgba(255,255,255,.09); color: var(--text); display: grid; place-items: center; font-size: 10px; padding: 0; overflow: visible; }
     .hex:hover { filter: brightness(1.2); transform: translate(-50%, -50%) !important; border-color: transparent; }
     .hex:hover:not(:disabled) { transform: translate(-50%, -50%) !important; background: #2a3344; }
@@ -256,7 +256,7 @@
     .winAgathoi { color: var(--agathoi); font-weight:700; }
     .winFabeot { color: var(--fabeot); font-weight:700; }
 
-    @media (max-width: 1180px) { .app { grid-template-columns: 1fr; } #boardWrap { min-height: 830px; } #board { width: 920px; height: 780px; } .marketDock .market { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .handStatusGrid { grid-template-columns: 1fr; } }
+    @media (max-width: 1180px) { .app { grid-template-columns: 1fr; } #boardWrap { min-height: 830px; } #board { width: var(--board-native-width, 920px); height: var(--board-native-height, 780px); } .marketDock .market { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .handStatusGrid { grid-template-columns: 1fr; } }
 @media (max-width: 720px) {
   header.topTitleBar { grid-template-columns: 1fr; gap: 8px; }
   .topBarLeft, .topBarRight { justify-content: stretch; }
@@ -502,8 +502,8 @@
     border-radius: 13px;
   }
   body.mobile-apk-m1 #board {
-    width: 920px;
-    height: 780px;
+    width: var(--board-native-width, 920px);
+    height: var(--board-native-height, 780px);
     max-width: none;
     flex: 0 0 auto;
     touch-action: manipulation;
@@ -1234,8 +1234,8 @@
     bottom:calc(var(--m4-bar-h) + var(--m4-sheet-h) + max(var(--m4-gap), env(safe-area-inset-bottom))) !important;
   }
   body.mobile-apk-m4 #board {
-    width:920px !important;
-    height:780px !important;
+    width:var(--board-native-width, 920px) !important;
+    height:var(--board-native-height, 780px) !important;
     max-width:none !important;
     flex:0 0 auto !important;
     position:relative !important;
@@ -2470,8 +2470,8 @@ body.app-screen-game:not(.mobile-apk-m4) #boardWrap {
   overflow: hidden;
 }
 body.app-screen-game:not(.mobile-apk-m4) #board {
-  width: 920px;
-  height: 780px;
+  width: var(--board-native-width, 920px);
+  height: var(--board-native-height, 780px);
   max-width: none;
   flex: 0 0 auto;
 }
@@ -5005,13 +5005,13 @@ html[data-map-bg-asset-status="missing"] .mapBgLayer {
   opacity: var(--map-qg-glow-opacity);
 }
 body.app-screen-game:not(.mobile-apk-m4) #boardVisualStack {
-  width: 920px;
-  height: 780px;
+  width: var(--board-native-width, 920px);
+  height: var(--board-native-height, 780px);
   max-width: none;
 }
 body.mobile-apk-m4 #boardVisualStack {
-  width: 920px !important;
-  height: 780px !important;
+  width: var(--board-native-width, 920px) !important;
+  height: var(--board-native-height, 780px) !important;
   max-width: none !important;
   flex: 0 0 auto !important;
   border-radius: 12px !important;
@@ -7758,4 +7758,2840 @@ body.tutorial-runtime-active .mapHandSelectionPreview.isVisible.hoverPreview .ma
   #mapEditorCanvas {
     min-height: 480px;
   }
+}
+
+/* =====================================================
+   F9Q3a – Main Menu Product Layout
+   ===================================================== */
+.mainMenuScreen {
+  overflow: auto;
+  padding: clamp(12px, 2.2vw, 30px);
+  align-items: start;
+}
+.mainMenuCard.mainMenuCardF9Q3a {
+  width: min(1240px, 100%);
+  max-width: none;
+  min-height: min(820px, calc(100dvh - 48px));
+  max-height: none;
+  margin: auto;
+  padding: clamp(18px, 2.5vw, 32px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(16px, 2vw, 24px);
+  overflow: visible;
+}
+.mainMenuHero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.mainMenuHeroBrand h1 {
+  margin: 2px 0 4px;
+  font-size: clamp(36px, 5vw, 68px);
+  letter-spacing: .055em;
+  line-height: .96;
+}
+.mainMenuTagline {
+  margin: 8px 0 0;
+  color: var(--muted);
+  max-width: 650px;
+  font-size: clamp(13px, 1.35vw, 16px);
+}
+.mainMenuHeroStatus {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  max-width: 500px;
+}
+.mainMenuHeroStatus .mainMenuStage,
+.mainMenuBuildChip,
+.mainMenuStorageChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 999px;
+  background: rgba(7,10,16,.58);
+  color: rgba(241,243,247,.92);
+  font-size: 11px;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.mainMenuHeroStatus .mainMenuStage {
+  margin: 0;
+  color: #f1d37b;
+  border-color: rgba(214,179,90,.34);
+}
+.mainMenuStorageChip[data-storage-tone="good"] {
+  color: #bfffc8;
+  border-color: rgba(126,220,148,.35);
+}
+.mainMenuStorageChip[data-storage-tone="warn"] {
+  color: #ffd99b;
+  border-color: rgba(255,190,94,.38);
+}
+.mainMenuDashboard {
+  display: grid;
+  grid-template-columns: minmax(310px, .88fr) minmax(460px, 1.42fr);
+  grid-template-areas:
+    "play studio"
+    "presentation future";
+  gap: 14px;
+  align-content: start;
+}
+.mainMenuPlayPanel { grid-area: play; }
+.mainMenuStudioPanel { grid-area: studio; }
+.mainMenuPresentationPanel { grid-area: presentation; }
+.mainMenuFuturePanel { grid-area: future; }
+.mainMenuCardF9Q3a .mainMenuActionGroup,
+.mainMenuStudioPanel,
+.mainMenuPresentationPanel,
+.mainMenuFuturePanel {
+  min-width: 0;
+  padding: clamp(16px, 2vw, 22px);
+  border: 1px solid rgba(255,255,255,.105);
+  border-radius: 18px;
+  background:
+    linear-gradient(150deg, rgba(255,255,255,.045), transparent 58%),
+    rgba(10,14,22,.78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+.mainMenuPlayPanel {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(197,66,56,.18), transparent 42%),
+    linear-gradient(150deg, rgba(214,179,90,.08), transparent 58%),
+    rgba(10,14,22,.82);
+}
+.mainMenuSectionHeading { margin-bottom: 16px; }
+.mainMenuSectionHeading.compact { margin-bottom: 12px; }
+.mainMenuSectionHeading h2 {
+  margin: 2px 0 5px;
+  font-size: clamp(18px, 2vw, 25px);
+}
+.mainMenuSectionHeading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.mainMenuSectionEyebrow {
+  color: #d6b35a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.mainMenuPlayActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.mainMenuPlayActions .mainMenuPrimaryAction {
+  grid-column: 1 / -1;
+  min-height: 88px;
+  display: grid;
+  place-content: center;
+  gap: 3px;
+  font-size: 17px;
+}
+.mainMenuButtonTitle { font-weight: 800; }
+.mainMenuButtonHint {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,.72);
+}
+.mainMenuStudioGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.mainMenuStudioTile {
+  min-height: 80px;
+  padding: 13px 14px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+}
+.mainMenuStudioTile > span:last-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.mainMenuStudioTile strong { font-size: 14px; }
+.mainMenuStudioTile small,
+.mainMenuFutureActions small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+.mainMenuTileIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(214,179,90,.10);
+  color: #e4c56d;
+  font-size: 18px;
+}
+.mainMenuLocalSummary {
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  color: rgba(214,222,235,.72);
+  font-size: 11px;
+}
+.mainMenuCardF9Q3a .arenaMusicControlMenu {
+  display: grid;
+  grid-template-columns: auto minmax(130px, 1fr);
+  gap: 9px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.mainMenuCardF9Q3a .arenaMusicControlMenu .arenaMusicVolumeLabel {
+  min-width: 0;
+  width: 100%;
+}
+.mainMenuFxToggles {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.mainMenuFutureActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.mainMenuFutureActions button {
+  min-height: 58px;
+  white-space: normal;
+}
+.mainMenuCardF9Q3a button:disabled,
+.mainMenuCardF9Q3a button[aria-disabled="true"] {
+  opacity: .46;
+  cursor: not-allowed;
+  filter: saturate(.45);
+}
+.mainMenuFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+.mainMenuFooter .mainMenuNotes {
+  margin: 0;
+  max-width: 580px;
+  text-align: left;
+}
+.mainMenuBuildMeta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 12px;
+  color: rgba(200,208,221,.62);
+  font-size: 9px;
+}
+.mainMenuBuildMeta strong { color: rgba(229,233,240,.76); }
+.mainMenuDevOnly[hidden] { display: none !important; }
+
+@media (max-width: 980px) {
+  .mainMenuHero { align-items: start; }
+  .mainMenuDashboard {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "play play"
+      "studio studio"
+      "presentation future";
+  }
+}
+@media (max-width: 680px) {
+  .mainMenuScreen { padding: 8px; }
+  .mainMenuCard.mainMenuCardF9Q3a {
+    min-height: calc(100dvh - 16px);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .mainMenuHero {
+    display: grid;
+    align-items: start;
+    gap: 14px;
+  }
+  .mainMenuHeroStatus { justify-content: flex-start; max-width: none; }
+  .mainMenuHeroStatus .mainMenuStage,
+  .mainMenuBuildChip,
+  .mainMenuStorageChip { white-space: normal; }
+  .mainMenuDashboard {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: "play" "studio" "presentation" "future";
+  }
+  .mainMenuStudioGrid,
+  .mainMenuPlayActions,
+  .mainMenuFutureActions { grid-template-columns: 1fr; }
+  .mainMenuPlayActions .mainMenuPrimaryAction { grid-column: auto; }
+  .mainMenuCardF9Q3a .arenaMusicControlMenu { grid-template-columns: 1fr; }
+  .mainMenuFxToggles { grid-column: auto; grid-template-columns: 1fr; }
+  .mainMenuFooter { display: grid; }
+  .mainMenuBuildMeta { justify-content: flex-start; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .mainMenuScreen { padding: 8px; }
+  .mainMenuCard.mainMenuCardF9Q3a { min-height: auto; padding: 14px; }
+  .mainMenuHero { align-items: center; padding-bottom: 10px; }
+  .mainMenuHeroBrand h1 { font-size: 34px; }
+  .mainMenuTagline { display: none; }
+  .mainMenuDashboard {
+    grid-template-columns: minmax(260px,.85fr) minmax(420px,1.4fr);
+    grid-template-areas: "play studio" "presentation future";
+  }
+  .mainMenuCardF9Q3a .mainMenuActionGroup,
+  .mainMenuStudioPanel,
+  .mainMenuPresentationPanel,
+  .mainMenuFuturePanel { padding: 12px; }
+  .mainMenuStudioTile { min-height: 60px; }
+  .mainMenuPlayActions .mainMenuPrimaryAction { min-height: 64px; }
+}
+
+/* F9Q3a menu hardening: neutralizza le vecchie griglie del menu e la shell
+   M4 di partita quando l'utente si trova nelle schermate applicative. */
+.mainMenuCardF9Q3a .mainMenuPlayPanel {
+  display: block;
+}
+body.mobile-apk-m4:not(.app-screen-game) .mobileStatusStrip,
+body.mobile-apk-m4:not(.app-screen-game) .mobileGameBar,
+body.mobile-apk-m4:not(.app-screen-game) .mapCameraControls {
+  display: none !important;
+}
+body.mobile-apk-m4.mobile-portrait:not(.app-screen-game)::before,
+body.mobile-apk-m4.mobile-portrait:not(.app-screen-game)::after {
+  display: none !important;
+  content: none !important;
+}
+body.app-screen-game:not(.mobile-apk-m4) #boardWrap {
+  height: min(850px, calc(100dvh - 178px));
+  min-height: min(850px, calc(100dvh - 178px));
+  max-height: min(850px, calc(100dvh - 178px));
+}
+
+/* F9Q3a: lo stack della board è ancorato geometricamente al centro del
+   viewport. Non partecipa più al sizing intrinseco della griglia, così mappe
+   più alte/larghe della MAP1 non spostano il loro centro fuori dal render. */
+#boardVisualStack {
+  position: absolute;
+  left: var(--board-layout-left, calc(50% - 460px));
+  top: var(--board-layout-top, calc(50% - 390px));
+}
+
+/* =====================================================
+   F9Q3b – Battlefield Readability
+   Terrain quality, occupied-cell faction tint, stronger token base and
+   conquest flags for strategic points. Visual-only: no targeting or rules.
+   ===================================================== */
+:root {
+  /* F9O2d used .22. F9Q3b raises it by roughly 27% while keeping artwork visible. */
+  --token-faction-base-art-opacity: .28;
+}
+
+.hex .cellOccupationTint {
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+  pointer-events: none;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--cell-occupant-color, transparent) 17%, transparent) 0 48%, transparent 76%);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--cell-occupant-color, transparent) 46%, transparent);
+  opacity: .9;
+}
+
+.hex.tacticalTarget .cellOccupationTint,
+.hex.selected .cellOccupationTint {
+  opacity: .48;
+}
+
+.hex .cellTerrainMarker {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  z-index: 7;
+  min-width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 3px;
+  border: 1px solid rgba(255,255,255,.68);
+  border-radius: 999px;
+  background: rgba(5,8,14,.88);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -.03em;
+  text-shadow: 0 1px 2px #000;
+  box-shadow: 0 1px 4px rgba(0,0,0,.72);
+  pointer-events: none;
+}
+
+.hex .cellTerrainMarker[data-terrain="obstacle"] {
+  color: #f0ddd1;
+  background: rgba(28,24,22,.96);
+  border-color: rgba(240,221,209,.82);
+  font-size: 12px;
+}
+
+.hex .cellTerrainMarker[data-terrain="difficult"] {
+  color: #ffe0a2;
+  border-color: rgba(255,204,112,.88);
+  background: rgba(80,53,24,.94);
+}
+
+.hex .cellTerrainMarker[data-terrain="defensive"] {
+  color: #9af1c1;
+  border-color: rgba(105,215,162,.9);
+  background: rgba(18,66,48,.94);
+}
+
+.hex .cellTerrainMarker[data-terrain="exposed"] {
+  color: #ffad98;
+  border-color: rgba(255,143,112,.9);
+  background: rgba(91,34,30,.94);
+}
+
+.hex .psControlFlag {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  z-index: 9;
+  transform: translateX(-50%);
+  color: var(--ps-flag-color, #d6b35a);
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 900;
+  text-shadow:
+    -1px -1px 0 rgba(0,0,0,.9),
+     1px -1px 0 rgba(0,0,0,.9),
+    -1px  1px 0 rgba(0,0,0,.9),
+     1px  1px 0 rgba(0,0,0,.9),
+     0 0 7px color-mix(in srgb, var(--ps-flag-color, #d6b35a) 70%, transparent);
+  pointer-events: none;
+}
+
+.hex .cellTerrainMarker[hidden],
+.hex .cellOccupationTint[hidden],
+.hex .psControlFlag[hidden] {
+  display: none !important;
+}
+
+/* Keep the cell quality readable when occupied without covering the token. */
+.hex.occupied .cellTerrainMarker {
+  top: 3px;
+  left: 4px;
+  transform: scale(.94);
+  transform-origin: top left;
+}
+
+body.mobile-apk-m4 .hex .cellTerrainMarker {
+  min-width: 16px;
+  height: 16px;
+  top: 4px;
+  left: 5px;
+  font-size: 9px;
+}
+
+body.mobile-apk-m4 .hex .psControlFlag {
+  font-size: 18px;
+}
+
+/* =====================================================
+   F9Q3c – Custom Map Backgrounds
+   ===================================================== */
+.mapBgAssetImage.customMapBackground {
+  object-fit: cover;
+  transition: opacity .16s ease;
+  will-change: transform, opacity;
+}
+
+.mapEditorBackgroundPanel {
+  display: grid;
+  gap: 8px;
+}
+
+.mapEditorBackgroundActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.mapEditorBackgroundStatus {
+  min-height: 2.2rem;
+  padding: 7px 8px;
+  border: 1px solid rgba(130, 213, 162, .22);
+  border-radius: 8px;
+  color: #bfe8ce;
+  background: rgba(21, 58, 42, .18);
+  font-size: .72rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.mapEditorBackgroundStatus.isMissing {
+  color: #ffd18a;
+  border-color: rgba(255, 184, 90, .28);
+  background: rgba(92, 52, 18, .2);
+}
+
+.mapEditorBackgroundPanel output {
+  float: right;
+  color: #f3d39b;
+  font-variant-numeric: tabular-nums;
+}
+
+.mapEditorBackgroundPanel input[type="range"] {
+  accent-color: #d99b4f;
+}
+
+.mapEditorBackgroundOffsets {
+  display: grid;
+  grid-template-columns: minmax(74px, 1fr) minmax(64px, .75fr);
+  gap: 6px 8px;
+  align-items: center;
+}
+
+.mapEditorBackgroundImage {
+  pointer-events: none;
+  filter: saturate(.96) contrast(1.02);
+}
+
+#mapEditorCanvas.hasCustomBackground .mapEditorHex polygon {
+  fill-opacity: .8;
+}
+
+#mapEditorCanvas.hasCustomBackground .mapEditorHex.terrain-obstacle polygon {
+  fill-opacity: .94;
+}
+
+@media (max-width: 720px) {
+  .mapEditorBackgroundActions {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================================
+   F9Q3c1 – Obstacle Readability Hotfix
+   Visual-only: obstacle cells must read as solid, impassable hexes at a glance.
+   The final-cascade !important declarations intentionally override the generic
+   map-cell opacity calibration binding without altering targeting or gameplay.
+   ===================================================== */
+:root {
+  --terrain-obstacle-fill: rgba(4, 5, 7, .88);
+  --terrain-obstacle-stripe: rgba(112, 118, 126, .22);
+  --terrain-obstacle-edge: rgba(230, 235, 242, .24);
+}
+
+#board .hex.terrain-obstacle:not(.tacticalTarget):not(.selected) {
+  background-color: var(--terrain-obstacle-fill) !important;
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(0, 0, 0, .20) 0 7px,
+      var(--terrain-obstacle-stripe) 7px 10px,
+      rgba(0, 0, 0, .12) 10px 14px
+    ) !important;
+  outline-color: rgba(240, 244, 249, .30) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, .96),
+    inset 0 0 0 3px var(--terrain-obstacle-edge),
+    inset 0 0 16px rgba(0, 0, 0, .92),
+    0 2px 6px rgba(0, 0, 0, .48) !important;
+  filter: saturate(.28) brightness(.76) contrast(1.12);
+  cursor: not-allowed;
+}
+
+#board .hex.terrain-obstacle:hover:not(:disabled):not(.tacticalTarget):not(.selected) {
+  background-color: rgba(8, 10, 13, .92) !important;
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(0, 0, 0, .18) 0 7px,
+      rgba(148, 154, 163, .28) 7px 10px,
+      rgba(0, 0, 0, .10) 10px 14px
+    ) !important;
+  filter: saturate(.32) brightness(.88) contrast(1.12);
+}
+
+/* SVG editor preview: a true near-black fill follows the exact polygon silhouette. */
+.mapEditorHex.terrain-obstacle polygon {
+  fill: #07090c !important;
+  fill-opacity: .90 !important;
+  stroke: rgba(235, 239, 245, .38) !important;
+  stroke-width: 2.1 !important;
+}
+
+#mapEditorCanvas.hasCustomBackground .mapEditorHex.terrain-obstacle polygon {
+  fill-opacity: .96 !important;
+}
+
+.mapEditorHex.terrain-obstacle:hover polygon,
+.mapEditorHex.terrain-obstacle:focus polygon,
+.mapEditorHex.terrain-obstacle.isSelected polygon {
+  fill: #0b0e12 !important;
+  stroke: #ffd17f !important;
+  stroke-width: 3 !important;
+}
+
+
+/* =====================================================
+   F9O7h — Tutorial Guidance & Adaptive Framing
+   ===================================================== */
+body.tutorial-runtime-active .mapHandSelectionPreview.isVisible,
+body.tutorial-runtime-active .mapHandHoverPreview:not([hidden]) {
+  z-index: 95 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  isolation: isolate;
+}
+body.tutorial-runtime-active .mapHandSelectionPreview.isVisible .mapHandSelectionPreviewInner,
+body.tutorial-runtime-active .mapHandHoverPreview:not([hidden]) .mapHandHoverPreviewInner {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 22px 72px rgba(0,0,0,.72), 0 0 0 3px rgba(241,203,99,.28);
+}
+.tutorialAttentionTarget,
+.tutorialAttentionContext {
+  outline-offset: 3px;
+  will-change: box-shadow, outline-color;
+}
+.tutorialAttentionTarget {
+  outline: 3px solid rgba(255,220,108,.95);
+  animation: tutorialRequiredActionPulse 820ms ease-in-out infinite alternate;
+}
+.tutorialAttentionContext {
+  outline: 2px solid rgba(255,220,108,.35);
+  animation: tutorialContextPulse 1100ms ease-in-out infinite alternate;
+}
+.narrativeNextBtn.tutorialAttentionTarget {
+  box-shadow: 0 0 0 2px rgba(255,231,150,.35), 0 0 26px rgba(255,207,73,.72);
+}
+@keyframes tutorialRequiredActionPulse {
+  from { outline-color: rgba(255,222,112,.58); box-shadow: 0 0 0 0 rgba(255,211,76,.16); }
+  to { outline-color: rgba(255,238,174,1); box-shadow: 0 0 0 7px rgba(255,211,76,.18), 0 0 30px rgba(255,198,48,.52); }
+}
+@keyframes tutorialContextPulse {
+  from { outline-color: rgba(255,220,108,.22); box-shadow: 0 0 0 0 rgba(255,211,76,.08); }
+  to { outline-color: rgba(255,238,174,.72); box-shadow: 0 0 0 5px rgba(255,211,76,.12), 0 0 18px rgba(255,198,48,.28); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tutorialAttentionTarget,
+  .tutorialAttentionContext { animation: none !important; }
+  .tutorialAttentionTarget { outline-color: rgba(255,238,174,1); box-shadow: 0 0 0 5px rgba(255,211,76,.18), 0 0 22px rgba(255,198,48,.42); }
+}
+
+
+/* =====================================================
+   F9O7h1 — Tutorial Visibility Hotfix
+   - Il pulsante narrativo richiesto lampeggia davvero, con fase quasi invisibile.
+   - Le anteprime carta vengono portalizzate nel body per uscire dallo stacking
+     context isolato di #boardWrap e restare sopra lo scrim dello spotlight.
+   ===================================================== */
+body.tutorial-runtime-active .mapHandSelectionPreview.tutorialPreviewPortal,
+body.tutorial-runtime-active .mapHandHoverPreview.tutorialPreviewPortal {
+  position: fixed !important;
+  z-index: 95 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  isolation: isolate;
+}
+
+.narrativeNextBtn.tutorialAttentionTarget {
+  animation: tutorialNarrativeButtonBlink 920ms steps(1, end) infinite !important;
+  will-change: opacity, box-shadow, outline-color, transform;
+}
+
+@keyframes tutorialNarrativeButtonBlink {
+  0%, 44% {
+    opacity: 1;
+    transform: scale(1);
+    outline-color: rgba(255,238,174,1);
+    box-shadow: 0 0 0 5px rgba(255,211,76,.20), 0 0 30px rgba(255,198,48,.62);
+  }
+  45%, 72% {
+    opacity: .10;
+    transform: scale(.985);
+    outline-color: transparent;
+    box-shadow: none;
+  }
+  73%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    outline-color: rgba(255,238,174,1);
+    box-shadow: 0 0 0 5px rgba(255,211,76,.20), 0 0 30px rgba(255,198,48,.62);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .narrativeNextBtn.tutorialAttentionTarget {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    outline-color: rgba(255,238,174,1);
+    box-shadow: 0 0 0 5px rgba(255,211,76,.20), 0 0 30px rgba(255,198,48,.62);
+  }
+}
+
+
+/* F9R3 — PS centrale semantico nell'Editor */
+.mapEditorHex.isCentralStrategicPoint polygon {
+  stroke: rgba(255, 217, 112, .98) !important;
+  stroke-width: 3.2 !important;
+  filter: drop-shadow(0 0 5px rgba(255, 196, 64, .72));
+}
+.mapEditorHex.isCentralStrategicPoint text { font-weight: 900; }
+
+
+/* F9Q3d1 — selezione esplicita del giocatore bersaglio in FFA */
+.player-target-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 16000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(5, 7, 10, 0.78);
+  backdrop-filter: blur(5px);
+}
+.player-target-overlay[hidden] { display: none !important; }
+.player-target-dialog {
+  width: min(620px, 94vw);
+  max-height: min(82vh, 760px);
+  overflow: auto;
+  border: 1px solid rgba(211, 169, 77, 0.72);
+  border-radius: 16px;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(25, 30, 38, 0.99), rgba(12, 15, 20, 0.99));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.62);
+}
+.player-target-kicker {
+  color: #d9b868;
+  font-size: 0.78rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.player-target-dialog h2 { margin: 6px 0 4px; }
+.player-target-description { margin: 0 0 14px; color: #cbd0d8; }
+.player-target-choices { display: grid; gap: 10px; }
+.player-target-choice {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 12px;
+  width: 100%;
+  padding: 13px 15px;
+  text-align: left;
+  color: #f2f2ef;
+  background: rgba(50, 57, 68, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
+  cursor: pointer;
+}
+.player-target-choice:hover,
+.player-target-choice:focus-visible {
+  border-color: rgba(221, 180, 83, 0.9);
+  background: rgba(73, 61, 38, 0.88);
+  outline: none;
+}
+.player-target-choice span { color: #d9b868; }
+.player-target-choice small { grid-column: 1 / -1; color: #b9c0ca; }
+.player-target-cancel { margin-top: 15px; width: 100%; }
+
+/* =====================================================
+   F9S1c1 – Official 50-Deck Roster & Deck Builder UX
+   ===================================================== */
+.deckBuilderHeader {
+  grid-template-columns: minmax(0, 1fr) minmax(420px, .95fr);
+  align-items: start;
+}
+.deckBuilderHeaderActions {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+.deckBuilderQuickActions,
+.deckBuilderAdvancedActions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 7px;
+}
+.deckBuilderHeaderActions .ghost,
+.deckBuilderHeaderActions .primary,
+.deckBuilderHeaderActions .danger {
+  width: auto;
+  min-height: 34px;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.deckBuilderAdvancedTools {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  background: rgba(0,0,0,.22);
+  overflow: hidden;
+}
+.deckBuilderAdvancedTools summary {
+  padding: 8px 10px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  user-select: none;
+}
+.deckBuilderAdvancedTools[open] summary {
+  border-bottom: 1px solid rgba(255,255,255,.09);
+  color: #f1d37b;
+}
+.deckBuilderAdvancedActions { padding: 8px; }
+
+.deckBuilderAnalysisPanel {
+  display: grid;
+  grid-template-columns: minmax(310px, .9fr) minmax(230px, .7fr) minmax(360px, 1.2fr);
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid rgba(227,189,103,.28);
+  border-radius: 16px;
+  background: rgba(0,0,0,.28);
+}
+.deckBuilderAnalysisHeadline {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(52px, 1fr));
+  gap: 6px;
+}
+.deckBuilderAnalysisHeadline > div {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 70px;
+  padding: 7px 5px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  text-align: center;
+}
+.deckBuilderAnalysisHeadline strong {
+  color: #fff4cf;
+  font-size: 18px;
+}
+.deckBuilderAnalysisHeadline span,
+.deckBuilderAnalysisLabel span {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.deckBuilderComposition,
+.deckBuilderCurveBlock {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+.deckBuilderAnalysisLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 11px;
+}
+.deckBuilderRatioBar {
+  display: flex;
+  height: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+}
+.deckBuilderRatioUnits {
+  flex: 0 0 var(--db-unit-ratio, 0%);
+  background: rgba(79,157,88,.72);
+}
+.deckBuilderRatioTactics {
+  flex: 1 1 auto;
+  background: rgba(164,105,196,.64);
+}
+.deckBuilderEnergyCurve {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(26px, 1fr));
+  gap: 5px;
+  align-items: end;
+  height: 92px;
+}
+.deckBuilderCurveColumn {
+  display: grid;
+  grid-template-rows: 14px 64px 14px;
+  justify-items: center;
+  align-items: end;
+  min-width: 0;
+}
+.deckBuilderCurveCount {
+  color: var(--muted);
+  font-size: 10px;
+}
+.deckBuilderCurveBar {
+  width: min(22px, 78%);
+  height: var(--db-curve-height, 2px);
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, rgba(241,211,123,.9), rgba(143,91,45,.82));
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset;
+}
+.deckBuilderCurveColumn strong {
+  color: #fff4cf;
+  font-size: 10px;
+}
+.deckBuilderValidationStats {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.deckBuilderTable th:first-child,
+.deckBuilderTable td:first-child {
+  width: 112px;
+  min-width: 112px;
+}
+.deckBuilderCountControl {
+  display: inline-grid;
+  grid-template-columns: 28px minmax(34px, auto) 28px;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.deckBuilderCountControl strong {
+  min-width: 34px;
+  color: #fff4cf;
+  font-size: 11px;
+  text-align: center;
+}
+
+.deckBuilderSavedGalleryLayout {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.35fr) minmax(300px, .85fr);
+  gap: 12px;
+  align-items: start;
+}
+.deckBuilderSavedDeckGroups {
+  display: grid;
+  gap: 10px;
+}
+.deckBuilderSavedDeckGroup {
+  display: grid;
+  grid-template-columns: minmax(110px, .34fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+.deckBuilderSavedDeckGroup h4 {
+  margin: 0;
+  padding: 8px 5px 0 0;
+  color: #f1d37b;
+  font-size: 11px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.deckBuilderSavedDeckNameGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(100px, 1fr));
+  gap: 6px;
+}
+.deckBuilderSavedDeckNameBtn {
+  min-width: 0;
+  min-height: 36px;
+  padding: 6px 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 10px;
+  background: rgba(255,255,255,.035);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+.deckBuilderSavedDeckNameBtn:hover,
+.deckBuilderSavedDeckNameBtn.selected {
+  border-color: rgba(227,189,103,.6);
+  background: rgba(227,189,103,.12);
+  color: #fff4cf;
+}
+.deckBuilderSavedDeckNameBtn.invalid {
+  border-color: rgba(216,74,68,.5);
+}
+.deckBuilderSavedDeckDetail {
+  position: sticky;
+  top: 8px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(227,189,103,.38);
+  border-radius: 15px;
+  background: rgba(0,0,0,.32);
+}
+.deckBuilderSavedDeckDetail .deckBuilderSavedDeckNote {
+  min-height: 0;
+}
+
+@media (max-width: 1050px) {
+  .deckBuilderHeader,
+  .deckBuilderAnalysisPanel,
+  .deckBuilderSavedGalleryLayout {
+    grid-template-columns: 1fr;
+  }
+  .deckBuilderSavedDeckDetail { position: static; }
+  .deckBuilderSavedDeckNameGrid { grid-template-columns: repeat(3, minmax(110px, 1fr)); }
+}
+@media (max-width: 700px) {
+  .deckBuilderQuickActions,
+  .deckBuilderAdvancedActions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .deckBuilderAnalysisHeadline { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .deckBuilderValidationStats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .deckBuilderSavedDeckGroup { grid-template-columns: 1fr; }
+  .deckBuilderSavedDeckGroup h4 { padding-top: 0; }
+  .deckBuilderSavedDeckNameGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .deckBuilderTable th:first-child,
+  .deckBuilderTable td:first-child { width: 104px; min-width: 104px; }
+}
+
+/* =====================================================
+   F9U1a – Map HUD Layout Foundation
+   Dock sinistro permanente, menu Debug e rimozione delle barre legacy.
+   UI-only: nessuna modifica a regole, dati o telemetria.
+   ===================================================== */
+
+.gameDebugHeaderBtn { display: none; }
+.hudDebugBtn {
+  width: auto;
+  min-height: 28px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border-color: rgba(227,189,103,.34);
+  color: #ffe1a1;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+.hudDebugBtn.active,
+.gameDebugHeaderBtn.active {
+  background: rgba(227,189,103,.16);
+  border-color: rgba(227,189,103,.62);
+  box-shadow: 0 0 0 2px rgba(227,189,103,.11);
+}
+
+.gameDebugMenu {
+  position: fixed;
+  z-index: 110;
+  top: 108px;
+  right: max(14px, env(safe-area-inset-right));
+  width: min(360px, calc(100vw - 28px));
+  padding: 10px;
+  border: 1px solid rgba(227,189,103,.32);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(18,22,31,.985), rgba(8,11,17,.98));
+  box-shadow: 0 20px 58px rgba(0,0,0,.58);
+  backdrop-filter: blur(12px);
+}
+.gameDebugMenu[hidden] { display: none !important; }
+.gameDebugMenuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 9px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.gameDebugMenuHeader > div { display: grid; gap: 2px; }
+.gameDebugMenuHeader strong {
+  color: #ffe1a1;
+  font-size: 13px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.gameDebugMenuHeader span { color: var(--muted); font-size: 10.5px; }
+.gameDebugMenuGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  padding: 10px 0;
+}
+.gameDebugMenuGrid button {
+  min-height: 38px;
+  padding: 7px 9px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.gameDebugVersionBox {
+  display: grid;
+  gap: 3px;
+  padding: 8px 9px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 11px;
+  background: rgba(0,0,0,.20);
+}
+.gameDebugVersionBox span,
+.gameDebugVersionBox small { color: var(--muted); font-size: 9.5px; }
+.gameDebugVersionBox strong { color: var(--text); font-size: 11px; overflow-wrap: anywhere; }
+
+/* La vecchia barra inferiore non deve più occupare spazio né desktop né mobile. */
+body.app-screen-game .gameActionBar,
+body.app-screen-game .mobileGameBar {
+  display: none !important;
+}
+body.app-screen-game:not(.mobile-apk-m4) .gameScreen {
+  padding-bottom: 0 !important;
+}
+
+/* La partita è map-first: setup, deck/debug legacy e tattiche duplicate restano
+   nel DOM solo per compatibilità, ma non sono pannelli della schermata principale. */
+body.app-screen-game:not(.mobile-apk-m4) .mapFirstGameApp {
+  padding: 10px 12px 12px;
+  gap: 0;
+}
+body.app-screen-game:not(.mobile-apk-m4) .mapFirstGameApp > .setupPanel,
+body.app-screen-game:not(.mobile-apk-m4) .mapFirstGameApp > .tacticDock,
+body.app-screen-game:not(.mobile-apk-m4) .boardColumn > .handPrimaryDock,
+body.app-screen-game:not(.mobile-apk-m4) .boardColumn > .marketDebugDock {
+  display: none !important;
+}
+body.app-screen-game:not(.mobile-apk-m4) .mapFirstGameApp > .boardColumn {
+  display: block !important;
+  width: 100%;
+}
+body.app-screen-game:not(.mobile-apk-m4) #boardWrap {
+  height: min(920px, calc(100dvh - 126px)) !important;
+  min-height: min(760px, calc(100dvh - 126px)) !important;
+  max-height: min(920px, calc(100dvh - 126px)) !important;
+  padding: 12px !important;
+}
+
+/* Dock sinistro principale: Missione, abilità di fazione, Mano e Fine turno. */
+.mapActionDock {
+  top: max(14px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  right: auto;
+  bottom: auto !important;
+  width: min(306px, 28vw);
+  max-height: calc(100% - 28px);
+  z-index: 42;
+}
+.mapHandOverlay.isTargeting ~ .mapActionDock,
+.mapHandOverlay.isMovementHidden ~ .mapActionDock {
+  bottom: auto !important;
+}
+.mapActionDockInner {
+  max-height: inherit;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  padding: 10px;
+  gap: 8px;
+  border-radius: 17px;
+  background: linear-gradient(180deg, rgba(14,18,27,.94), rgba(7,10,16,.94));
+  box-shadow: 0 18px 46px rgba(0,0,0,.48);
+  backdrop-filter: blur(10px);
+}
+.mapActionDockHeader { align-items: center; }
+.mapActionDockIdentity { display: grid; gap: 2px; min-width: 0; }
+.mapActionDockIdentity strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mapActionDockEnergy { display: grid; gap: 1px; text-align: right; }
+.mapActionDockEnergy strong { color: #ffe1a1; font-size: 17px; line-height: 1; }
+.mapActionDockEnergy strong small { color: var(--muted); font-size: 9px; }
+.mapActionDockEnergy span { font-size: 8.5px; color: var(--muted); }
+.mapActionDockSectionTitle {
+  color: rgba(255,255,255,.72);
+  font-size: 9.5px;
+  font-weight: 850;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 1px 2px;
+}
+.mapActionDockList {
+  max-height: none;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 3px;
+}
+.mapLeftDockControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+.mapLeftDockControls button {
+  width: 100%;
+  min-height: 40px;
+  padding: 7px 8px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 850;
+}
+.mapLeftEndTurnBtn { letter-spacing: .02em; }
+.mapCollapsedHandControls { display: none !important; }
+
+/* La mano aperta non copre il dock sinistro. */
+body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
+  left: max(332px, calc(env(safe-area-inset-left) + 332px));
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+}
+body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlayInner {
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr) minmax(92px, auto);
+}
+body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlayActions {
+  min-width: 92px;
+}
+
+/* Log e Statistiche esistono soltanto come overlay richiamati da Debug. */
+body.app-screen-game:not(.mobile-apk-m4) .statsPanel:not(.panelOverlayActive),
+body.app-screen-game:not(.mobile-apk-m4) #logDock:not(.panelOverlayActive) {
+  display: none !important;
+}
+body.app-screen-game:not(.mobile-apk-m4)[data-game-panel-placement="bottom"] .managedGamePanel.panelOverlayActive {
+  bottom: max(18px, env(safe-area-inset-bottom)) !important;
+}
+body.app-screen-game:not(.mobile-apk-m4) .statsPanel.panelOverlayActive,
+body.app-screen-game:not(.mobile-apk-m4) #logDock.panelOverlayActive {
+  width: min(980px, calc(100vw - 36px)) !important;
+  max-height: min(76dvh, 760px) !important;
+  z-index: 104 !important;
+}
+body.app-screen-game:not(.mobile-apk-m4) #logDock.panelOverlayActive #log {
+  height: min(58dvh, 580px) !important;
+}
+
+@media (max-width: 1120px) and (min-width: 981px) {
+  .mapActionDock { width: min(280px, 31vw); }
+  body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
+    left: max(302px, calc(env(safe-area-inset-left) + 302px));
+  }
+}
+
+/* APK/mobile: stessa gerarchia senza la vecchia barra inferiore. */
+body.mobile-apk-m4 .gameDebugHeaderBtn {
+  display: inline-flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 27px !important;
+  height: 27px !important;
+  padding: 2px 5px !important;
+  border-radius: 7px !important;
+  font-size: 9.5px !important;
+  align-items: center;
+  justify-content: center;
+}
+body.mobile-apk-m4 .gameHudStrip { display: none !important; }
+body.mobile-apk-m4 .gameDebugMenu {
+  top: calc(var(--m4-header-h) + 5px);
+  right: max(5px, env(safe-area-inset-right));
+  width: min(300px, calc(100vw - 10px));
+  padding: 8px;
+  border-radius: 12px;
+  backdrop-filter: none;
+}
+body.mobile-apk-m4 .gameDebugMenuGrid { gap: 5px; padding: 7px 0; }
+body.mobile-apk-m4 .gameDebugMenuGrid button { min-height: 32px !important; font-size: 9.5px !important; }
+body.mobile-apk-m4 .gameDebugMenuHeader strong { font-size: 10px; }
+body.mobile-apk-m4 .gameDebugMenuHeader span,
+body.mobile-apk-m4 .gameDebugVersionBox span,
+body.mobile-apk-m4 .gameDebugVersionBox small { font-size: 8px; }
+body.mobile-apk-m4 .gameDebugVersionBox strong { font-size: 9px; }
+
+body.mobile-apk-m4 #boardWrap,
+body.mobile-apk-m4.mobile-panel-hand #boardWrap,
+body.mobile-apk-m4.mobile-panel-command #boardWrap,
+body.mobile-apk-m4.mobile-panel-setup #boardWrap,
+body.mobile-apk-m4.mobile-panel-actions #boardWrap,
+body.mobile-apk-m4.mobile-panel-log #boardWrap,
+body.mobile-apk-m4.mobile-panel-stats #boardWrap {
+  bottom: max(4px, env(safe-area-inset-bottom)) !important;
+}
+body.mobile-apk-m4 .setupPanel,
+body.mobile-apk-m4 .tacticDock,
+body.mobile-apk-m4 .handPrimaryDock,
+body.mobile-apk-m4 .marketDock {
+  display: none !important;
+}
+body.mobile-apk-m4 .statsPanel,
+body.mobile-apk-m4 .logPanel {
+  bottom: max(6px, env(safe-area-inset-bottom)) !important;
+  height: min(72dvh, 420px) !important;
+  max-height: min(72dvh, 420px) !important;
+}
+body.mobile-apk-m4 .mapActionDock {
+  top: calc(var(--m4-header-h) + var(--m4-status-h) + 45px);
+  left: max(7px, env(safe-area-inset-left));
+  bottom: auto !important;
+  width: min(220px, 47vw);
+  max-height: calc(100dvh - var(--m4-header-h) - var(--m4-status-h) - 58px);
+  z-index: 44;
+}
+body.mobile-apk-m4 .mapHandOverlay.isTargeting ~ .mapActionDock,
+body.mobile-apk-m4 .mapHandOverlay.isMovementHidden ~ .mapActionDock {
+  bottom: auto !important;
+}
+body.mobile-apk-m4 .mapActionDockInner {
+  max-height: inherit;
+  padding: 7px;
+  gap: 5px;
+  grid-template-rows: auto auto auto minmax(0,1fr) auto;
+}
+body.mobile-apk-m4 .mapActionDockList { max-height: none; }
+body.mobile-apk-m4 .mapLeftDockControls { gap: 5px; padding-top: 5px; }
+body.mobile-apk-m4 .mapLeftDockControls button {
+  min-height: 31px !important;
+  padding: 4px !important;
+  font-size: 8.5px !important;
+}
+body.mobile-apk-m4 .mapHandOverlay {
+  left: max(7px, env(safe-area-inset-left));
+  right: max(7px, env(safe-area-inset-right));
+  bottom: max(7px, env(safe-area-inset-bottom));
+  z-index: 48;
+}
+body.mobile-apk-m4 .selectedUnitFloat { z-index: 50; }
+body.mobile-apk-m4 .gamePanelScrim { bottom: 0 !important; }
+
+@media (max-width: 620px) {
+  .mapActionDock { width: min(210px, 48vw); }
+  .mapActionDockName { font-size: 9.5px; }
+  .mapActionDockMeta { font-size: 8px; }
+  .mapActionDockCmd { min-width: 38px; font-size: 8px; }
+}
+
+/* F9U1a precedence hardening: neutralizza il vecchio centraggio verticale F9N7a. */
+.mapActionDock,
+.mapHandOverlay.isTargeting ~ .mapActionDock,
+.mapHandOverlay.isMovementHidden ~ .mapActionDock {
+  top: max(14px, env(safe-area-inset-top)) !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+body.mobile-apk-m4 .mapActionDock,
+body.mobile-apk-m4 .mapHandOverlay.isTargeting ~ .mapActionDock,
+body.mobile-apk-m4 .mapHandOverlay.isMovementHidden ~ .mapActionDock {
+  top: calc(var(--m4-header-h) + var(--m4-status-h) + 45px) !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+
+/* =====================================================
+   F9U1a1 — Inspector, Hand Alignment & Header Controls Hotfix
+   ===================================================== */
+body.app-screen-game:not(.mobile-apk-m4) .topTitleBar {
+  grid-template-columns: minmax(180px, 230px) minmax(280px, 1fr) minmax(350px, 430px);
+}
+.arenaMusicControlGame {
+  width: min(340px, 100%);
+  max-width: 340px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  padding: 5px 7px;
+}
+.arenaGameAudioRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.arenaGamePresentationToggles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 0;
+}
+.arenaGamePresentationToggles button {
+  width: 100%;
+  min-width: 0;
+  min-height: 27px;
+  padding: 4px 5px;
+  font-size: 9px;
+  line-height: 1.08;
+  white-space: normal;
+}
+.arenaMusicControlGame .arenaMusicVolumeLabel {
+  width: 100%;
+  grid-template-columns: minmax(82px, 1fr) 35px;
+}
+
+/* La mano si avvicina al centro della superficie di gioco senza tornare sotto il dock. */
+body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
+  left: max(220px, calc(env(safe-area-inset-left) + 220px));
+}
+@media (max-width: 1120px) and (min-width: 981px) {
+  body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
+    left: max(190px, calc(env(safe-area-inset-left) + 190px));
+  }
+}
+
+/* Inspector destro in colonna: carta, abilità principale, stat/abilità, azioni. */
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloat {
+  width: min(392px, calc(100% - 24px));
+  max-height: min(calc(100% - 24px), 92vh);
+}
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
+  max-height: min(830px, calc(100vh - 150px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+.selectedUnitFloat #selectedPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.selectedUnitPreviewShell {
+  display: grid;
+  gap: 9px;
+  justify-items: center;
+}
+.selectedUnitPreviewCanvasWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.selectedUnitPreviewCanvasWrap #selectedUnitCardPreviewCanvas,
+#selectedUnitCardPreviewCanvas {
+  width: min(100%, 230px);
+  aspect-ratio: 1024 / 1536;
+}
+.selectedUnitPrimaryAbilitySlot {
+  width: 100%;
+  display: grid;
+}
+.selectedUnitPrimaryAbilityBtn {
+  width: 100%;
+  min-height: 42px;
+  font-size: 12px;
+  font-weight: 850;
+}
+.selectedUnitDataCard {
+  display: grid;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 13px;
+  background: rgba(0,0,0,.20);
+}
+.selectedUnitIdentity {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.selectedUnitIdentity strong { color: #ffe1a1; font-size: 14px; }
+.selectedUnitIdentity span { color: var(--muted); font-size: 10px; }
+.selectedUnitStatsTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 11px;
+}
+.selectedUnitStatsTable th {
+  padding: 6px 4px 4px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .08em;
+  background: rgba(255,255,255,.035);
+}
+.selectedUnitStatsTable td {
+  padding: 5px 4px 8px;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255,255,255,.035);
+}
+.selectedUnitAbilitiesBox {
+  display: grid;
+  gap: 7px;
+}
+.selectedUnitAbilityRow,
+.selectedUnitPassiveBlock {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 10px;
+  background: rgba(255,255,255,.025);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.selectedUnitAbilityRow strong,
+.selectedUnitPassiveBlock > strong { color: #ffe1a1; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; }
+.selectedUnitAbilityRow span,
+.selectedUnitPassiveBlock div { color: var(--text); }
+.selectedUnitAbilityRow.isMuted span,
+.selectedUnitPassiveBlock .isMuted { color: var(--muted); }
+.selectedUnitInspectorEmpty { padding: 10px; text-align: center; }
+.selectedUnitFloat #actionPanel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+}
+.selectedUnitFloat #actionPanel button {
+  width: 100%;
+  min-height: 40px;
+  font-size: 11.5px;
+  font-weight: 820;
+}
+
+@media (pointer: coarse), (max-width: 980px), (max-height: 560px) {
+  body.mobile-apk-m4 .arenaMusicControlGame {
+    width: min(330px, calc(100vw - 12px));
+    max-width: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    min-height: 58px;
+  }
+  body.mobile-apk-m4 .arenaGameAudioRow {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 5px;
+  }
+  body.mobile-apk-m4 .arenaGamePresentationToggles { gap: 3px; }
+  body.mobile-apk-m4 .arenaGamePresentationToggles button {
+    min-height: 23px !important;
+    height: auto !important;
+    padding: 2px 3px !important;
+    font-size: 7.5px !important;
+  }
+  body.mobile-apk-m4 .mapActionDock,
+  body.mobile-apk-m4 .mapHandOverlay.isTargeting ~ .mapActionDock,
+  body.mobile-apk-m4 .mapHandOverlay.isMovementHidden ~ .mapActionDock {
+    top: calc(var(--m4-header-h) + var(--m4-status-h) + 78px) !important;
+    max-height: calc(100dvh - var(--m4-header-h) - var(--m4-status-h) - 88px);
+  }
+  body.mobile-apk-m4 .selectedUnitFloat {
+    width: min(312px, calc(100% - 12px));
+    max-height: min(92svh, 620px);
+  }
+  body.mobile-apk-m4 .selectedUnitFloatBody {
+    max-height: min(82svh, 560px);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  body.mobile-apk-m4 .selectedUnitPreviewCanvasWrap #selectedUnitCardPreviewCanvas,
+  body.mobile-apk-m4 #selectedUnitCardPreviewCanvas {
+    width: min(100%, 190px);
+  }
+  body.mobile-apk-m4 .selectedUnitPrimaryAbilityBtn { min-height: 31px !important; font-size: 9px !important; }
+  body.mobile-apk-m4 .selectedUnitStatsTable td { font-size: 17px; }
+  body.mobile-apk-m4 .selectedUnitAbilityRow,
+  body.mobile-apk-m4 .selectedUnitPassiveBlock { font-size: 9px; padding: 6px; }
+  body.mobile-apk-m4 .selectedUnitFloat #actionPanel {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* F9U1a1 hand centering refinement: il pannello resta tra dock sinistro e inspector destro. */
+body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
+  right: max(410px, calc(env(safe-area-inset-right) + 410px));
+}
+@media (max-width: 1120px) and (min-width: 981px) {
+  body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
+    right: max(350px, calc(env(safe-area-inset-right) + 350px));
+  }
+}
+
+/* F9U1a1 viewport clamp: l'inspector resta interamente dentro la schermata e scorre internamente. */
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloat {
+  max-height: calc(100dvh - 175px);
+}
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
+  max-height: calc(100dvh - 220px);
+  overflow-y: auto;
+}
+
+
+/* =====================================================
+   F9U1b — Unit Inspector & PS/Unit Comparison Bars
+   Indicatori UI alimentati dallo stato runtime autorevole.
+   ===================================================== */
+.gameComparisonBars {
+  flex: 0 0 100%;
+  width: min(1180px, 100%);
+  display: grid;
+  gap: 4px;
+  padding: 1px 2px 0;
+}
+.gameComparisonBars.isEmpty { opacity: .62; }
+.gameComparisonRow {
+  display: grid;
+  grid-template-columns: 48px minmax(120px, 1fr) minmax(210px, auto);
+  align-items: center;
+  gap: 8px;
+  min-height: 14px;
+}
+.gameComparisonLabel {
+  color: #e7d7b2;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+.gameComparisonTrack {
+  min-width: 0;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  background: rgba(0,0,0,.42);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.72);
+}
+.gameComparisonSegments {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+}
+.gameComparisonSegments.isEmpty::after {
+  content: "";
+  width: 100%;
+  background: rgba(255,255,255,.045);
+}
+.gameComparisonSegment {
+  display: block;
+  min-width: 0;
+  background: var(--comparison-color, #73839a);
+  border-right: 1px solid rgba(0,0,0,.35);
+  transition: flex-grow .18s ease, opacity .18s ease;
+}
+.gameComparisonSegment:last-child { border-right: 0; }
+.gameComparisonSegment.isDuplicateFaction {
+  background:
+    repeating-linear-gradient(var(--comparison-stripe-angle, 55deg), rgba(255,255,255,.20) 0 2px, transparent 2px 7px),
+    var(--comparison-color, #73839a);
+}
+.gameComparisonSegment.isEliminated { opacity: .42; filter: grayscale(.35); }
+.gameComparisonSegment.isNeutral { background: #59606b; }
+.gameComparisonCounters {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.gameComparisonCounter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #dce2ec;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+.gameComparisonCounter b { font-weight: 850; }
+.gameComparisonCounterDot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 50%;
+  background: var(--comparison-color, #73839a);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.44);
+}
+.gameComparisonCounter.isNeutral .gameComparisonCounterDot { background: #59606b; }
+.gameComparisonCounter.isEliminated { opacity: .48; text-decoration: line-through; }
+
+/* Il nuovo blocco occupa pochi pixel sotto i chip: la mappa resta dominante. */
+body.app-screen-game:not(.mobile-apk-m4) #boardWrap {
+  height: min(920px, calc(100dvh - 164px)) !important;
+  min-height: min(720px, calc(100dvh - 164px)) !important;
+  max-height: min(920px, calc(100dvh - 164px)) !important;
+}
+
+/* Inspector finalizzato: accento di fazione e nessun pulsante fittizio per unità passive. */
+.selectedUnitFloat #selectedPanel { --selected-unit-accent: rgba(227,189,103,.52); }
+.selectedUnitFloat .selectedUnitDataCard {
+  border-color: color-mix(in srgb, var(--selected-unit-accent) 50%, rgba(255,255,255,.10));
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--selected-unit-accent) 72%, transparent);
+}
+.selectedUnitPrimaryAbilitySlot[hidden] { display: none !important; }
+.selectedUnitFloatHeader #selectedUnitFloatTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.selectedUnitStatsTable td { font-size: 24px; }
+
+@media (max-width: 1120px) and (min-width: 981px) {
+  .gameComparisonRow { grid-template-columns: 44px minmax(100px, 1fr) minmax(170px, auto); gap: 6px; }
+  .gameComparisonCounters { gap: 5px; }
+  .gameComparisonCounter { font-size: 8.5px; }
+}
+
+/* APK/mobile: mostra soltanto le due linee del gameHudStrip, sotto i controlli audio. */
+@media (pointer: coarse), (max-width: 980px), (max-height: 560px) {
+  body.mobile-apk-m4 .gameHudStrip {
+    display: block !important;
+    position: fixed !important;
+    z-index: 83;
+    top: calc(var(--m4-header-h) + var(--m4-status-h) + 70px) !important;
+    left: max(7px, env(safe-area-inset-left));
+    right: max(7px, env(safe-area-inset-right));
+    width: auto;
+    padding: 4px 6px !important;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 10px;
+    background: rgba(6,8,13,.82);
+    backdrop-filter: none;
+    pointer-events: none;
+  }
+  body.mobile-apk-m4 .gameHudStrip > :not(.gameComparisonBars) { display: none !important; }
+  body.mobile-apk-m4 .gameComparisonBars { width: 100%; gap: 3px; padding: 0; }
+  body.mobile-apk-m4 .gameComparisonRow {
+    grid-template-columns: 35px minmax(70px, 1fr) minmax(135px, auto);
+    gap: 5px;
+    min-height: 11px;
+  }
+  body.mobile-apk-m4 .gameComparisonLabel { font-size: 7.5px; }
+  body.mobile-apk-m4 .gameComparisonTrack { height: 6px; }
+  body.mobile-apk-m4 .gameComparisonCounters { gap: 4px; }
+  body.mobile-apk-m4 .gameComparisonCounter { font-size: 7px; gap: 2px; }
+  body.mobile-apk-m4 .gameComparisonCounterDot { width: 5px; height: 5px; flex-basis: 5px; }
+  body.mobile-apk-m4 .mapActionDock,
+  body.mobile-apk-m4 .mapHandOverlay.isTargeting ~ .mapActionDock,
+  body.mobile-apk-m4 .mapHandOverlay.isMovementHidden ~ .mapActionDock {
+    top: calc(var(--m4-header-h) + var(--m4-status-h) + 112px) !important;
+    max-height: calc(100dvh - var(--m4-header-h) - var(--m4-status-h) - 122px);
+  }
+  body.mobile-apk-m4 .selectedUnitStatsTable td { font-size: 18px; }
+}
+
+@media (max-width: 560px) {
+  body.mobile-apk-m4 .gameComparisonRow { grid-template-columns: 31px minmax(48px, 1fr) minmax(102px, auto); gap: 3px; }
+  body.mobile-apk-m4 .gameComparisonCounters { gap: 3px; }
+  body.mobile-apk-m4 .gameComparisonCounter { font-size: 6.5px; }
+}
+
+/* F9U1b viewport clamp: le barre superiori aggiungono altezza, l'Inspector resta nel viewport. */
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloat {
+  max-height: calc(100dvh - 205px);
+}
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
+  max-height: calc(100dvh - 250px);
+}
+
+
+/* =====================================================
+   F9U2a – Card Pool Reorganization
+   ===================================================== */
+.cardPoolHeader {
+  align-items: center;
+}
+.cardPoolHeaderActions {
+  width: min(100%, 620px);
+  min-width: 0;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 8px;
+}
+.cardPoolHeaderActions .ghost,
+.cardPoolHeaderActions .primary {
+  width: 100%;
+  min-height: 40px;
+}
+.cardPoolPreviewToolbar {
+  display: grid;
+  grid-template-columns: minmax(230px, auto) minmax(320px, 1fr) minmax(140px, auto);
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(0,0,0,.16);
+}
+.cardPoolViewModeGroup,
+.cardPoolNavGroup,
+.cardPoolFocusGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.cardPoolNavGroup {
+  justify-content: center;
+}
+.cardPoolFocusGroup {
+  justify-content: flex-end;
+}
+.cardPoolToolbarLabel {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.cardPoolPreviewLayout {
+  grid-template-columns: minmax(400px, 520px) minmax(380px, 1fr);
+  align-items: stretch;
+}
+.cardPoolSelectedInfoBox {
+  align-self: stretch;
+  align-content: start;
+  grid-auto-rows: max-content;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(15,19,27,.78), rgba(0,0,0,.24));
+  box-shadow: 0 14px 30px rgba(0,0,0,.20);
+}
+.cardPoolPreviewMeta {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+.cardPoolSelectedHeading {
+  display: grid;
+  gap: 4px;
+}
+.cardPoolSelectedHeading h4 {
+  margin: 0;
+  color: #fff4cf;
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1.08;
+}
+.cardPoolSelectedHeading span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.cardPoolLargeStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(72px, 1fr));
+  gap: 8px;
+}
+.cardPoolLargeStat {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 14px;
+  background: rgba(0,0,0,.28);
+}
+.cardPoolLargeStat span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+.cardPoolLargeStat strong {
+  color: #fff;
+  font-size: 27px;
+  line-height: 1;
+}
+.cardPoolAbilityStack {
+  display: grid;
+  gap: 10px;
+}
+.cardPoolAbilitySection {
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+}
+.cardPoolAbilitySection h5 {
+  margin: 0 0 8px;
+  color: #f1d37b;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.cardPoolAbilitySection p {
+  margin: 0;
+  color: #e7edf5;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.cardPoolAbilityMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+.cardPoolAbilityMeta span {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(227,189,103,.12);
+  color: #ffe8ad;
+  font-size: 11px;
+  font-weight: 800;
+}
+.cardPoolPassiveList {
+  display: grid;
+  gap: 9px;
+}
+.cardPoolPassiveList article {
+  padding-left: 10px;
+  border-left: 3px solid rgba(227,189,103,.48);
+}
+.cardPoolPassiveList strong {
+  color: #fff4cf;
+  font-size: 14px;
+}
+.cardPoolPassiveList p {
+  margin-top: 3px;
+}
+.cardPoolFullText p {
+  color: var(--muted);
+}
+.cardPoolDebugDetails {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  padding-top: 10px;
+}
+.cardPoolDebugSummary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  min-width: 100px;
+  cursor: pointer;
+  list-style: none;
+}
+.cardPoolDebugSummary::-webkit-details-marker { display: none; }
+.cardPoolDebugSummary::after {
+  content: "▾";
+  margin-left: 8px;
+  transition: transform .12s ease;
+}
+.cardPoolDebugDetails[open] .cardPoolDebugSummary::after {
+  transform: rotate(180deg);
+}
+.cardPoolDebugContent {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+.cardPoolDebugBody {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+}
+.cardPoolDebugActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+body.cardPoolFocusMode .cardPoolSelectedInfoBox {
+  min-height: 0;
+}
+@media (max-width: 1100px) {
+  .cardPoolHeaderActions {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+  .cardPoolPreviewToolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cardPoolNavGroup {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .cardPoolFocusGroup { justify-content: flex-end; }
+  .cardPoolPreviewLayout {
+    grid-template-columns: minmax(330px, 440px) minmax(320px, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .cardPoolHeaderActions {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  .cardPoolPreviewToolbar {
+    grid-template-columns: 1fr;
+  }
+  .cardPoolViewModeGroup,
+  .cardPoolNavGroup,
+  .cardPoolFocusGroup {
+    grid-column: auto;
+    grid-row: auto;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cardPoolPreviewLayout {
+    grid-template-columns: 1fr;
+  }
+  .cardPoolSelectedInfoBox {
+    padding: 13px;
+  }
+  .cardPoolLargeStats {
+    grid-template-columns: repeat(4, minmax(58px, 1fr));
+  }
+  .cardPoolLargeStat {
+    min-height: 62px;
+  }
+  .cardPoolLargeStat strong {
+    font-size: 23px;
+  }
+  .cardPoolAbilitySection p {
+    font-size: 14px;
+  }
+}
+
+
+/* =====================================================
+   F9U2b – Card Editor & Map Editor Layout Reorganization
+   Layout-only: all existing editor IDs and runtime handlers remain authoritative.
+   ===================================================== */
+.cardEditorHeader,
+.mapEditorHeaderF9U2b {
+  gap: 18px;
+}
+.cardEditorHeading,
+.mapEditorHeading {
+  min-width: min(100%, 390px);
+}
+.cardEditorHeaderActions,
+.mapEditorHeaderActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cardEditorActionGroup,
+.mapEditorActionGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  padding: 6px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+}
+.cardEditorHeaderTools,
+.mapEditorActionDetails {
+  position: relative;
+  min-width: 132px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 12px;
+  background: rgba(0,0,0,.2);
+}
+.cardEditorHeaderTools > summary,
+.mapEditorActionDetails > summary,
+.cardEditorDataExchange > summary,
+.cardEditorWorkbenchDetails > summary,
+.mapEditorValidationPanel > summary {
+  cursor: pointer;
+  list-style: none;
+  color: #f0d6a6;
+  font-weight: 800;
+  padding: 10px 12px;
+}
+.cardEditorHeaderTools > summary::-webkit-details-marker,
+.mapEditorActionDetails > summary::-webkit-details-marker,
+.cardEditorDataExchange > summary::-webkit-details-marker,
+.cardEditorWorkbenchDetails > summary::-webkit-details-marker,
+.mapEditorValidationPanel > summary::-webkit-details-marker { display: none; }
+.cardEditorHeaderTools > summary::after,
+.mapEditorActionDetails > summary::after,
+.cardEditorDataExchange > summary::after,
+.cardEditorWorkbenchDetails > summary::after,
+.mapEditorValidationPanel > summary::after {
+  content: "▾";
+  float: right;
+  margin-left: 12px;
+  opacity: .7;
+}
+.cardEditorHeaderTools:not([open]) > summary::after,
+.mapEditorActionDetails:not([open]) > summary::after,
+.cardEditorDataExchange:not([open]) > summary::after,
+.cardEditorWorkbenchDetails:not([open]) > summary::after,
+.mapEditorValidationPanel:not([open]) > summary::after { content: "▸"; }
+.cardEditorHeaderToolsBody,
+.mapEditorActionDetailsBody {
+  display: grid;
+  gap: 7px;
+  padding: 0 8px 8px;
+}
+.cardEditorLivePolicyBar {
+  grid-template-columns: minmax(260px, .8fr) minmax(360px, 1.2fr);
+  align-items: stretch;
+}
+.cardEditorLayoutF9U2b {
+  grid-template-columns: minmax(620px, 1.2fr) minmax(390px, .8fr);
+  gap: 16px;
+}
+.cardEditorFormBox,
+.cardEditorPreviewBox {
+  border-color: rgba(227,189,103,.15);
+}
+.cardEditorIdentityGrid,
+.cardEditorStatsGrid,
+.cardEditorAbilityGrid,
+.cardEditorArtBox,
+.cardEditorLibrarySection,
+.cardEditorDataExchange {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(0,0,0,.15);
+}
+.cardEditorIdentityGrid,
+.cardEditorStatsGrid {
+  padding: 12px;
+}
+.cardEditorStatsGrid {
+  background: rgba(227,189,103,.045);
+}
+.cardEditorWorkbenchDetails {
+  margin: 14px 0 12px;
+  padding: 0;
+  overflow: hidden;
+}
+.cardEditorWorkbenchDetailsBody,
+.cardEditorDataExchangeBody {
+  padding: 0 12px 12px;
+}
+.cardEditorWorkbenchDetails .deckBuilderBoxTitleRow {
+  margin-top: 0;
+}
+.cardEditorPreviewBox {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+}
+.cardEditorPreviewLayout {
+  grid-template-columns: minmax(210px, 285px) minmax(0,1fr);
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.cardEditorLibrarySection {
+  margin-top: 16px;
+  padding: 0 12px 12px;
+}
+.cardEditorDataExchange {
+  margin-top: 14px;
+  overflow: hidden;
+}
+.cardEditorDataExchange .cardEditorSavedTitle {
+  margin-top: 0;
+}
+
+.mapEditorHeaderF9U2b {
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.mapEditorHeaderActions {
+  max-width: 940px;
+}
+.mapEditorActionDetailsBody button {
+  width: 100%;
+}
+.mapEditorLiveBar {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.5fr) minmax(150px, 1.2fr) repeat(7, minmax(68px, .55fr));
+  gap: 7px;
+  align-items: stretch;
+  margin: 0 0 12px;
+  padding: 8px;
+  border: 1px solid rgba(230,184,116,.24);
+  border-radius: 13px;
+  background: rgba(0,0,0,.26);
+  overflow-x: auto;
+}
+.mapEditorLiveBar .mapEditorValidationSummary {
+  margin: 0;
+  min-width: 205px;
+  display: flex;
+  align-items: center;
+  line-height: 1.25;
+}
+.mapEditorLiveMetric {
+  min-width: 68px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 9px;
+  background: rgba(255,255,255,.035);
+}
+.mapEditorLiveMetric span {
+  color: var(--muted);
+  font-size: .64rem;
+  text-transform: uppercase;
+  letter-spacing: .055em;
+}
+.mapEditorLiveMetric strong {
+  max-width: 175px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #f5dfb6;
+  font-size: .82rem;
+  font-variant-numeric: tabular-nums;
+}
+.mapEditorWorkspaceF9U2b {
+  grid-template-columns: minmax(250px, 310px) minmax(560px, 1fr) minmax(270px, 330px);
+  gap: 12px;
+}
+.mapEditorProjectPanel,
+.mapEditorToolsPanel {
+  max-height: calc(100vh - 190px);
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+.mapEditorSideSection {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: rgba(0,0,0,.13);
+}
+.mapEditorSideTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.mapEditorSideTitleRow h3 {
+  margin: 0;
+  font-size: .94rem;
+}
+.mapEditorTwoColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mapEditorTwoColumns label {
+  display: grid;
+  gap: 5px;
+}
+.mapEditorToolsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mapEditorToolsPanel .mapEditorToolGrid {
+  grid-template-columns: repeat(2, minmax(0,1fr));
+}
+.mapEditorToolOptions {
+  display: grid;
+  gap: 6px;
+}
+.mapEditorToolOptions select {
+  width: 100%;
+}
+.mapEditorSelectionSection {
+  min-height: 125px;
+}
+.mapEditorSelection {
+  margin-top: 0;
+  background: rgba(255,255,255,.035);
+}
+.mapEditorValidationPanel {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+  overflow: hidden;
+}
+.mapEditorValidationBody {
+  padding: 0 10px 10px;
+}
+.mapEditorValidationPanel ol {
+  max-height: 220px;
+}
+.mapEditorSideActions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: auto;
+}
+.mapEditorCanvasPanel {
+  min-height: 0;
+}
+.mapEditorCanvasViewport {
+  height: calc(100vh - 250px);
+  min-height: 570px;
+}
+
+@media (max-width: 1380px) {
+  .mapEditorLiveBar {
+    grid-template-columns: minmax(200px, 1.4fr) minmax(140px, 1fr) repeat(7, minmax(64px, .5fr));
+  }
+  .mapEditorWorkspaceF9U2b {
+    grid-template-columns: minmax(225px, 275px) minmax(480px, 1fr) minmax(245px, 295px);
+  }
+  .cardEditorLayoutF9U2b {
+    grid-template-columns: minmax(520px, 1.1fr) minmax(350px, .9fr);
+  }
+}
+@media (max-width: 1100px) {
+  .cardEditorLivePolicyBar,
+  .cardEditorLayoutF9U2b {
+    grid-template-columns: 1fr;
+  }
+  .cardEditorPreviewBox {
+    position: static;
+    max-height: none;
+  }
+  .mapEditorWorkspaceF9U2b {
+    grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+  }
+  .mapEditorToolsPanel {
+    grid-column: 1 / -1;
+    max-height: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+  .mapEditorSideActions { align-self: end; }
+}
+@media (max-width: 760px) {
+  .cardEditorHeaderActions,
+  .mapEditorHeaderActions {
+    justify-content: stretch;
+  }
+  .cardEditorActionGroup,
+  .mapEditorActionGroup,
+  .cardEditorHeaderTools,
+  .mapEditorActionDetails {
+    width: 100%;
+  }
+  .cardEditorActionGroup button,
+  .mapEditorActionGroup button {
+    flex: 1 1 auto;
+  }
+  .cardEditorPreviewLayout {
+    grid-template-columns: 1fr;
+  }
+  .mapEditorLiveBar {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+  .mapEditorLiveBar .mapEditorValidationSummary {
+    grid-column: 1 / -1;
+  }
+  .mapEditorWorkspaceF9U2b,
+  .mapEditorToolsPanel {
+    grid-template-columns: 1fr;
+  }
+  .mapEditorToolsPanel { grid-column: auto; }
+  .mapEditorProjectPanel,
+  .mapEditorToolsPanel { max-height: none; }
+  .mapEditorCanvasViewport { min-height: 480px; height: 62vh; }
+}
+
+/* F9U2b tablet reflow: the editor workspaces become a single vertical flow before Android-specific work. */
+@media (max-width: 900px) {
+  .mapEditorLiveBar {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+  .mapEditorLiveBar .mapEditorValidationSummary {
+    grid-column: 1 / -1;
+  }
+  .mapEditorWorkspaceF9U2b,
+  .mapEditorToolsPanel {
+    grid-template-columns: 1fr;
+  }
+  .mapEditorToolsPanel {
+    grid-column: auto;
+  }
+  .mapEditorProjectPanel,
+  .mapEditorToolsPanel {
+    max-height: none;
+  }
+  .mapEditorCanvasViewport {
+    min-height: 480px;
+    height: 62vh;
+  }
+}
+
+/* =====================================================
+   F9U3 – Control Center
+   ===================================================== */
+.mainMenuCard.mainMenuCardF9Q3a {
+  grid-template-rows: auto auto auto auto;
+  width: min(1460px, 100%);
+}
+.mainMenuDashboard.controlCenterDashboard {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas: none;
+  gap: 14px;
+  align-items: stretch;
+}
+.controlCenterArea {
+  min-width: 0;
+  padding: clamp(15px, 1.7vw, 22px);
+  border: 1px solid rgba(255,255,255,.105);
+  border-radius: 18px;
+  background:
+    linear-gradient(150deg, rgba(255,255,255,.045), transparent 58%),
+    rgba(10,14,22,.82);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 18px 48px rgba(0,0,0,.12);
+}
+.controlCenterAreaPlay {
+  grid-column: span 4;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(197,66,56,.19), transparent 44%),
+    linear-gradient(150deg, rgba(214,179,90,.08), transparent 58%),
+    rgba(10,14,22,.86);
+}
+.controlCenterAreaCards { grid-column: span 5; }
+.controlCenterAreaMaps { grid-column: span 3; }
+.controlCenterAreaAnalysis { grid-column: span 6; }
+.controlCenterAreaSystem { grid-column: span 6; }
+.controlCenterActionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.controlCenterActionGridPlay .controlCenterActionPrimary { grid-column: 1 / -1; }
+.controlCenterActionGridCompact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.controlCenterActionPrimary,
+.controlCenterActionGrid .mainMenuStudioTile {
+  min-height: 78px;
+  white-space: normal;
+}
+.controlCenterActionPrimary {
+  padding: 15px 17px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+}
+.controlCenterActionPrimary > span:last-child {
+  display: grid;
+  gap: 3px;
+}
+.controlCenterActionPrimary strong { font-size: 16px; }
+.controlCenterActionPrimary small {
+  color: rgba(255,255,255,.76);
+  font-size: 10px;
+  font-weight: 600;
+}
+.controlCenterStatusBoard {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.controlCenterStatusCard {
+  min-width: 0;
+  min-height: 104px;
+  padding: 14px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(6,9,15,.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+}
+.controlCenterStatusCard > span {
+  color: #d6b35a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.controlCenterStatusCard > strong {
+  min-width: 0;
+  color: rgba(247,248,251,.96);
+  font-size: clamp(13px, 1.3vw, 17px);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.controlCenterStatusCard > small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+.controlCenterStatusCard[data-tone="good"] { border-color: rgba(112,211,137,.28); }
+.controlCenterStatusCard[data-tone="warn"] { border-color: rgba(255,190,94,.42); }
+.controlCenterStatusCard[data-tone="bad"] {
+  border-color: rgba(237,92,92,.48);
+  background: rgba(45,10,14,.42);
+}
+.controlCenterPanel[hidden] { display: none !important; }
+.controlCenterPanel {
+  position: fixed;
+  inset: 0;
+  z-index: 5400;
+  display: grid;
+  place-items: center;
+  padding: clamp(10px, 2.5vw, 30px);
+}
+.controlCenterPanelScrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(2,4,8,.82);
+  backdrop-filter: blur(8px);
+}
+.controlCenterPanelSheet {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  max-height: min(900px, calc(100dvh - 28px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(214,179,90,.30);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(173,44,44,.15), transparent 32%),
+    linear-gradient(155deg, rgba(29,35,47,.98), rgba(8,11,18,.99));
+  box-shadow: 0 32px 100px rgba(0,0,0,.68), inset 0 1px 0 rgba(255,255,255,.055);
+}
+.controlCenterPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 17px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.controlCenterPanelHeader h2 { margin: 2px 0 0; font-size: clamp(20px, 2.3vw, 30px); }
+.compactIconBtn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+}
+.controlCenterPanelBody {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(15px, 2.2vw, 24px);
+}
+.controlCenterPanelLead {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.controlCenterPanelLead h3,
+.controlCenterPanelLead strong { margin: 0; color: rgba(248,249,252,.96); font-size: 18px; }
+.controlCenterPanelLead p { margin: 5px 0 0; color: var(--muted); line-height: 1.45; }
+.controlCenterInlineActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.controlCenterMetricGrid,
+.controlCenterDiagnosticsGrid,
+.controlCenterTransferGrid,
+.controlCenterSettingsGrid,
+.controlCenterVersionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.controlCenterMiniMetric,
+.controlCenterDiagnosticCard,
+.controlCenterTransferCard,
+.controlCenterSettingCard,
+.controlCenterVersionCard {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(5,8,14,.55);
+}
+.controlCenterMiniMetric { display: grid; gap: 5px; }
+.controlCenterMiniMetric small { color: #d6b35a; font-size: 9px; text-transform: uppercase; letter-spacing: .1em; }
+.controlCenterMiniMetric strong { overflow-wrap: anywhere; font-size: 17px; }
+.controlCenterMiniMetric span { color: var(--muted); font-size: 10px; }
+.controlCenterMiniMetric[data-tone="good"],
+.controlCenterDiagnosticCard[data-tone="good"] { border-color: rgba(112,211,137,.28); }
+.controlCenterMiniMetric[data-tone="warn"],
+.controlCenterDiagnosticCard[data-tone="warn"] { border-color: rgba(255,190,94,.38); }
+.controlCenterMiniMetric[data-tone="bad"],
+.controlCenterDiagnosticCard[data-tone="bad"] { border-color: rgba(237,92,92,.44); }
+.controlCenterTableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+}
+.controlCenterTable {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.controlCenterTable th,
+.controlCenterTable td {
+  padding: 10px 11px;
+  border-bottom: 1px solid rgba(255,255,255,.075);
+  text-align: left;
+  vertical-align: middle;
+}
+.controlCenterTable th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(22,27,37,.98);
+  color: #e3c46d;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.controlCenterTable tr:last-child td { border-bottom: 0; }
+.controlCenterTable td small { display: block; margin-top: 3px; color: var(--muted); }
+.controlCenterTable td[data-tone="good"] { color: #bfffc8; }
+.controlCenterTable td[data-tone="warn"] { color: #ffd99b; }
+.controlCenterTable td[data-tone="bad"] { color: #ffb3b3; }
+.controlCenterTableActions { white-space: nowrap; }
+.controlCenterTableActions button { margin: 2px; }
+.controlCenterEmptyState {
+  padding: 30px 18px;
+  border: 1px dashed rgba(255,255,255,.16);
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.controlCenterJsonDetails {
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  background: rgba(0,0,0,.22);
+}
+.controlCenterJsonDetails summary { padding: 12px 14px; cursor: pointer; color: #d6b35a; font-weight: 700; }
+.controlCenterJsonDetails pre {
+  max-height: 420px;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  border-top: 1px solid rgba(255,255,255,.07);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: rgba(223,229,238,.88);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.controlCenterSettingCard,
+.controlCenterTransferCard,
+.controlCenterDiagnosticCard,
+.controlCenterVersionCard { display: grid; align-content: start; gap: 9px; }
+.controlCenterSettingCard h3,
+.controlCenterTransferCard h3,
+.controlCenterDiagnosticCard h3,
+.controlCenterVersionCard h3 { margin: 0; font-size: 15px; }
+.controlCenterSettingCard p,
+.controlCenterTransferCard p,
+.controlCenterDiagnosticCard p,
+.controlCenterVersionCard p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.controlCenterSettingCard label,
+.controlCenterToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.controlCenterSettingCard input[type="range"] { width: 100%; }
+.controlCenterTransferCard dl,
+.controlCenterVersionCard dl { display: grid; gap: 8px; margin: 0; }
+.controlCenterTransferCard dl div,
+.controlCenterVersionCard dl div { display: grid; grid-template-columns: minmax(90px,.7fr) minmax(0,1.3fr); gap: 10px; }
+.controlCenterTransferCard dt,
+.controlCenterVersionCard dt { color: var(--muted); font-size: 10px; }
+.controlCenterTransferCard dd,
+.controlCenterVersionCard dd { margin: 0; overflow-wrap: anywhere; font-size: 11px; }
+.controlCenterDiagnosticList { margin: 0; padding-left: 18px; color: rgba(226,230,237,.88); font-size: 11px; line-height: 1.5; }
+.controlCenterFeedback {
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 11px;
+  background: rgba(0,0,0,.22);
+  color: var(--muted);
+}
+.controlCenterFeedback[data-tone="good"] { color: #bfffc8; border-color: rgba(112,211,137,.3); }
+.controlCenterFeedback[data-tone="bad"] { color: #ffb3b3; border-color: rgba(237,92,92,.4); }
+[data-control-center-dev-only][hidden],
+html[data-arena-developer-mode="off"] [data-control-center-dev-only] { display: none !important; }
+
+@media (max-width: 1120px) {
+  .mainMenuDashboard.controlCenterDashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .controlCenterAreaPlay,
+  .controlCenterAreaCards,
+  .controlCenterAreaMaps,
+  .controlCenterAreaAnalysis,
+  .controlCenterAreaSystem { grid-column: span 1; }
+  .controlCenterAreaAnalysis,
+  .controlCenterAreaSystem { grid-column: span 1; }
+  .controlCenterStatusBoard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .mainMenuDashboard.controlCenterDashboard { grid-template-columns: 1fr; }
+  .controlCenterAreaPlay,
+  .controlCenterAreaCards,
+  .controlCenterAreaMaps,
+  .controlCenterAreaAnalysis,
+  .controlCenterAreaSystem { grid-column: auto; }
+  .controlCenterActionGrid,
+  .controlCenterActionGridCompact { grid-template-columns: 1fr; }
+  .controlCenterActionGridPlay .controlCenterActionPrimary { grid-column: auto; }
+  .controlCenterStatusBoard { grid-template-columns: 1fr; }
+  .controlCenterStatusCard { min-height: 88px; }
+  .controlCenterPanel { padding: 6px; }
+  .controlCenterPanelSheet {
+    width: 100%;
+    max-height: calc(100dvh - 12px);
+    border-radius: 15px;
+  }
+  .controlCenterPanelHeader { padding: 13px 14px; }
+  .controlCenterPanelBody { padding: 12px; }
+  .controlCenterPanelLead { display: grid; }
+  .controlCenterMetricGrid,
+  .controlCenterDiagnosticsGrid,
+  .controlCenterTransferGrid,
+  .controlCenterSettingsGrid,
+  .controlCenterVersionGrid { grid-template-columns: 1fr; }
+  .controlCenterInlineActions { display: grid; grid-template-columns: 1fr; }
+  .controlCenterInlineActions button { width: 100%; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .mainMenuDashboard.controlCenterDashboard { grid-template-columns: repeat(3, minmax(230px, 1fr)); }
+  .controlCenterAreaPlay,
+  .controlCenterAreaCards,
+  .controlCenterAreaMaps,
+  .controlCenterAreaAnalysis,
+  .controlCenterAreaSystem { grid-column: auto; }
+  .controlCenterStatusBoard { grid-template-columns: repeat(4, minmax(190px, 1fr)); overflow-x: auto; }
+}
+
+/* F9U3 aliases matching the runtime-generated panel markup. */
+.controlCenterMiniMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.controlCenterSettingsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.controlCenterSettingsCard {
+  min-width: 0;
+  padding: 14px;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(5,8,14,.55);
+}
+.controlCenterSettingsCard h3 { margin: 0; font-size: 15px; }
+.controlCenterSettingsCard p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.controlCenterSettingsCard label,
+.controlCenterDeveloperToggle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+.controlCenterSettingsCard label:has(input[type="range"]) {
+  grid-template-columns: minmax(90px, auto) minmax(90px, 1fr) auto;
+}
+.controlCenterSettingsCard output { min-width: 42px; text-align: right; color: #d6b35a; }
+.controlCenterDiagnosticGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.controlCenterDiagnosticGrid details,
+.controlCenterNotesBox {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 13px;
+  background: rgba(4,7,12,.50);
+}
+.controlCenterDiagnosticGrid summary { cursor: pointer; color: #d6b35a; font-weight: 750; }
+.controlCenterDiagnosticGrid ul { margin: 10px 0 0; padding-left: 18px; color: rgba(224,229,238,.86); font-size: 11px; line-height: 1.5; }
+.controlCenterDiagnosticGrid pre { max-height: 320px; margin: 10px 0 0; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 10px; }
+.controlCenterNotesBox { margin-top: 14px; }
+.controlCenterNotesBox p { margin: 7px 0 0; color: var(--muted); line-height: 1.5; }
+.controlCenterKeyValueTable { min-width: 560px; }
+.controlCenterKeyValueTable th { position: static; width: 210px; }
+@media (max-width: 760px) {
+  .controlCenterMiniMetrics,
+  .controlCenterSettingsGrid,
+  .controlCenterDiagnosticGrid { grid-template-columns: 1fr; }
+  .controlCenterSettingsCard label:has(input[type="range"]) { grid-template-columns: 1fr auto; }
+  .controlCenterSettingsCard label:has(input[type="range"]) input { grid-column: 1 / -1; width: 100%; }
+}
+.controlCenterTableActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 190px;
+}
+.controlCenterTableActions button {
+  width: auto !important;
+  min-width: 78px;
+  flex: 0 0 auto;
+}
+.mainMenuDashboard.controlCenterDashboard > .controlCenterArea {
+  grid-area: auto !important;
+}
+/* F9U3 explicit placement after neutralizing legacy named grid areas. */
+.mainMenuDashboard.controlCenterDashboard > .controlCenterAreaPlay { grid-column: span 4 !important; }
+.mainMenuDashboard.controlCenterDashboard > .controlCenterAreaCards { grid-column: span 5 !important; }
+.mainMenuDashboard.controlCenterDashboard > .controlCenterAreaMaps { grid-column: span 3 !important; }
+.mainMenuDashboard.controlCenterDashboard > .controlCenterAreaAnalysis,
+.mainMenuDashboard.controlCenterDashboard > .controlCenterAreaSystem { grid-column: span 6 !important; }
+@media (max-width: 1120px) {
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaPlay,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaCards,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaMaps,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaAnalysis,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaSystem { grid-column: span 1 !important; }
+}
+@media (max-width: 760px) {
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaPlay,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaCards,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaMaps,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaAnalysis,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaSystem { grid-column: 1 / -1 !important; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaPlay,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaCards,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaMaps,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaAnalysis,
+  .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaSystem { grid-column: auto !important; }
 }

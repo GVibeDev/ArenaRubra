@@ -610,6 +610,33 @@ function runPrecheck(options = {}) {
       info.push("F9T0: memoria di finalizzazione pronta; inizializzazione rinviata alla creazione della partita.");
     }
 
+    // F9T1/F9T2c3a – architettura Expert, conversione territoriale, sopravvivenza Relay e Pivot avanzata.
+    const f9t1ExpertHelpers = [
+      "expertBeginTurnF9T1", "expertCompleteTurnF9T1", "expertBuildCommonContextF9T1",
+      "expertRouteFactionF9T1", "expertValidateMicroPlanF9T1",
+      "expertNexusModuleF9T1", "expertExordiumModuleF9T1", "expertLibertiModuleF9T1",
+      "expertAgathoiModuleF9T1", "expertFabeotModuleF9T1",
+      "expertExordiumModuleF9T2b", "expertExordiumModuleF9T2c", "expertExordiumTryPrePurchasePlanStepF9T2a", "expertExordiumRosterChoiceF9T2", "expertExordiumRosterChoiceF9T2c", "expertExordiumObserveRosterPlayF9T2c", "expertExordiumRecordCandidateAuditF9T2a",
+      "expertExordiumClearCandidatesF9T2b", "expertExordiumRelaySurvivalAssessmentF9T2b", "expertExordiumForwardPivotCandidatesF9T2c", "expertExordiumCreateForwardPivotPlanF9T2c", "expertExordiumVarranAssaultCandidatesF9T2d", "expertExordiumCreateVarranAssaultPlanF9T2d", "expertAiHandleGameEventF9T2b", "expertAiHandleGameEventF9T2c",
+      "expertExordiumRefreshCommanderCommitmentF9T2d3", "expertExordiumCommanderRosterChoiceF9T2d3", "expertExordiumObserveCommanderRosterPlayF9T2d3", "expertFactionRefreshPersistentCommitmentsF9T2d3", "expertCommanderReservedEnergyF9T2d3",
+      "expertAdvancePlanStepF9T2", "expertAbortPlanF9T2", "expertCanSpendEnergyF9T2"
+    ];
+    const missingF9T1ExpertHelpers = f9t1ExpertHelpers.filter(name => typeof globalThis[name] !== "function");
+    if (missingF9T1ExpertHelpers.length) {
+      problems.push(`F9T1: componenti architettura Expert mancanti: ${missingF9T1ExpertHelpers.join(", ")}.`);
+    } else {
+      info.push("F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.");
+      info.push("F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.");
+      info.push("F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.");
+      info.push("F9T2d3: turni Expert finalizzati; Commander Deployment Commitment protegge la riserva ENE e forza lo schieramento bounded del comandante senza superare le priorità P0. Varran stazionario, Clear ATT→DEF→HP, Forward Pivot e aggregati restano preservati.");
+    }
+    if (typeof MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION !== "undefined" && MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION !== "F9T1-1") {
+      problems.push(`F9T1: schema telemetrico Expert base inatteso: ${MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION}.`);
+    }
+    if (typeof MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION !== "undefined" && MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION !== "F9T2d3-1") {
+      problems.push(`F9T2d3: schema dottrina Expert inatteso: ${MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION}.`);
+    }
+
     // Handler orfani: non errore, ma utile per pulizia.
     if (typeof ABILITY_HANDLERS !== "undefined") {
       const usedKinds = new Set(blueprints.map(bp => bp.ability && bp.ability.kind).filter(Boolean));

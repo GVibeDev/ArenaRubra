@@ -30,7 +30,7 @@ load("src/sfx_manager.js", "\nthis.__sfxDesc=arenaSfxDescriptorForGameEventF9O5a
 
 const audit = JSON.parse(JSON.stringify(ctx.__fxAudit(vm.runInContext("BLUEPRINTS", ctx))));
 assert.strictEqual(audit.ok, true, audit.errors.join("\n"));
-assert.strictEqual(audit.total, 96);
+assert.strictEqual(audit.total, 115);
 assert.ok(Object.keys(audit.counts).length >= 6);
 assert.strictEqual(ctx.__profile(vm.runInContext('BLUEPRINTS.find(x => x.id === "AGPIV01")', ctx)), "organic");
 assert.strictEqual(ctx.__profile(vm.runInContext('BLUEPRINTS.find(x => x.id === "FBC1F04")', ctx)), "occult");
@@ -64,8 +64,8 @@ assert.strictEqual(settings.sfx.enabled, false);
 assert.strictEqual(ctx.__sfxDiag().volumePercent, 27);
 
 load("data/cards_base.js", "\nthis.__catalogConfig=CARD_CATALOG_CONFIG;");
-assert.ok(["C2-STABLE-1-F9O5a-APK-M4c","C2-STABLE-1-F9O5b-APK-M4c","C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c","C2-STABLE-1-F9O7g-APK-M4c"].includes(ctx.__catalogConfig.version));
-assert.ok(["token_motion_sfx_evaluation","hq_empty_objective_visual_hotfix","tutorial_runtime_foundation","lesson_1_exordium","lesson_2_nexus","collapsed_hand_controls_reflow","lesson_3_agathoi","lesson_4_liberti","lesson_5_fabeot"].includes(ctx.__catalogConfig.mode));
+assert.ok(["C2-STABLE-1-F9O5a-APK-M4c","C2-STABLE-1-F9O5b-APK-M4c","C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c","C2-STABLE-1-F9O7g-APK-M4c","C2-STABLE-1-F9S1b1-APK-M4c"].includes(ctx.__catalogConfig.version));
+assert.ok(["token_motion_sfx_evaluation","hq_empty_objective_visual_hotfix","tutorial_runtime_foundation","lesson_1_exordium","lesson_2_nexus","collapsed_hand_controls_reflow","lesson_3_agathoi","lesson_4_liberti","lesson_5_fabeot","faction_units_tactics_expansion","alternative_pivots_complete_40_card_pools"].includes(ctx.__catalogConfig.mode));
 for (const flag of ["tokenFxProfilesF9O5a", "dynamicTokenFxLayerF9O5a", "tokenFxReducedOffModesF9O5a", "synthesizedSfxRuntimeF9O5a", "persistentSfxControlsF9O5a", "noWebGlMigrationF9O5a"]) {
   assert.strictEqual(ctx.__catalogConfig[flag], true, `Missing F9O5a flag ${flag}`);
 }

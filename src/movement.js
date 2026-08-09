@@ -68,11 +68,20 @@ function movableCells(unit) {
       const range = movementRangeFor(unit);
       if (range <= 0) return [];
       if (typeof mapReachableCells === "function" && state.mapDefinition) {
-        const occupiedKeys = new Set(
-          state.cells
-            .filter(cell => (getUnitAt(cell.coord) && !sameCoord(cell.coord, unit.pos)) || isCellBlockedByEffect(cell.coord))
-            .map(cell => coordKey(cell.coord))
-        );
+        const occupiedKeys = new Set();
+        // Build occupancy from active pieces (units) instead of asking every
+        // map cell to linearly scan the full unit history (cells x units).
+        const fieldUnits = typeof combatUnits === "function"
+          ? combatUnits()
+          : (Array.isArray(state.units) ? state.units.filter(other => other && other.alive && other.pos && other.type !== "QG") : []);
+        for (const other of fieldUnits) {
+          if (other && other.pos && other.uid !== unit.uid) occupiedKeys.add(coordKey(other.pos));
+        }
+        for (const effect of Array.isArray(state.cellEffects) ? state.cellEffects : []) {
+          if (effect && effect.kind === "temporary_block_cell" && Array.isArray(effect.coord)) {
+            occupiedKeys.add(coordKey(effect.coord));
+          }
+        }
         return mapReachableCells(state.mapDefinition, unit.pos, range, { occupiedKeys })
           .map(entry => entry.coord)
           .filter(isCellEnterable);

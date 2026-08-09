@@ -49,7 +49,7 @@ $("newGameBtn").addEventListener("click", newGame);
     $("runBotBtn").addEventListener("click", maybeRunBot);
     $("concedeBtn").addEventListener("click", () => concedeMatch(state.currentPlayer));
     $("autoResignToggle").addEventListener("change", () => { if (state) state.autoResignEnabled = $("autoResignToggle").checked; });
-    $("botAiMode").addEventListener("change", () => { if (state) { state.aiMode = $("botAiMode").value; log(`AI dei bot impostata su ${state.aiMode === "advanced" ? "Avanzata v1.8.11" : "Base v0.9"}.`); maybeRunBot(); renderAll(); } });
+    $("botAiMode").addEventListener("change", () => { if (state) { state.aiMode = $("botAiMode").value; log(`AI dei bot impostata su ${typeof aiModeLabel === "function" ? aiModeLabel(state.aiMode) : state.aiMode}.`); maybeRunBot(); renderAll(); } });
     $("pacePreset").addEventListener("change", () => { if (state) { state.pacePreset = $("pacePreset").value; log(`Preset ritmo impostato su ${paceLabel()}: ${typeof pressureRequirementSummary === "function" ? pressureRequirementSummary() : `Pressione dal round ${pressureStartRound()}`}; cap leggere G1 ${lightFieldLimit(1)} / G2 ${lightFieldLimit(2)}, movimento veicoli ${vehicleMoveRange()}.`); renderAll(); maybeRunBot(); } });
     $("p1Mode").addEventListener("change", () => { if (state) state.modes[1] = $("p1Mode").value; maybeRunBot(); renderAll(); });
     $("p2Mode").addEventListener("change", () => { if (state) state.modes[2] = $("p2Mode").value; maybeRunBot(); renderAll(); });

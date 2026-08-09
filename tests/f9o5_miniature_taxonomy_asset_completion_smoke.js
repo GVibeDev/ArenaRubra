@@ -21,9 +21,9 @@ for (const rel of [
 
 const audit = vm.runInContext("unitTaxonomyAuditF9O5(BLUEPRINTS)", sandbox);
 assert.strictEqual(audit.ok, true, audit.errors.join("\n"));
-assert.strictEqual(audit.total, 96);
+assert.strictEqual(audit.total, 115);
 assert.deepStrictEqual(JSON.parse(JSON.stringify(audit.counts)), {
-  starter: 15, light: 15, heavy: 31, elite: 20, pivot: 5, commander: 10
+  starter: 15, light: 23, heavy: 36, elite: 21, pivot: 10, commander: 10
 });
 assert.deepStrictEqual(JSON.parse(JSON.stringify(audit.starterRoles)), {
   starter_infantry: 5, starter_vehicle: 5, starter_structure: 5

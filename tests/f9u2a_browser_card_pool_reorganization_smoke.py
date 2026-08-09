@@ -97,7 +97,7 @@ with sync_playwright() as p:
     mobile_result=snapshot(mobile)
     browser.close()
 
-assert before['build']=='C2-STABLE-1-F9T0-APK-M4c',before
+assert before['build']=='C2-STABLE-1-F9T2d3-APK-M4c',before
 assert before['headerButtons']==['Deck Builder','Card Editor','Duplica selezionata','Menu principale'],before
 assert before['nav']==['Galleria','Tabella','← Precedente','Successiva →','Apri focus','Chiudi focus'],before
 assert before['selectedName'],before

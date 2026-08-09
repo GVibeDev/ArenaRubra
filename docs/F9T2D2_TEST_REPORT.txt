@@ -1,0 +1,94 @@
+ARENA RUBRA — F9T2d2 TEST REPORT
+=================================
+
+Build candidata
+---------------
+C2-STABLE-1-F9T2d2-APK-M4c
+
+Baseline ufficiale preservata
+-----------------------------
+C2-STABLE-1-F9T2c4-APK-M4c
+
+Scope
+-----
+Correzione del modello di danno usato dal selettore CLEAR_OCCUPY_FORTIFY.
+La selezione simula in sequenza ATT -> DEF -> HP non perforante e accetta il
+candidato soltanto quando al massimo tre attaccanti prevedono la distruzione
+reale del presidio.
+
+Verifiche statiche
+------------------
+JavaScript src controllati con node --check: 79/79 PASS
+
+Suite Node completa
+-------------------
+Test eseguiti: 89
+PASS: 89
+FAIL: 0
+
+Smoke dedicato F9T2d2
+----------------------
+39/39 verifiche superate.
+
+Copertura dedicata:
+1. Falso candidato ATT 4 contro DEF 1 + HP 3 respinto.
+2. Sequenza ATT 1 per rimuovere DEF seguita da ATT 3 sugli HP completata.
+3. PS occupato dopo la rimozione del presidio.
+4. Ricomposizione bounded quando il primo attaccante diventa indisponibile.
+5. Massimo tre attaccanti e modello ATT_DEF_HP_NON_PIERCING.
+
+Browser selezionati
+-------------------
+7/7 PASS
+
+- Territorial Conversion
+- Forward Pivot
+- Varran Assault Chain
+- Telemetry Aggregation
+- First-turn Bootstrap G2
+- Control Center
+- Editor Layout
+
+Territorial Conversion ripetuto
+-------------------------------
+3/3 PASS
+
+Module duration osservata:
+- 3,9 ms
+- 4,1 ms
+- 4,1 ms
+
+Budget exhaustion: 0/3
+Errori pagina: 0
+Errori console: 0
+
+Nota sul test browser Territorial Conversion
+--------------------------------------------
+Il nuovo selettore può scegliere legalmente un attaccante diverso rispetto al
+vecchio ordinamento nominale. Il test è stato reso coerente col contratto del
+piano: risolve attaccante e builder dagli ID prenotati in orderedSteps, invece
+di assumere a priori quale unità svolga ciascun ruolo.
+
+Regressioni preservate
+----------------------
+- Varran Assault F9T2d1
+- Clear Occupation Commitment F9T2c4
+- aggregati e proprietà temporale F9T2c3a
+- Bastion Relay e Survival Check
+- Forward Pivot
+- bootstrap Expert
+- Control Center ed editor
+
+Esclusioni dal collaudo
+-----------------------
+Non eseguiti:
+- replay completo del match reale F9T2d1;
+- batch multi-seed;
+- benchmark Android;
+- collaudo APK su dispositivo reale;
+- partita lunga sulle mappe x1 e x3.
+
+Verdetto tecnico
+----------------
+Candidata pronta per il test telemetrico reale. Non promossa a baseline fino
+alla validazione dell'utente.

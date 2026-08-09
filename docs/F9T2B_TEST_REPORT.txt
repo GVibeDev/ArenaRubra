@@ -1,0 +1,72 @@
+ARENA RUBRA — F9T2b TEST REPORT
+Build: C2-STABLE-1-F9T2b-APK-M4c
+Baseline: C2-STABLE-1-F9T2a-APK-M4c
+Data: 31 luglio 2026
+
+1. SINTASSI
+- File JavaScript controllati: 175
+- Errori: 0
+
+2. SUITE NODE
+- Test eseguiti: 81
+- Superati: 81
+- Falliti: 0
+
+Test dedicato F9T2b:
+- f9t2b_exordium_territorial_conversion_smoke.js
+- Verifiche: 24/24
+- Copertura: selezione CLEAR_OCCUPY_FORTIFY, riserva ENE, due attacchi, eliminazione, fortificazione, telemetria, memoria a cinque round, classificazione UNSUSTAINABLE e cleanup runtime.
+
+Regressione F9T2a:
+- f9t2_exordium_bastion_relay_smoke.js
+- Verifiche: 25/25
+
+3. TEST BROWSER CHROMIUM
+Superati:
+- f9t2b_browser_exordium_territorial_conversion_smoke.py
+- f9t2_browser_exordium_bastion_relay_smoke.py
+- f9t1_browser_expert_architecture_smoke.py
+- f9t1_browser_expert_turn_integration_smoke.py
+- f9u3_browser_control_center_smoke.py
+- f9u2a_browser_card_pool_reorganization_smoke.py
+- f9u2b_browser_editor_layout_reorganization_smoke.py
+
+Esito test browser F9T2b mirato:
+- modulo: expert-exordium-f9t2b
+- piano: EXORDIUM_CLEAR_OCCUPY_FORTIFY
+- sequenza: attack_ps_target -> build_roster_clear_ps
+- ENE riservata: 2
+- PS liberati: 1
+- PS fortificati dopo rimozione: 1
+- memoria perdite tramite eventi: 2 perdite / 5 round
+- classificazione: UNSUSTAINABLE
+- budget esauriti: 0
+- page errors: 0
+- console errors: 0
+- durata contesto osservata: circa 1 ms
+- durata modulo osservata: circa 2,6–2,8 ms
+
+Esito regressione browser Relay:
+- sequenza: move_guard -> build_bastion
+- Bastione costruito: sì
+- guarnigione liberata: sì
+- budget esauriti: 0
+- page/console errors: 0
+
+4. PRECHECK E REGRESSIONI
+- Precheck F9T2b: superato nei test browser.
+- Router monofazione e fallback F9T1: superati.
+- Control Center: superato.
+- Pool carte: superato.
+- Card Editor / Map Editor: superati.
+
+5. LIMITI DEL COLLAUDO
+Non sono stati eseguiti in questa fase:
+- batch di almeno 10 seed;
+- partita completa comparativa F9T2a/F9T2b;
+- benchmark affidabile RAM/CPU su APK fisico;
+- validazione comportamentale su mappe x1/x2/x3;
+- valutazione statistica del tasso di conversione territoriale.
+
+VERDETTO AUTOMATICO
+La candidata è sintatticamente e contrattualmente stabile nei test disponibili. CLEAR_OCCUPY_FORTIFY e RELAY_SURVIVAL_CHECK vengono esercitati con sequenze reali nel browser. La validazione della milestone richiede ancora collaudo comportamentale e prestazionale dell’utente su partite complete/APK.

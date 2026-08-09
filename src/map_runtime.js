@@ -26,8 +26,50 @@ function mapRuntimeSafeId(value, fallback = "custom_map") {
   return normalized || fallback;
 }
 
+
+function mapRuntimeClampNumber(value, fallback, min, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.max(min, Math.min(max, number));
+}
+
+function mapRuntimeSafeImageDataUrl(value, maxLength = 3 * 1024 * 1024) {
+  const text = String(value || "");
+  if (!/^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/=\r\n]+$/i.test(text)) return null;
+  return text.length <= maxLength ? text : null;
+}
+
 function mapRuntimeCellKey(coord) {
   return Array.isArray(coord) ? coord.join(",") : "";
+}
+
+// F9O7h2 performance hotfix. Geometry coordinates do not change during a
+// match, while mutable ownership remains on the indexed cell objects.
+const MAP_RUNTIME_CELL_INDEX_CACHE = new WeakMap();
+const MAP_RUNTIME_PERF = {
+  cellIndexBuilds: 0,
+  shortestPathQueries: 0,
+  reachableQueries: 0
+};
+
+function mapRuntimeCellIndex(cells) {
+  if (!Array.isArray(cells)) return new Map();
+  const cached = MAP_RUNTIME_CELL_INDEX_CACHE.get(cells);
+  if (cached && cached.length === cells.length) return cached.index;
+  const index = new Map(cells.map(cell => [mapRuntimeCellKey(cell.coord), cell]));
+  MAP_RUNTIME_CELL_INDEX_CACHE.set(cells, { length: cells.length, index });
+  MAP_RUNTIME_PERF.cellIndexBuilds += 1;
+  return index;
+}
+
+// Equivalent to queue.sort(cost).shift(), without reordering equal-cost
+// entries. This preserves deterministic insertion-order tie breaking.
+function mapRuntimeTakeLowestCost(queue) {
+  let bestIndex = 0;
+  for (let index = 1; index < queue.length; index += 1) {
+    if (queue[index].cost < queue[bestIndex].cost) bestIndex = index;
+  }
+  return queue.splice(bestIndex, 1)[0];
 }
 
 function mapRuntimeValidCubeCoord(coord) {
@@ -100,6 +142,14 @@ function mapRuntimeNormalizeDefinition(rawDefinition, options = {}) {
     incomeValue: Math.max(0, Math.min(10, Number(ps && ps.incomeValue) || 1)),
     tags: Array.isArray(ps && ps.tags) ? ps.tags.map(tag => mapRuntimeSafeText(tag, 32)).filter(Boolean).slice(0, 12) : []
   })) : [];
+  const taggedCentralPs = strategicPoints.filter(ps => ps.tags.includes("central"));
+  const inferredCentralPs = taggedCentralPs[0]
+    || strategicPoints.find(ps => mapRuntimeCellKey(ps.coord) === "0,0,0")
+    || null;
+  const centralStrategicPointId = mapRuntimeSafeId(
+    raw.centralStrategicPointId || (inferredCentralPs && inferredCentralPs.id) || "",
+    ""
+  ) || null;
   const explicitHazards = Array.isArray(raw.initialHazards)
     ? raw.initialHazards.slice(0, 128).map(mapRuntimeNormalizeInitialHazard)
     : [];
@@ -157,10 +207,33 @@ function mapRuntimeNormalizeDefinition(rawDefinition, options = {}) {
     },
     playerSlots,
     strategicPoints,
+    centralStrategicPointId,
     initialHazards,
     presentation: {
       skinKey: mapRuntimeSafeId(raw.presentation && raw.presentation.skinKey || "red_dust", "red_dust"),
-      backgroundKey: raw.presentation && raw.presentation.backgroundKey ? mapRuntimeSafeText(raw.presentation.backgroundKey, 120) : null
+      backgroundKey: raw.presentation && raw.presentation.backgroundKey ? mapRuntimeSafeText(raw.presentation.backgroundKey, 120) : null,
+      backgroundAssetId: raw.presentation && raw.presentation.backgroundAssetId
+        ? mapRuntimeSafeId(raw.presentation.backgroundAssetId, "map-background")
+        : null,
+      backgroundAssetPath: raw.presentation && raw.presentation.backgroundAssetPath
+        ? mapRuntimeSafeText(raw.presentation.backgroundAssetPath, 240)
+        : null,
+      backgroundName: raw.presentation && raw.presentation.backgroundName
+        ? mapRuntimeSafeText(raw.presentation.backgroundName, 120)
+        : null,
+      backgroundMime: raw.presentation && /^(?:image\/(?:png|jpeg|webp))$/i.test(String(raw.presentation.backgroundMime || ""))
+        ? String(raw.presentation.backgroundMime).toLowerCase()
+        : null,
+      backgroundWidth: Math.max(0, Math.min(16384, Math.trunc(Number(raw.presentation && raw.presentation.backgroundWidth) || 0))),
+      backgroundHeight: Math.max(0, Math.min(16384, Math.trunc(Number(raw.presentation && raw.presentation.backgroundHeight) || 0))),
+      backgroundFit: ["cover", "contain", "native"].includes(raw.presentation && raw.presentation.backgroundFit)
+        ? raw.presentation.backgroundFit
+        : "cover",
+      backgroundOpacity: mapRuntimeClampNumber(raw.presentation && raw.presentation.backgroundOpacity, 0.9, 0, 1),
+      backgroundScale: mapRuntimeClampNumber(raw.presentation && raw.presentation.backgroundScale, 1, 0.25, 4),
+      backgroundOffsetX: mapRuntimeClampNumber(raw.presentation && raw.presentation.backgroundOffsetX, 0, -100, 100),
+      backgroundOffsetY: mapRuntimeClampNumber(raw.presentation && raw.presentation.backgroundOffsetY, 0, -100, 100),
+      backgroundInlineDataUrl: mapRuntimeSafeImageDataUrl(raw.presentation && raw.presentation.backgroundInlineDataUrl)
     },
     metadata: {
       author: mapRuntimeSafeText(raw.metadata && raw.metadata.author || "Arena Rubra", 80),
@@ -196,8 +269,11 @@ function mapRuntimeWriteCustomStore(store) {
     : false;
 }
 
-function getBuiltinMapDefinitions() {
-  return Object.values(BUILTIN_MAP_DEFINITIONS).map(mapRuntimeClone);
+function getBuiltinMapDefinitions(options = {}) {
+  const includeDisabled = options.includeDisabled === true;
+  return Object.values(BUILTIN_MAP_DEFINITIONS)
+    .filter(definition => includeDisabled || definition.enabled !== false)
+    .map(mapRuntimeClone);
 }
 
 function getCustomMapDefinitions() {
@@ -207,7 +283,8 @@ function getCustomMapDefinitions() {
 
 function getAvailableMapDefinitions(options = {}) {
   const includeInvalid = options.includeInvalid === true;
-  const all = [...getBuiltinMapDefinitions(), ...getCustomMapDefinitions()];
+  const all = [...getBuiltinMapDefinitions({ includeDisabled: options.includeDisabled === true }), ...getCustomMapDefinitions()]
+    .filter(definition => options.includeDisabled === true || definition.enabled !== false);
   return includeInvalid ? all : all.filter(definition => validateMapDefinition(definition).valid);
 }
 
@@ -237,8 +314,7 @@ function getMapCell(coord, definition = null) {
   const cells = definition && definition.geometry
     ? definition.geometry.cells || []
     : getActiveMapCells();
-  const key = mapRuntimeCellKey(coord);
-  return cells.find(cell => mapRuntimeCellKey(cell.coord) === key) || null;
+  return mapRuntimeCellIndex(cells).get(mapRuntimeCellKey(coord)) || null;
 }
 
 function getMapHeadquarters(playerId, definition = null) {
@@ -254,6 +330,43 @@ function getMapStrategicPoints(definition = null) {
   return active && Array.isArray(active.strategicPoints)
     ? active.strategicPoints.map(ps => ({ ...ps, coord: [...ps.coord] }))
     : [];
+}
+
+function mapRuntimeHexDistance(a, b) {
+  if (!mapRuntimeValidCubeCoord(a) || !mapRuntimeValidCubeCoord(b)) return Infinity;
+  return Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[2] - b[2]));
+}
+
+function getCentralStrategicPoint(definition = null) {
+  const active = definition || getActiveMapDefinition();
+  const points = active && Array.isArray(active.strategicPoints) ? active.strategicPoints : [];
+  if (!points.length) return null;
+  const explicitId = active && active.centralStrategicPointId ? String(active.centralStrategicPointId) : "";
+  const explicit = explicitId ? points.find(ps => String(ps.id) === explicitId) : null;
+  const tagged = points.find(ps => Array.isArray(ps.tags) && ps.tags.includes("central"));
+  const fallback = points.find(ps => mapRuntimeCellKey(ps.coord) === "0,0,0");
+  const central = explicit || tagged || fallback || null;
+  return central ? { ...central, coord: [...central.coord] } : null;
+}
+
+function getCentralStrategicPointCoord(definition = null) {
+  const central = getCentralStrategicPoint(definition);
+  return central ? [...central.coord] : (typeof CENTER_PS_COORD !== "undefined" ? [...CENTER_PS_COORD] : [0, 0, 0]);
+}
+
+function isCentralStrategicPointCoord(coord, definition = null) {
+  const central = getCentralStrategicPoint(definition);
+  return Boolean(central && mapRuntimeCellKey(central.coord) === mapRuntimeCellKey(coord));
+}
+
+function centralStrategicPointLinearDistances(definition = null) {
+  const active = definition || getActiveMapDefinition();
+  const central = getCentralStrategicPoint(active);
+  if (!active || !central || !Array.isArray(active.playerSlots)) return [];
+  return active.playerSlots.map(slot => ({
+    player: Number(slot.slotId),
+    distance: mapRuntimeHexDistance(central.coord, slot.headquarters)
+  }));
 }
 
 function getMapDeploymentDefinition(playerId, definition = null) {
@@ -323,6 +436,7 @@ function getPlayerById(playerId) {
 function getActivePlayers() {
   if (typeof state === "undefined" || !state) return [];
   return mapRuntimePlayerIds(state).filter(playerId => {
+    if (typeof isPlayerActive === "function") return isPlayerActive(playerId);
     const player = getPlayerById(playerId);
     return !player || player.eliminated !== true;
   });
@@ -468,17 +582,17 @@ function mapRuntimeObstacleSymmetryIssues(definition) {
 
 function findMapPath(definition, startCoord, targetCoord, options = {}) {
   if (!definition || !mapRuntimeValidCubeCoord(startCoord) || !mapRuntimeValidCubeCoord(targetCoord)) return null;
-  const cells = new Map((definition.geometry && definition.geometry.cells || []).map(cell => [mapRuntimeCellKey(cell.coord), cell]));
+  const cells = mapRuntimeCellIndex(definition.geometry && definition.geometry.cells || []);
   const startKey = mapRuntimeCellKey(startCoord);
   const targetKey = mapRuntimeCellKey(targetCoord);
   if (!cells.has(startKey) || !cells.has(targetKey)) return null;
+  MAP_RUNTIME_PERF.shortestPathQueries += 1;
   const distances = new Map([[startKey, 0]]);
   const previous = new Map();
   const queue = [{ coord: [...startCoord], cost: 0 }];
   const occupied = options.occupiedKeys instanceof Set ? options.occupiedKeys : new Set();
   while (queue.length) {
-    queue.sort((a, b) => a.cost - b.cost);
-    const current = queue.shift();
+    const current = mapRuntimeTakeLowestCost(queue);
     const currentKey = mapRuntimeCellKey(current.coord);
     if (current.cost !== distances.get(currentKey)) continue;
     if (currentKey === targetKey) break;
@@ -512,15 +626,15 @@ function findMapPath(definition, startCoord, targetCoord, options = {}) {
 }
 
 function mapReachableCells(definition, startCoord, budget, options = {}) {
-  const cells = new Map((definition && definition.geometry && definition.geometry.cells || []).map(cell => [mapRuntimeCellKey(cell.coord), cell]));
+  const cells = mapRuntimeCellIndex(definition && definition.geometry && definition.geometry.cells || []);
   const startKey = mapRuntimeCellKey(startCoord);
   if (!cells.has(startKey) || budget <= 0) return [];
+  MAP_RUNTIME_PERF.reachableQueries += 1;
   const occupied = options.occupiedKeys instanceof Set ? options.occupiedKeys : new Set();
   const distances = new Map([[startKey, 0]]);
   const queue = [{ coord: [...startCoord], cost: 0 }];
   while (queue.length) {
-    queue.sort((a, b) => a.cost - b.cost);
-    const current = queue.shift();
+    const current = mapRuntimeTakeLowestCost(queue);
     const currentKey = mapRuntimeCellKey(current.coord);
     if (current.cost !== distances.get(currentKey)) continue;
     for (const next of mapRuntimeNeighbors(current.coord)) {
@@ -575,6 +689,7 @@ function validateMapDefinition(rawDefinition, options = {}) {
   }
 
   const hazardKeys = new Set();
+  const hazardIds = new Set();
   for (const [index, hazard] of (Array.isArray(raw.initialHazards) ? raw.initialHazards : []).entries()) {
     if (!hazard || !["trap", "mine"].includes(hazard.type)) {
       pushError("E_MAP_INVALID_INITIAL_HAZARD", `Pericolo iniziale ${index + 1} con tipo non valido.`);
@@ -584,6 +699,9 @@ function validateMapDefinition(rawDefinition, options = {}) {
       pushError("E_MAP_INVALID_CUBE_COORD", `Pericolo iniziale ${index + 1} con coordinate non valide.`, hazard.coord);
       continue;
     }
+    const hazardId = mapRuntimeSafeId(hazard.id || hazard.sourceId, `hazard-${index + 1}`);
+    if (hazardIds.has(hazardId)) pushError("E_MAP_DUPLICATE_INITIAL_HAZARD_ID", `ID pericolo iniziale duplicato: ${hazardId}.`, hazard.coord);
+    hazardIds.add(hazardId);
     const key = mapRuntimeCellKey(hazard.coord);
     if (!keys.has(key)) pushError("E_MAP_INITIAL_HAZARD_OUTSIDE_CELLS", `Pericolo iniziale ${index + 1} fuori mappa.`, hazard.coord);
     const uniqueKey = `${key}|${hazard.type}`;
@@ -613,18 +731,37 @@ function validateMapDefinition(rawDefinition, options = {}) {
   }
 
   const psKeys = new Set();
+  const psIds = new Set();
   for (const ps of definition.strategicPoints) {
     if (!mapRuntimeValidCubeCoord(ps.coord)) {
       pushError("E_MAP_INVALID_CUBE_COORD", `PS ${ps.id} con coordinate non valide.`, ps.coord);
       continue;
     }
     const key = mapRuntimeCellKey(ps.coord);
+    if (psIds.has(ps.id)) pushError("E_MAP_DUPLICATE_PS_ID", `ID Punto Strategico duplicato: ${ps.id}.`, ps.coord);
+    psIds.add(ps.id);
     if (!keys.has(key)) pushError("E_MAP_PS_OUTSIDE_CELLS", `PS ${ps.id} fuori mappa.`, ps.coord);
     if (psKeys.has(key)) pushError("E_MAP_DUPLICATE_PS", `PS duplicato sulla cella ${key}.`, ps.coord);
     if (hqKeys.has(key)) pushError("E_MAP_PS_OVERLAPS_HQ", `PS ${ps.id} sovrapposto a un QG.`, ps.coord);
     psKeys.add(key);
     const terrain = getMapTerrainAt(ps.coord, definition);
     if (terrain && terrain.blocksOccupation) pushError("E_MAP_OBSTACLE_ON_PS", `PS ${ps.id} su ostacolo.`, ps.coord);
+  }
+
+  const centralTagged = definition.strategicPoints.filter(ps => Array.isArray(ps.tags) && ps.tags.includes("central"));
+  const centralId = definition.centralStrategicPointId ? String(definition.centralStrategicPointId) : "";
+  const centralPs = centralId ? definition.strategicPoints.find(ps => String(ps.id) === centralId) : null;
+  if (!centralId) pushError("E_MAP_CENTRAL_PS_REQUIRED", "Designare un PS centrale esplicito.");
+  else if (!centralPs) pushError("E_MAP_CENTRAL_PS_NOT_FOUND", `Il PS centrale ${centralId} non esiste.`);
+  if (centralTagged.length > 1) pushError("E_MAP_MULTIPLE_CENTRAL_PS", `Più PS marcati come centrali: ${centralTagged.map(ps => ps.id).join(", ")}.`);
+  if (centralPs && !centralPs.tags.includes("central")) {
+    pushWarning("W_MAP_CENTRAL_PS_TAG_MISSING", `Il PS centrale ${centralPs.id} non contiene il tag central.`, centralPs.coord);
+  }
+  if (centralPs && definition.playerSlots.length > 1) {
+    const distances = definition.playerSlots.map(slot => mapRuntimeHexDistance(centralPs.coord, slot.headquarters));
+    if (distances.some(distance => !Number.isFinite(distance)) || new Set(distances).size !== 1) {
+      pushError("E_MAP_CENTRAL_PS_NOT_EQUIDISTANT", `Il PS centrale deve essere equidistante in linea retta da tutti i QG; distanze: ${distances.join(", ")}.`, centralPs.coord);
+    }
   }
 
   const traversableCells = cells.filter(cell => {
@@ -691,6 +828,8 @@ function validateMapDefinition(rawDefinition, options = {}) {
       playerCount: definition.playerCount,
       cellCount: cells.length,
       strategicPointCount: definition.strategicPoints.length,
+      centralStrategicPointId: definition.centralStrategicPointId || null,
+      centralStrategicPointCoord: (getCentralStrategicPoint(definition) || {}).coord || null,
       terrainUsage: mapTerrainUsage(definition)
     }
   };
@@ -755,6 +894,8 @@ function duplicateMapDefinition(mapId, requestedId = "") {
 function exportMapDefinitionJson(rawDefinition) {
   const validation = validateMapDefinition(rawDefinition, { imported: rawDefinition && rawDefinition.official !== true });
   if (!validation.valid) return { ok: false, validation, json: "" };
+  const portableMap = mapRuntimeClone(validation.definition);
+  if (portableMap.presentation) delete portableMap.presentation.backgroundInlineDataUrl;
   return {
     ok: true,
     validation,
@@ -762,7 +903,8 @@ function exportMapDefinitionJson(rawDefinition) {
       kind: "arena-rubra-map",
       schemaVersion: MAP_SCHEMA_VERSION,
       exportedAt: new Date().toISOString(),
-      map: validation.definition
+      assetMode: "reference-only",
+      map: portableMap
     }, null, 2)
   };
 }
