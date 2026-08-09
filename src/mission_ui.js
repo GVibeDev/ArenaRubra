@@ -78,7 +78,6 @@ function missionUiPendingRewardSignature() {
     pending.attackerUid || "",
     pending.defenderUid || "",
     Array.isArray(pending.selectedUids) ? pending.selectedUids.slice().sort().join(",") : "",
-    Array.isArray(pending.targetSides) ? pending.targetSides.slice().sort((a,b)=>a-b).join(",") : "",
     groups
   ].join("^");
 }
@@ -532,13 +531,6 @@ function missionUiConfirmPlay(side) {
 function missionUiPendingRewardChoiceHtml() {
   const pending = typeof missionPendingReward === "function" ? missionPendingReward() : null;
   if (!pending) return "";
-  if (pending.kind === "mission_player_target_selection") {
-    const buttons = (pending.targetSides || []).map(side => {
-      const info = typeof f9q3d1TargetSummary === "function" ? f9q3d1TargetSummary(side) : {faction:state.factions && state.factions[side],energy:state.energy && state.energy[side],hand:state.hand && state.hand[side] ? state.hand[side].length : 0,deck:state.deck && state.deck[side] ? state.deck[side].length : 0,pressure:state.pressure && state.pressure[side] || 0,ps:typeof countControlledPS === "function" ? countControlledPS(side) : 0};
-      return `<button type="button" class="missionRewardCard" onclick="missionRewardConfirmPlayerTarget(${side})"><strong>${missionUiEscape(playerName(side))}</strong><span>${missionUiEscape(info.faction || "Fazione")} · ENE ${info.energy} · PS ${info.ps} · Pressione ${info.pressure} · Mano ${info.hand} · Deck ${info.deck}</span></button>`;
-    }).join("");
-    return `<section class="missionRewardChoice" aria-label="Scelta avversario ricompensa Missione"><div class="missionRewardChoiceHeader"><div><strong>Scegli l’avversario della Missione “${missionUiEscape(pending.missionName)}”</strong><span>Solo i giocatori attivi sono bersagli validi.</span></div><span class="missionStatus missionStatus-reward_pending">FFA</span></div><div class="missionRewardCardGrid">${buttons}</div></section>`;
-  }
   if (pending.kind === "enemy_discard_selection") {
     const cards = typeof missionPendingDiscardEligibleCards === "function" ? missionPendingDiscardEligibleCards() : [];
     const selected = new Set(pending.selectedUids || []);

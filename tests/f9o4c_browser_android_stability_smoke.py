@@ -100,7 +100,7 @@ result={
   'ignoredBaselineConsoleErrors':len(console_errors)-len(unexpected)
 }
 print(json.dumps(result,ensure_ascii=False,indent=2))
-assert base['build'] in {'C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c','C2-STABLE-1-F9S1b1-APK-M4c','C2-STABLE-1-F9Q3e1a-APK-M4c','C2-STABLE-1-F9U2b-APK-M4c'},base
+assert base['build'] in {'C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c'},base
 assert base['pre']['ok'],base['pre']['problems']
 assert base['replaceChildren']=='undefined',base
 assert base['mobile'] and base['gameBar'],base

@@ -58,25 +58,19 @@ function selectAiTargetPlayer(player, options = {}) {
 
 function controlledPsCells(player) { return state.cells.filter(c => c.ps && c.control === player); }
 
-function centerPsCell() {
-  if (!state || !Array.isArray(state.cells)) return null;
-  const coord = typeof getCentralStrategicPointCoord === "function"
-    ? getCentralStrategicPointCoord(state.mapDefinition)
-    : CENTER_PS_COORD;
-  return state.cells.find(c => c.ps && sameCoord(c.coord, coord)) || null;
-}
+function centerPsCell() { return state.cells.find(c => c.ps && sameCoord(c.coord, CENTER_PS_COORD)) || null; }
 
 function centerPsOccupant() { const center = centerPsCell(); return center ? getUnitAt(center.coord) : null; }
 
 function centerControlledBy(player) { const center = centerPsCell(); return Boolean(center && center.control === player); }
 
-function centerControlledByEnemy(player) { const center = centerPsCell(); return Boolean(center && center.control && center.control !== player); }
+function centerControlledByEnemy(player) { const center = centerPsCell(); const enemy = enemyOf(player); return Boolean(center && center.control === enemy); }
 
 function centerOpeningActive(player) { return Boolean(centerPsCell() && state.turn <= CENTER_OPENING_END_ROUND && !centerControlledBy(player)); }
 
 function centerContestUrgent(player) { return Boolean(centerPsCell() && state.turn <= CENTER_CONTEST_END_ROUND && centerControlledByEnemy(player)); }
 
-function sidePsCells() { const center = centerPsCell(); return state.cells.filter(c => c.ps && (!center || !sameCoord(c.coord, center.coord))); }
+function sidePsCells() { return state.cells.filter(c => c.ps && !sameCoord(c.coord, CENTER_PS_COORD)); }
 
 function homePsCell(player) {
       const hq = getHq(player);
@@ -357,20 +351,19 @@ function botApplyEneReserveToChoices(player, choices) {
       return choices;
     }
 
-function c2e3MoveScore(unit, coord, status=strategicStatus(unit.side), options={}) {
+function c2e3MoveScore(unit, coord) {
       const player = unit.side;
-      const data = status && status.strategic ? status.strategic : evaluateBotStrategicState(player);
+      const data = evaluateBotStrategicState(player);
       let score = botCenterPsBonus(player, coord);
       const cell = getCellAt(coord);
       if (cell && cell.ps && cell.control !== player) score += data.posture === "svantaggio" ? 12 : 7;
       if (cell && cell.ps && cell.control === player) score += data.posture === "vantaggio" ? 7 : 3;
       score -= botThreatPenalty(player, coord, unit) * (data.posture === "vantaggio" ? 0.8 : 0.55);
-      if (options.includeDoctrine !== false) score += botGeneralDoctrineMoveBonus(unit, coord, status) * 0.55;
-      if (options.includeGate !== false) score -= botPsSupportGatePenalty(unit, coord, status) * 0.35;
+      score += botGeneralDoctrineMoveBonus(unit, coord, strategicStatus(player)) * 0.55;
+      score -= botPsSupportGatePenalty(unit, coord, strategicStatus(player)) * 0.35;
       if (data.recoveryReadySoon && unit.type !== "Comandante") score += 1.5;
       return score;
     }
-
 
 function c2e3SaferStrategicMove(unit, options, proposed) {
       if (!advancedAiEnabled() || !proposed || !options || !options.length) return proposed;
@@ -537,227 +530,10 @@ function botTotalPsCount() {
       return state && Array.isArray(state.cells) ? state.cells.filter(c => c.ps).length : 3;
     }
 
-
-// =====================================================
-// F9T0 – Advanced AI Finalization / Expert AI Preparation
-// Single-pass movement context, proportional pressure thresholds,
-// dynamic garrison budget and anti-stall memory.
-// =====================================================
-function botPressureProfileF9T0() {
-      const profile = typeof pressureRuleProfile === "function" ? pressureRuleProfile() : null;
-      const totalPs = Math.max(1, Number(profile && profile.totalPs) || botTotalPsCount() || 1);
-      const requiredPs = Math.max(1, Number(profile && profile.requiredPs) || Math.ceil(totalPs / 2));
-      return {
-        totalPs,
-        requiredPs,
-        centralCoord: profile && Array.isArray(profile.centralCoord) ? [...profile.centralCoord] : (centerPsCell() ? [...centerPsCell().coord] : null),
-        startRound: Number(profile && profile.startRound) || (typeof pressureStartRound === "function" ? pressureStartRound() : 20),
-        pressureWin: Number(profile && profile.pressureWin) || (typeof pressureWinLimit === "function" ? pressureWinLimit() : PRESSURE_WIN),
-        maxRound: Number(profile && profile.maxRound) || (typeof maxRoundLimit === "function" ? maxRoundLimit() : MAX_ROUND)
-      };
-    }
-
-function botControlsCentralF9T0(player, profile=botPressureProfileF9T0()) {
-      if (typeof playerControlsCentralStrategicPoint === "function") return playerControlsCentralStrategicPoint(player, profile);
-      const center = centerPsCell();
-      return Boolean(center && center.control === player);
-    }
-
-function ensureAiFinalizationMemoryF9T0() {
-      if (!state) return null;
-      if (!state.aiFinalizationF9T0 || typeof state.aiFinalizationF9T0 !== "object") {
-        state.aiFinalizationF9T0 = { schema:"F9T0-1", players:{}, unitHistory:{} };
-      }
-      if (!state.aiFinalizationF9T0.players) state.aiFinalizationF9T0.players = {};
-      if (!state.aiFinalizationF9T0.unitHistory) state.aiFinalizationF9T0.unitHistory = {};
-      return state.aiFinalizationF9T0;
-    }
-
-function botProgressSnapshotF9T0(player) {
-      const enemy = enemyOf(player);
-      const ownHq = getHq(player);
-      const enemyHq = getHq(enemy);
-      const ownUnits = combatUnits(player);
-      const enemyUnits = combatUnits(enemy);
-      const mobile = ownUnits.filter(u => u.type !== "Struttura" && u.type !== "QG");
-      const closestEnemyHqDistance = enemyHq && mobile.length ? Math.min(...mobile.map(u => hexDistance(u.pos, enemyHq.pos))) : 99;
-      const forwardUnits = ownHq && enemyHq ? mobile.filter(u => hexDistance(u.pos, enemyHq.pos) < hexDistance(u.pos, ownHq.pos)).length : 0;
-      return {
-        round: Number(state.turn) || 0,
-        ownPs: countControlledPS(player),
-        ownPressure: Number(state.pressure && state.pressure[player]) || 0,
-        enemyUnits: enemyUnits.length,
-        closestEnemyHqDistance,
-        forwardUnits
-      };
-    }
-
-function botUpdateFinalizationMemoryF9T0(player) {
-      const memory = ensureAiFinalizationMemoryF9T0();
-      if (!memory) return { stalledRounds:0, lastProgressRound:0 };
-      const round = Number(state.turn) || 0;
-      const existing = memory.players[player];
-      if (existing && existing.lastRound === round) return existing;
-      const current = botProgressSnapshotF9T0(player);
-      const record = existing || { lastRound:-1, stalledRounds:0, lastProgressRound:current.round, snapshot:null };
-      if (record.lastRound !== current.round) {
-        const previous = record.snapshot;
-        const progressed = !previous
-          || current.ownPs > previous.ownPs
-          || current.ownPressure > previous.ownPressure
-          || current.enemyUnits < previous.enemyUnits
-          || current.closestEnemyHqDistance < previous.closestEnemyHqDistance
-          || current.forwardUnits > previous.forwardUnits;
-        if (progressed || current.round < 6) {
-          record.stalledRounds = 0;
-          record.lastProgressRound = current.round;
-        } else {
-          record.stalledRounds = Math.min(9, (record.stalledRounds || 0) + 1);
-        }
-        record.snapshot = current;
-        record.lastRound = current.round;
-        memory.players[player] = record;
-        if (state.aiTelemetry) {
-          if (!state.aiTelemetry.maxStalledRounds) state.aiTelemetry.maxStalledRounds = {};
-          state.aiTelemetry.maxStalledRounds[player] = Math.max(state.aiTelemetry.maxStalledRounds[player] || 0, record.stalledRounds);
-        }
-      }
-      return record;
-    }
-
-function botRecordMoveChoiceF9T0(unit, coord) {
-      const memory = ensureAiFinalizationMemoryF9T0();
-      if (!memory || !unit || !unit.uid || !Array.isArray(unit.pos) || !Array.isArray(coord)) return;
-      const previousRecord = memory.unitHistory[unit.uid] || {};
-      const returning = Array.isArray(previousRecord.previous) && sameCoord(previousRecord.previous, coord);
-      memory.unitHistory[unit.uid] = {
-        previous:[...unit.pos],
-        current:[...coord],
-        round:Number(state.turn) || 0,
-        returning
-      };
-      if (returning && state.aiTelemetry) {
-        if (!state.aiTelemetry.oscillationMoves) state.aiTelemetry.oscillationMoves = {};
-        state.aiTelemetry.oscillationMoves[unit.side] = (state.aiTelemetry.oscillationMoves[unit.side] || 0) + 1;
-      }
-    }
-
-function botMoveUnitF9T0(unit, coord) {
-      if (advancedAiEnabled()) botRecordMoveChoiceF9T0(unit, coord);
-      moveUnit(unit, coord);
-    }
-
-function botNexusNetworkMaturityF9T0(player, profile=botPressureProfileF9T0()) {
-      if (!botIsNexusPlayer(player)) return { mature:false, controlled:0, structures:0, covered:0, mobile:0 };
-      const controlled = controlledPsCells(player);
-      const structures = combatUnits(player).filter(u => u.faction === "Nexus" && u.type === "Struttura");
-      const mobile = combatUnits(player).filter(u => u.type !== "Struttura" && u.type !== "QG").length;
-      const covered = controlled.filter(ps => structures.some(s => hexDistance(s.pos, ps.coord) <= 1) || alliesNear(ps.coord, player, 1).length >= 2).length;
-      const targetPs = Math.max(1, Math.min(profile.requiredPs - 1, Math.ceil(profile.requiredPs / 2)));
-      const requiredStructures = profile.requiredPs >= 3 ? 2 : 1;
-      return {
-        mature: controlled.length >= targetPs && structures.length >= requiredStructures && covered >= Math.min(targetPs, controlled.length) && mobile >= 3,
-        controlled:controlled.length,
-        structures:structures.length,
-        covered,
-        mobile,
-        targetPs
-      };
-    }
-
-function botAgathoiGreenLineMaturityF9T0(player, profile=botPressureProfileF9T0()) {
-      if (!botIsAgathoiPlayer(player)) return { mature:false, controlled:0, structures:0, covered:0, mobile:0 };
-      const controlled = controlledPsCells(player);
-      const structures = botAgathoiStructures(player);
-      const mobileUnits = combatUnits(player).filter(u => u.type !== "Struttura" && u.type !== "QG");
-      const covered = controlled.filter(ps => structures.some(s => hexDistance(s.pos, ps.coord) <= 2) || alliesNear(ps.coord, player, 1).length >= 2).length;
-      const targetPs = Math.max(1, Math.min(profile.requiredPs - 1, Math.ceil(profile.requiredPs / 2)));
-      const requiredStructures = profile.requiredPs >= 3 ? 2 : 1;
-      const forwardReady = mobileUnits.filter(u => !unitIsGarrisoningPs(u)).length >= 2;
-      return {
-        mature: controlled.length >= targetPs && structures.length >= requiredStructures && covered >= Math.min(targetPs, controlled.length) && forwardReady,
-        controlled:controlled.length,
-        structures:structures.length,
-        covered,
-        mobile:mobileUnits.length,
-        targetPs
-      };
-    }
-
-function botGarrisonCellPriorityF9T0(player, cell, status) {
-      const enemies = enemiesNear(cell.coord, player, 2).length;
-      const allies = alliesNear(cell.coord, player, 1).length;
-      const isCenter = Boolean(status.center && sameCoord(cell.coord, status.center.coord));
-      const nearHq = status.ownHq ? hexDistance(cell.coord, status.ownHq.pos) <= 2 : false;
-      let score = enemies * 50 + (isCenter ? 24 : 0) + (nearHq ? 12 : 0);
-      if (status.closePressureLock || status.ownPressureQualified) score += isCenter ? 28 : 10;
-      if (allies <= 0) score += 8;
-      return { score, enemies, allies, isCenter, nearHq };
-    }
-
-function botBuildGarrisonPlanF9T0(player, status) {
-      const cells = controlledPsCells(player);
-      if (!cells.length) return { budget:0, keepCells:[], keepKeys:new Set(), guardTargets:[] };
-      const entries = cells.map(cell => ({ cell, ...botGarrisonCellPriorityF9T0(player, cell, status) }));
-      const critical = entries.filter(entry => entry.enemies > 0 || (entry.isCenter && (status.pressureWindow || status.closePressureLock)));
-      let budget;
-      if (status.closePressureLock || status.pressureEmergency || (status.hqDanger && cells.length <= 2)) budget = cells.length;
-      else if (cells.length <= 1) budget = 1;
-      else if (status.stalledRounds >= 2) budget = Math.max(1, Math.ceil(cells.length * 0.34));
-      else if (status.winning && (status.networkMature || status.greenLineMature)) budget = Math.max(1, Math.ceil(cells.length * 0.5));
-      else budget = Math.max(1, Math.ceil(cells.length * 0.67));
-      budget = Math.min(cells.length, Math.max(budget, critical.length));
-      entries.sort((a,b) => b.score - a.score || String(a.cell.id || "").localeCompare(String(b.cell.id || "")));
-      const keepCells = entries.slice(0, budget).map(entry => entry.cell);
-      for (const entry of critical) if (!keepCells.some(cell => sameCoord(cell.coord, entry.cell.coord))) keepCells.push(entry.cell);
-      const keepKeys = new Set(keepCells.map(cell => cell.coord.join(",")));
-      const guardTargets = entries.filter(entry => {
-        if (!keepKeys.has(entry.cell.coord.join(","))) return false;
-        const occupant = getUnitAt(entry.cell.coord);
-        if (!occupant || occupant.side !== player) return true;
-        return entry.enemies > 0 && entry.allies < Math.min(3, entry.enemies + 1);
-      }).map(entry => entry.cell);
-      return { budget, keepCells, keepKeys, guardTargets, entries };
-    }
-
-function botStallOscillationScoreF9T0(unit, coord, status) {
-      if (!status || status.stalledRounds < 2 || status.hqDanger || status.pressureEmergency || !unit || !coord) return 0;
-      const memory = ensureAiFinalizationMemoryF9T0();
-      const history = memory && memory.unitHistory ? memory.unitHistory[unit.uid] : null;
-      const level = Math.min(3, status.stalledRounds - 1);
-      let score = 0;
-      if (status.enemyHq) {
-        const currentDistance = hexDistance(unit.pos, status.enemyHq.pos);
-        const nextDistance = hexDistance(coord, status.enemyHq.pos);
-        score += (currentDistance - nextDistance) * (2.5 + level * 1.5);
-      }
-      if (history && Array.isArray(history.previous) && sameCoord(coord, history.previous)) score -= 8 + level * 5;
-      const cell = getCellAt(coord);
-      if (cell && cell.ps && cell.control !== unit.side) score += 6 + level * 3;
-      if (cell && cell.ps && cell.control === unit.side && status.garrisonPlan && !status.garrisonPlan.keepKeys.has(cell.coord.join(","))) score -= 4 + level * 2;
-      return score;
-    }
-
-function botFactionDoctrineMoveBonusF9T0(unit, coord, status) {
-      if (!unit) return 0;
-      if (unit.faction === "Nexus") return botNexusMoveDoctrineBonus(unit, coord, status);
-      if (unit.faction === "Exordium") return botExordiumMoveDoctrineBonus(unit, coord, status);
-      if (unit.faction === "Liberti") return botLibertiMoveDoctrineBonus(unit, coord, status);
-      if (unit.faction === "Agathoi") return botAgathoiMoveDoctrineBonus(unit, coord, status);
-      if (unit.faction === "Fabeot") return botFabeotMoveDoctrineBonus(unit, coord, status);
-      return 0;
-    }
-
-
 function botPressureEmergencyActive(status) {
       if (!status) return false;
-      const profile = status.pressureProfile || botPressureProfileF9T0();
-      const enemyQualified = typeof status.enemyPressureQualified === "boolean"
-        ? status.enemyPressureQualified
-        : (status.enemyPs >= profile.requiredPs && botControlsCentralF9T0(status.enemy, profile));
-      return enemyQualified || status.enemyPressure >= Math.max(1, profile.pressureWin - 2);
+      return status.enemyPs >= botTotalPsCount() || status.enemyPressure >= Math.min(3, PRESSURE_WIN - 2);
     }
-
 
 function botZeroPsRecoveryActive(status) {
       return Boolean(status && status.ownPs <= 0 && status.enemyPs > 0);
@@ -918,17 +694,15 @@ function updateAiTelemetryStartTurn(player) {
       t.maxPressure[player] = Math.max(t.maxPressure[player] || 0, ownPressure);
       t.maxPressure[enemy] = Math.max(t.maxPressure[enemy] || 0, enemyPressure);
       if (ownPs <= 0) t.turnsAt0PS[player] = (t.turnsAt0PS[player] || 0) + 1;
-      const profile = botPressureProfileF9T0();
-      const enemyQualified = enemyPs >= profile.requiredPs && botControlsCentralF9T0(enemy, profile);
-      if (enemyQualified) t.turnsEnemyAt3PS[player] = (t.turnsEnemyAt3PS[player] || 0) + 1;
-      if (enemyPressure >= Math.max(1, profile.pressureWin - 2) || enemyQualified) t.pressureEmergencyTurns[player] = (t.pressureEmergencyTurns[player] || 0) + 1;
+      if (enemyPs >= botTotalPsCount()) t.turnsEnemyAt3PS[player] = (t.turnsEnemyAt3PS[player] || 0) + 1;
+      if (enemyPressure >= Math.min(3, PRESSURE_WIN - 2) || enemyPs >= botTotalPsCount()) t.pressureEmergencyTurns[player] = (t.pressureEmergencyTurns[player] || 0) + 1;
       if (botImmediateVictoryThreat(player)) t.qgThreatTurns[player] = (t.qgThreatTurns[player] || 0) + 1;
       if (t.wasAt0PS[player] && ownPs > 0) t.recoveriesFrom0PS[player] = (t.recoveriesFrom0PS[player] || 0) + 1;
       t.wasAt0PS[player] = ownPs <= 0;
     }
 
 function botClosePressureLockActive(status) {
-      return Boolean(status && status.ownPressure >= (typeof pressureWinLimit === "function" ? pressureWinLimit() : PRESSURE_WIN) - 1 && status.ownPs > status.enemyPs);
+      return Boolean(status && status.ownPressure >= PRESSURE_WIN - 1 && status.ownPs > status.enemyPs);
     }
 
 function botClosePressureLockBonus(unit, coord, status=strategicStatus(unit.side)) {
@@ -1117,9 +891,8 @@ function botOpeningDoctrineMoveBonus(unit, coord, status=strategicStatus(unit.si
       return score;
     }
 
-function botGeneralDoctrineMoveBonus(unit, coord, status=strategicStatus(unit.side), options={}) {
+function botGeneralDoctrineMoveBonus(unit, coord, status=strategicStatus(unit.side)) {
       if (!advancedAiEnabled() || !unit || !coord) return 0;
-      const includeFaction = options.includeFaction !== false;
       let score = 0;
       score += botOpeningDoctrineMoveBonus(unit, coord, status);
       score += botControlledPsDoctrineBonus(unit, coord, status);
@@ -1128,7 +901,11 @@ function botGeneralDoctrineMoveBonus(unit, coord, status=strategicStatus(unit.si
       score += botPsAdjacentStagingBonus(unit, coord, status);
       score += botObjectiveRecoveryBonus(unit, coord, status);
       score += botSuperiorDoctrineMoveBonus(unit, coord, status);
-      if (includeFaction) score += botFactionDoctrineMoveBonusF9T0(unit, coord, status);
+      score += botNexusMoveDoctrineBonus(unit, coord, status);
+      score += botExordiumMoveDoctrineBonus(unit, coord, status);
+      score += botLibertiMoveDoctrineBonus(unit, coord, status);
+      score += botAgathoiMoveDoctrineBonus(unit, coord, status);
+      score += botFabeotMoveDoctrineBonus(unit, coord, status);
       score -= botCellDangerPenalty(unit.side, coord, unit, status);
       score += botCellOpportunityBonus(unit.side, coord);
       score -= botDoctrineExposurePenalty(unit, coord, status);
@@ -1143,11 +920,10 @@ function botGeneralDoctrineMoveBonus(unit, coord, status=strategicStatus(unit.si
       return score;
     }
 
-
 function botGeneralDoctrineCoordBonus(player, bp, coord, status=strategicStatus(player)) {
       if (!advancedAiEnabled() || !bp || !coord) return 0;
       const fake = botFakeUnitForCoord(player, bp, coord);
-      let score = botGeneralDoctrineMoveBonus(fake, coord, status, { includeFaction:false });
+      let score = botGeneralDoctrineMoveBonus(fake, coord, status);
       const cell = getCellAt(coord);
       score -= botCellDangerPenalty(player, coord, bp, status) * 0.85;
       score += botCellOpportunityBonus(player, coord);
@@ -1542,9 +1318,8 @@ function botNexusCoreStructure(unitOrBp) {
       if (!unitOrBp || unitOrBp.faction !== "Nexus") return false;
       if (unitOrBp.type !== "Struttura") return false;
       const n = String(unitOrBp.name || "").toLowerCase();
-      return /bunker|nodo|fabbrica|torre|barriera|rete|comando/.test(n);
+      return /bunker|nodo|fabbrica|torre|barriera|rete|comando/.test(n) || true;
     }
-
 
 function botNexusStructureCountNear(player, coord, range=1) {
       if (!coord) return 0;
@@ -1604,36 +1379,30 @@ function botNexusMoveDoctrineBonus(unit, coord, status=strategicStatus(unit.side
       const player = unit.side;
       const cell = getCellAt(coord);
       const targets = botNexusPsNetworkTargets(player, status);
-      const mature = Boolean(status && status.networkMature && !status.zeroPsRecovery && !status.pressureEmergency && !status.hqDanger);
       let score = 0;
-      if (targets.length) score += Math.max(0, (mature && unit.type !== "Struttura" ? 12 : 22) - minDistance(coord, targets) * (mature ? 2.4 : 4.4));
-      score += botNexusNetworkSupportScore(player, coord) * (mature && unit.type !== "Struttura" ? 0.45 : 1);
+      if (targets.length) score += Math.max(0, 22 - minDistance(coord, targets) * 4.4);
+      score += botNexusNetworkSupportScore(player, coord);
       if (cell && cell.ps) {
-        if (cell.control === player) score += unit.type === "Struttura" ? 20 : (mature ? 3 : 10);
-        else score += status.zeroPsRecovery || status.pressureEmergency ? 34 : (mature ? 22 : 16);
+        if (cell.control === player) score += unit.type === "Struttura" ? 20 : 10;
+        else score += status.zeroPsRecovery || status.pressureEmergency ? 34 : 16;
       }
       if (unit.type === "Struttura") {
+        // Nexus deve presidiare e irrobustire rete PS, non inseguire linee aggressive senza supporto.
         if (state.cells.some(c => c.ps && hexDistance(c.coord, coord) <= 1)) score += 12;
         if (botNexusStructureCountNear(player, coord, 1) >= 2 && !(cell && cell.ps)) score -= 6;
       } else if (unit.weight === "Pesante" || unit.weight === "Elite" || unit.weight === "Pivot") {
-        if (!mature && botNexusStructureCountNear(player, coord, 2) > 0) score += 5;
-        if (!mature && controlledPsCells(player).some(c => hexDistance(c.coord, coord) <= 1)) score += 4;
+        if (botNexusStructureCountNear(player, coord, 2) > 0) score += 5;
+        if (controlledPsCells(player).some(c => hexDistance(c.coord, coord) <= 1)) score += 4;
       } else if (unit.weight === "Leggera" || unit.cost <= 2) {
         if (status.zeroPsRecovery || status.pressureEmergency) score += 6;
         if (cell && cell.ps && cell.control !== player) score += 8;
       }
-      if (mature && status.enemyHq && unit.type !== "Struttura") {
-        score += Math.max(0, 20 - hexDistance(coord, status.enemyHq.pos) * 3.2);
-        if (status.stalledRounds >= 2) score += Math.max(0, 12 - hexDistance(coord, status.enemyHq.pos) * 1.8);
-      }
-      const required = status && status.pressureProfile ? status.pressureProfile.requiredPs : 2;
-      if (!status.qgWinPlan && !mature && countControlledPS(player) < Math.max(1, required - 1)) {
+      if (!status.qgWinPlan && countControlledPS(player) < 2) {
         const enemyHq = getHq(enemyOf(player));
         if (enemyHq && hexDistance(coord, enemyHq.pos) <= 3) score -= botUnitIsSacrificial(unit) ? 3 : 9;
       }
       return score;
     }
-
 
 function botNexusCoordDoctrineBonus(player, unitOrBp, coord, status=strategicStatus(player)) {
       if (!advancedAiEnabled() || !botIsNexusPlayer(player) || !unitOrBp || !coord) return 0;
@@ -2108,7 +1877,7 @@ function botAgathoiGreenLineTargets(player, status=strategicStatus(player)) {
           }
         }
       }
-      const guard = nearestControlledPsNeedingGuard(player, status);
+      const guard = nearestControlledPsNeedingGuard(player);
       if (guard) targets.push(guard.coord);
       return uniqueCoords(targets);
     }
@@ -2123,25 +1892,22 @@ function botAgathoiFrontLayerScore(player, coord, status=strategicStatus(player)
       if (alliedStructures) score += Math.min(10, alliedStructures * 4);
       if (alliedSupport >= 2) score += 4;
       if (enemiesR2 && alliedStructures) score += Math.min(8, enemiesR2 * 2);
-      const lineMayAdvance = Boolean(status && status.winning && (status.greenLineMature || status.stalledRounds >= 2));
-      if (enemiesR1 >= 2 && alliedSupport < 2 && !(status && status.allIn) && !lineMayAdvance) score -= 8;
+      if (enemiesR1 >= 2 && alliedSupport < 2 && !(status && status.allIn)) score -= 8;
       return score;
     }
-
 
 function botAgathoiMoveDoctrineBonus(unit, coord, status=strategicStatus(unit.side)) {
       if (!advancedAiEnabled() || !unit || unit.faction !== "Agathoi" || !coord) return 0;
       const player = unit.side;
       const cell = getCellAt(coord);
       const targets = botAgathoiGreenLineTargets(player, status);
-      const mature = Boolean(status && status.greenLineMature && !status.zeroPsRecovery && !status.pressureEmergency && !status.hqDanger);
       let score = 0;
-      if (targets.length) score += Math.max(0, (mature && unit.type !== "Struttura" ? 15 : 26) - minDistance(coord, targets) * (mature ? 2.4 : 4.0));
-      score += botAgathoiStructureNetworkScore(player, coord) * (mature && unit.type !== "Struttura" ? 0.35 : 0.65);
+      if (targets.length) score += Math.max(0, 26 - minDistance(coord, targets) * 4.0);
+      score += botAgathoiStructureNetworkScore(player, coord) * 0.65;
       score += botAgathoiFrontLayerScore(player, coord, status);
       if (cell && cell.ps) {
-        if (cell.control === player) score += unit.type === "Struttura" ? 26 : (mature ? 4 : 12);
-        else score += (status.zeroPsRecovery || status.pressureEmergency) ? 38 : (mature ? 24 : 16);
+        if (cell.control === player) score += unit.type === "Struttura" ? 26 : 12;
+        else score += (status.zeroPsRecovery || status.pressureEmergency) ? 38 : 16;
       }
       if (unit.type === "Struttura") {
         if (state.cells.some(c => c.ps && hexDistance(c.coord, coord) <= 1)) score += 16;
@@ -2149,28 +1915,22 @@ function botAgathoiMoveDoctrineBonus(unit, coord, status=strategicStatus(unit.si
         if (botAgathoiStructures(player).filter(s => hexDistance(s.pos, coord) <= 1).length >= 3 && !(cell && cell.ps)) score -= 8;
       }
       if (unit.canBuild) {
-        if (state.cells.some(c => c.ps && hexDistance(c.coord, coord) <= 1)) score += mature ? 3 : 8;
-        if (botAgathoiStructureNetworkScore(player, coord) >= 5) score += mature ? 1 : 4;
+        if (state.cells.some(c => c.ps && hexDistance(c.coord, coord) <= 1)) score += 8;
+        if (botAgathoiStructureNetworkScore(player, coord) >= 5) score += 4;
       }
       if (unit.passiveThorns || (unit.ability && (unit.ability.statusKind === "thorns" || unit.ability.kind === "armorThorns" || unit.ability.kind === "grantCounterattack"))) {
         if (enemiesNear(coord, player, 2).length) score += 5;
-        if (!mature && botAgathoiStructureNetworkScore(player, coord) >= 5) score += 4;
+        if (botAgathoiStructureNetworkScore(player, coord) >= 5) score += 4;
       }
       if ((status.zeroPsRecovery || status.pressureEmergency || status.defendQGRecovery) && targets.length) {
         score += Math.max(0, 24 - minDistance(coord, targets) * 4.8);
         if (status.defendQGRecovery && status.ownHq && hexDistance(coord, status.ownHq.pos) <= 2 && countControlledPS(player) <= 0) score -= 7;
       }
-      if (mature && status.enemyHq && unit.type !== "Struttura") {
-        score += Math.max(0, 20 - hexDistance(coord, status.enemyHq.pos) * 3.0);
-        if (status.stalledRounds >= 2) score += Math.max(0, 14 - hexDistance(coord, status.enemyHq.pos) * 2.0);
-      }
-      const required = status && status.pressureProfile ? status.pressureProfile.requiredPs : 2;
-      if (!status.qgWinPlan && !mature && countControlledPS(player) < Math.max(1, required - 1) && status.enemyHq && hexDistance(coord, status.enemyHq.pos) <= 3) {
+      if (!status.qgWinPlan && countControlledPS(player) < 2 && status.enemyHq && hexDistance(coord, status.enemyHq.pos) <= 3) {
         score -= unit.weight === "Pivot" ? 3 : 8;
       }
       return score;
     }
-
 
 function botAgathoiCoordDoctrineBonus(player, unitOrBp, coord, status=strategicStatus(player)) {
       if (!advancedAiEnabled() || !botIsAgathoiPlayer(player) || !unitOrBp || !coord) return 0;
@@ -2553,9 +2313,8 @@ function botFabeotTacticProfileBonus(player, card, target, phase="dynamic") {
 // B7b – Strategic status / emergency / protection helpers
 // =====================================================
 
-function strategicStatus(player, options = {}) {
+function strategicStatus(player) {
       const enemy = enemyOf(player);
-      const profile = botPressureProfileF9T0();
       const ownPs = countControlledPS(player);
       const enemyPs = countControlledPS(enemy);
       const ownPressure = state.pressure[player] || 0;
@@ -2570,51 +2329,32 @@ function strategicStatus(player, options = {}) {
       const centerOccupant = center ? getUnitAt(center.coord) : null;
       const centerOpening = Boolean(center && state.turn <= CENTER_OPENING_END_ROUND && !centerControlledBy(player));
       const centerLostEarly = Boolean(center && state.turn <= CENTER_CONTEST_END_ROUND && centerControlledByEnemy(player));
-      const pressureWindow = state.turn >= profile.startRound - 2;
-      const ownControlsCentral = botControlsCentralF9T0(player, profile);
-      const enemyControlsCentral = botControlsCentralF9T0(enemy, profile);
-      const ownPressureQualified = ownControlsCentral && ownPs >= profile.requiredPs;
-      const enemyPressureQualified = enemyControlsCentral && enemyPs >= profile.requiredPs;
-      const ownPressureNearQualified = ownControlsCentral && ownPs >= Math.max(1, profile.requiredPs - 1);
-      const enemyPressureNearQualified = enemyControlsCentral && enemyPs >= Math.max(1, profile.requiredPs - 1);
-      const pressureEmergency = enemyPressureQualified || enemyPressure >= Math.max(1, profile.pressureWin - 2) || (pressureWindow && enemyPressureNearQualified && enemyPs > ownPs);
+      const pressureWindow = state.turn >= pressureStartRound() - 2;
+      const pressureEmergency = enemyPs >= botTotalPsCount() || enemyPressure >= Math.min(3, PRESSURE_WIN - 2);
       const zeroPsRecovery = ownPs <= 0 && enemyPs > 0;
-      const pressureDanger = pressureWindow && (enemyPressureQualified || enemyPressureNearQualified || enemyPressure >= profile.pressureWin - 2 || (enemyPs > ownPs && enemyPs >= Math.max(1, profile.requiredPs - 1)) || enemyPressure - ownPressure >= 2);
+      const pressureDanger = pressureWindow && (enemyPs > ownPs || enemyPressure >= PRESSURE_WIN - 2 || enemyPressure - ownPressure >= 2);
       const hqDanger = Boolean(enemyOnOwnHq) || enemiesNearOwnHq.length > 0;
-      const defendQGRecovery = hqDanger && (zeroPsRecovery || enemyPs >= Math.max(2, profile.requiredPs - 1) || enemyPressure > ownPressure);
-      const roundDanger = state.turn >= profile.maxRound - 5 && (enemyPs > ownPs || enemyPressure > ownPressure || enemyUnits.length > ownUnits.length + 2);
-      const allIn = Boolean(enemyOnOwnHq) || enemyPressure >= profile.pressureWin - 1 || (state.turn >= profile.maxRound - 3 && enemyPs >= ownPs) || (pressureWindow && ownPs === 0 && enemyPs >= Math.max(2, profile.requiredPs - 1)) || (pressureEmergency && ownPs === 0);
+      const defendQGRecovery = hqDanger && (zeroPsRecovery || enemyPs >= 2 || enemyPressure > ownPressure);
+      const roundDanger = state.turn >= MAX_ROUND - 5 && (enemyPs > ownPs || enemyPressure > ownPressure || enemyUnits.length > ownUnits.length + 2);
+      const allIn = Boolean(enemyOnOwnHq) || enemyPressure >= PRESSURE_WIN - 1 || (state.turn >= MAX_ROUND - 3 && enemyPs >= ownPs) || (pressureWindow && ownPs === 0 && enemyPs >= 2) || (pressureEmergency && ownPs === 0);
       const strategic = evaluateBotStrategicState(player);
       const midgame = state.turn >= 8;
       const winning = midgame && strategic.posture === "vantaggio";
       const losing = midgame && strategic.posture === "svantaggio";
-      const progressMemory = botUpdateFinalizationMemoryF9T0(player);
-      const stalledRounds = progressMemory.stalledRounds || 0;
-      const nexusMaturity = botNexusNetworkMaturityF9T0(player, profile);
-      const agathoiMaturity = botAgathoiGreenLineMaturityF9T0(player, profile);
-      const networkMature = nexusMaturity.mature;
-      const greenLineMature = agathoiMaturity.mature;
       const qgRaiderUnits = ownUnits.filter(u => enemyHq && (hexDistance(u.pos, enemyHq.pos) <= 5 || (u.type === "Veicolo" && hexDistance(u.pos, enemyHq.pos) <= 6)));
       const qgRaiders = qgRaiderUnits.length;
       const closestQGRaiderDistance = qgRaiderUnits.length && enemyHq ? Math.min(...qgRaiderUnits.map(u => hexDistance(u.pos, enemyHq.pos))) : 99;
       const qgImmediateOccupy = Boolean(ownUnits.some(u => enemyHq && sameCoord(u.pos, enemyHq.pos)));
-      const movesFor = typeof options.movesFor === "function" ? options.movesFor : movableCells;
-      const qgImmediateMove = Boolean(enemyHq && ownPs >= 1 && ownUnits.some(u => {
-        if (u.acted || u.type === "Struttura" || u.type === "QG") return false;
-        const estimatedRange = typeof movementRangeFor === "function" ? movementRangeFor(u) : (u.type === "Veicolo" ? 2 : 1);
-        if (hexDistance(u.pos, enemyHq.pos) > estimatedRange) return false;
-        return typeof movesFor === "function" && movesFor(u).some(c => sameCoord(c, enemyHq.pos));
-      }));
-      const closePressureLock = Boolean(ownPressure >= profile.pressureWin - 1 && ownPressureQualified && ownPs > enemyPs);
+      const qgImmediateMove = Boolean(enemyHq && ownPs >= 1 && ownUnits.some(u => !u.acted && typeof movableCells === "function" && movableCells(u).some(c => sameCoord(c, enemyHq.pos))));
+      const closePressureLock = Boolean(ownPressure >= PRESSURE_WIN - 1 && ownPs > enemyPs);
+      // C2e-4g: una breccia QG supera la pressione solo se è immediata o quasi certa.
+      // Se il bot è già a 4/5 pressione con vantaggio PS, resta conservativo sui PS.
       const qgStrongSequence = Boolean(!closePressureLock && qgRaiders >= 2 && closestQGRaiderDistance <= 2);
-      const matureAssaultReady = Boolean((networkMature || greenLineMature) && ownUnits.filter(u => u.type !== "Struttura" && u.type !== "QG").length >= 4);
-      const qgPreparedSequence = Boolean(!closePressureLock && matureAssaultReady && qgRaiders >= 1 && closestQGRaiderDistance <= 4 && ownPs >= Math.max(1, profile.requiredPs - 2));
-      const qgClosingPossible = Boolean(winning && ownPs >= 1 && (qgImmediateOccupy || qgImmediateMove || qgStrongSequence || qgPreparedSequence));
+      const qgClosingPossible = Boolean(winning && ownPs >= 1 && (qgImmediateOccupy || qgImmediateMove || qgStrongSequence));
       const qgWinPlan = qgClosingPossible;
-      const pressureWinPlan = Boolean(!qgWinPlan && (closePressureLock || (winning && ownPressureNearQualified && (ownPs >= profile.requiredPs || ownPs > enemyPs || strategic.incomeDelta >= 0))));
-      const enemyPressurePlan = Boolean(losing && (enemyPressureNearQualified || enemyPressure > ownPressure || (enemyPs > ownPs && enemyPs >= Math.max(1, profile.requiredPs - 1))));
-      const finalizationStall = Boolean(midgame && !losing && stalledRounds >= 2 && (state.factions[player] === "Nexus" || state.factions[player] === "Agathoi"));
-      const doctrineActive = pressureWinPlan || qgWinPlan || enemyPressurePlan || pressureEmergency || zeroPsRecovery || defendQGRecovery || closePressureLock || finalizationStall;
+      const pressureWinPlan = Boolean(!qgWinPlan && (closePressureLock || (winning && (ownPs >= 2 || ownPressure > enemyPressure + 1 || (ownPs > enemyPs && strategic.incomeDelta >= 0)))));
+      const enemyPressurePlan = Boolean(losing && (enemyPs >= 2 || enemyPressure > ownPressure || enemyPs > ownPs));
+      const doctrineActive = pressureWinPlan || qgWinPlan || enemyPressurePlan || pressureEmergency || zeroPsRecovery || defendQGRecovery || closePressureLock;
       const active = pressureDanger || hqDanger || roundDanger || allIn || centerOpening || centerLostEarly || doctrineActive;
       let mode = "normal";
       if (qgImmediateOccupy || qgImmediateMove) mode = "vittoria_qg";
@@ -2630,12 +2370,8 @@ function strategicStatus(player, options = {}) {
       else if (enemyPressurePlan) mode = "difesa_pressione";
       else if (qgWinPlan) mode = "vittoria_qg";
       else if (pressureWinPlan) mode = "vittoria_pressione";
-      else if (finalizationStall) mode = "sblocco_stallo";
-      const result = { player, enemy, ownPs, enemyPs, ownPressure, enemyPressure, ownHq, enemyHq, enemyUnits, ownUnits, enemyOnOwnHq, enemiesNearOwnHq, center, centerOccupant, centerOpening, centerLostEarly, pressureWindow, pressureDanger, pressureEmergency, zeroPsRecovery, defendQGRecovery, hqDanger, roundDanger, allIn, active, mode, strategic, midgame, winning, losing, pressureWinPlan, qgWinPlan, qgClosingPossible, qgImmediateOccupy, qgImmediateMove, qgStrongSequence, qgPreparedSequence, closePressureLock, closestQGRaiderDistance, enemyPressurePlan, doctrineActive, qgRaiders, pressureProfile:profile, ownControlsCentral, enemyControlsCentral, ownPressureQualified, enemyPressureQualified, ownPressureNearQualified, enemyPressureNearQualified, networkMature, greenLineMature, nexusMaturity, agathoiMaturity, stalledRounds, finalizationStall };
-      result.garrisonPlan = botBuildGarrisonPlanF9T0(player, result);
-      return result;
+      return { player, enemy, ownPs, enemyPs, ownPressure, enemyPressure, ownHq, enemyHq, enemyUnits, ownUnits, enemyOnOwnHq, enemiesNearOwnHq, center, centerOccupant, centerOpening, centerLostEarly, pressureDanger, pressureEmergency, zeroPsRecovery, defendQGRecovery, hqDanger, roundDanger, allIn, active, mode, strategic, midgame, winning, losing, pressureWinPlan, qgWinPlan, qgClosingPossible, qgImmediateOccupy, qgImmediateMove, qgStrongSequence, closePressureLock, closestQGRaiderDistance, enemyPressurePlan, doctrineActive, qgRaiders };
     }
-
 
 function logEmergencyIfNeeded(player, status) {
       if (!status || !status.active || !state || state.winner) return;
@@ -2645,14 +2381,11 @@ function logEmergencyIfNeeded(player, status) {
       if (status.hqDanger) reasons.push("QG minacciato");
       if (status.centerOpening) reasons.push("apertura: priorità PS centrale");
       if (status.centerLostEarly) reasons.push("PS centrale perso presto");
-      if (status.pressureDanger) reasons.push(`Pressione nemica ${status.enemyPressure}/${(typeof pressureWinLimit === "function" ? pressureWinLimit() : PRESSURE_WIN)}, PS ${status.enemyPs}-${status.ownPs}`);
+      if (status.pressureDanger) reasons.push(`Pressione nemica ${status.enemyPressure}/${PRESSURE_WIN}, PS ${status.enemyPs}-${status.ownPs}`);
       if (status.pressureEmergency) reasons.push("override: rompere controllo PS");
       if (status.zeroPsRecovery) reasons.push("0 PS: recupero obiettivo");
       if (status.defendQGRecovery) reasons.push("difesa QG con ripartenza PS");
       if (status.roundDanger) reasons.push("spareggio vicino");
-      if (status.finalizationStall) reasons.push(`stallo operativo ${status.stalledRounds} round`);
-      if (status.networkMature) reasons.push("rete Nexus matura: proiezione offensiva");
-      if (status.greenLineMature) reasons.push("linea verde matura: avanzata");
       if (status.enemyPressurePlan) reasons.push("dottrina: difendere asse PS");
       if (status.closePressureLock) reasons.push("close pressure lock: proteggere PS e chiudere pressione");
       if (status.pressureWinPlan) reasons.push("dottrina: chiudere di pressione");
@@ -2793,7 +2526,7 @@ function homePsMoveScore(unit, coord, status=strategicStatus(unit.side)) {
 
 function chooseHomePsDutyMove(unit, options, status=strategicStatus(unit.side)) {
       if (!options.length || !homePsDutyActive(unit.side, status)) return null;
-      if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit, status)) return null;
+      if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) return null;
       const currentHomeDistance = hexDistance(unit.pos, homePsCell(unit.side).coord);
       const best = options.map(coord => ({ coord, score: homePsMoveScore(unit, coord, status), distance: hexDistance(coord, homePsCell(unit.side).coord) }))
         .sort((a,b) => b.score - a.score || a.distance - b.distance)[0];
@@ -2803,35 +2536,29 @@ function chooseHomePsDutyMove(unit, options, status=strategicStatus(unit.side)) 
 
 function contestedPsCells(player) { return controlledPsCells(player).filter(c => enemiesNear(c.coord, player, 2).length > 0); }
 
-function nearestControlledPsNeedingGuard(player, status=null) {
-      const resolved = status || strategicStatus(player);
-      const plan = resolved && resolved.garrisonPlan ? resolved.garrisonPlan : botBuildGarrisonPlanF9T0(player, resolved || {});
-      if (!plan.guardTargets || !plan.guardTargets.length) return null;
-      return plan.guardTargets.slice().sort((a,b) => {
-        const pa = botGarrisonCellPriorityF9T0(player, a, resolved).score;
-        const pb = botGarrisonCellPriorityF9T0(player, b, resolved).score;
-        return pb - pa;
-      })[0] || null;
+function nearestControlledPsNeedingGuard(player) {
+      const candidates = controlledPsCells(player).map(c => ({
+        cell: c,
+        allies: alliesNear(c.coord, player, 1).length,
+        enemies: enemiesNear(c.coord, player, 2).length
+      })).filter(x => x.allies <= 1 || x.enemies > 0);
+      candidates.sort((a,b) => (b.enemies - a.enemies) || (a.allies - b.allies));
+      return candidates.length ? candidates[0].cell : null;
     }
 
-
-function shouldReleasePsGarrison(unit, status=null) {
+function shouldReleasePsGarrison(unit) {
       if (!unitIsGarrisoningPs(unit)) return true;
-      const resolved = status || strategicStatus(unit.side);
-      if (resolved.allIn && countControlledPS(unit.side) > 1) return true;
-      const plan = resolved.garrisonPlan || botBuildGarrisonPlanF9T0(unit.side, resolved);
-      const key = unit.pos.join(",");
-      if (plan.keepKeys && plan.keepKeys.has(key)) return false;
-      if (countControlledPS(unit.side) <= 1 && !resolved.finalizationStall) return false;
-      return true;
+      const status = strategicStatus(unit.side);
+      // In tutto-per-tutto si può abbandonare un PS solo se ne resta almeno un altro presidiato.
+      if (status.allIn && countControlledPS(unit.side) > 1) return true;
+      return false;
     }
 
-
-function commanderSafetyMove(unit, cachedOptions = null) {
+function commanderSafetyMove(unit) {
       if (!advancedAiEnabled() || unit.type !== "Comandante") return null;
       const threat = commanderThreatLevel(unit);
       if (threat < 2) return null;
-      const options = Array.isArray(cachedOptions) ? cachedOptions : movableCells(unit);
+      const options = movableCells(unit);
       if (!options.length) return null;
       const currentThreat = enemiesNear(unit.pos, unit.side, 2).length * 2 + enemiesNear(unit.pos, unit.side, 1).length * 4;
       const ownHq = getHq(unit.side);
@@ -2851,31 +2578,29 @@ function commanderProtectionMoveBonus(unit, coord) {
       return Math.max(0, 5 - hexDistance(coord, commander.pos)) * (1.2 + threat * 0.35);
     }
 
-function psProtectionMoveBonus(player, coord, status=null) {
-      const target = nearestControlledPsNeedingGuard(player, status);
+function psProtectionMoveBonus(player, coord) {
+      const target = nearestControlledPsNeedingGuard(player);
       if (!target) return 0;
       const d = hexDistance(coord, target.coord);
       return Math.max(0, 5 - d) * 1.15;
     }
 
-
-function shouldHoldStrategicCell(unit, cell, status=null) {
+function shouldHoldStrategicCell(unit, cell) {
       if (!advancedAiEnabled() || !cell || !cell.ps || cell.control !== unit.side) return false;
       if (unit.type === "Comandante") return false;
       if (combatUnits(enemyOf(unit.side)).some(e => areAdjacent(e.pos, unit.pos))) return false;
-      return !shouldReleasePsGarrison(unit, status);
+      return !shouldReleasePsGarrison(unit);
     }
-
 
 
 // =====================================================
 // B7e – AI movement selection / faction movement profiles
 // =====================================================
 
-function chooseBotMove(unit, cachedOptions = null, cachedStatus = null) {
-      const options = Array.isArray(cachedOptions) ? cachedOptions : movableCells(unit);
+function chooseBotMove(unit) {
+      const options = movableCells(unit);
       if (!options.length) return null;
-      if (advancedAiEnabled()) return chooseAdvancedMove(unit, options, cachedStatus || strategicStatus(unit.side));
+      if (advancedAiEnabled()) return chooseAdvancedMove(unit, options);
       if (unit.faction === "Liberti") return chooseLibertiMove(unit, options);
 
       const faction = unit.faction;
@@ -2910,181 +2635,242 @@ function chooseBotMove(unit, cachedOptions = null, cachedStatus = null) {
       return scored[0].coord;
     }
 
+function chooseAdvancedMove(unit, options) {
+      const status = strategicStatus(unit.side);
+      if (status.active) {
+        const emergency = chooseEmergencyMove(unit, options, status);
+        if (emergency) return emergency;
+      }
+      const homeDuty = chooseHomePsDutyMove(unit, options, status);
+      if (homeDuty) return homeDuty;
+      const faction = unit.faction;
+      let proposed = null;
+      if (faction === "Liberti") proposed = chooseAdvancedLibertiMove(unit, options);
+      else if (faction === "Nexus") proposed = chooseAdvancedNexusMove(unit, options);
+      else if (faction === "Exordium") proposed = chooseAdvancedExordiumMove(unit, options);
+      else if (faction === "Agathoi") proposed = chooseAdvancedAgathoiMove(unit, options);
+      else if (faction === "Fabeot") proposed = chooseAdvancedFabeotMove(unit, options);
+      else proposed = chooseLibertiMove(unit, options);
+      const doctrineBest = options.map(coord => ({ coord, score: botGeneralDoctrineMoveBonus(unit, coord, status) + (typeof botMissionMoveBonus === "function" ? botMissionMoveBonus(unit, coord) : 0) }))
+        .sort((a,b) => b.score - a.score)[0];
+      if (doctrineBest && doctrineBest.score >= 18) proposed = doctrineBest.coord;
+      const safeProposed = c2e3SaferStrategicMove(unit, options, proposed);
+      const gatePenalty = botPsSupportGatePenalty(unit, safeProposed, status);
+      if (gatePenalty >= 24 && !status.allIn) {
+        const supported = options.map(coord => ({
+          coord,
+          score: botGeneralDoctrineMoveBonus(unit, coord, status) + c2e3MoveScore(unit, coord) + (typeof botMissionMoveBonus === "function" ? botMissionMoveBonus(unit, coord) : 0) - botPsSupportGatePenalty(unit, coord, status)
+        })).sort((a,b) => b.score - a.score)[0];
+        if (supported && supported.score > -10) return supported.coord;
+      }
+      return safeProposed;
+    }
 
-function botCreateAdvancedMoveContextF9T0(unit, options, status) {
+function chooseAdvancedAgathoiMove(unit, options) {
+      const player = unit.side;
+      const enemyHq = getHq(enemyOf(player));
+      const hasPS = countControlledPS(player) >= 1;
+      const status = strategicStatus(player);
+      const psTargets = state.cells.filter(c => c.ps).map(c => c.coord);
+      const guardTarget = nearestControlledPsNeedingGuard(player);
+      const greenTargets = botAgathoiGreenLineTargets(player, status);
+      const scored = options.map(coord => {
+        let score = 0;
+        const cell = getCellAt(coord);
+        if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) score -= 999;
+        score += homePsMoveScore(unit, coord, status);
+        score += centerMoveScore(unit, coord, status);
+        if (!hasPS) score -= minDistance(coord, psTargets) * 2.0;
+        else if (guardTarget) score -= hexDistance(coord, guardTarget.coord) * 2.4;
+        else score -= hexDistance(coord, enemyHq.pos) * 0.55;
+        if (greenTargets.length) score += Math.max(0, 18 - minDistance(coord, greenTargets) * 3.2);
+        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 22 : 12;
+        if (cell && cell.ps && cell.control === player) score += 16;
+        score += alliesNear(coord, player, 1).length * 1.2;
+        score += botAgathoiStructureNetworkScore(player, coord) * 0.75;
+        if (combatUnits(player).some(s => s.faction === "Agathoi" && s.type === "Struttura" && hexDistance(coord, s.pos) <= 1)) score += 5;
+        if (unit.canBuild && state.cells.some(ps => ps.ps && hexDistance(coord, ps.coord) <= 1)) score += 7;
+        if (state.factions[enemyOf(player)] === "Liberti") {
+          const enemyCountR2 = enemiesNear(coord, player, 2).length;
+          if (unit.name === "Oplita di Confine" && enemyCountR2) score += 6 + enemyCountR2 * 2.2;
+          if (unit.name === "Aratro Corazzato" && enemyCountR2) score += 5 + enemyCountR2 * 1.8;
+          if (botAgathoiStructureNetworkScore(player, coord) >= 5) score += 4;
+          if (unit.canBuild && state.cells.some(ps => ps.ps && hexDistance(coord, ps.coord) <= 1)) score += 4;
+        }
+        if (unit.type === "Struttura" || unit.weight === "Pivot") score += 3;
+        if (sameCoord(coord, enemyHq.pos) && hasPS && status.qgWinPlan) score += 28;
+        else if (sameCoord(coord, enemyHq.pos) && hasPS) score += 10;
+        score += psProtectionMoveBonus(player, coord) * 1.6;
+        score += homePsMoveScore(unit, coord, status);
+        score += commanderProtectionMoveBonus(unit, coord);
+        score -= enemiesNear(coord, player, 1).length * (unit.type === "Comandante" ? 4 : 0.2);
+        score += botGeneralDoctrineMoveBonus(unit, coord, status);
+        score += botAgathoiMoveDoctrineBonus(unit, coord, status);
+        return { coord, score };
+      }).sort((a,b) => b.score - a.score);
+      return scored[0].coord;
+    }
+
+function chooseAdvancedFabeotMove(unit, options) {
       const player = unit.side;
       const enemy = enemyOf(player);
       const enemyHq = getHq(enemy);
-      const ownHq = getHq(player);
-      const hasPS = status.ownPs >= 1;
-      const psCells = state.cells.filter(c => c.ps).map(c => c.coord);
-      const uncontrolledPs = state.cells.filter(c => c.ps && c.control !== player).map(c => c.coord);
-      const controlledPs = controlledPsCells(player).map(c => c.coord);
-      const guardTarget = nearestControlledPsNeedingGuard(player, status);
+      const hasPS = countControlledPS(player) >= 1;
+      const status = strategicStatus(player);
+      const targets = botFabeotDeceptionTargets(player, status);
       const commander = commanderOf(player);
-      const context = {
-        unit, player, enemy, enemyHq, ownHq, hasPS, psCells, uncontrolledPs, controlledPs, guardTarget, commander, status,
-        enemyUnits:combatUnits(enemy),
-        allyUnits:combatUnits(player),
-        nexusTargets:unit.faction === "Nexus" ? botNexusPsNetworkTargets(player, status) : [],
-        greenTargets:unit.faction === "Agathoi" ? botAgathoiGreenLineTargets(player, status) : [],
-        exordiumFronts:unit.faction === "Exordium" ? exordiumFrontTargets(player) : [],
-        libertiTargets:unit.faction === "Liberti" ? botLibertiFrontTargets(player, status) : [],
-        libertiFlank:unit.faction === "Liberti" ? libertiFlankTarget(player) : null,
-        fabeotTargets:unit.faction === "Fabeot" ? botFabeotDeceptionTargets(player, status) : [],
-        fabeotCollapse:unit.faction === "Fabeot" ? botFabeotCollapseReady(player, status) : false,
-        fabeotExposed:unit.faction === "Fabeot" ? botFabeotExposedKeyTargets(player) : [],
-        fabeotConcentrated:unit.faction === "Fabeot" ? botFabeotEnemyConcentratedOnDefense(player) : false
-      };
-      context.exordiumFront = context.exordiumFronts.length ? chooseExordiumFrontForUnit(unit, context.exordiumFronts) : null;
-      context.candidates = options.map(coord => ({
-        coord,
-        cell:getCellAt(coord),
-        enemyHqDistance:enemyHq ? hexDistance(coord, enemyHq.pos) : 99,
-        ownHqDistance:ownHq ? hexDistance(coord, ownHq.pos) : 99,
-        alliesR1:alliesNear(coord, player, 1).length,
-        enemiesR1:enemiesNear(coord, player, 1).length,
-        homeScore:homePsMoveScore(unit, coord, status),
-        emergencyScore:strategicMoveBonus(player, unit, coord, status),
-        generalScore:botGeneralDoctrineMoveBonus(unit, coord, status, { includeFaction:false }),
-        factionDoctrineScore:botFactionDoctrineMoveBonusF9T0(unit, coord, status),
-        missionScore:typeof botMissionMoveBonus === "function" ? botMissionMoveBonus(unit, coord) : 0,
-        c2e3Score:c2e3MoveScore(unit, coord, status, { includeDoctrine:false, includeGate:false }),
-        stallScore:botStallOscillationScoreF9T0(unit, coord, status)
-      }));
-      return context;
-    }
-
-function botFactionMoveBaseScoreF9T0(entry, context) {
-      const { unit, player, enemyHq, hasPS, status } = context;
-      const { coord, cell } = entry;
-      let score = 0;
-      if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit, status)) score -= 999;
-      if (unit.faction === "Nexus") {
-        const mature = status.networkMature;
-        if (!hasPS) score -= minDistance(coord, context.uncontrolledPs.length ? context.uncontrolledPs : context.psCells) * 2.6;
-        else if (status.zeroPsRecovery || status.pressureEmergency) score -= minDistance(coord, context.nexusTargets) * 1.5;
-        else if (context.guardTarget && !mature) score -= hexDistance(coord, context.guardTarget.coord) * 2.2;
-        else if (!mature && context.controlledPs.length && status.ownPs < Math.max(1, status.pressureProfile.requiredPs - 1)) score -= minDistance(coord, context.controlledPs) * 1.1;
-        else if (context.uncontrolledPs.length && status.pressureWinPlan) score -= minDistance(coord, context.uncontrolledPs) * 1.2;
-        else score -= entry.enemyHqDistance * (status.qgWinPlan || mature ? 1.05 : 0.55);
-        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 34 : (mature ? 22 : 14);
-        if (cell && cell.ps && cell.control === player) score += unit.type === "Struttura" ? 20 : (mature ? 3 : 10);
-        if (!mature && context.controlledPs.some(ps => hexDistance(coord, ps) === 1)) score += 5;
-        if (enemyHq && sameCoord(coord, enemyHq.pos) && hasPS) score += status.qgWinPlan || mature ? 55 : 28;
-        if (unit.weight === "Pivot") score += entry.alliesR1 * 2.2;
-        if (unit.type === "Struttura" && !state.cells.some(c => c.ps && hexDistance(c.coord, coord) <= 1) && !status.hqDanger) score -= 5;
-        score += psProtectionMoveBonus(player, coord, status) * (mature ? 0.45 : 1.05);
-      } else if (unit.faction === "Agathoi") {
-        const mature = status.greenLineMature;
-        if (!hasPS) score -= minDistance(coord, context.psCells) * 2.0;
-        else if (context.guardTarget && !mature) score -= hexDistance(coord, context.guardTarget.coord) * 2.4;
-        else if (context.uncontrolledPs.length && (status.pressureWinPlan || mature)) score -= minDistance(coord, context.uncontrolledPs) * (mature ? 1.25 : 0.9);
-        else score -= entry.enemyHqDistance * (status.qgWinPlan || mature ? 1.0 : 0.55);
-        if (context.greenTargets.length) score += Math.max(0, (mature ? 12 : 18) - minDistance(coord, context.greenTargets) * (mature ? 2.2 : 3.2));
-        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 28 : (mature ? 22 : 12);
-        if (cell && cell.ps && cell.control === player) score += mature ? 4 : 13;
-        score += entry.alliesR1 * (mature ? 0.7 : 1.1);
-        score += botAgathoiStructureNetworkScore(player, coord) * (mature ? 0.35 : 0.7);
-        if (unit.canBuild && state.cells.some(ps => ps.ps && hexDistance(coord, ps.coord) <= 1)) score += mature ? 2 : 7;
-        if (enemyHq && sameCoord(coord, enemyHq.pos) && hasPS) score += status.qgWinPlan || mature ? 42 : 10;
-        score += psProtectionMoveBonus(player, coord, status) * (mature ? 0.4 : 1.25);
-      } else if (unit.faction === "Exordium") {
-        const front = context.exordiumFront;
-        if (!hasPS && context.exordiumFronts.length) score -= minDistance(coord, context.exordiumFronts.map(f => f.ps)) * 2.35;
-        else if (front) score -= hexDistance(coord, front.advance) * 1.05;
-        score -= entry.enemyHqDistance * (hasPS ? 0.95 : 0.15);
-        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 28 : 10;
-        if (enemyHq && sameCoord(coord, enemyHq.pos) && hasPS) score += 55;
-        if (unit.type === "Veicolo") score += 2;
-        if (unit.weight === "Pivot" || unit.weight === "Elite") score += 2;
-        score += Math.min(5, entry.alliesR1 * (botExordiumShockUnit(unit) ? 1.5 : 0.9));
-        if (!status.zeroPsRecovery && !status.pressureEmergency && entry.alliesR1 >= 4) score -= 2;
-        score += psProtectionMoveBonus(player, coord, status) * 1.1;
-      } else if (unit.faction === "Liberti") {
-        const mainTarget = hasPS
-          ? (status.qgWinPlan ? enemyHq.pos : (context.libertiFlank && hexDistance(unit.pos, context.libertiFlank) > 2 ? context.libertiFlank : enemyHq.pos))
-          : (context.libertiTargets.length ? nearestCoord(unit.pos, context.libertiTargets) : [0,0,0]);
-        score -= hexDistance(coord, mainTarget) * (hasPS ? 1.15 : 1.85);
-        if (context.libertiTargets.length) score += Math.max(0, 18 - minDistance(coord, context.libertiTargets) * 3.4);
-        if (hasPS) score += Math.min(3.5, Math.abs(coord[1]) * 0.45);
-        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 28 : 8;
-        if (cell && cell.ps && cell.control === player) score += botUnitIsSacrificial(unit) ? 4 : 7;
-        if (enemyHq && sameCoord(coord, enemyHq.pos) && hasPS) score += status.qgRaiders >= 2 ? 55 : 24;
-        score += entry.alliesR1 * 2.0;
-        for (const enemy of context.enemyUnits) if (areAdjacent(coord, enemy.pos)) score += 2 + (context.allyUnits.some(a => a.uid !== unit.uid && areAdjacent(a.pos, enemy.pos)) ? 6 : 0);
-        score += psProtectionMoveBonus(player, coord, status) * 1.1;
-      } else if (unit.faction === "Fabeot") {
+      const collapse = botFabeotCollapseReady(player, status);
+      const scored = options.map(coord => {
+        let score = 0;
+        const cell = getCellAt(coord);
+        if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) score -= 999;
+        score += homePsMoveScore(unit, coord, status);
+        score += centerMoveScore(unit, coord, status);
         if (!hasPS || status.zeroPsRecovery || status.pressureEmergency) {
           const psTargets = botFabeotLessDefendedPsTargets(player);
           score += psTargets.length ? Math.max(0, 34 - minDistance(coord, psTargets) * 5.2) : 0;
-        } else if (context.fabeotTargets.length) {
-          score += Math.max(0, (context.fabeotCollapse ? 28 : 20) - minDistance(coord, context.fabeotTargets) * (context.fabeotCollapse ? 4.4 : 3.2));
+        } else if (targets.length) {
+          score += Math.max(0, (collapse ? 28 : 20) - minDistance(coord, targets) * (collapse ? 4.4 : 3.2));
         }
-        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 36 : 16;
+        if (cell && cell.ps && cell.control !== player) score += (status.zeroPsRecovery || status.pressureEmergency) ? 36 : 16;
         if (cell && cell.ps && cell.control === player) score += 7;
-        if (enemyHq && sameCoord(coord, enemyHq.pos) && hasPS) score += context.fabeotCollapse && status.qgRaiders >= 2 ? 60 : (botFabeotIsBaitUnit(unit) ? 36 : 14);
-        if (unit.ability && !unit.ability.passive && context.enemyUnits.some(e => hexDistance(coord, e.pos) <= Math.max(1, unit.ability.range || 1))) score += context.fabeotCollapse ? 7 : 5;
-        if (context.fabeotCollapse && context.fabeotExposed.length) score += Math.max(0, 22 - minDistance(coord, context.fabeotExposed.map(e => e.pos)) * 4.2);
-        if (!context.fabeotCollapse && botFabeotIsValuableUnit(unit) && enemyHq && entry.enemyHqDistance <= 3) score -= 10;
-        if (context.fabeotConcentrated) score += botFabeotSplitPressureScore(player, coord, status) * 0.9;
-        score += psProtectionMoveBonus(player, coord, status) * 0.95;
-      }
-      if (context.commander && unit.uid !== context.commander.uid && commanderThreatLevel(context.commander) > 0) score -= hexDistance(coord, context.commander.pos) * (unit.faction === "Exordium" ? 1.8 : 2.0);
-      score += commanderProtectionMoveBonus(unit, coord);
-      score -= entry.enemiesR1 * (unit.type === "Comandante" ? 4.5 : 0.45);
-      return score;
+        if (enemyHq && sameCoord(coord, enemyHq.pos) && hasPS) {
+          score += collapse && status.qgRaiders >= 2 ? 60 : (botFabeotIsBaitUnit(unit) ? 36 : 14);
+        }
+        if (unit.ability && !unit.ability.passive) {
+          const enemyNearRange = combatUnits(enemy).some(e => hexDistance(coord, e.pos) <= Math.max(1, unit.ability.range || 1));
+          if (enemyNearRange) score += collapse ? 7 : 5;
+        }
+        score += botFabeotMoveDoctrineBonus(unit, coord, status) * 1.35;
+        const exposed = botFabeotExposedKeyTargets(player);
+        if (collapse && exposed.length) score += Math.max(0, 22 - minDistance(coord, exposed.map(e => e.pos)) * 4.2);
+        if (!collapse && botFabeotIsValuableUnit(unit) && enemyHq && hexDistance(coord, enemyHq.pos) <= 3) score -= 10;
+        if (botFabeotEnemyConcentratedOnDefense(player)) score += botFabeotSplitPressureScore(player, coord, status) * 0.9;
+        if (commander && unit.uid !== commander.uid && commanderThreatLevel(commander) > 0) score -= hexDistance(coord, commander.pos) * 2.0;
+        score += commanderProtectionMoveBonus(unit, coord);
+        score += psProtectionMoveBonus(player, coord) * 1.05;
+        score -= enemiesNear(coord, player, 1).length * (unit.type === "Comandante" ? 5 : (collapse ? 0.8 : 1.3));
+        score += botGeneralDoctrineMoveBonus(unit, coord, status);
+        return { coord, score };
+      }).sort((a,b) => b.score - a.score);
+      return scored[0].coord;
     }
-
-function botAdvancedMoveScoreF9T0(entry, context) {
-      const emergencyWeight = context.status.active ? 0.85 : 0;
-      return botFactionMoveBaseScoreF9T0(entry, context)
-        + entry.generalScore
-        + entry.factionDoctrineScore
-        + entry.homeScore
-        + entry.emergencyScore * emergencyWeight
-        + entry.c2e3Score * 0.35
-        + entry.missionScore
-        + entry.stallScore;
-    }
-
-function chooseAdvancedMove(unit, options, cachedStatus = null) {
-      const status = cachedStatus || strategicStatus(unit.side);
-      const context = botCreateAdvancedMoveContextF9T0(unit, options, status);
-      let best = null;
-      for (const entry of context.candidates) {
-        const score = botAdvancedMoveScoreF9T0(entry, context);
-        const tie = entry.enemyHqDistance * 0.001 + String(entry.coord.join(",")).length * 0.000001;
-        if (!best || score > best.score || (score === best.score && tie < best.tie)) best = { coord:entry.coord, score, tie };
-      }
-      return best ? best.coord : null;
-    }
-
-
-function chooseAdvancedAgathoiMove(unit, options) {
-      return chooseAdvancedMove(unit, options);
-    }
-
-
-function chooseAdvancedFabeotMove(unit, options) {
-      return chooseAdvancedMove(unit, options);
-    }
-
 
 function chooseAdvancedNexusMove(unit, options) {
-      return chooseAdvancedMove(unit, options);
+      const player = unit.side;
+      const enemy = enemyOf(player);
+      const enemyHq = getHq(enemy);
+      const hasPS = countControlledPS(player) >= 1;
+      const status = strategicStatus(player);
+      const uncontrolledPS = state.cells.filter(c => c.ps && c.control !== player).map(c => c.coord);
+      const controlled = controlledPsCells(player).map(c => c.coord);
+      const guardTarget = nearestControlledPsNeedingGuard(player);
+      const commander = commanderOf(player);
+      const nexusTargets = botNexusPsNetworkTargets(player, status);
+      const scored = options.map(coord => {
+        let score = 0;
+        const cell = getCellAt(coord);
+        if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) score -= 999;
+        score += homePsMoveScore(unit, coord, status);
+        score += centerMoveScore(unit, coord, status);
+        if (!hasPS) score -= minDistance(coord, uncontrolledPS.length ? uncontrolledPS : state.cells.filter(c => c.ps).map(c => c.coord)) * 2.6;
+        else if (status.zeroPsRecovery || status.pressureEmergency) score -= minDistance(coord, nexusTargets) * 1.5;
+        else if (guardTarget) score -= hexDistance(coord, guardTarget.coord) * 2.2;
+        else if (controlled.length && countControlledPS(player) < 2) score -= minDistance(coord, controlled) * 1.1;
+        else score -= hexDistance(coord, enemyHq.pos) * (status.qgWinPlan ? 1.15 : 0.45);
+        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 34 : 14;
+        if (cell && cell.ps && cell.control === player) score += unit.type === "Struttura" ? 20 : 13;
+        if (controlled.some(ps => hexDistance(coord, ps) === 1)) score += 6;
+        if (sameCoord(coord, enemyHq.pos) && hasPS) score += status.qgWinPlan ? 55 : 28;
+        if (unit.weight === "Pivot") score += alliesNear(coord, player, 1).length * 2.5;
+        if (unit.type === "Struttura" && !state.cells.some(c => c.ps && hexDistance(c.coord, coord) <= 1) && !status.hqDanger) score -= 5;
+        if (commander && unit.uid !== commander.uid && commanderThreatLevel(commander) > 0) score -= hexDistance(coord, commander.pos) * 2;
+        score += commanderProtectionMoveBonus(unit, coord);
+        score += psProtectionMoveBonus(player, coord) * 1.15;
+        score += botNexusMoveDoctrineBonus(unit, coord, status) * 1.2;
+        score += botGeneralDoctrineMoveBonus(unit, coord, status);
+        score -= enemiesNear(coord, player, 1).length * (unit.type === "Comandante" ? 4 : 0.6);
+        return { coord, score };
+      }).sort((a,b) => b.score - a.score);
+      return scored[0].coord;
     }
-
 
 function chooseAdvancedExordiumMove(unit, options) {
-      return chooseAdvancedMove(unit, options);
+      const player = unit.side;
+      const status = strategicStatus(player);
+      const enemyHq = getHq(enemyOf(player));
+      const hasPS = countControlledPS(player) >= 1;
+      const fronts = exordiumFrontTargets(player);
+      const desiredFront = chooseExordiumFrontForUnit(unit, fronts);
+      const commander = commanderOf(player);
+      const scored = options.map(coord => {
+        let score = 0;
+        const cell = getCellAt(coord);
+        if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) score -= 999;
+        score += homePsMoveScore(unit, coord, status);
+        score += centerMoveScore(unit, coord, status);
+        if (!hasPS) score -= minDistance(coord, fronts.map(f => f.ps)) * 2.35;
+        else score -= hexDistance(coord, desiredFront.advance) * 1.05;
+        score -= hexDistance(coord, enemyHq.pos) * (hasPS ? 0.95 : 0.15);
+        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 28 : 10;
+        if (sameCoord(coord, enemyHq.pos) && hasPS) score += 55;
+        if (unit.type === "Veicolo") score += 2;
+        if (unit.weight === "Pivot" || unit.weight === "Elite") score += 2;
+        score += botExordiumMoveDoctrineBonus(unit, coord, status) * 1.25;
+        const nearbyAllies = alliesNear(coord, player, 1).length;
+        score += botExordiumShockUnit(unit) ? Math.min(5, nearbyAllies * 1.5) : Math.min(4, nearbyAllies * 0.9);
+        if (!status.zeroPsRecovery && !status.pressureEmergency && nearbyAllies >= 4) score -= 2;
+        if (commander && unit.uid !== commander.uid && commanderThreatLevel(commander) > 0) score -= hexDistance(coord, commander.pos) * 1.8;
+        score += commanderProtectionMoveBonus(unit, coord);
+        score += psProtectionMoveBonus(player, coord) * 1.25;
+        score += botGeneralDoctrineMoveBonus(unit, coord, status);
+        return { coord, score };
+      }).sort((a,b) => b.score - a.score);
+      return scored[0].coord;
     }
-
 
 function chooseAdvancedLibertiMove(unit, options) {
-      return chooseAdvancedMove(unit, options);
+      const player = unit.side;
+      const enemyHq = getHq(enemyOf(player));
+      const enemies = combatUnits(enemyOf(player));
+      const hasPS = countControlledPS(player) >= 1;
+      const status = strategicStatus(player);
+      const targets = botLibertiFrontTargets(player, status);
+      const flankTarget = libertiFlankTarget(player);
+      const mainTarget = hasPS
+        ? (status.qgWinPlan ? enemyHq.pos : (hexDistance(unit.pos, flankTarget) > 2 ? flankTarget : enemyHq.pos))
+        : (targets.length ? nearestCoord(unit.pos, targets) : [0,0,0]);
+      const allies = combatUnits(player).filter(a => a.uid !== unit.uid);
+      const commander = commanderOf(player);
+      const scored = options.map(coord => {
+        let score = 0;
+        const cell = getCellAt(coord);
+        if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) score -= 999;
+        score += homePsMoveScore(unit, coord, status);
+        score += centerMoveScore(unit, coord, status);
+        score -= hexDistance(coord, mainTarget) * (hasPS ? 1.15 : 1.85);
+        if (targets.length) score += Math.max(0, 18 - minDistance(coord, targets) * 3.4);
+        if (hasPS) score += Math.min(3.5, Math.abs(coord[1]) * 0.45);
+        if (cell && cell.ps && cell.control !== player) score += status.zeroPsRecovery || status.pressureEmergency ? 28 : 8;
+        if (cell && cell.ps && cell.control === player) score += botUnitIsSacrificial(unit) ? 4 : 7;
+        if (sameCoord(coord, enemyHq.pos) && hasPS) score += status.qgRaiders >= 2 ? 55 : 24;
+        const adjacentAllies = alliesNear(coord, player, 1).length;
+        score += adjacentAllies * 2.0;
+        for (const enemy of enemies) {
+          if (areAdjacent(coord, enemy.pos)) {
+            score += 2;
+            if (allies.some(a => areAdjacent(a.pos, enemy.pos))) score += 6;
+          }
+        }
+        score += botLibertiMoveDoctrineBonus(unit, coord, status) * 1.35;
+        if (commander && unit.uid !== commander.uid && commanderThreatLevel(commander) > 0) score -= hexDistance(coord, commander.pos) * 1.9;
+        score += commanderProtectionMoveBonus(unit, coord);
+        score += psProtectionMoveBonus(player, coord) * 1.25;
+        score += botGeneralDoctrineMoveBonus(unit, coord, status);
+        return { coord, score };
+      }).sort((a,b) => b.score - a.score);
+      return scored[0].coord;
     }
-
 
 function chooseLibertiMove(unit, options) {
       const enemyHq = getHq(enemyOf(unit.side));
@@ -3151,10 +2937,10 @@ function hashString(s) {
 // B7f – AI orchestrator / turn driver
 // =====================================================
 
-async function maybeRunBot(options = {}) {
+async function maybeRunBot() {
       if (!state || state.winner || botRunning) return;
       if (typeof tutorialRuntimeShouldPauseBot === "function" && tutorialRuntimeShouldPauseBot()) return;
-      if (state.modes[state.currentPlayer] === "bot") await runBotTurn(options);
+      if (state.modes[state.currentPlayer] === "bot") await runBotTurn();
     }
 
 function chooseNextBotUnit(player) {
@@ -3189,47 +2975,34 @@ function chooseNextAdvancedBotUnit(player) {
       const ownHq = getHq(player);
       const hasPS = countControlledPS(player) >= 1;
       const commander = commanderOf(player);
-      const movementCache = new Map();
-      const movesFor = unit => {
-        if (!movementCache.has(unit.uid)) movementCache.set(unit.uid, movableCells(unit));
-        return movementCache.get(unit.uid);
-      };
-      const status = strategicStatus(player, { movesFor });
+      const status = strategicStatus(player);
       logEmergencyIfNeeded(player, status);
-      const controlledPs = controlledPsCells(player);
-      const threatenedPs = controlledPs.filter(c => enemiesNear(c.coord, player, 2).length > 0);
-      const underguardedPs = controlledPs.filter(c => alliesNear(c.coord, player, 1).length <= 1);
+      const threatenedPs = controlledPsCells(player).filter(c => enemiesNear(c.coord, player, 2).length > 0);
+      const underguardedPs = controlledPsCells(player).filter(c => alliesNear(c.coord, player, 1).length <= 1);
       const units = activeCombatUnits(player);
       if (!units.length) return null;
       const home = homePsCell(player);
       const homeDuty = homePsDutyActive(player, status);
-      const center = status.centerOpening || status.centerLostEarly ? centerPsCell() : null;
-      const enemyUnits = combatUnits(enemy);
-      const threatenedCoords = threatenedPs.map(c => c.coord);
-      const underguardedCoords = underguardedPs.map(c => c.coord);
-      const openPsCoords = state.cells.filter(c => c.ps && c.control !== player).map(c => c.coord);
-      const enemyControlledPs = state.cells.filter(c => c.ps && c.control === enemy);
-      const hasNonCommander = units.some(x => x.type !== "Comandante");
-      const hasOwnStructure = combatUnits(player).some(a => a.type === "Struttura");
       return units.map(u => {
         let score = 0;
-        const adjacentEnemies = enemyUnits.filter(e => areAdjacent(u.pos, e.pos));
+        const adjacentEnemies = combatUnits(enemy).filter(e => areAdjacent(u.pos, e.pos));
         if (status.centerOpening || status.centerLostEarly) {
+          const center = centerPsCell();
           if (center) {
             score += Math.max(0, 30 - hexDistance(u.pos, center.coord) * 5);
-            if (movesFor(u).some(c => sameCoord(c, center.coord))) score += 60;
+            if (movableCells(u).some(c => sameCoord(c, center.coord))) score += 60;
             if (adjacentEnemies.some(e => sameCoord(e.pos, center.coord))) score += 22;
-            if (u.type === "Comandante" && hasNonCommander) score -= 20;
+            if (u.type === "Comandante" && units.some(x => x.uid !== u.uid && x.type !== "Comandante")) score -= 20;
           }
         }
         if (homeDuty && home) {
           score += Math.max(0, 34 - hexDistance(u.pos, home.coord) * 4.2);
-          if (movesFor(u).some(c => sameCoord(c, home.coord))) score += 50;
-          if (u.type === "Comandante" && hasNonCommander) score -= 18;
+          if (movableCells(u).some(c => sameCoord(c, home.coord))) score += 50;
+          if (u.type === "Comandante" && units.some(x => x.uid !== u.uid && x.type !== "Comandante")) score -= 18;
         }
         if (adjacentEnemies.length) score += 8 + adjacentEnemies.length * 2;
-        if (hasPS && movesFor(u).some(c => sameCoord(c, enemyHq.pos))) score += 100;
-        if (!hasPS && movesFor(u).some(c => getCellAt(c)?.ps)) score += 35;
+        if (hasPS && movableCells(u).some(c => sameCoord(c, enemyHq.pos))) score += 100;
+        if (!hasPS && movableCells(u).some(c => getCellAt(c)?.ps)) score += 35;
 
         // Modalità emergenza: usa per primi i pezzi che possono rompere pressione o difendere QG.
         if (status.active) {
@@ -3246,17 +3019,17 @@ function chooseNextAdvancedBotUnit(player) {
           score -= hexDistance(u.pos, commander.pos) * 2.2;
           if (hexDistance(u.pos, commander.pos) <= 2) score += 6;
         }
-        if (threatenedPs.length) score -= minDistance(u.pos, threatenedCoords) * 2.1;
-        else if (underguardedPs.length) score -= minDistance(u.pos, underguardedCoords) * 1.25;
+        if (threatenedPs.length) score -= minDistance(u.pos, threatenedPs.map(c => c.coord)) * 2.1;
+        else if (underguardedPs.length) score -= minDistance(u.pos, underguardedPs.map(c => c.coord)) * 1.25;
         else if (hasPS) score -= hexDistance(u.pos, enemyHq.pos) * 0.8;
-        else score -= minDistance(u.pos, openPsCoords) * 1.5;
+        else score -= minDistance(u.pos, state.cells.filter(c => c.ps && c.control !== player).map(c => c.coord)) * 1.5;
 
         if (unitIsGarrisoningPs(u) && !enemiesNear(u.pos, player, 1).length && !status.hqDanger) score -= 18;
 
         if (status.doctrineActive) {
           if (status.pressureWinPlan && getCellAt(u.pos)?.ps) score += 6;
           if (status.qgWinPlan && hexDistance(u.pos, enemyHq.pos) <= 5) score += 8;
-          if (status.enemyPressurePlan && enemyControlledPs.some(c => hexDistance(u.pos, c.coord) <= 3)) score += 10;
+          if (status.enemyPressurePlan && state.cells.some(c => c.ps && c.control === enemy && hexDistance(u.pos, c.coord) <= 3)) score += 10;
         }
 
         if (u.faction === "Nexus") {
@@ -3287,7 +3060,7 @@ function chooseNextAdvancedBotUnit(player) {
         } else if (u.faction === "Agathoi") {
           const vsLiberti = state.factions[enemy] === "Liberti";
           const nearbyEnemyCount = enemiesNear(u.pos, player, 2).length;
-          if (u.canBuild && (hasPS || hasOwnStructure)) score += 5;
+          if (u.canBuild && (hasPS || combatUnits(player).some(a => a.type === "Struttura"))) score += 5;
           if (u.type === "Struttura" && u.ability && abilityTargets(u, u.ability).length > 0) score += 3;
           if (u.ability && ["inhibit_move", "thorns"].includes(u.ability.statusKind)) score += status.centerLostEarly || status.hqDanger ? 4 : 1;
           if (u.passiveThorns && enemiesNear(u.pos, player, 1).length) score += 4;
@@ -3295,19 +3068,19 @@ function chooseNextAdvancedBotUnit(player) {
             if (u.name === "Oplita di Confine") score += 8 + nearbyEnemyCount * 2;
             if (u.name === "Aratro Corazzato" && u.ability && canUseAbility(u, u.ability) && abilityTargets(u, u.ability).length) score += 10;
             if (u.passiveThorns && nearbyEnemyCount) score += 6;
-            if (u.canBuild && hasPS) score += 3;
+            if (u.canBuild && countControlledPS(player) >= 1) score += 3;
           }
         }
         return { u, score };
       }).sort((a,b) => b.score - a.score)[0].u;
     }
 
-async function runBotTurn(options = {}) {
+async function runBotTurn() {
       if (botRunning || state.winner) return;
       botRunning = true;
       const player = state.currentPlayer;
       try {
-        if (!options.skipInitialRender) renderAll();
+        renderAll();
         await sleep(220);
         if (typeof getEnemyPlayers === "function" && getEnemyPlayers(player).length > 1) {
           const targetPlayer = selectAiTargetPlayer(player, { reason: "turn-start" });
@@ -3364,7 +3137,7 @@ async function runBotTurn(options = {}) {
       } finally {
         botRunning = false;
         if (!state.winner && state.currentPlayer === player) endTurn();
-        else renderAll();
+        renderAll();
       }
     }
 
@@ -3375,42 +3148,53 @@ function botAct(unit) {
         return;
       }
       const enemyHq = getHq(enemyOf(unit.side));
-      // F9T0: calcola una sola volta lo stato strategico per l'intera azione.
-      // Le scelte discrezionali di movimento (sicurezza comandante, emergenza,
-      // presidio e dottrina di fazione) confluiscono nel selettore unificato.
-      const advancedStatus = advancedAiEnabled() ? strategicStatus(unit.side) : null;
-      if (advancedStatus) logEmergencyIfNeeded(unit.side, advancedStatus);
+      if (advancedAiEnabled()) {
+        const status = strategicStatus(unit.side);
+        logEmergencyIfNeeded(unit.side, status);
+        if (!status.allIn) {
+          const safe = commanderSafetyMove(unit);
+          if (safe) {
+            moveUnit(unit, safe);
+            finishBotMove(unit);
+            return;
+          }
+        }
+      }
       if (advancedAiEnabled() && !unit.acted) {
         maybeUseBotHandTactic(unit.side, "preAction");
         maybeUseBotTactic(unit.side);
       }
 
-      let actionMoveOptions = null;
-      const actionMoves = () => {
-        if (!actionMoveOptions) actionMoveOptions = movableCells(unit);
-        return actionMoveOptions;
-      };
       if (sameCoord(unit.pos, enemyHq.pos) && countControlledPS(unit.side) < 1) {
         log(`${unit.name} mantiene il QG nemico in attesa del controllo di un PS.`);
         endUnitAction(unit);
         return;
       }
-      const winStep = actionMoves().find(c => sameCoord(c, enemyHq.pos) && countControlledPS(unit.side) >= 1);
+      const winStep = movableCells(unit).find(c => sameCoord(c, enemyHq.pos) && countControlledPS(unit.side) >= 1);
       if (winStep) {
-        botMoveUnitF9T0(unit, winStep);
+        moveUnit(unit, winStep);
         finishBotMove(unit);
         return;
       }
 
-      // F9T0: le azioni offensive d'emergenza restano deterministiche; il
-      // movimento relativo all'emergenza viene invece valutato nel passaggio unico.
-      if (advancedStatus && emergencyBotAction(unit, () => actionMoves(), advancedStatus)) return;
-      const psStep = actionMoves().find(c => {
+      if (advancedAiEnabled() && emergencyBotAction(unit)) return;
+
+      if (advancedAiEnabled() && homePsDutyActive(unit.side)) {
+        const home = homePsCell(unit.side);
+        const homeStep = home ? movableCells(unit).find(c => sameCoord(c, home.coord)) : null;
+        if (homeStep) {
+          moveUnit(unit, homeStep);
+          log(`${unit.name} mette in sicurezza il PS laterale della propria fazione.`);
+          finishBotMove(unit);
+          return;
+        }
+      }
+      const psStep = movableCells(unit).find(c => {
         const cell = getCellAt(c);
         return cell && cell.ps && cell.control !== unit.side && countControlledPS(unit.side) < 1;
       });
       if (psStep) {
-        botMoveUnitF9T0(unit, psStep);
+        moveUnit(unit, psStep);
         finishBotMove(unit);
         return;
       }
@@ -3419,21 +3203,19 @@ function botAct(unit) {
         return;
       }
       const currentCell = getCellAt(unit.pos);
-      if (advancedStatus && shouldHoldStrategicCell(unit, currentCell, advancedStatus)) {
+      if (advancedAiEnabled() && shouldHoldStrategicCell(unit, currentCell)) {
         log(`${unit.name} presidia il PS conquistato.`);
         endUnitAction(unit);
         return;
       }
-      // La soglia storica fissa "meno di 2 PS" resta solo per l'IA base.
-      // L'IA avanzata usa il budget dinamico F9T0, proporzionale alla mappa.
-      if (!advancedStatus && currentCell && currentCell.ps && currentCell.control === unit.side && countControlledPS(unit.side) < 2) {
+      if (currentCell && currentCell.ps && currentCell.control === unit.side && countControlledPS(unit.side) < 2) {
         log(`${unit.name} presidia il Punto Strategico.`);
         endUnitAction(unit);
         return;
       }
-      const step = chooseBotMove(unit, actionMoves(), advancedStatus);
+      const step = chooseBotMove(unit);
       if (step) {
-        botMoveUnitF9T0(unit, step);
+        moveUnit(unit, step);
         finishBotMove(unit);
       } else {
         log(`${unit.name} non trova movimento utile e resta in posizione.`);
@@ -3558,16 +3340,6 @@ function scoreBotHandTactic(player, rawCard, target, phase="dynamic") {
         if (kind === "block_enemy_hand_cards_by_ps") return countControlledPS(player) > 0 ? score + 5 + countControlledPS(player) * 2 : -99;
         if (kind === "usury_energy_income_debuff") return score + 6 + Math.min(4, state.energy[enemy] || 0);
         return -99;
-      }
-
-      if (typeof isPlayerTargetToken === "function" && isPlayerTargetToken(target)) {
-        const targetSide = target.side;
-        const targetUnits = combatUnits(targetSide);
-        if (kind === "enemy_ability_cost_tax") return score + 4 + targetUnits.filter(u => u && u.ability && !u.ability.passive && (u.ability.cost || 0) > 0).length * 2;
-        if (kind === "mutual_draw_conditional_steal") return score + 5 + Math.min(4, state.hand && state.hand[targetSide] ? state.hand[targetSide].length : 0);
-        if (kind === "block_enemy_hand_cards_by_ps") return score + 5 + countControlledPS(player) * 2 + Math.min(5, state.hand && state.hand[targetSide] ? state.hand[targetSide].length : 0);
-        if (kind === "usury_energy_income_debuff") return score + 6 + Math.min(6, state.energy[targetSide] || 0);
-        return score;
       }
 
       const enemyTarget = target.side === enemy;
@@ -3796,15 +3568,6 @@ function scoreBotAdvancedHandTactic(player, rawCard, target, phase="dynamic") {
         if (strategic.ownCards.deck <= 1 && strategic.ownCards.hand <= 3) score -= 3;
       }
 
-      if (typeof isPlayerTargetToken === "function" && isPlayerTargetToken(target)) {
-        const targetSide = target.side;
-        if (kind === "mutual_draw_conditional_steal") score += botHandFreeSlots(player) > 0 ? 2 : -8;
-        if (kind === "block_enemy_hand_cards_by_ps") score += Math.min(5, state.hand && state.hand[targetSide] ? state.hand[targetSide].length : 0);
-        if (kind === "usury_energy_income_debuff") score += (state.energy[targetSide] || 0) === 0 ? 2 : 0;
-        if (kind === "enemy_ability_cost_tax") score += combatUnits(targetSide).filter(u => u.ability && !u.ability.passive && canUseAbility(u, u.ability)).length * 1.5;
-        return score + botFactionTacticProfileBonus(player, card, target, phase);
-      }
-
       // Effetti no target Fabeot/economia: più valore se mano nemica/deck hanno materiale e se il bot non è saturo.
       if (!target) {
         if (kind === "block_enemy_hand_cards_by_ps") {
@@ -3938,10 +3701,7 @@ function scoreBotTactic(player, tactic, target) {
       if (tactic.kind === "defensiveRoots") score += target ? 5 + (isOnPS(target) ? 3 : 0) : 0;
       if (tactic.kind === "greenWall") score += combatUnits(player).filter(u => u.type !== "Struttura" && combatUnits(player).some(s => s.type === "Struttura" && areAdjacent(s.pos, u.pos)) && u.currentDef < u.maxDef).length * 2;
       if (tactic.kind === "logisticChoke") score += target ? 5 + (target.att > 3 ? 2 : 0) : 0;
-      if (tactic.kind === "contractTrap") {
-        const targetSide = target && target.side ? target.side : enemyOf(player);
-        score += state.energy[targetSide] >= 3 ? 8 : 4;
-      }
+      if (tactic.kind === "contractTrap") score += state.energy[enemyOf(player)] >= 3 ? 8 : 4;
       score += botTacticEmergencyRelevance(player, tactic, target, status);
       score += botSuperiorDoctrineTacticBonus(player, tactic, target, status);
       if (status.pressureDanger || status.hqDanger || status.allIn) score += 2;
@@ -4291,7 +4051,7 @@ function chooseAdvancedSpawnCell(player, unit, options) {
         if (status.centerOpening || status.centerLostEarly) score += centerMoveScore(unit, coord, status) * 0.35;
         score += botCenterPsBonus(player, coord) * 0.55;
         score -= botThreatPenalty(player, coord, unit) * 0.35;
-        if (faction === "Nexus") score += psProtectionMoveBonus(player, coord, status) * 1.4 + botNexusCoordDoctrineBonus(player, unit, coord, status) * 0.65;
+        if (faction === "Nexus") score += psProtectionMoveBonus(player, coord) * 1.4 + botNexusCoordDoctrineBonus(player, unit, coord, status) * 0.65;
         if (faction === "Exordium") score += botExordiumCoordDoctrineBonus(player, unit, coord, status) * 0.65 - Math.max(0, alliesNear(coord, player, 1).length - 2) * 0.35;
         if (faction === "Liberti") score += alliesNear(coord, player, 1).length * 1.15;
         if (!status.allIn && commander && commanderThreatLevel(commander) > 0) score -= hexDistance(coord, commander.pos) * 1.7;
@@ -4498,17 +4258,13 @@ function advancedPurchaseBonus(player, bp, field, enemyField, enemyNearHq) {
 function botTryStationaryAction(unit) {
       if (!unit || !canAct(unit)) return false;
       let didSomething = false;
-      let f9s1aPreparedAction = false;
       const ab = unit.ability;
       if (ab && !ab.passive && canUseAbility(unit, ab)) {
         const scored = abilityTargets(unit, ab).map(t => ({ target:t, score: scoreAbilityWithMission(unit, t, ab) })).sort((a,b) => b.score - a.score);
         if (scored.length && scored[0].score > 0) {
           useAbility(unit, scored[0].target, ab);
           didSomething = true;
-          if (unit.f9s1aKeepActionAfterAbility) {
-            unit.f9s1aKeepActionAfterAbility = false;
-            f9s1aPreparedAction = true;
-          } else if (unit.c2finalc2ReadyAfterAbility) {
+          if (unit.c2finalc2ReadyAfterAbility) {
             unit.c2finalc2ReadyAfterAbility = false;
           } else if (unit.type !== "Veicolo") return true;
         }
@@ -4528,29 +4284,14 @@ function botTryStationaryAction(unit) {
         }
       }
       if (!isFieldUnit(unit)) return didSomething;
-      if (unit.postAttackMove && (unit.attacksMade || 0) > 0 && !unit.f9s1aPostAttackMoveUsed && typeof movableCells === "function") {
-        const steps = movableCells(unit);
-        const step = steps.length ? chooseBotMove(unit, steps) : null;
-        if (step) {
-          unit.f9s1aPostAttackMoveUsed = true;
-          botMoveUnitF9T0(unit, step);
-          log(`${unit.name} usa Disimpegno dopo l'attacco.`);
-          return true;
-        }
-      }
-      if (unit.type === "Veicolo" && (unit.attacksMade || 0) > 0) return true;
       if (unit.type === "Veicolo" && ab && !ab.passive && canUseAbility(unit, ab)) {
         const scored = abilityTargets(unit, ab).map(t => ({ target:t, score: scoreAbilityWithMission(unit, t, ab) })).sort((a,b) => b.score - a.score);
         if (scored.length && scored[0].score > 0) {
           useAbility(unit, scored[0].target, ab);
           didSomething = true;
-          if (unit.f9s1aKeepActionAfterAbility) {
-            unit.f9s1aKeepActionAfterAbility = false;
-            f9s1aPreparedAction = true;
-          }
         }
       }
-      return f9s1aPreparedAction ? false : didSomething;
+      return didSomething;
     }
 
 function botTryAttackOnly(unit) {
@@ -4590,8 +4331,8 @@ function finishBotMove(unit) {
       endUnitAction(unit);
     }
 
-function emergencyBotAction(unit, movementProvider = movableCells, status = null) {
-      status = status || strategicStatus(unit.side);
+function emergencyBotAction(unit) {
+      const status = strategicStatus(unit.side);
       if (!status.active) return false;
       const adjacentEnemies = combatUnits(status.enemy).filter(e => areAdjacent(unit.pos, e.pos));
       const strategicAdjacent = adjacentEnemies.filter(e => isStrategicEnemyTarget(unit.side, e, status));
@@ -4610,8 +4351,15 @@ function emergencyBotAction(unit, movementProvider = movableCells, status = null
         if (isFieldUnit(unit)) endUnitAction(unit);
         return true;
       }
-      // F9T0: nessun secondo selettore di movimento. Il presidio dinamico e
-      // l'urgenza strategica sono già componenti del punteggio unificato.
+      if (unitIsGarrisoningPs(unit) && !shouldReleasePsGarrison(unit)) {
+        return false;
+      }
+      const step = chooseEmergencyMove(unit, movableCells(unit), status);
+      if (step) {
+        moveUnit(unit, step);
+        finishBotMove(unit);
+        return true;
+      }
       return false;
     }
 
@@ -4648,78 +4396,11 @@ function scoreAbilityWithMission(unit, target, ab) {
     }
 
 function scoreAbility(unit, target, ab) {
-      if (!target || target.type === "QG" || ab.passive) return -99;
-      if (typeof isPlayerTargetToken === "function" && isPlayerTargetToken(target)) {
-        const targetSide = target.side;
-        if (ab.kind === "compromisedLogistics") {
-          const enemyDeck = state.deck && state.deck[targetSide] ? state.deck[targetSide].length : 0;
-          const ownHand = state.hand && state.hand[unit.side] ? state.hand[unit.side].length : 0;
-          const maxHand = typeof maxHandSizeConfig === "function" ? maxHandSizeConfig() : 10;
-          return enemyDeck > 0 ? 4 + Math.max(0, maxHand - ownHand) * 0.25 + enemyDeck * 0.04 : 0;
-        }
-        if (ab.kind === "copyRandomEnemyHandCard") {
-          const count = typeof stealableHandCards === "function" ? stealableHandCards(targetSide).length : (state.hand && state.hand[targetSide] ? state.hand[targetSide].length : 0);
-          return count ? 5 + Math.min(count, 4) : 0;
-        }
-        if (ab.kind === "lockEnemyEnergy") {
-          const ene = state.energy[targetSide] || 0;
-          const hand = state.hand && state.hand[targetSide] ? state.hand[targetSide].length : 0;
-          return ene > 0 || hand > 0 ? 6 + Math.min(ene, 5) + (ene === 0 && hand ? 4 : 0) : 0;
-        }
-        return 0;
-      }
+      if (target.type === "QG" || ab.passive) return -99;
       const status = advancedAiEnabled() ? strategicStatus(unit.side) : { active:false };
       let emergency = status.active && target.side !== unit.side && isStrategicEnemyTarget(unit.side, target, status) ? 8 : 0;
       if (advancedAiEnabled() && target && target.side && target.pos && target.side !== unit.side) emergency += botTargetPriorityBonus(unit.side, target, status) * 0.25;
       const superiorAbility = advancedAiEnabled() ? botSuperiorDoctrineAbilityBonus(unit, target, ab, status) : 0;
-      if (ab.kind === "f9s1DoubleMove") {
-        if (unit.movedThisTurn) return 0;
-        const moves = typeof movableCells === "function" ? movableCells(unit).length : 0;
-        return moves > 0 ? 3 + Math.min(4, moves * 0.2) : 0;
-      }
-      if (ab.kind === "f9s1RepairHpDef") {
-        if (target.side !== unit.side || target.uid === unit.uid) return -99;
-        return Math.max(0,target.maxHp-target.currentHp) + Math.max(0,target.maxDef-target.currentDef) + 2;
-      }
-      if (ab.kind === "f9s1HealInfantry" || ab.kind === "f9s1Heal") {
-        if (target.side !== unit.side || (ab.excludeSelf && target.uid===unit.uid)) return -99;
-        return Math.max(0,target.maxHp-target.currentHp) * 2 + 1;
-      }
-      if (ab.kind === "f9s1Assassinate") {
-        if (!target || target.side===unit.side) return -99;
-        const valid=(target.type==="Fanteria"||target.type==="Veicolo") && target.weight!=="Pivot" && target.type!=="Comandante" && (target.currentDef||0)<=2;
-        return valid ? 7 + (target.cost||0)*2 - (unit.cost||0) : 0;
-      }
-      if (ab.kind === "f9s1CellBarrage" || ab.kind === "f9s1CellMortar") {
-        const coord=target && (target.coord||target.pos);
-        if (!coord) return 0;
-        const occupant=getUnitAt(coord);
-        return occupant ? (occupant.side===unit.side ? -4 : 7 + (occupant.cost||0)) : 1;
-      }
-      if (ab.kind === "f9s1NextAttackIgnoreDefense") {
-        const adjacent = adjacentAttackTargets(unit);
-        return adjacent.some(t=>(t.currentDef||0)>0) ? 6 : 1;
-      }
-      if (ab.kind === "f9s1bAdjacentMoveLock") {
-        const adjacent=(typeof enemyCombatUnits==="function"?enemyCombatUnits(unit.side):[]).filter(t=>t&&t.alive&&t.pos&&areAdjacent(unit.pos,t.pos));
-        return adjacent.length ? 4 + adjacent.length*3 + adjacent.filter(t=>isOnPS(t)||t.type==="Comandante"||t.weight==="Pivot").length*2 : 0;
-      }
-      if (ab.kind === "f9s1bLineSuppression") {
-        const coord=target&&(target.coord||target.pos);
-        if (!coord) return 0;
-        const options=typeof f9s1bValidLineOptions==="function"?f9s1bValidLineOptions(unit,coord,ab):[];
-        return options.length ? Math.max(...options.map(x=>typeof f9s1bLineScore==="function"?f9s1bLineScore(unit,x.coords):0)) : 0;
-      }
-      if (ab.kind === "f9s1bCrash") {
-        if (!target||target.side===unit.side) return -99;
-        const amount=Math.max(0,unit.currentHp||0);
-        const heavy=String(target.weight||"").toLowerCase().startsWith("pesant");
-        return 4 + amount*2 + (heavy?3:0) + ((target.currentDef||0)<=amount?3:0) + emergency;
-      }
-      if (ab.kind === "f9s1bErkos") {
-        if (!target||target.side===unit.side) return -99;
-        return 6 + ((target.currentDef||0)<=2?2:0) + (isOnPS(target)?3:0) + emergency;
-      }
       if (ab.kind === "heal") {
         if (target.side !== unit.side) return -99;
         const missing = target.maxHp - target.currentHp;

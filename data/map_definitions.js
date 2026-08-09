@@ -140,9 +140,6 @@ function mapDefinitionCreate(config) {
       incomeValue: Number.isFinite(ps.incomeValue) ? ps.incomeValue : 1,
       tags: Array.isArray(ps.tags) ? [...ps.tags] : []
     })),
-    centralStrategicPointId: config.centralStrategicPointId
-      || ((config.strategicPoints || []).find(ps => Array.isArray(ps.tags) && ps.tags.includes("central")) || {}).id
-      || null,
     initialHazards,
     presentation: {
       skinKey: config.skinKey || "red_dust",
@@ -258,17 +255,8 @@ const MAP3_QUADRIVIUM_DEFINITION = mapDefinitionCreate({
   symmetry: "rotation-2"
 });
 
-// F9R3: le vecchie MAP2/MAP3 restano risolvibili per compatibilità con salvataggi e log,
-// ma non sono più proposte nel Setup perché non rispettano il nuovo centro equidistante.
-MAP2_TRIUMVIRATE_DEFINITION.enabled = false;
-MAP2_TRIUMVIRATE_DEFINITION.metadata.tags.push("legacy-disabled-f9r3");
-MAP3_QUADRIVIUM_DEFINITION.enabled = false;
-MAP3_QUADRIVIUM_DEFINITION.metadata.tags.push("legacy-disabled-f9r3");
-
 const BUILTIN_MAP_DEFINITIONS = Object.freeze({
   [MAP1_STARTER_DEFINITION.id]: MAP1_STARTER_DEFINITION,
   [MAP2_TRIUMVIRATE_DEFINITION.id]: MAP2_TRIUMVIRATE_DEFINITION,
-  [MAP3_QUADRIVIUM_DEFINITION.id]: MAP3_QUADRIVIUM_DEFINITION,
-  ...(typeof F9R3_OFFICIAL_MAP_DEFINITIONS !== "undefined" ? F9R3_OFFICIAL_MAP_DEFINITIONS : {}),
-  ...(typeof F9S1B1_OFFICIAL_MAP_DEFINITIONS !== "undefined" ? F9S1B1_OFFICIAL_MAP_DEFINITIONS : {})
+  [MAP3_QUADRIVIUM_DEFINITION.id]: MAP3_QUADRIVIUM_DEFINITION
 });

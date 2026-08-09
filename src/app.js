@@ -49,7 +49,6 @@ function setAppScreen(screen) {
   const isPlaceholder = placeholderScreens.includes(next);
   const isGameLayoutLab = isLayoutLab && typeof menuLayoutCalibrationIsGameContext === "function" && menuLayoutCalibrationIsGameContext();
 
-  if (!isMainMenu && typeof controlCenterClosePanel === "function") controlCenterClosePanel();
   if (!isGame && typeof closeGamePanel === "function") closeGamePanel();
 
   document.body.dataset.appScreen = next;
@@ -82,10 +81,6 @@ function setAppScreen(screen) {
     arenaPresentationResetForMenu({ music: true, restoreMap: true, fade: true });
   }
   refreshMainMenuResumeState();
-  if (isMainMenu) {
-    refreshMainMenuLocalDataSummary();
-    if (typeof controlCenterRefresh === "function") controlCenterRefresh();
-  }
 }
 
 function readControlValue(id, fallback = "") {
@@ -149,61 +144,7 @@ function refreshMainMenuResumeState() {
   if (!resumeBtn) return;
   const hasGame = typeof state !== "undefined" && !!state;
   resumeBtn.disabled = !hasGame;
-  resumeBtn.title = hasGame ? "Riprendi la sessione runtime corrente" : "Nessuna sessione attiva";
-  const title = resumeBtn.querySelector("strong");
-  const hint = resumeBtn.querySelector("small");
-  if (title) title.textContent = "Riprendi";
-  if (hint) hint.textContent = hasGame ? "Sessione runtime corrente" : "Nessuna sessione attiva";
-  if (!title && !hint) resumeBtn.textContent = hasGame ? "Riprendi partita" : "Riprendi partita non disponibile";
-}
-
-function refreshMainMenuLocalDataSummary() {
-  if (typeof document === "undefined") return;
-  const status = document.getElementById("menuStorageStatus");
-  const summary = document.getElementById("mainMenuLocalSummary");
-  const diagnostics = typeof arenaStorageBackendDiagnostics === "function"
-    ? arenaStorageBackendDiagnostics()
-    : { backendName: "localStorage", initialized: true, pendingWrites: 0 };
-  const backendLabels = {
-    opfs: "directory privata OPFS",
-    indexedDB: "archivio IndexedDB",
-    localStorage: "compatibilità localStorage",
-    memory: "memoria temporanea",
-    uninitialized: "inizializzazione"
-  };
-  const backendLabel = backendLabels[diagnostics.backendName] || diagnostics.backendName || "archivio locale";
-  if (status) {
-    const pending = Number(diagnostics.pendingWrites) || 0;
-    status.textContent = `Archivio locale: ${backendLabel}${pending ? ` · ${pending} scrittura/e` : ""}`;
-    status.dataset.storageTone = diagnostics.backendName === "memory" || diagnostics.error ? "warn" : "good";
-  }
-  if (summary) {
-    const cards = typeof cardEditorReadCustomCards === "function" ? cardEditorReadCustomCards().length : 0;
-    const deckStore = typeof arenaStorageReadCustomDecks === "function" ? arenaStorageReadCustomDecks() : {};
-    const decks = deckStore && typeof deckStore === "object" ? Object.keys(deckStore).length : 0;
-    const maps = typeof getCustomMapDefinitions === "function" ? getCustomMapDefinitions().length : 0;
-    const stats = typeof arenaStorageReadMatchupStats === "function" ? arenaStorageReadMatchupStats().length : 0;
-    const history = typeof arenaStorageReadMatchHistory === "function" ? arenaStorageReadMatchHistory().length : 0;
-    summary.textContent = `${cards} carte custom · ${decks} deck custom · ${maps} mappe custom · ${stats} record matchup · ${history} partite nello storico`;
-  }
-  if (typeof controlCenterRefreshMetrics === "function") controlCenterRefreshMetrics();
-}
-
-function initializeMainMenuDeveloperTools() {
-  if (typeof document === "undefined") return;
-  if (typeof controlCenterApplyDeveloperMode === "function") {
-    controlCenterApplyDeveloperMode();
-    return;
-  }
-  let enabled = false;
-  try {
-    const params = new URLSearchParams(window.location.search || "");
-    enabled = params.get("dev") === "1";
-  } catch (_) {}
-  document.querySelectorAll("[data-dev-only]").forEach(element => {
-    element.hidden = !enabled;
-    element.setAttribute("aria-hidden", enabled ? "false" : "true");
-  });
+  resumeBtn.textContent = hasGame ? "Riprendi partita" : "Riprendi partita non disponibile";
 }
 
 function commanderLabelForSetup(card) {
@@ -274,44 +215,16 @@ function refreshSetupForSelectedMap() {
     const usage = typeof mapTerrainUsage === "function" ? mapTerrainUsage(definition) : {};
     const special = Object.entries(usage).filter(([key]) => key !== "free").map(([key, value]) => `${key} ${value}`).join(" · ");
     const lab = typeof mapEditorState !== "undefined" && mapEditorState && mapEditorState.labMapId === definition.id ? "MATCH LAB · " : "";
-    const central = typeof getCentralStrategicPoint === "function" ? getCentralStrategicPoint(definition) : null;
-    meta.textContent = `${lab}${definition.playerCount} giocatori FFA · ${definition.geometry.cells.length} celle · ${definition.strategicPoints.length} PS · centro ${central ? `[${central.coord.join(",")}]` : "non valido"} · movimento ×${definition.movementMultiplier}${special ? ` · ${special}` : " · terreno standard"}`;
+    meta.textContent = `${lab}${definition.playerCount} giocatori FFA · ${definition.geometry.cells.length} celle · ${definition.strategicPoints.length} PS · movimento ×${definition.movementMultiplier}${special ? ` · ${special}` : " · terreno standard"}`;
   }
   refreshSetupDeckSelectors();
 }
 
 function setupSavedDeckEntriesForSide(side) {
   const faction = readControlValue(`setupP${side}Faction`, side === 1 ? "Nexus" : "Exordium");
+  const commanderId = readControlValue(`setupP${side}Commander`, "");
   if (typeof deckBuilderSavedPayloadEntriesFor !== "function") return [];
-  // F9S1b1: il selettore mostra tutti i deck salvati della fazione.
-  // Il comandante viene sincronizzato dal deck selezionato, invece di filtrare
-  // preventivamente la lista sul comandante attualmente visibile nel Setup.
-  return deckBuilderSavedPayloadEntriesFor(faction, "", { allowCustom: true });
-}
-
-function setupSelectedSavedDeckEntryForSide(side, entries = null) {
-  const list = Array.isArray(entries) ? entries : setupSavedDeckEntriesForSide(side);
-  const key = readControlValue(`setupP${side}DeckSavedKey`, "") || readControlValue(`p${side}DeckSavedKey`, "");
-  return list.find(entry => entry && entry.key === key) || null;
-}
-
-function setupApplySelectedDeckIdentity(side, entries = null) {
-  const mode = readControlValue(`setupP${side}DeckMode`, "template");
-  const commanderSelect = document.getElementById(`setupP${side}Commander`);
-  if (commanderSelect) {
-    commanderSelect.disabled = mode === "custom";
-    commanderSelect.title = mode === "custom"
-      ? "Nel modo Deck salvato il comandante è determinato dal deck selezionato."
-      : "";
-  }
-  if (mode !== "custom") return null;
-  const entry = setupSelectedSavedDeckEntryForSide(side, entries);
-  const payload = entry && entry.payload ? entry.payload : null;
-  const commanderId = payload && payload.commanderId ? String(payload.commanderId) : "";
-  if (!entry || !commanderId) return entry;
-  writeControlValue(`setupP${side}Commander`, commanderId);
-  writeControlValue(`p${side}Commander`, commanderId);
-  return entry;
+  return deckBuilderSavedPayloadEntriesFor(faction, commanderId, { allowCustom: true });
 }
 
 function setupPopulateSavedDeckSelectForSide(side, entries = null) {
@@ -342,16 +255,15 @@ function setupPopulateSavedDeckSelectForSide(side, entries = null) {
 
 function setupDeckInfoForSide(side) {
   const faction = readControlValue(`setupP${side}Faction`, side === 1 ? "Nexus" : "Exordium");
+  const commanderId = readControlValue(`setupP${side}Commander`, "");
   const mode = readControlValue(`setupP${side}DeckMode`, "template");
   const entries = setupSavedDeckEntriesForSide(side);
   const selectState = setupPopulateSavedDeckSelectForSide(side, entries);
   const savedKey = selectState.selectedKey || "";
-  const selectedEntry = setupApplySelectedDeckIdentity(side, entries);
-  const commanderId = readControlValue(`setupP${side}Commander`, "");
   const check = typeof deckBuilderSavedStatusForSetup === "function"
     ? deckBuilderSavedStatusForSetup(faction, commanderId, null, { allowCustom: true, preferCustom: true, savedKey: mode === "custom" ? savedKey : "" })
     : { ok: false, exists: false, issues: ["Deck Builder non inizializzato"] };
-  return { side, faction, commanderId, mode, savedKey, selectedEntry, savedDeckEntries: entries, check };
+  return { side, faction, commanderId, mode, savedKey, savedDeckEntries: entries, check };
 }
 
 function refreshSetupDeckSelectorForSide(side) {
@@ -544,7 +456,6 @@ function resumeGameFromAppMenu() {
 }
 
 function openMainMenu() {
-  if (typeof controlCenterClosePanel === "function") controlCenterClosePanel();
   refreshSetupDeckSelectors();
   setAppScreen(ARENA_APP_SCREENS.MAIN_MENU);
 }
@@ -552,8 +463,6 @@ function openMainMenu() {
 function initializeArenaAppShell() {
   if (typeof document === "undefined") return;
   if (typeof applyBuildInfoToDom === "function") applyBuildInfoToDom();
-  initializeMainMenuDeveloperTools();
-  refreshMainMenuLocalDataSummary();
   if (typeof initializeGameScreenShell === "function") {
     try {
       initializeGameScreenShell();
@@ -568,7 +477,6 @@ function initializeArenaAppShell() {
   if (typeof initializeCardPoolScreen === "function") initializeCardPoolScreen();
   if (typeof initializeMapEditorScreen === "function") initializeMapEditorScreen();
   if (typeof initializeMenuLayoutCalibrationLab === "function") initializeMenuLayoutCalibrationLab();
-  if (typeof initializeControlCenter === "function") initializeControlCenter();
 
   document.querySelectorAll("[data-app-open-deck-builder]").forEach(deckBuilderBtn => {
     if (deckBuilderBtn.dataset.bound === "1") return;
@@ -638,7 +546,7 @@ function initializeArenaAppShell() {
   }
 
   document.querySelectorAll("[data-app-placeholder-screen]").forEach(btn => {
-    if (btn.disabled || btn.getAttribute("aria-disabled") === "true" || btn.dataset.bound === "1") return;
+    if (btn.dataset.bound === "1") return;
     btn.dataset.bound = "1";
     btn.addEventListener("click", () => showAppPlaceholder(btn.dataset.appPlaceholderScreen));
   });
@@ -686,10 +594,7 @@ function initializeArenaAppShell() {
     const savedDeckSelect = document.getElementById(`setupP${side}DeckSavedKey`);
     if (savedDeckSelect && savedDeckSelect.dataset.deckBound !== "1") {
       savedDeckSelect.dataset.deckBound = "1";
-      savedDeckSelect.addEventListener("change", () => {
-        setupApplySelectedDeckIdentity(side);
-        refreshSetupDeckSelectorForSide(side);
-      });
+      savedDeckSelect.addEventListener("change", () => refreshSetupDeckSelectorForSide(side));
     }
 
     const legacyDeckModeSelect = document.getElementById(`p${side}DeckMode`);
@@ -701,11 +606,7 @@ function initializeArenaAppShell() {
     const legacySavedDeckSelect = document.getElementById(`p${side}DeckSavedKey`);
     if (legacySavedDeckSelect && legacySavedDeckSelect.dataset.deckBound !== "1") {
       legacySavedDeckSelect.dataset.deckBound = "1";
-      legacySavedDeckSelect.addEventListener("change", () => {
-        writeControlValue(`setupP${side}DeckSavedKey`, legacySavedDeckSelect.value || "");
-        setupApplySelectedDeckIdentity(side);
-        refreshSetupDeckSelectorForSide(side);
-      });
+      legacySavedDeckSelect.addEventListener("change", () => refreshSetupDeckSelectorForSide(side));
     }
   });
 

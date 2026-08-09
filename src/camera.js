@@ -15,9 +15,7 @@ const boardCamera = {
   fitScale: 1,
   mode: "fit",
   initialized: false,
-  lastFocusKey: "",
-  geometryVersion: -1,
-  geometryMapId: ""
+  lastFocusKey: ""
 };
 
 let boardCameraAnimationTimer = null;
@@ -40,40 +38,6 @@ function boardCameraWrapEl() {
 function boardCameraTotalScale() {
   const scale = (Number.isFinite(boardCamera.fitScale) ? boardCamera.fitScale : 1) * (Number.isFinite(boardCamera.zoom) ? boardCamera.zoom : 1);
   return Math.max(0.25, Math.min(2.2, scale));
-}
-
-function boardCameraGeometry() {
-  return typeof getBoardGeometry === "function"
-    ? getBoardGeometry()
-    : {
-        version: 0,
-        mapId: "map1_starter",
-        nativeWidth: BOARD_CAMERA_W,
-        nativeHeight: BOARD_CAMERA_H,
-        renderOriginX: typeof CENTER_X !== "undefined" ? CENTER_X : BOARD_CAMERA_W / 2,
-        renderOriginY: typeof CENTER_Y !== "undefined" ? CENTER_Y : BOARD_CAMERA_H / 2
-      };
-}
-
-function clampBoardCamera(options = {}) {
-  const wrap = boardCameraWrapEl();
-  if (!wrap) return;
-  const rect = typeof cameraInteractionViewportRect === "function"
-    ? cameraInteractionViewportRect({ refresh: options.refreshGeometry === true })
-    : wrap.getBoundingClientRect();
-  if (!rect) return;
-  const scale = boardCameraTotalScale();
-  if (typeof clampBoardGeometryTranslation === "function") {
-    const clamped = clampBoardGeometryTranslation(boardCamera.x, boardCamera.y, rect.width, rect.height, scale, 24);
-    boardCamera.x = clamped.x;
-    boardCamera.y = clamped.y;
-    return;
-  }
-  const geometry = boardCameraGeometry();
-  const extraX = Math.max(0, (geometry.nativeWidth * scale - rect.width) / 2);
-  const extraY = Math.max(0, (geometry.nativeHeight * scale - rect.height) / 2);
-  boardCamera.x = extraX > 0 ? Math.max(-(extraX + 24), Math.min(extraX + 24, boardCamera.x)) : 0;
-  boardCamera.y = extraY > 0 ? Math.max(-(extraY + 24), Math.min(extraY + 24, boardCamera.y)) : 0;
 }
 
 function setBoardCameraAnimating(enabled) {
@@ -123,16 +87,14 @@ function applyBoardCamera(options = {}) {
   }
 
   setBoardCameraAnimating(Boolean(options.animate));
-  if (!options.skipClamp) clampBoardCamera({ refreshGeometry: options.refreshGeometry === true });
 
   const totalScale = boardCameraTotalScale();
-  const geometry = boardCameraGeometry();
   board.style.setProperty("--board-fit-scale", String(totalScale.toFixed(4)));
   board.style.setProperty("--board-camera-x", `${Math.round(boardCamera.x)}px`);
   board.style.setProperty("--board-camera-y", `${Math.round(boardCamera.y)}px`);
   if (!options.skipLayoutSize) {
-    wrap.style.setProperty("--board-visual-width", `${Math.round(geometry.nativeWidth * totalScale)}px`);
-    wrap.style.setProperty("--board-visual-height", `${Math.round(geometry.nativeHeight * totalScale)}px`);
+    wrap.style.setProperty("--board-visual-width", `${Math.round(BOARD_CAMERA_W * totalScale)}px`);
+    wrap.style.setProperty("--board-visual-height", `${Math.round(BOARD_CAMERA_H * totalScale)}px`);
   }
   updateBoardCameraHud();
 }
@@ -144,19 +106,16 @@ function computeBoardFitScale() {
   const pad = 28;
   const availableW = Math.max(260, rect.width - pad);
   const availableH = Math.max(220, rect.height - pad);
-  const geometry = boardCameraGeometry();
-  return Math.max(0.18, Math.min(1, availableW / geometry.nativeWidth, availableH / geometry.nativeHeight));
+  return Math.max(0.34, Math.min(1, availableW / BOARD_CAMERA_W, availableH / BOARD_CAMERA_H));
 }
 
 function boardPointForCoord(coord) {
-  if (typeof getBoardRenderPoint === "function") return getBoardRenderPoint(coord);
-  const geometry = boardCameraGeometry();
-  if (!Array.isArray(coord)) return { x: geometry.nativeWidth / 2, y: geometry.nativeHeight / 2 };
+  if (!Array.isArray(coord)) return { x: BOARD_CAMERA_W / 2, y: BOARD_CAMERA_H / 2 };
   const q = coord[0];
   const r = coord[2];
   return {
-    x: geometry.renderOriginX + HEX_SIZE * Math.sqrt(3) * (q + r / 2),
-    y: geometry.renderOriginY + HEX_SIZE * 1.5 * r
+    x: CENTER_X + HEX_SIZE * Math.sqrt(3) * (q + r / 2),
+    y: CENTER_Y + HEX_SIZE * 1.5 * r
   };
 }
 
@@ -214,7 +173,6 @@ function boardCameraFocusCoord() {
   } catch (err) {
     // Camera UI: non deve mai bloccare gameplay/render.
   }
-  if (typeof getCentralStrategicPointCoord === "function") return getCentralStrategicPointCoord(state && state.mapDefinition);
   return typeof CENTER_PS_COORD !== "undefined" ? CENTER_PS_COORD : [0,0,0];
 }
 
@@ -227,9 +185,8 @@ function centerBoardCameraOn(coord, options = {}) {
   if (!options.keepZoom) boardCamera.zoom = BOARD_CAMERA_ZOOMS.focus;
   const p = boardPointForCoord(coord || boardCameraFocusCoord());
   const scale = boardCameraTotalScale();
-  const geometry = boardCameraGeometry();
-  boardCamera.x = (geometry.nativeWidth / 2 - p.x) * scale;
-  boardCamera.y = (geometry.nativeHeight / 2 - p.y) * scale;
+  boardCamera.x = (BOARD_CAMERA_W / 2 - p.x) * scale;
+  boardCamera.y = (BOARD_CAMERA_H / 2 - p.y) * scale;
   applyBoardCamera({ animate: options.animate !== false });
 }
 
@@ -315,43 +272,22 @@ function screenToBoardCoord(point) {
   };
 }
 
-function refreshBoardCameraForGeometry(geometry, options = {}) {
-  boardCamera.geometryVersion = geometry.version;
-  boardCamera.geometryMapId = geometry.mapId;
-  if (options.mapChanged || boardCamera.mode === "fit") {
-    boardCamera.fitScale = computeBoardFitScale();
-    boardCamera.zoom = boardCamera.mode === "fit" ? BOARD_CAMERA_ZOOMS.fit : boardCamera.zoom;
-    boardCamera.x = 0;
-    boardCamera.y = 0;
-  }
-  if (typeof cameraInteractionInvalidateGeometry === "function") cameraInteractionInvalidateGeometry();
-}
-
 function syncBoardCameraAfterRender() {
-  // I render ordinari non devono inseguire bot o azioni. Si reagisce soltanto
-  // agli eventi del registry geometrico F9Q3a; in sua assenza resta il contratto
-  // storico F9O2c e la camera corrente viene soltanto riapplicata.
-  const geometry = boardCameraGeometry();
-  const hasDynamicGeometry = typeof getBoardGeometry === "function";
-  const geometryChanged = hasDynamicGeometry && boardCamera.geometryVersion !== geometry.version;
-  const mapChanged = hasDynamicGeometry && boardCamera.geometryMapId !== geometry.mapId;
-
+  // F9O2c: un render di gioco non deve mai ricalcolare o riposizionare la camera.
+  // I bot possono generare molti render consecutivi per movimento, attacco e abilità:
+  // ricalcolare fitScale in questo punto produce salti di zoom anche con x/y preservati.
   if (isApkM4CameraActive()) {
-    if (typeof apkM4HandleBoardGeometry === "function") apkM4HandleBoardGeometry({ geometryChanged, mapChanged });
-    else if (typeof applyApkM4Camera === "function") applyApkM4Camera();
+    if (typeof applyApkM4Camera === "function") applyApkM4Camera();
     if (typeof updateApkM4StatusStrip === "function") updateApkM4StatusStrip();
     if (typeof cameraInteractionUpdateControls === "function") cameraInteractionUpdateControls();
     return;
   }
   if (!boardCamera.initialized) {
     boardCamera.initialized = true;
-    boardCamera.geometryVersion = geometry.version;
-    boardCamera.geometryMapId = geometry.mapId;
     fitToBoard({ animate:false });
     return;
   }
-  if (geometryChanged) refreshBoardCameraForGeometry(geometry, { mapChanged });
-  applyBoardCamera({ animate:false, refreshGeometry:geometryChanged, skipClamp:!geometryChanged });
+  applyBoardCamera({ animate:false });
   if (typeof cameraInteractionUpdateControls === "function") cameraInteractionUpdateControls();
 }
 
@@ -364,14 +300,9 @@ function initializeBoardCamera() {
   boardCamera.initialized = true;
   fitToBoard({ animate:false });
 
-  const handleViewportChange = () => {
-    if (typeof cameraInteractionInvalidateGeometry === "function") cameraInteractionInvalidateGeometry();
-    if (boardCamera.mode === "fit") boardCamera.fitScale = computeBoardFitScale();
-    applyBoardCamera({ animate:false, refreshGeometry:true });
-  };
-  window.addEventListener("resize", handleViewportChange, { passive:true });
-  window.addEventListener("orientationchange", () => setTimeout(handleViewportChange, 160), { passive:true });
+  window.addEventListener("resize", () => syncBoardCameraAfterRender(), { passive:true });
+  window.addEventListener("orientationchange", () => setTimeout(() => syncBoardCameraAfterRender(), 160), { passive:true });
   if (window.visualViewport && typeof window.visualViewport.addEventListener === "function") {
-    window.visualViewport.addEventListener("resize", handleViewportChange, { passive:true });
+    window.visualViewport.addEventListener("resize", () => syncBoardCameraAfterRender(), { passive:true });
   }
 }

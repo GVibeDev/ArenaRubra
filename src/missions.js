@@ -1,6 +1,6 @@
 "use strict";
 
-// Arena Rubra – F9Q3d2 FFA Mission Progress Tracker e ciclo di recupero.
+// Arena Rubra – F9N10 Mission Progress Tracker e ciclo di recupero.
 // Tracker puro: osserva eventi strutturati e checkpoint di stato.
 // Non rende giocabili le Missioni e non applica ricompense.
 
@@ -12,11 +12,10 @@ function ensureMissionTelemetry() {
   const t = state.missionTelemetry;
   const numericMaps = ["cyclesStarted","recoveriesWithMission","recoveriesWithoutMission","missionLocksApplied","missionUnlocks","missionsReady","missionsPlayed","secondOrLaterPlays","rewardsResolved","aiMissionPlays","aiMissionWaits","targetQuotasWasted"];
   for (const key of numericMaps) {
-    if (!t[key]) t[key] = {};
-    for (const side of missionPlayerIds()) if (!Number.isFinite(t[key][side])) t[key][side] = 0;
+    if (!t[key]) t[key] = {1:0,2:0};
+    for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) if (!Number.isFinite(t[key][side])) t[key][side] = 0;
   }
-  if (!t.lastAiDecision) t.lastAiDecision = {};
-  for (const side of missionPlayerIds()) if (!Object.prototype.hasOwnProperty.call(t.lastAiDecision, side)) t.lastAiDecision[side] = null;
+  if (!t.lastAiDecision) t.lastAiDecision = {1:null,2:null};
   if (!t.byMission || typeof t.byMission !== "object") t.byMission = {};
   return t;
 }
@@ -73,8 +72,6 @@ function missionEntryState(item) {
     current:0,
     target:Number.isFinite(item.value) ? item.value : (Number.isFinite(item.consecutive) ? item.consecutive : 1),
     streak:0,
-    streakByEnemy:{},
-    sourceEnemySide:null,
     satisfied:false,
     completed:false,
     detail:"Non valutato",
@@ -150,8 +147,8 @@ function createMissionRuntime(side, definition=null) {
 
 function initializeMissionTrackerForGame() {
   if (!state) return null;
-  state.missions = state.missions || {};
-  for (const side of missionPlayerIds()) {
+  state.missions = state.missions || { 1:null, 2:null };
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const card = missionCardForSide(side);
     const id = card && (card.missionId || card.sourceId || String(card.id || "").replace(/^MISSION:/, ""));
     const definition = missionDefinitionById(id);
@@ -166,59 +163,9 @@ function missionRuntime(side) {
   return state && state.missions ? state.missions[side] || null : null;
 }
 
-function missionPlayerIds() {
-  let ids = [];
-  if (typeof mapRuntimePlayerIds === "function") ids = mapRuntimePlayerIds(state) || [];
-  else if (state && Array.isArray(state.players)) ids = state.players.map(player => Number(player && (player.id ?? player.side)));
-  else if (state && Array.isArray(state.turnOrder)) ids = state.turnOrder.map(Number);
-  else if (state) ids = Object.keys(state.factions || state.energy || {}).map(Number);
-  const unique = [...new Set(ids.map(Number))].filter(id => Number.isFinite(id) && id > 0);
-  return unique.length ? unique : [1,2];
-}
-function missionEnemySides(side, options={}) {
-  const owner = Number(side);
-  const activeOnly = options.activeOnly !== false;
-  const ids = activeOnly && typeof getEnemyPlayers === "function"
-    ? getEnemyPlayers(owner)
-    : missionPlayerIds().filter(id => Number(id) !== owner);
-  return [...new Set((ids || []).map(Number))].filter(id => id > 0 && id !== owner && (!activeOnly || typeof isPlayerEliminated !== "function" || !isPlayerEliminated(id)));
-}
-function missionIsOpponentSide(ownerSide, otherSide, options={}) {
-  const other = Number(otherSide);
-  return Number.isFinite(other) && missionEnemySides(ownerSide, { activeOnly:options.activeOnly !== false }).includes(other);
-}
-function missionEnemy(side) {
-  const enemies = missionEnemySides(side);
-  if (!enemies.length) return null;
-  if (enemies.length === 1) return enemies[0];
-  if (typeof chooseAutomaticPlayerTarget === "function" && typeof createPlayerTargetToken === "function") {
-    const chosen = chooseAutomaticPlayerTarget(side, enemies.map(id => createPlayerTargetToken(id)), { kind:"mission_threat" });
-    if (chosen) return Number(chosen.side);
-  }
-  return enemies[0];
-}
+function missionEnemy(side) { return side === 1 ? 2 : 1; }
 function missionUnits(side) { return typeof combatUnits === "function" ? combatUnits(side).filter(u => u && u.type !== "QG") : []; }
-function missionEnemyUnits(side) {
-  return missionEnemySides(side).flatMap(enemySide => missionUnits(enemySide));
-}
-function missionPlayerLabel(side) {
-  if (typeof playerName === "function") return playerName(side);
-  return `G${Number(side) || "?"}`;
-}
-function missionEnemyHqs(side) {
-  return missionEnemySides(side).map(enemySide => typeof getHq === "function" ? getHq(enemySide) : null).filter(Boolean);
-}
-function missionCheckpointEnemySide(ownerSide, context={}) {
-  const candidate = Number(context && context.side);
-  return missionIsOpponentSide(ownerSide, candidate) ? candidate : null;
-}
-function missionCentralCell() {
-  if (!state || !Array.isArray(state.cells)) return null;
-  const coord = typeof getCentralStrategicPointCoord === "function"
-    ? getCentralStrategicPointCoord(state.mapDefinition)
-    : CENTER_PS_COORD;
-  return state.cells.find(c => c.ps && sameCoord(c.coord, coord)) || null;
-}
+function missionCentralCell() { return state && state.cells ? state.cells.find(c => c.ps && sameCoord(c.coord, CENTER_PS_COORD)) || null : null; }
 function missionControlledPs(side) { return typeof countControlledPS === "function" ? countControlledPS(side) : 0; }
 function missionCommanderInPlay(side) { return missionUnits(side).some(u => u.type === "Comandante" || u.role === "commander"); }
 function missionPivotInPlay(side) { return missionUnits(side).some(u => u.weight === "Pivot" || u.deckRole === "pivot"); }
@@ -267,13 +214,13 @@ function missionVehiclesNearPs(side, range=3) {
 }
 
 function missionUnitNearEnemyHq(side, range=5) {
-  const hqs = missionEnemyHqs(side);
-  return hqs.some(hq => missionUnits(side).some(u => Array.isArray(u.pos) && hexDistance(u.pos, hq.pos) <= range));
+  const hq = typeof getHq === "function" ? getHq(missionEnemy(side)) : null;
+  return Boolean(hq && missionUnits(side).some(u => Array.isArray(u.pos) && hexDistance(u.pos, hq.pos) <= range));
 }
 
 function missionStructureNearObjective(coord, side) {
   if (!Array.isArray(coord) || !state) return false;
-  const hqs = [typeof getHq === "function" ? getHq(side) : null, ...missionEnemyHqs(side)].filter(Boolean).map(h => h.pos);
+  const hqs = [getHq(side), getHq(missionEnemy(side))].filter(Boolean).map(h => h.pos);
   const objectives = [...(state.cells || []).filter(c => c.ps).map(c => c.coord), ...hqs];
   return objectives.some(target => hexDistance(coord, target) <= 1);
 }
@@ -300,9 +247,8 @@ function missionEffectTagsFromTactic(card) {
   return [...tags];
 }
 
-function missionResolveMetric(side, item, runtime, context={}) {
-  const enemies = missionEnemySides(side);
-  const checkpointEnemy = missionCheckpointEnemySide(side, context);
+function missionResolveMetric(side, item, runtime) {
+  const enemy = missionEnemy(side);
   const counters = runtime.counters;
   let current = 0;
   let target = Number.isFinite(item.value) ? item.value : 1;
@@ -323,24 +269,12 @@ function missionResolveMetric(side, item, runtime, context={}) {
     case "controls_central_ps": current = Boolean(missionCentralCell() && missionCentralCell().control === side); target = true; break;
     case "tagged_effects_used": current = counters.taggedEffectsUsed[item.tag] || 0; break;
     case "pivot_in_play": current = missionPivotInPlay(side); target = true; break;
-    case "enemy_controls_central_ps": {
-      const control = Number(missionCentralCell() && missionCentralCell().control || 0);
-      const match = checkpointEnemy ? control === checkpointEnemy : enemies.includes(control);
-      current = match; target = true;
-      detail = match && control ? `${missionPlayerLabel(control)} controlla il PS centrale` : "Nessun avversario valido controlla il PS centrale";
-      break;
-    }
-    case "enemy_pressure": {
-      const values = enemies.map(enemySide => ({ side:enemySide, value:Number(state.pressure && state.pressure[enemySide] || 0) }));
-      const best = values.sort((a,b) => b.value - a.value || a.side - b.side)[0] || {side:null,value:0};
-      current = best.value;
-      detail = best.side ? `${missionPlayerLabel(best.side)}: ${best.value} Pressione` : "Nessun avversario attivo";
-      break;
-    }
+    case "enemy_controls_central_ps": current = Boolean(missionCentralCell() && missionCentralCell().control === enemy); target = true; break;
+    case "enemy_pressure": current = state.pressure[enemy] || 0; break;
     case "enemy_pivot_and_commander_in_play": {
-      const matchSide = enemies.find(enemySide => missionPivotInPlay(enemySide) && missionCommanderInPlay(enemySide)) || null;
-      current = Boolean(matchSide); target = true; satisfied = Boolean(matchSide);
-      return {current,target,satisfied,detail:matchSide ? `${missionPlayerLabel(matchSide)} mantiene Pivot e Comandante` : "Nessun singolo avversario mantiene insieme Pivot e Comandante", sourceEnemySide:matchSide};
+      const pivot = missionPivotInPlay(enemy), commander = missionCommanderInPlay(enemy);
+      current = `${pivot ? 1 : 0}/${commander ? 1 : 0}`; target = "Pivot+Comandante"; satisfied = pivot && commander;
+      return {current,target,satisfied,detail:`Pivot ${pivot ? "sì" : "no"}, Comandante ${commander ? "sì" : "no"}`};
     }
     case "vehicles_in_play": current = missionUnits(side).filter(u => u.type === "Veicolo").length; break;
     case "enemy_units_destroyed": current = counters.enemyUnitsDestroyed; break;
@@ -354,14 +288,7 @@ function missionResolveMetric(side, item, runtime, context={}) {
     case "enemy_structures_destroyed": current = counters.enemyStructuresDestroyed; break;
     case "enemy_units_destroyed_in_owner_turn": current = counters.enemyUnitsDestroyedCurrentOwnerTurn; break;
     case "own_heavy_vehicles_destroyed_by_enemy": current = counters.ownHeavyVehiclesDestroyedByEnemy; break;
-    case "enemy_controlled_ps": {
-      const candidates = checkpointEnemy ? [checkpointEnemy] : enemies;
-      const values = candidates.map(enemySide => ({side:enemySide,value:missionControlledPs(enemySide)}));
-      const best = values.sort((a,b)=>b.value-a.value || a.side-b.side)[0] || {side:null,value:0};
-      current = best.value;
-      detail = best.side ? `${missionPlayerLabel(best.side)} controlla ${best.value} PS` : "Nessun avversario attivo";
-      break;
-    }
+    case "enemy_controlled_ps": current = missionControlledPs(enemy); break;
     case "own_commander_destroyed": current = counters.ownCommanderDestroyed; target = true; break;
     case "units_deployed": current = counters.unitsDeployed; break;
     case "numerical_superiority_unique_targets": current = runtime.unique.numericalSuperiorityTargets.length; break;
@@ -370,14 +297,7 @@ function missionResolveMetric(side, item, runtime, context={}) {
     case "units_deployed_by_tactics": current = counters.unitsDeployedByTactics; break;
     case "unit_distance_from_enemy_hq": current = missionUnitNearEnemyHq(side, item.value || 5); target = true; break;
     case "own_units_destroyed_by_enemy": current = counters.ownUnitsDestroyedByEnemy; break;
-    case "enemy_has_more_units": {
-      const candidates = checkpointEnemy ? [checkpointEnemy] : enemies;
-      const ownCount = missionUnits(side).length;
-      const matchSide = candidates.find(enemySide => missionUnits(enemySide).length > ownCount) || null;
-      current = Boolean(matchSide); target = true;
-      detail = matchSide ? `${missionPlayerLabel(matchSide)} ha ${missionUnits(matchSide).length} unità contro ${ownCount}` : `Nessun avversario supera le tue ${ownCount} unità`;
-      break;
-    }
+    case "enemy_has_more_units": current = missionUnits(enemy).length > missionUnits(side).length; target = true; break;
     case "own_commander_or_pivot_destroyed": current = counters.ownCommanderDestroyed || counters.ownPivotDestroyed; target = true; break;
     case "units_deployed_min_cost": current = counters.unitsDeployedMinCost; break;
     case "deck_cards_remaining": current = state.deck && state.deck[side] ? state.deck[side].length : 0; break;
@@ -395,20 +315,13 @@ function missionResolveMetric(side, item, runtime, context={}) {
     case "energy_gained_from_doctrine": current = counters.energyGainedFromDoctrine; break;
     case "enemy_faction_units_controlled": current = counters.enemyFactionUnitsControlled; break;
     case "enemy_energy_manipulations": current = counters.enemyEnergyManipulations; break;
-    case "enemy_energy_greater_than_owner": {
-      const candidates = checkpointEnemy ? [checkpointEnemy] : enemies;
-      const ownEnergy = Number(state.energy && state.energy[side] || 0);
-      const matchSide = candidates.find(enemySide => Number(state.energy && state.energy[enemySide] || 0) > ownEnergy) || null;
-      current = Boolean(matchSide); target = true;
-      detail = matchSide ? `${missionPlayerLabel(matchSide)} ha ${state.energy[matchSide] || 0} ENE contro ${ownEnergy}` : `Nessun avversario supera i tuoi ${ownEnergy} ENE`;
-      break;
-    }
+    case "enemy_energy_greater_than_owner": current = (state.energy[enemy] || 0) > (state.energy[side] || 0); target = true; break;
     default:
       return {current:0,target, satisfied:false, detail:`Metrica non supportata: ${item.metric}`, warning:true};
   }
 
   satisfied = missionCompare(current, item.operator || "gte", target);
-  if (!detail) detail = `${current} / ${target}`;
+  detail = `${current} / ${target}`;
   return {current,target,satisfied,detail};
 }
 
@@ -416,9 +329,9 @@ function missionCheckpointMatches(item, checkpoint, checkpointSide, ownerSide) {
   const mode = item.durationMode;
   if (!item.consecutive) return true;
   if (mode === "rounds") return checkpoint === "round_end";
-  if (mode === "owner_turns") return checkpoint === "turn_start" && Number(checkpointSide) === Number(ownerSide);
-  if (mode === "enemy_turns") return checkpoint === "turn_start" && missionIsOpponentSide(ownerSide, checkpointSide);
-  return checkpoint === "turn_start" && Number(checkpointSide) === Number(ownerSide);
+  if (mode === "owner_turns") return checkpoint === "turn_start" && checkpointSide === ownerSide;
+  if (mode === "enemy_turns") return checkpoint === "turn_start" && checkpointSide === missionEnemy(ownerSide);
+  return checkpoint === "turn_start" && checkpointSide === ownerSide;
 }
 
 function missionEmitProgress(side, runtime, item, entry, previous) {
@@ -454,30 +367,16 @@ function missionEvaluateSide(side, reason="manual", context={}) {
   for (const item of items) {
     const entry = runtime.entries[item.id] || (runtime.entries[item.id] = missionEntryState(item));
     const previous = JSON.stringify({current:entry.current,streak:entry.streak,satisfied:entry.satisfied,completed:entry.completed});
-    const result = missionResolveMetric(side, item, runtime, context);
+    const result = missionResolveMetric(side, item, runtime);
     entry.current = result.current;
     entry.target = result.target;
     entry.detail = result.detail;
     entry.satisfied = Boolean(result.satisfied);
 
     if (item.consecutive && missionCheckpointMatches(item, context.checkpoint, context.side, side)) {
-      if (item.durationMode === "enemy_turns") {
-        const enemySide = missionCheckpointEnemySide(side, context);
-        if (enemySide) {
-          entry.streakByEnemy = entry.streakByEnemy && typeof entry.streakByEnemy === "object" ? entry.streakByEnemy : {};
-          entry.streakByEnemy[enemySide] = entry.satisfied ? (Number(entry.streakByEnemy[enemySide]) || 0) + 1 : 0;
-          const active = new Set(missionEnemySides(side).map(String));
-          for (const key of Object.keys(entry.streakByEnemy)) if (!active.has(String(key)) && !entry.completed) delete entry.streakByEnemy[key];
-          const ranked = Object.entries(entry.streakByEnemy).map(([enemy,value]) => ({enemy:Number(enemy),value:Number(value)||0})).sort((a,b)=>b.value-a.value || a.enemy-b.enemy);
-          entry.streak = ranked.length ? ranked[0].value : 0;
-          entry.sourceEnemySide = ranked.length ? ranked[0].enemy : null;
-        }
-      } else {
-        entry.streak = entry.satisfied ? entry.streak + 1 : 0;
-      }
+      entry.streak = entry.satisfied ? entry.streak + 1 : 0;
       entry.completed = entry.completed || entry.streak >= item.consecutive;
-      const sourceLabel = entry.sourceEnemySide ? ` · ${missionPlayerLabel(entry.sourceEnemySide)}` : "";
-      entry.detail = `${entry.detail}${sourceLabel} · serie ${entry.streak}/${item.consecutive}`;
+      entry.detail = `${entry.detail} · serie ${entry.streak}/${item.consecutive}`;
     } else if (!item.consecutive) {
       if (item.cumulative || definition.missionClass === "ordinary") entry.completed = entry.completed || entry.satisfied;
       else entry.completed = entry.satisfied;
@@ -507,7 +406,7 @@ function missionEvaluateSide(side, reason="manual", context={}) {
 
 function missionEvaluateAll(reason="manual", context={}) {
   if (!state || !state.missions) return null;
-  for (const side of missionPlayerIds()) missionEvaluateSide(side, reason, context);
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) missionEvaluateSide(side, reason, context);
   return state.missions;
 }
 
@@ -548,7 +447,7 @@ function missionUnlockAtOwnerTurnStart(side) {
     type:EventTypes.MISSION_UNLOCKED,
     data:{ player:side, faction:state.factions && state.factions[side], missionId:runtime.missionId, missionName:runtime.missionName, cycle:runtime.cycle, ownerTurnsStarted:currentOwnerTurns }
   });
-  if (typeof log === "function") log(`La Missione “${runtime.missionName}” è nuovamente utilizzabile per ${missionPlayerLabel(side)}.`);
+  if (typeof log === "function") log(`La Missione “${runtime.missionName}” è nuovamente utilizzabile per ${playerName(side)}.`);
   return true;
 }
 
@@ -595,9 +494,10 @@ function missionTrackerHandleEvent(event) {
     const d = event.data || {};
     const actor = missionEventActor(event);
 
-    for (const side of missionPlayerIds()) {
+    for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
       const runtime = missionRuntime(side);
       if (!runtime || !runtime.active || runtime.played) continue;
+      const enemy = missionEnemy(side);
       const c = runtime.counters;
 
       if (event.type === EventTypes.UNIT_SPAWNED && Number(d.player) === side) {
@@ -619,12 +519,12 @@ function missionTrackerHandleEvent(event) {
         if (d.damageKind === "thorns" || /spine/i.test(String(d.source || ""))) c.thornsDamageDealt += Number(d.hpLoss || 0);
       }
 
-      if (event.type === EventTypes.UNIT_DESTROYED && missionIsOpponentSide(side, d.side, {activeOnly:false}) && Number(d.destroyedBySide || actor) === side) {
+      if (event.type === EventTypes.UNIT_DESTROYED && Number(d.side) === enemy && Number(d.destroyedBySide || actor) === side) {
         c.enemyUnitsDestroyed += 1;
         c.enemyUnitsDestroyedCurrentOwnerTurn += 1;
         if (d.unitType === "Struttura") c.enemyStructuresDestroyed += 1;
       }
-      if (event.type === EventTypes.UNIT_DESTROYED && Number(d.side) === side && missionIsOpponentSide(side, Number(d.destroyedBySide || actor), {activeOnly:false})) {
+      if (event.type === EventTypes.UNIT_DESTROYED && Number(d.side) === side && Number(d.destroyedBySide || actor) === enemy) {
         c.ownUnitsDestroyedByEnemy += 1;
         if (d.unitType === "Struttura") c.ownStructuresDestroyedByEnemy += 1;
         if (d.unitType === "Veicolo" && String(d.unitWeight || "").toLowerCase().startsWith("pesant")) c.ownHeavyVehiclesDestroyedByEnemy += 1;
@@ -654,7 +554,7 @@ function missionTrackerHandleEvent(event) {
       }
 
       if (event.type === EventTypes.ECONOMY_CHANGED && Number(d.player) === side && Number(d.doctrineDelta || 0) > 0 && state.factions[side] === "Fabeot") c.energyGainedFromDoctrine += Number(d.doctrineDelta || 0);
-      if (event.type === EventTypes.UNIT_CONVERTED && Number(d.newSide) === side && missionIsOpponentSide(side, d.oldSide, {activeOnly:false})) c.enemyFactionUnitsControlled += 1;
+      if (event.type === EventTypes.UNIT_CONVERTED && Number(d.newSide) === side && Number(d.oldSide) === enemy) c.enemyFactionUnitsControlled += 1;
       if (event.type === EventTypes.CARD_DRAWN && Number(d.player) === side) c.cardsDrawn += Number(d.count || 1);
       if (event.type === EventTypes.CARD_PLAYED && Number(d.player) === side) c.cardsPlayed += 1;
 
@@ -701,7 +601,7 @@ function missionDiagnosticsSummary() {
     build:typeof BUILD_INFO !== "undefined" ? BUILD_INFO.version : "unknown",
     round:state ? state.turn : null,
     currentPlayer:state ? state.currentPlayer : null,
-    sides:Object.fromEntries(missionPlayerIds().map(side => [side, missionDiagnosticsForSide(side)])),
+    sides:{ 1:missionDiagnosticsForSide(1), 2:missionDiagnosticsForSide(2) },
     rewards:typeof missionRewardDiagnostics === "function" ? missionRewardDiagnostics() : null,
     telemetry:state && state.missionTelemetry ? JSON.parse(JSON.stringify(state.missionTelemetry)) : null
   };

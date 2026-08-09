@@ -7,10 +7,8 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const files = [
   "data/terrain_registry.js",
-  "data/official_maps_f9r3.js",
   "data/map_definitions.js",
   "src/map_runtime.js",
-  "src/map_backgrounds.js",
   "src/map_editor.js"
 ];
 const prefix = `
@@ -38,7 +36,7 @@ for (const template of ["single", "double", "triple"]) {
 const empty = mapEditorTemplateDefinition("empty");
 assert.strictEqual(validateMapDefinition(empty).valid, false);
 
-const draft = duplicateMapDefinition("custom_double_ms0ra3ds").definition;
+const draft = duplicateMapDefinition("map2_triumvirate").definition;
 draft.name = "Test editor";
 draft.description = "Round-trip editor";
 draft.metadata.tags = ["custom", "round-trip"];
@@ -60,12 +58,12 @@ assert.strictEqual(imported.conflict, true);
 assert.ok(imported.definition.id.includes("import"));
 assert.strictEqual(deleteCustomMapDefinition(saved.definition.id).ok, true);
 
-mapEditorState.draft = mapEditorTemplateDefinition("triple");
-mapEditorState.draft.id = "editor_symmetry";
+mapEditorState.draft = duplicateMapDefinition("map2_triumvirate", "editor_symmetry").definition;
 mapEditorState.undo = [];
 mapEditorState.redo = [];
 symmetryMode = "rotate3";
-const sourceNeighbor = [1,-1,0];
+const sourceHq = mapEditorState.draft.playerSlots[0].headquarters;
+const sourceNeighbor = [sourceHq[0] + 1, sourceHq[1] - 1, sourceHq[2]];
 const replicas = mapEditorSymmetryCoords(sourceNeighbor);
 assert.strictEqual(replicas.length, 3);
 assert.ok(replicas.every(coord => getMapCell(coord, mapEditorState.draft)));

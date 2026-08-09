@@ -57,6 +57,6 @@ with sync_playwright() as p:
     }
     """)
     browser.close()
-ok=(not errors and result["build"] in {"C2-STABLE-1-F9N6-APK-M4c","C2-STABLE-1-F9O4a-APK-M4c","C2-STABLE-1-F9O4b-APK-M4c","C2-STABLE-1-F9O4c-APK-M4c","C2-STABLE-1-F9O4d-APK-M4c","C2-STABLE-1-F9O4f-APK-M4c","C2-STABLE-1-F9O4e-APK-M4c","C2-STABLE-1-F9O5-APK-M4c","C2-STABLE-1-F9O5a-APK-M4c", "C2-STABLE-1-F9O5b-APK-M4c", "C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c",'C2-STABLE-1-F9S1b1-APK-M4c'} and result["active"] and result["missionId"]=="NXMSN01" and result["objectiveCount"]==3 and result["streak"]>=2 and result["completed"] and result["precheckRendererOk"] and result["missionEvents"]>0)
+ok=(not errors and result["build"] in {"C2-STABLE-1-F9N6-APK-M4c","C2-STABLE-1-F9O4a-APK-M4c","C2-STABLE-1-F9O4b-APK-M4c","C2-STABLE-1-F9O4c-APK-M4c","C2-STABLE-1-F9O4d-APK-M4c","C2-STABLE-1-F9O4f-APK-M4c","C2-STABLE-1-F9O4e-APK-M4c","C2-STABLE-1-F9O5-APK-M4c","C2-STABLE-1-F9O5a-APK-M4c", "C2-STABLE-1-F9O5b-APK-M4c", "C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c"} and result["active"] and result["missionId"]=="NXMSN01" and result["objectiveCount"]==3 and result["streak"]>=2 and result["completed"] and result["precheckRendererOk"] and result["missionEvents"]>0)
 print(json.dumps({"ok":ok,"errors":errors,"result":result},ensure_ascii=False,indent=2))
 raise SystemExit(0 if ok else 1)

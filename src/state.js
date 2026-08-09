@@ -9,12 +9,9 @@ let state = null;
 let selectedId = null;
 let mode = "idle"; // idle | move | ability | build | spawn | tactic
 let pendingAbility = null;
-let pendingAbilityCoords = []; // F9S1a multi-cella abilità
 let pendingBuildBlueprintId = null;
 let pendingPurchaseBlueprintId = null;
 let pendingTacticId = null;
-let pendingTacticCoords = []; // F9S1a multi-cella tattiche
-let pendingPlayerTargetContext = null; // F9Q3d1 selezione esplicita avversario
 let pendingHandCardUid = null;
 let pendingStarterCardUid = null;
 let pendingDeploymentContext = null; // { source:"starter", starterRole, cardUid, side }
@@ -114,10 +111,7 @@ function createInitialGameState(setup) {
       faction: factions[id],
       mode: setup.modes[id],
       eliminated: false,
-      lifecycleStatus: "active",
       eliminatedAtTurn: null,
-      eliminatedAtOrderIndex: null,
-      eliminatedBy: null,
       eliminationReason: null
     })),
     factions,
@@ -147,8 +141,6 @@ function createInitialGameState(setup) {
     handLocked: { 1: 0, 2: 0 },
     psLocks: [],
     emergencyLoggedTurn: { 1: -1, 2: -1 },
-    // F9T0 – memoria AI leggera per stallo, maturità e oscillazioni.
-    aiFinalizationF9T0: { schema:"F9T0-1", players:{}, unitHistory:{} },
     autoResignEnabled: setup.autoResignEnabled,
     aiMode: setup.aiMode,
     pacePreset: setup.pacePreset,
@@ -228,12 +220,7 @@ function createInitialGameState(setup) {
       starterSlots: { 1: {}, 2: {} }
     },
 
-    matchId: createMatchId(),
-    matchSeed: String(setup.matchSeed || ""),
-    matchRngState: Number.isInteger(setup.matchRngState) ? setup.matchRngState : (typeof telemetryHashSeed === "function" ? telemetryHashSeed(setup.matchSeed || "") : 0),
-    matchRngCalls: Number.isFinite(setup.matchRngCalls) ? setup.matchRngCalls : 0,
-    matchTelemetry: null,
-    matchTelemetryRuntime: null
+    matchId: createMatchId()
   };
 
   const ensurePlayerValue = (container, side, fallbackFactory) => {
@@ -320,10 +307,6 @@ function resetInteractionContext() {
   selectedId = null;
   mode = "idle";
   pendingAbility = null;
-  pendingAbilityCoords = [];
-  pendingTacticCoords = [];
-  pendingPlayerTargetContext = null;
-  if (typeof closePlayerTargetSelector === "function") closePlayerTargetSelector({ silent:true });
   pendingBuildBlueprintId = null;
   pendingPurchaseBlueprintId = null;
   pendingTacticId = null;

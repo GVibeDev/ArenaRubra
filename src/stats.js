@@ -12,11 +12,15 @@
 // - renderMatchupStats/escapeHtml da render.js
 
 function loadMatchStats() {
-      return typeof arenaStorageReadMatchupStats === "function" ? arenaStorageReadMatchupStats() : [];
+      if (typeof arenaStorageReadMatchupStats === "function") return arenaStorageReadMatchupStats();
+      try { return JSON.parse(localStorage.getItem(STATS_STORAGE_KEY) || "[]"); }
+      catch (_) { return []; }
     }
 
     function saveMatchStats(items) {
-      if (typeof arenaStorageWriteMatchupStats === "function") arenaStorageWriteMatchupStats(items);
+      if (typeof arenaStorageWriteMatchupStats === "function") { arenaStorageWriteMatchupStats(items); return; }
+      try { localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(items)); }
+      catch (_) { /* localStorage non disponibile */ }
     }
 
     function recordMatchResult() {
@@ -55,17 +59,6 @@ function loadMatchStats() {
           mode: state.modes[side],
           commander: commanderLogLabel(side),
           eliminated: typeof isPlayerEliminated === "function" ? isPlayerEliminated(side) : false,
-          lifecycleStatus: typeof playerLifecycleStatus === "function" ? playerLifecycleStatus(side) : null,
-          eliminatedAtTurn: (typeof getPlayerById === "function" && getPlayerById(side)) ? getPlayerById(side).eliminatedAtTurn : null,
-          eliminatedBy: (typeof getPlayerById === "function" && getPlayerById(side)) ? getPlayerById(side).eliminatedBy : null,
-          eliminationReason: (typeof getPlayerById === "function" && getPlayerById(side)) ? getPlayerById(side).eliminationReason : null,
-          eliminationAssistSides: (typeof getPlayerById === "function" && getPlayerById(side) && Array.isArray(getPlayerById(side).eliminationAssistSides)) ? [...getPlayerById(side).eliminationAssistSides] : [],
-          eliminationAttributionType: (typeof getPlayerById === "function" && getPlayerById(side)) ? getPlayerById(side).eliminationAttributionType || null : null,
-          kills: state.matchStats && state.matchStats.players && state.matchStats.players[side] ? state.matchStats.players[side].kills || 0 : 0,
-          assists: state.matchStats && state.matchStats.players && state.matchStats.players[side] ? state.matchStats.players[side].assists || 0 : 0,
-          playerEliminations: state.matchStats && state.matchStats.players && state.matchStats.players[side] ? state.matchStats.players[side].playerEliminations || 0 : 0,
-          playerEliminationAssists: state.matchStats && state.matchStats.players && state.matchStats.players[side] ? state.matchStats.players[side].playerEliminationAssists || 0 : 0,
-          pressureGained: state.matchStats && state.matchStats.players && state.matchStats.players[side] ? state.matchStats.players[side].pressureGained || 0 : 0,
           ps: countControlledPS(side),
           pressure: state.pressure[side] || 0,
           units: combatUnits(side).length,
@@ -125,7 +118,6 @@ function loadMatchStats() {
         recoveriesFrom0PSP1: state.aiTelemetry && state.aiTelemetry.recoveriesFrom0PS ? state.aiTelemetry.recoveriesFrom0PS[1] || 0 : 0,
         recoveriesFrom0PSP2: state.aiTelemetry && state.aiTelemetry.recoveriesFrom0PS ? state.aiTelemetry.recoveriesFrom0PS[2] || 0 : 0,
         f9n3Telemetry: state.f9n3Telemetry ? JSON.parse(JSON.stringify(state.f9n3Telemetry)) : null,
-        attribution: typeof ffaAttributionSnapshot === "function" ? ffaAttributionSnapshot() : null,
         message: state.winner || ""
       };
       const items = loadMatchStats();
@@ -189,10 +181,6 @@ function loadMatchStats() {
         players: stats && stats.players
           ? Object.fromEntries(playerIds.map(side => [side, { ...(stats.players[side] || {}) }]))
           : {},
-        eliminationTimeline: stats && Array.isArray(stats.eliminationTimeline) ? stats.eliminationTimeline.map(entry => ({...entry, assistSides:[...(entry.assistSides || [])]})) : [],
-        pressureTimeline: stats && Array.isArray(stats.pressureTimeline) ? stats.pressureTimeline.map(entry => ({...entry, activePlayers:[...(entry.activePlayers || [])], eliminatedPlayers:[...(entry.eliminatedPlayers || [])], qualifiedPlayers:[...(entry.qualifiedPlayers || [])], standings:(entry.standings || []).map(item => ({...item}))})) : [],
-        attribution: record.attribution || (typeof ffaAttributionSnapshot === "function" ? ffaAttributionSnapshot() : null),
-        matchTelemetry: typeof currentMatchTelemetrySnapshot === "function" ? currentMatchTelemetrySnapshot() : null,
         topTactics: stats ? Object.entries(stats.tactics || {}).sort((a,b)=>Number(b[1]||0)-Number(a[1]||0)).slice(0,8) : [],
         topAbilities: stats ? Object.entries(stats.abilities || {}).sort((a,b)=>Number(b[1]||0)-Number(a[1]||0)).slice(0,8) : [],
         message: record.message || ""
@@ -282,10 +270,6 @@ function matchLogHeaderText() {
     ...(typeof buildInfoExportMeta === "function" ? Object.entries(buildInfoExportMeta()).map(([k,v]) => `BuildInfo.${k}: ${v}`) : []),
     `ExportedAt: ${new Date().toISOString()}`,
     `MatchId: ${state.matchId || ""}`,
-    `MatchSeed: ${state.matchSeed || ""}`,
-    `MatchRngAlgorithm: ${typeof MATCH_TELEMETRY_RNG_ALGORITHM !== "undefined" ? MATCH_TELEMETRY_RNG_ALGORITHM : ""}`,
-    `MatchRngCalls: ${Number(state.matchRngCalls || 0)}`,
-    `MatchTelemetrySchema: ${state.matchTelemetry && state.matchTelemetry.schemaVersion ? state.matchTelemetry.schemaVersion : ""}`,
     `Round: ${state.turn || 0}`,
     `PacePreset: ${state.pacePreset || ""}`,
     `GameScaleMode: ${state.gameScaleMode || "large_scale"}`,
@@ -378,21 +362,7 @@ function f9fEmptyPlayerStats() {
     damageTaken: 0,
     defDamageTaken: 0,
     hpDamageTaken: 0,
-    damageDealt: 0,
-    defDamageDealt: 0,
-    hpDamageDealt: 0,
     unitsLost: 0,
-    kills: 0,
-    assists: 0,
-    playerEliminations: 0,
-    playerEliminationAssists: 0,
-    timesEliminated: 0,
-    eliminatedAtTurn: null,
-    eliminatedBy: null,
-    eliminationAssistSides: [],
-    pressureGained: 0,
-    pressureQualifiedRounds: 0,
-    pressureDeniedByTie: 0,
     structuresLost: 0,
     commandersLost: 0,
     pivotsLost: 0,
@@ -493,13 +463,6 @@ function initializeMatchStats() {
       unitsSpawned: 0,
       structuresBuilt: 0,
       unitsDestroyed: 0,
-      kills: 0,
-      assists: 0,
-      playerEliminations: 0,
-      playerEliminationAssists: 0,
-      unattributedPlayerEliminations: 0,
-      pressureIncrements: 0,
-      pressureEvaluations: 0,
       abilitiesUsed: 0,
       tacticsUsed: 0,
       psControlChanges: 0,
@@ -513,9 +476,7 @@ function initializeMatchStats() {
     tactics: {},
     abilities: {},
     statuses: {},
-    psTimeline: [],
-    pressureTimeline: [],
-    eliminationTimeline: []
+    psTimeline: []
   };
   refreshMatchStatsSnapshot();
   return state.matchStats;
@@ -559,9 +520,7 @@ function refreshMatchStatsSnapshot() {
     energy: valueByPlayer(side => state.energy ? state.energy[side] || 0 : 0),
     units: valueByPlayer(side => typeof combatUnits === "function" ? combatUnits(side).length : 0),
     cards: valueByPlayer(side => f9fReadCardZoneCounts(side)),
-    eliminated: valueByPlayer(side => typeof isPlayerEliminated === "function" ? isPlayerEliminated(side) : false),
-    lifecycle: valueByPlayer(side => typeof playerLifecycleStatus === "function" ? playerLifecycleStatus(side) : null),
-    attribution: typeof ffaAttributionSnapshot === "function" ? ffaAttributionSnapshot() : null
+    eliminated: valueByPlayer(side => typeof isPlayerEliminated === "function" ? isPlayerEliminated(side) : false)
   };
   if (state.winnerSide && !stats.final) {
     stats.final = { ...stats.current, finishedAt: new Date().toISOString() };
@@ -647,13 +606,6 @@ function updateMatchStatsFromEvent(event) {
         bucket.defDamageTaken += defLoss;
         bucket.hpDamageTaken += hpLoss;
       }
-      const sourceSide = Number(data.sourceSide || 0) || null;
-      const sourceBucket = sourceSide && Number(sourceSide) !== Number(targetSide) ? f9fPlayerBucket(stats, sourceSide) : null;
-      if (sourceBucket) {
-        sourceBucket.damageDealt += total;
-        sourceBucket.defDamageDealt += defLoss;
-        sourceBucket.hpDamageDealt += hpLoss;
-      }
       stats.totals.damage += total;
       stats.totals.damageToDef += defLoss;
       stats.totals.damageToHp += hpLoss;
@@ -669,85 +621,7 @@ function updateMatchStatsFromEvent(event) {
         if (unit && unit.type === "Comandante") bucket.commandersLost += 1;
         if (unit && unit.weight === "Pivot") bucket.pivotsLost += 1;
       }
-      const killerSide = Number(data.killerSide || data.destroyedBySide || 0) || null;
-      const killerBucket = killerSide && Number(killerSide) !== Number(side) ? f9fPlayerBucket(stats, killerSide) : null;
-      if (killerBucket) {
-        killerBucket.kills += 1;
-        stats.totals.kills += 1;
-      }
-      for (const assistSide of [...new Set((data.assistSides || []).map(Number).filter(Boolean))]) {
-        if (assistSide === killerSide || assistSide === Number(side)) continue;
-        const assistBucket = f9fPlayerBucket(stats, assistSide);
-        if (assistBucket) {
-          assistBucket.assists += 1;
-          stats.totals.assists += 1;
-        }
-      }
       stats.totals.unitsDestroyed += 1;
-      break;
-    }
-    case EventTypes.PLAYER_ELIMINATED: {
-      const victimSide = Number(data.player || 0) || null;
-      const killerSide = Number(data.killerSide || data.conqueror || 0) || null;
-      const victimBucket = f9fPlayerBucket(stats, victimSide);
-      if (victimBucket) {
-        victimBucket.timesEliminated += 1;
-        victimBucket.eliminatedAtTurn = Number(data.round || (state ? state.turn : 0));
-        victimBucket.eliminatedBy = killerSide;
-        victimBucket.eliminationAssistSides = [...new Set((data.assistSides || []).map(Number).filter(Boolean))];
-      }
-      const killerBucket = killerSide ? f9fPlayerBucket(stats, killerSide) : null;
-      if (killerBucket) {
-        killerBucket.playerEliminations += 1;
-        stats.totals.playerEliminations += 1;
-      } else stats.totals.unattributedPlayerEliminations += 1;
-      for (const assistSide of [...new Set((data.assistSides || []).map(Number).filter(Boolean))]) {
-        if (assistSide === killerSide || assistSide === victimSide) continue;
-        const assistBucket = f9fPlayerBucket(stats, assistSide);
-        if (assistBucket) {
-          assistBucket.playerEliminationAssists += 1;
-          stats.totals.playerEliminationAssists += 1;
-        }
-      }
-      stats.eliminationTimeline.push({
-        round:Number(data.round || (state ? state.turn : 0)),
-        player:victimSide,
-        killerSide,
-        assistSides:[...new Set((data.assistSides || []).map(Number).filter(Boolean))],
-        reason:data.reason || "eliminazione",
-        attributionType:data.attributionType || null
-      });
-      if (stats.eliminationTimeline.length > 32) stats.eliminationTimeline.shift();
-      break;
-    }
-    case EventTypes.PRESSURE_EVALUATED: {
-      stats.totals.pressureEvaluations += 1;
-      const qualified = [...new Set((data.qualifiedPlayers || []).map(Number).filter(Boolean))];
-      for (const side of qualified) {
-        const playerBucket = f9fPlayerBucket(stats, side);
-        if (playerBucket) {
-          playerBucket.pressureQualifiedRounds += 1;
-          if (data.outcome === "tie") playerBucket.pressureDeniedByTie += 1;
-        }
-      }
-      stats.pressureTimeline.push({
-        round:Number(data.round || (state ? state.turn : 0)),
-        activePlayers:(data.activePlayers || []).map(Number),
-        eliminatedPlayers:(data.eliminatedPlayers || []).map(Number),
-        qualifiedPlayers:qualified,
-        advancingPlayer:Number(data.advancingPlayer || 0) || null,
-        outcome:data.outcome || "unqualified",
-        standings:(data.standings || []).map(entry => ({...entry}))
-      });
-      if (stats.pressureTimeline.length > 200) stats.pressureTimeline.shift();
-      break;
-    }
-    case EventTypes.PRESSURE_CHANGED: {
-      const pressureSide = Number(data.player || 0) || null;
-      const pressureBucket = f9fPlayerBucket(stats, pressureSide);
-      const delta = Math.max(0, Number(data.delta || 0));
-      if (pressureBucket) pressureBucket.pressureGained += delta;
-      stats.totals.pressureIncrements += delta;
       break;
     }
     case EventTypes.ABILITY_USED: {

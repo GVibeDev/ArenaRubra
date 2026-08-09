@@ -14,10 +14,7 @@ const mapEditorState = {
   drag: null,
   operationWarnings: [],
   initialized: false,
-  labMapId: null,
-  backgroundPreviewUrl: "",
-  backgroundPreviewToken: 0,
-  backgroundStatus: "Nessuno sfondo custom."
+  labMapId: null
 };
 
 function mapEditorEl(id) {
@@ -28,34 +25,6 @@ function mapEditorEscape(value) {
   return String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[char]));
-}
-
-
-const MAP_EDITOR_TOOL_LABELS = Object.freeze({
-  inspect: "Ispeziona",
-  cell: "Cella",
-  terrain: "Terreno",
-  role: "Ruolo",
-  hazard: "Pericolo"
-});
-
-function mapEditorSetLiveText(id, value) {
-  const element = mapEditorEl(id);
-  if (element) element.textContent = value == null || value === "" ? "—" : String(value);
-}
-
-function mapEditorUpdateLiveBar(draft, validation) {
-  if (!draft || !validation) return;
-  const summary = validation.summary || {};
-  mapEditorSetLiveText("mapEditorLiveName", draft.name || draft.id || "—");
-  mapEditorSetLiveText("mapEditorLivePlayers", summary.playerCount || draft.playerCount || 0);
-  mapEditorSetLiveText("mapEditorLiveCells", summary.cellCount || 0);
-  mapEditorSetLiveText("mapEditorLiveHq", Array.isArray(draft.playerSlots) ? draft.playerSlots.length : 0);
-  mapEditorSetLiveText("mapEditorLivePs", summary.strategicPointCount || 0);
-  mapEditorSetLiveText("mapEditorLiveMovement", `×${Number(draft.movementMultiplier) || 1}`);
-  mapEditorSetLiveText("mapEditorLiveZoom", `${Math.round((Number(mapEditorState.view.scale) || 1) * 100)}%`);
-  mapEditorSetLiveText("mapEditorLiveTool", MAP_EDITOR_TOOL_LABELS[mapEditorState.tool] || mapEditorState.tool || "—");
-  mapEditorSetLiveText("mapEditorLiveSelection", mapEditorState.selectedKey || "—");
 }
 
 function mapEditorSnapshot() {
@@ -71,11 +40,9 @@ function mapEditorPushUndo() {
 
 function mapEditorApplySnapshot(snapshot) {
   if (!snapshot) return;
-  if (mapEditorState.backgroundPreviewUrl) mapBackgroundReleaseEditorUrl(mapEditorState.backgroundPreviewUrl);
-  mapEditorState.backgroundPreviewUrl = "";
   mapEditorState.draft = mapRuntimeNormalizeDefinition(snapshot, { imported: true });
   mapEditorSyncForm();
-  Promise.resolve(mapEditorRefreshBackgroundPreview()).catch(() => {});
+  renderMapEditor();
 }
 
 function mapEditorUndo() {
@@ -129,24 +96,8 @@ function mapEditorTemplateDefinition(template) {
       { slotId: 2, headquarters: [6, 0, -6], deployment: { mode: "hq_network", radius: 1 } }
     ],
     strategicPoints: [{ id: "ps-center", coord: [0, 0, 0], incomeValue: 1, tags: ["central"] }],
-    centralStrategicPointId: "ps-center",
     initialHazards: [],
-    presentation: {
-      skinKey: "red_dust",
-      backgroundKey: null,
-      backgroundAssetId: null,
-      backgroundAssetPath: null,
-      backgroundName: null,
-      backgroundMime: null,
-      backgroundWidth: 0,
-      backgroundHeight: 0,
-      backgroundFit: "cover",
-      backgroundOpacity: 0.9,
-      backgroundScale: 1,
-      backgroundOffsetX: 0,
-      backgroundOffsetY: 0,
-      backgroundInlineDataUrl: null
-    },
+    presentation: { skinKey: "red_dust", backgroundKey: null },
     metadata: { author: "Arena Rubra Map Editor", revision: 1, tags: ["custom"], symmetry: null, source: "F9Q3-editor" }
   }, { imported: true });
 }
@@ -166,8 +117,6 @@ function mapEditorRefreshMapSelect(preferredId = "") {
 function mapEditorLoad(mapId, options = {}) {
   const definition = getMapDefinitionById(mapId || "map1_starter");
   if (!definition) return false;
-  if (mapEditorState.backgroundPreviewUrl) mapBackgroundReleaseEditorUrl(mapEditorState.backgroundPreviewUrl);
-  mapEditorState.backgroundPreviewUrl = "";
   mapEditorState.sourceId = definition.id;
   mapEditorState.draft = definition.official && options.copy !== false
     ? duplicateMapDefinition(definition.id).definition
@@ -179,7 +128,7 @@ function mapEditorLoad(mapId, options = {}) {
   mapEditorRefreshMapSelect(definition.id);
   mapEditorSyncForm();
   mapEditorFit();
-  Promise.resolve(mapEditorRefreshBackgroundPreview()).catch(() => {});
+  renderMapEditor();
   return true;
 }
 
@@ -275,7 +224,6 @@ function mapEditorSyncForm() {
   if (playerCount) playerCount.value = String(draft.playerCount || 2);
   if (movement) movement.value = String(draft.movementMultiplier || 1);
   mapEditorSyncComponentControls();
-  mapEditorSyncBackgroundControls();
 }
 
 function mapEditorEnsurePlayerSlots() {
@@ -441,9 +389,7 @@ function mapEditorApplyTool(coord) {
       if (mapEditorState.toolValue === "remove" && existing) {
         draft.geometry.cells = draft.geometry.cells.filter(cell => mapRuntimeCellKey(cell.coord) !== key);
         draft.playerSlots = draft.playerSlots.filter(slot => mapRuntimeCellKey(slot.headquarters) !== key);
-        const removedCentral = draft.strategicPoints.find(ps => mapRuntimeCellKey(ps.coord) === key && ps.id === draft.centralStrategicPointId);
         draft.strategicPoints = draft.strategicPoints.filter(ps => mapRuntimeCellKey(ps.coord) !== key);
-        if (removedCentral) draft.centralStrategicPointId = null;
       } else if (!existing) {
         draft.geometry.cells.push({ coord: [...target], componentId: null, componentIds: [], terrainType: "free", cellRole: "normal", ownerPlayerId: null, initialHazard: null });
       }
@@ -471,25 +417,11 @@ function mapEditorApplyTool(coord) {
         const playerId = Number(value.slice(3));
         const slot = draft.playerSlots.find(item => item.slotId === playerId);
         if (slot) slot.headquarters = [...coord];
-      } else if (value === "ps" || value === "central_ps") {
-        let existing = draft.strategicPoints.find(ps => mapRuntimeCellKey(ps.coord) === mapRuntimeCellKey(coord));
-        if (!existing) {
-          const baseId = value === "central_ps" ? "ps-center" : `ps-${draft.strategicPoints.length + 1}`;
-          let id = baseId;
-          let suffix = 2;
-          while (draft.strategicPoints.some(ps => ps.id === id)) id = `${baseId}-${suffix++}`;
-          existing = { id, coord: [...coord], incomeValue: 1, tags: ["custom"] };
-          draft.strategicPoints.push(existing);
-        }
-        if (value === "central_ps") {
-          draft.strategicPoints.forEach(ps => { ps.tags = (ps.tags || []).filter(tag => tag !== "central"); });
-          existing.tags = Array.from(new Set([...(existing.tags || []), "central"]));
-          draft.centralStrategicPointId = existing.id;
-        }
+      } else if (value === "ps") {
+        const existing = draft.strategicPoints.find(ps => mapRuntimeCellKey(ps.coord) === mapRuntimeCellKey(coord));
+        if (!existing) draft.strategicPoints.push({ id: `ps-${draft.strategicPoints.length + 1}`, coord: [...coord], incomeValue: 1, tags: ["custom"] });
       } else {
-        const removed = draft.strategicPoints.find(ps => mapRuntimeCellKey(ps.coord) === mapRuntimeCellKey(coord));
         draft.strategicPoints = draft.strategicPoints.filter(ps => mapRuntimeCellKey(ps.coord) !== mapRuntimeCellKey(coord));
-        if (removed && removed.id === draft.centralStrategicPointId) draft.centralStrategicPointId = null;
       }
       mapEditorRebuildCellRoles();
     }
@@ -507,7 +439,7 @@ function mapEditorApplyTool(coord) {
       cell.initialHazard = mapEditorState.toolValue === "none" ? null : {
         type: mapEditorState.toolValue,
         sourceType: "map",
-        sourceId: `editor-${mapEditorState.toolValue}-${mapRuntimeCellKey(target).replace(/,/g, "_")}`,
+        sourceId: "editor-initial",
         ownerPlayerId: null,
         duration: null,
         payload: {}
@@ -527,7 +459,7 @@ function mapEditorToolOptions() {
   if (mapEditorState.tool === "cell") options = [["add", "Aggiungi"], ["remove", "Rimuovi"]];
   if (mapEditorState.tool === "terrain") options = terrainDefinitions().map(terrain => [terrain.id, `${terrain.icon} ${terrain.name}`]);
   if (mapEditorState.tool === "role") {
-    options = [["normal", "Normale"], ["ps", "Punto Strategico"], ["central_ps", "PS centrale"]];
+    options = [["normal", "Normale"], ["ps", "Punto Strategico"]];
     for (let id = 1; id <= mapEditorState.draft.playerCount; id += 1) options.push([`hq-${id}`, `QG Giocatore ${id}`]);
   }
   if (mapEditorState.tool === "hazard") options = [["none", "Nessuno"], ["trap", "Trappola"], ["mine", "Mina"]];
@@ -541,135 +473,12 @@ function mapEditorToolOptions() {
   if (select) select.addEventListener("change", () => { mapEditorState.toolValue = select.value; });
 }
 
-
-function mapEditorBackgroundPresentation() {
-  if (!mapEditorState.draft) return mapBackgroundSafePresentation(null);
-  mapEditorState.draft.presentation = {
-    ...(mapEditorState.draft.presentation || {}),
-    ...mapBackgroundSafePresentation(mapEditorState.draft.presentation)
-  };
-  return mapEditorState.draft.presentation;
-}
-
-function mapEditorSyncBackgroundControls() {
-  if (!mapEditorState.draft) return;
-  const presentation = mapEditorBackgroundPresentation();
-  const fit = mapEditorEl("mapEditorBackgroundFit");
-  const opacity = mapEditorEl("mapEditorBackgroundOpacity");
-  const scale = mapEditorEl("mapEditorBackgroundScale");
-  const offsetX = mapEditorEl("mapEditorBackgroundOffsetX");
-  const offsetY = mapEditorEl("mapEditorBackgroundOffsetY");
-  const opacityValue = mapEditorEl("mapEditorBackgroundOpacityValue");
-  const scaleValue = mapEditorEl("mapEditorBackgroundScaleValue");
-  const status = mapEditorEl("mapEditorBackgroundStatus");
-  const remove = mapEditorEl("mapEditorBackgroundRemoveBtn");
-  if (fit) fit.value = presentation.backgroundFit;
-  if (opacity) opacity.value = String(presentation.backgroundOpacity);
-  if (scale) scale.value = String(presentation.backgroundScale);
-  if (offsetX) offsetX.value = String(presentation.backgroundOffsetX);
-  if (offsetY) offsetY.value = String(presentation.backgroundOffsetY);
-  if (opacityValue) opacityValue.textContent = `${Math.round(presentation.backgroundOpacity * 100)}%`;
-  if (scaleValue) scaleValue.textContent = `${presentation.backgroundScale.toFixed(2)}×`;
-  const hasAsset = mapBackgroundHasAsset(presentation);
-  if (status) {
-    const dimensions = presentation.backgroundWidth && presentation.backgroundHeight
-      ? ` · ${presentation.backgroundWidth}×${presentation.backgroundHeight}`
-      : "";
-    status.textContent = hasAsset
-      ? `${presentation.backgroundName || presentation.backgroundAssetId || "Sfondo locale"}${dimensions} · ${mapEditorState.backgroundStatus || "pronto"}`
-      : "Nessuno sfondo custom. Verrà usata la skin di fallback.";
-    status.classList.toggle("isMissing", hasAsset && !mapEditorState.backgroundPreviewUrl);
-  }
-  if (remove) remove.disabled = !hasAsset;
-}
-
-async function mapEditorRefreshBackgroundPreview() {
-  const token = ++mapEditorState.backgroundPreviewToken;
-  const oldUrl = mapEditorState.backgroundPreviewUrl;
-  mapEditorState.backgroundPreviewUrl = "";
-  if (oldUrl) mapBackgroundReleaseEditorUrl(oldUrl);
-  if (!mapEditorState.draft || !mapBackgroundHasAsset(mapEditorState.draft.presentation)) {
-    mapEditorState.backgroundStatus = "Nessuno sfondo custom.";
-    mapEditorSyncBackgroundControls();
-    renderMapEditor();
-    return false;
-  }
-  mapEditorState.backgroundStatus = "caricamento…";
-  mapEditorSyncBackgroundControls();
-  const resolved = await mapBackgroundResolveSource(mapEditorState.draft.presentation, { editor: true });
-  if (token !== mapEditorState.backgroundPreviewToken) {
-    if (resolved.revoke) mapBackgroundReleaseEditorUrl(resolved.src);
-    return false;
-  }
-  if (!resolved.ok) {
-    mapEditorState.backgroundStatus = "asset non disponibile: fallback attivo";
-    mapEditorSyncBackgroundControls();
-    renderMapEditor();
-    return false;
-  }
-  mapEditorState.backgroundPreviewUrl = resolved.src;
-  mapEditorState.backgroundStatus = resolved.mode === "inline" ? "fallback inline" : "salvato nel Data Vault";
-  mapEditorSyncBackgroundControls();
-  renderMapEditor();
-  return true;
-}
-
-function mapEditorWorldBounds(cells) {
-  const points = (cells || []).map(cell => mapEditorCubeToPoint(cell.coord));
-  if (!points.length) return { minX: -560, minY: -360, maxX: 560, maxY: 360, width: 1120, height: 720, centerX: 0, centerY: 0 };
-  const minX = Math.min(...points.map(point => point.x)) - 38;
-  const maxX = Math.max(...points.map(point => point.x)) + 38;
-  const minY = Math.min(...points.map(point => point.y)) - 38;
-  const maxY = Math.max(...points.map(point => point.y)) + 38;
-  return {
-    minX, minY, maxX, maxY,
-    width: Math.max(1, maxX - minX),
-    height: Math.max(1, maxY - minY),
-    centerX: (minX + maxX) / 2,
-    centerY: (minY + maxY) / 2
-  };
-}
-
-function mapEditorBackgroundMarkup(cells) {
-  const presentation = mapEditorBackgroundPresentation();
-  const src = mapEditorState.backgroundPreviewUrl;
-  if (!src) return "";
-  const bounds = mapEditorWorldBounds(cells);
-  const offsetX = (presentation.backgroundOffsetX / 100) * bounds.width;
-  const offsetY = (presentation.backgroundOffsetY / 100) * bounds.height;
-  let x = bounds.minX;
-  let y = bounds.minY;
-  let width = bounds.width;
-  let height = bounds.height;
-  let preserve = presentation.backgroundFit === "cover" ? "xMidYMid slice" : "xMidYMid meet";
-  if (presentation.backgroundFit === "native") {
-    width = presentation.backgroundWidth || bounds.width;
-    height = presentation.backgroundHeight || bounds.height;
-    x = bounds.centerX - width / 2;
-    y = bounds.centerY - height / 2;
-    preserve = "xMidYMid meet";
-  }
-  const transform = `translate(${offsetX} ${offsetY}) translate(${bounds.centerX} ${bounds.centerY}) scale(${presentation.backgroundScale}) translate(${-bounds.centerX} ${-bounds.centerY})`;
-  return `<image class="mapEditorBackgroundImage" href="${mapEditorEscape(src)}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="${preserve}" opacity="${presentation.backgroundOpacity}" transform="${transform}" aria-hidden="true"></image>`;
-}
-
-function mapEditorUpdateBackgroundSetting(key, value) {
-  if (!mapEditorState.draft) return;
-  const presentation = mapEditorBackgroundPresentation();
-  presentation[key] = value;
-  mapEditorState.draft.presentation = mapRuntimeNormalizeDefinition(mapEditorState.draft, { imported: true }).presentation;
-  mapEditorState.draft.metadata.revision = Math.max(1, Number(mapEditorState.draft.metadata.revision) || 1) + 1;
-  mapEditorSyncBackgroundControls();
-  renderMapEditor();
-}
-
 function renderMapEditor() {
   const draft = mapEditorState.draft;
   const svg = mapEditorEl("mapEditorCanvas");
   if (!draft || !svg) return;
   mapEditorToolOptions();
   const cells = draft.geometry.cells || [];
-  svg.classList.toggle("hasCustomBackground", Boolean(mapEditorState.backgroundPreviewUrl));
   const transform = `translate(${mapEditorState.view.x} ${mapEditorState.view.y}) scale(${mapEditorState.view.scale})`;
   const polygons = cells.map(cell => {
     const point = mapEditorCubeToPoint(cell.coord);
@@ -680,11 +489,10 @@ function renderMapEditor() {
       terrain.visualClass,
       cell.cellRole === "headquarters" ? "isHeadquarters" : "",
       cell.cellRole === "strategic_point" ? "isStrategicPoint" : "",
-      cell.cellRole === "strategic_point" && isCentralStrategicPointCoord(cell.coord, draft) ? "isCentralStrategicPoint" : "",
       cell.initialHazard ? `has-${cell.initialHazard.type}` : "",
       key === mapEditorState.selectedKey ? "isSelected" : ""
     ].filter(Boolean).join(" ");
-    const roleLabel = cell.cellRole === "headquarters" ? `QG${cell.ownerPlayerId}` : cell.cellRole === "strategic_point" ? (isCentralStrategicPointCoord(cell.coord, draft) ? "PS★" : "PS") : "";
+    const roleLabel = cell.cellRole === "headquarters" ? `QG${cell.ownerPlayerId}` : cell.cellRole === "strategic_point" ? "PS" : "";
     const hazardLabel = cell.initialHazard ? (cell.initialHazard.type === "mine" ? "M" : "T") : "";
     return `<g class="${classes}" data-map-cell="${key}" tabindex="0" role="button" aria-label="${mapEditorEscape(`${key}, ${terrain.name}, ${roleLabel || "normale"}`)}">
       <polygon points="${mapEditorHexPoints(point)}"></polygon>
@@ -692,8 +500,7 @@ function renderMapEditor() {
       ${hazardLabel ? `<text class="mapEditorHazardLabel" x="${point.x + 13}" y="${point.y - 10}" text-anchor="middle">${hazardLabel}</text>` : ""}
     </g>`;
   }).join("");
-  const backgroundMarkup = mapEditorBackgroundMarkup(cells);
-  svg.innerHTML = `<g id="mapEditorWorld" transform="${transform}">${backgroundMarkup}${polygons}</g>`;
+  svg.innerHTML = `<g id="mapEditorWorld" transform="${transform}">${polygons}</g>`;
   svg.querySelectorAll("[data-map-cell]").forEach(node => {
     const coord = node.dataset.mapCell.split(",").map(Number);
     node.addEventListener("pointerenter", () => mapEditorPreviewSymmetry(coord, true));
@@ -707,13 +514,12 @@ function renderMapEditor() {
     });
   });
   const validation = validateMapDefinition(draft, { imported: true });
-  mapEditorUpdateLiveBar(draft, validation);
   const summary = mapEditorEl("mapEditorValidationSummary");
   const list = mapEditorEl("mapEditorValidationList");
   if (summary) {
     summary.className = validation.valid ? "mapEditorValidationSummary isValid" : "mapEditorValidationSummary isInvalid";
     summary.textContent = validation.valid
-      ? `Valida · ${validation.summary.cellCount} celle · ${validation.summary.strategicPointCount} PS · centro ${validation.summary.centralStrategicPointCoord ? validation.summary.centralStrategicPointCoord.join(",") : "—"}`
+      ? `Valida · ${validation.summary.cellCount} celle · ${validation.summary.strategicPointCount} PS`
       : `${validation.errors.length} errori · ${validation.warnings.length} avvisi`;
   }
   if (list) {
@@ -737,7 +543,7 @@ function renderMapEditor() {
       ? `<strong>${mapEditorEscape(mapEditorState.selectedKey)}</strong>
          <span>Componente: ${mapEditorEscape((selected.componentIds && selected.componentIds.length ? selected.componentIds : [selected.componentId || "esplicita"]).join(", "))}</span>
          <span>Terreno: ${mapEditorEscape(selectedTerrain && selectedTerrain.name || selected.terrainType)} · costo movimento ${selectedTerrain && selectedTerrain.blocksMovement ? "bloccato" : selectedTerrain && selectedTerrain.movementCost} · DEF ${selectedTerrain && selectedTerrain.defenseModifier >= 0 ? "+" : ""}${selectedTerrain && selectedTerrain.defenseModifier || 0}</span>
-         <span>Ruolo: ${mapEditorEscape(selected.cellRole)} · proprietario QG ${selected.ownerPlayerId || "—"} · PS ${selectedPs ? selectedPs.id : "—"}${selectedPs && selectedPs.id === draft.centralStrategicPointId ? " · centrale" : ""}</span>
+         <span>Ruolo: ${mapEditorEscape(selected.cellRole)} · proprietario QG ${selected.ownerPlayerId || "—"} · PS ${selectedPs ? selectedPs.id : "—"}</span>
          <span>Deployment: ${selectedSlot ? `${selectedSlot.deployment.mode} r${selectedSlot.deployment.radius}` : "—"}</span>
          <span>Pericolo: ${mapEditorEscape(selected.initialHazard && selected.initialHazard.type || "nessuno")}</span>
          <span>Errori/warning cella: ${selectedIssues.length ? mapEditorEscape(selectedIssues.map(issue => issue.code).join(", ")) : "nessuno"}</span>`
@@ -749,7 +555,7 @@ function renderMapEditor() {
   if (redo) redo.disabled = !mapEditorState.redo.length;
   const deleteButton = mapEditorEl("mapEditorDeleteBtn");
   if (deleteButton) deleteButton.disabled = Boolean(BUILTIN_MAP_DEFINITIONS[mapEditorState.sourceId]);
-  ["mapEditorSaveBtn", "mapEditorExportBtn", "mapEditorPortableExportBtn", "mapEditorLabBtn"].forEach(id => {
+  ["mapEditorSaveBtn", "mapEditorExportBtn", "mapEditorLabBtn"].forEach(id => {
     const button = mapEditorEl(id);
     if (button) button.disabled = !validation.valid;
   });
@@ -851,7 +657,6 @@ function initializeMapEditorScreen() {
     mapEditorState.operationWarnings = [];
     mapEditorSyncForm();
     mapEditorFit();
-    Promise.resolve(mapEditorRefreshBackgroundPreview()).catch(() => {});
   });
   const nameInput = mapEditorEl("mapEditorNameInput");
   if (nameInput) nameInput.addEventListener("input", () => {
@@ -886,53 +691,6 @@ function initializeMapEditorScreen() {
     mapEditorState.draft.movementMultiplier = Number(movement.value);
     renderMapEditor();
   });
-  const backgroundFile = mapEditorEl("mapEditorBackgroundFile");
-  const backgroundChoose = mapEditorEl("mapEditorBackgroundChooseBtn");
-  if (backgroundChoose) backgroundChoose.addEventListener("click", () => { if (backgroundFile) backgroundFile.click(); });
-  if (backgroundFile) backgroundFile.addEventListener("change", async () => {
-    const file = backgroundFile.files && backgroundFile.files[0];
-    backgroundFile.value = "";
-    if (!file || !mapEditorState.draft) return;
-    mapEditorPushUndo();
-    const result = await mapBackgroundFileToPresentation(file, mapEditorState.draft.id, mapEditorState.draft.presentation);
-    if (!result.ok) {
-      mapEditorState.undo.pop();
-      if (typeof alert === "function") alert(`Sfondo non importato.\n${(result.issues || []).join("\n")}`);
-      return;
-    }
-    mapEditorState.draft.presentation = {
-      ...(mapEditorState.draft.presentation || {}),
-      ...result.presentation
-    };
-    mapEditorState.draft.metadata.revision = Math.max(1, Number(mapEditorState.draft.metadata.revision) || 1) + 1;
-    mapEditorState.backgroundStatus = result.storageMode === "blob" ? "salvato nel Data Vault" : "fallback inline";
-    mapEditorSyncForm();
-    await mapEditorRefreshBackgroundPreview();
-  });
-  const backgroundRemove = mapEditorEl("mapEditorBackgroundRemoveBtn");
-  if (backgroundRemove) backgroundRemove.addEventListener("click", async () => {
-    if (!mapEditorState.draft || !mapBackgroundHasAsset(mapEditorState.draft.presentation)) return;
-    mapEditorPushUndo();
-    mapEditorState.draft.presentation = {
-      ...(mapEditorState.draft.presentation || {}),
-      ...(await mapBackgroundRemovePresentationAsset(mapEditorState.draft.presentation))
-    };
-    mapEditorState.draft.metadata.revision = Math.max(1, Number(mapEditorState.draft.metadata.revision) || 1) + 1;
-    await mapEditorRefreshBackgroundPreview();
-  });
-  const bindBackgroundSetting = (id, key, parser = value => value) => {
-    const control = mapEditorEl(id);
-    if (!control) return;
-    control.addEventListener("change", () => {
-      mapEditorPushUndo();
-      mapEditorUpdateBackgroundSetting(key, parser(control.value));
-    });
-  };
-  bindBackgroundSetting("mapEditorBackgroundFit", "backgroundFit", value => value);
-  bindBackgroundSetting("mapEditorBackgroundOpacity", "backgroundOpacity", value => Number(value));
-  bindBackgroundSetting("mapEditorBackgroundScale", "backgroundScale", value => Number(value));
-  bindBackgroundSetting("mapEditorBackgroundOffsetX", "backgroundOffsetX", value => Number(value));
-  bindBackgroundSetting("mapEditorBackgroundOffsetY", "backgroundOffsetY", value => Number(value));
   const componentSelect = mapEditorEl("mapEditorComponentSelect");
   if (componentSelect) componentSelect.addEventListener("change", mapEditorSyncComponentControls);
   const updateSelectedComponent = () => {
@@ -961,7 +719,6 @@ function initializeMapEditorScreen() {
     mapEditorState.tool = button.dataset.mapTool;
     toolGrid.querySelectorAll("[data-map-tool]").forEach(node => node.classList.toggle("isActive", node === button));
     mapEditorToolOptions();
-    mapEditorSetLiveText("mapEditorLiveTool", MAP_EDITOR_TOOL_LABELS[mapEditorState.tool] || mapEditorState.tool || "—");
   });
   const svg = mapEditorEl("mapEditorCanvas");
   if (svg) {
@@ -1020,20 +777,12 @@ function initializeMapEditorScreen() {
     }
     mapEditorDownload(`${mapRuntimeSafeId(mapEditorState.draft.id)}.json`, result.json);
   });
-  bind("mapEditorPortableExportBtn", async () => {
-    const result = await exportMapDefinitionPortableJson(mapEditorState.draft);
-    if (!result.ok) {
-      if (typeof alert === "function") alert(`Esportazione portatile fallita.\n${(result.issues || []).join("\n")}`);
-      return;
-    }
-    mapEditorDownload(`${mapRuntimeSafeId(mapEditorState.draft.id)}.portable.json`, result.json);
-  });
   const importFile = mapEditorEl("mapEditorImportFile");
   bind("mapEditorImportBtn", () => { if (importFile) importFile.click(); });
   if (importFile) importFile.addEventListener("change", async () => {
     const file = importFile.files && importFile.files[0];
     if (!file) return;
-    const result = await importMapDefinitionPortableJson(await file.text(), { save: false });
+    const result = importMapDefinitionJson(await file.text(), { save: false });
     importFile.value = "";
     if (!result.ok) {
       if (typeof alert === "function") alert(`Import fallito.\n${(result.issues || []).join("\n")}`);
@@ -1045,17 +794,12 @@ function initializeMapEditorScreen() {
     mapEditorState.redo = [];
     mapEditorSyncForm();
     mapEditorFit();
-    Promise.resolve(mapEditorRefreshBackgroundPreview()).catch(() => {});
   });
-  bind("mapEditorDeleteBtn", async () => {
+  bind("mapEditorDeleteBtn", () => {
     if (!mapEditorState.sourceId || BUILTIN_MAP_DEFINITIONS[mapEditorState.sourceId]) return;
     if (typeof confirm === "function" && !confirm(`Eliminare la mappa custom "${mapEditorState.draft.name}"?`)) return;
-    const presentation = mapRuntimeClone(mapEditorState.draft.presentation || {});
     const result = deleteCustomMapDefinition(mapEditorState.sourceId);
-    if (result.ok) {
-      await mapBackgroundRemovePresentationAsset(presentation);
-      mapEditorLoad("map1_starter", { copy: true });
-    }
+    if (result.ok) mapEditorLoad("map1_starter", { copy: true });
   });
   mapEditorLoad("map1_starter", { copy: true });
 }

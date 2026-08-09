@@ -28,7 +28,7 @@ with sync_playwright() as p:
     page.evaluate("""() => { const splash=document.getElementById('appSplash'); if(splash){ splash.hidden=true; splash.style.display='none'; splash.setAttribute('aria-hidden','true'); } }""")
     page.wait_for_timeout(250)
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9S1b1-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9O7g-APK-M4c"
     page.evaluate("setAppScreen(ARENA_APP_SCREENS.GAME); newGame({ p1Faction:'Nexus', p2Faction:'Exordium', p1Mode:'human', p2Mode:'human', initiativeMode:'1' })")
     page.wait_for_timeout(350)
 

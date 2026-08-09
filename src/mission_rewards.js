@@ -1,19 +1,11 @@
 "use strict";
 
-// Arena Rubra – F9Q3d2 Missioni, ricompense FFA e cicli multipli.
+// Arena Rubra – F9N10 Missioni, ricompense e cicli multipli.
 // Le 10 Missioni ordinarie restano operative.
 // F9N9 aggiunge le 5 Missioni disperate, moltiplicatore x1-x3,
 // selezioni distinte, quote sprecate e ricompense temporali.
 
 let missionResolutionBusy = false;
-
-function missionRewardPlayerIds() {
-  if (typeof missionPlayerIds === "function") return missionPlayerIds();
-  if (typeof mapRuntimePlayerIds === "function") return mapRuntimePlayerIds(state) || [];
-  if (state && Array.isArray(state.players)) return [...new Set(state.players.map(player => Number(player && (player.id ?? player.side))))].filter(id => Number.isFinite(id) && id > 0);
-  if (state && Array.isArray(state.turnOrder)) return [...new Set(state.turnOrder.map(Number))].filter(id => Number.isFinite(id) && id > 0);
-  return state ? Object.keys(state.factions || state.energy || {}).map(Number).filter(id => Number.isFinite(id) && id > 0) : [];
-}
 
 function ensureMissionRewardState() {
   if (!state) return null;
@@ -23,8 +15,9 @@ function ensureMissionRewardState() {
       2:{ cardCostSequence:null, repeatAttacksRemaining:0, repeatAttacksGranted:0, repeatAttacksUsed:0, repeatAttacksRound:null }
     };
   }
-  for (const side of missionRewardPlayerIds()) {
-    if (!state.missionRewards[side]) state.missionRewards[side] = { cardCostSequence:null };
+  if (!state.missionRewards[1]) state.missionRewards[1] = { cardCostSequence:null };
+  if (!state.missionRewards[2]) state.missionRewards[2] = { cardCostSequence:null };
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const rewardState = state.missionRewards[side];
     if (!Number.isFinite(rewardState.repeatAttacksRemaining)) rewardState.repeatAttacksRemaining = 0;
     if (!Number.isFinite(rewardState.repeatAttacksGranted)) rewardState.repeatAttacksGranted = 0;
@@ -169,15 +162,14 @@ function missionRewardDraw(side, amount, source, discount=0, minCost=0) {
   return { requested, drawn:drawn.length, discounted, cards:drawn.map(card => card.cardUid) };
 }
 
-function missionRewardEnemyLosesEnergyFraction(side, reward, source, targetSide) {
-  const enemy = Number(targetSide);
-  if (!Number.isFinite(enemy) || (typeof missionIsOpponentSide === "function" && !missionIsOpponentSide(side, enemy))) return { targetSide:null, before:0, loss:0, after:0, invalidTarget:true };
+function missionRewardEnemyLosesEnergyFraction(side, reward, source) {
+  const enemy = typeof missionEnemy === "function" ? missionEnemy(side) : (side === 1 ? 2 : 1);
   const numerator = Math.max(0, Number(reward.numerator) || 0);
   const denominator = Math.max(1, Number(reward.denominator) || 1);
   const before = Math.max(0, Number(state.energy[enemy]) || 0);
   const loss = Math.floor(before * numerator / denominator);
   state.energy[enemy] = Math.max(0, before - loss);
-  if (loss > 0) missionEmitEconomyChange(enemy, -loss, source, { missionOwner:side, missionReward:true, targetSide:enemy });
+  if (loss > 0) missionEmitEconomyChange(enemy, -loss, source, { missionOwner:side, missionReward:true });
   if (typeof log === "function") log(`Missione “${source}”: ${playerName(enemy)} perde ${loss} ENE (${before} → ${state.energy[enemy]}).`);
   return { targetSide:enemy, before, loss, after:state.energy[enemy] };
 }
@@ -213,9 +205,8 @@ function missionDiscardSelectedCards(targetSide, selectedUids, source, missionOw
   return discarded;
 }
 
-function missionCreateDiscardSelection(side, reward, source, selectedTargetSide) {
-  const targetSide = Number(selectedTargetSide);
-  if (!Number.isFinite(targetSide) || (typeof missionIsOpponentSide === "function" && !missionIsOpponentSide(side, targetSide))) return { pending:false, targetSide:null, required:0, discarded:0, invalidTarget:true };
+function missionCreateDiscardSelection(side, reward, source) {
+  const targetSide = typeof missionEnemy === "function" ? missionEnemy(side) : (side === 1 ? 2 : 1);
   const eligible = missionRewardEligibleDiscardCards(targetSide);
   const required = Math.floor(eligible.length * Math.max(0, Number(reward.numerator) || 0) / Math.max(1, Number(reward.denominator) || 1));
   if (required <= 0) return { pending:false, targetSide, required:0, discarded:0 };
@@ -271,87 +262,6 @@ function missionRewardConfirmDiscardSelection() {
   return true;
 }
 
-function missionRewardActiveEnemySides(side) {
-  if (typeof missionEnemySides === "function") return missionEnemySides(side);
-  if (typeof getEnemyPlayers === "function") return getEnemyPlayers(side);
-  return missionRewardPlayerIds().filter(enemy => Number(enemy) !== Number(side) && (typeof isPlayerEliminated !== "function" || !isPlayerEliminated(enemy)));
-}
-
-function missionRewardEligiblePlayerSides(side, rewardKind) {
-  const enemies = missionRewardActiveEnemySides(side);
-  if (rewardKind === "enemy_loses_energy_fraction") {
-    const useful = enemies.filter(enemy => Number(state.energy && state.energy[enemy] || 0) > 0);
-    return useful.length ? useful : enemies;
-  }
-  if (rewardKind === "enemy_discards_hand_fraction") {
-    const useful = enemies.filter(enemy => missionRewardEligibleDiscardCards(enemy).length > 0);
-    return useful.length ? useful : enemies;
-  }
-  return enemies;
-}
-
-function missionApplyChosenPlayerReward(side, definition, targetSide) {
-  const reward = definition && definition.reward || {};
-  const source = definition && definition.name || "Missione";
-  if (reward.kind === "enemy_loses_energy_fraction") return { pending:false, kind:reward.kind, ...missionRewardEnemyLosesEnergyFraction(side, reward, source, targetSide) };
-  if (reward.kind === "enemy_discards_hand_fraction") return { kind:reward.kind, ...missionCreateDiscardSelection(side, reward, source, targetSide) };
-  return { pending:false, kind:reward.kind || "unsupported", unsupported:true };
-}
-
-function missionOpenPendingPlayerRewardSelector() {
-  const pending = missionPendingReward();
-  if (!pending || pending.kind !== "mission_player_target_selection") return false;
-  const targets = pending.targetSides.map(side => typeof createPlayerTargetToken === "function" ? createPlayerTargetToken(side, { sourceKind:pending.contextKind }) : { playerTarget:true, side, name:playerName(side) });
-  if (typeof requestPlayerTargetSelection !== "function") return false;
-  return requestPlayerTargetSelection({
-    casterSide:pending.missionOwnerSide, targets, sourceName:`Missione: ${pending.missionName}`,
-    title:"Scegli l’avversario della ricompensa",
-    description:`${pending.missionName}: scegli quale avversario attivo subisce la ricompensa.`,
-    context:{ kind:pending.contextKind }, allowCancel:false,
-    onSelect:target => missionRewardConfirmPlayerTarget(target && target.side)
-  });
-}
-
-function missionRewardConfirmPlayerTarget(targetSide) {
-  const pending = missionPendingReward();
-  if (!pending || pending.kind !== "mission_player_target_selection") return false;
-  const target = Number(targetSide);
-  if (!pending.targetSides.includes(target) || (typeof missionIsOpponentSide === "function" && !missionIsOpponentSide(pending.missionOwnerSide, target))) return false;
-  const ownerSide = pending.missionOwnerSide;
-  const definition = typeof missionDefinitionById === "function" ? missionDefinitionById(pending.missionId) : null;
-  state.missionPendingReward = null;
-  if (typeof closePlayerTargetSelector === "function") closePlayerTargetSelector({ silent:true, force:true });
-  const result = missionApplyChosenPlayerReward(ownerSide, definition, target);
-  const runtime = typeof missionRuntime === "function" ? missionRuntime(ownerSide) : null;
-  if (runtime) { runtime.rewardResult = result; runtime.rewardPending = Boolean(result && result.pending); runtime.status = runtime.rewardPending ? "reward_pending" : "resolving"; }
-  if (result && result.pending) {
-    if (typeof missionUiOpenPanel === "function") missionUiOpenPanel(ownerSide);
-  } else {
-    missionFinalizeReward(ownerSide, result);
-  }
-  if (typeof renderAll === "function") renderAll();
-  return true;
-}
-
-function missionCreatePlayerRewardSelection(side, definition) {
-  const reward = definition && definition.reward || {};
-  const targetSides = missionRewardEligiblePlayerSides(side, reward.kind);
-  if (!targetSides.length) return { pending:false, kind:reward.kind, targetSide:null, noValidTarget:true };
-  const contextKind = reward.kind === "enemy_loses_energy_fraction" ? "mission_enemy_energy_fraction" : "mission_enemy_discard_fraction";
-  const targets = targetSides.map(enemy => typeof createPlayerTargetToken === "function" ? createPlayerTargetToken(enemy, { sourceKind:contextKind }) : { playerTarget:true, side:enemy });
-  const automatic = Boolean(state.modes && state.modes[side] === "bot") || targetSides.length === 1 || typeof document === "undefined";
-  if (automatic) {
-    const chosen = typeof chooseAutomaticPlayerTarget === "function" ? chooseAutomaticPlayerTarget(side, targets, { kind:contextKind }) : targets[0];
-    return missionApplyChosenPlayerReward(side, definition, chosen && chosen.side);
-  }
-  state.missionPendingReward = {
-    kind:"mission_player_target_selection", missionOwnerSide:side, missionId:definition.id, missionName:definition.name, rewardKind:reward.kind,
-    targetSides:[...targetSides], contextKind, createdAt:new Date().toISOString()
-  };
-  missionOpenPendingPlayerRewardSelector();
-  return { pending:true, kind:reward.kind, targetSelection:true, targetSides:[...targetSides] };
-}
-
 function missionApplyOrdinaryReward(side, definition) {
   const reward = definition && definition.reward;
   if (!reward) return { pending:false, kind:"none" };
@@ -370,8 +280,9 @@ function missionApplyOrdinaryReward(side, definition) {
     case "gain_energy":
       return { pending:false, kind:reward.kind, ...missionRewardGainEnergy(side, reward.value, source) };
     case "enemy_loses_energy_fraction":
+      return { pending:false, kind:reward.kind, ...missionRewardEnemyLosesEnergyFraction(side, reward, source) };
     case "enemy_discards_hand_fraction":
-      return missionCreatePlayerRewardSelection(side, definition);
+      return { kind:reward.kind, ...missionCreateDiscardSelection(side, reward, source) };
     default:
       return { pending:false, kind:reward.kind || "unsupported", unsupported:true };
   }
@@ -497,7 +408,6 @@ function missionRewardUnitByUid(uid) {
 
 function missionRewardTargetableEnemy(unit, ownerSide) {
   if (!unit || !unit.alive || unit.side === ownerSide || unit.type === "QG") return false;
-  if (typeof isPlayerEliminated === "function" && isPlayerEliminated(unit.side)) return false;
   if (typeof hasStatus === "function" && hasStatus(unit, "enemy_effect_immune")) return false;
   if (typeof isUntargetableTo === "function" && isUntargetableTo(unit, ownerSide)) return false;
   return true;
@@ -647,7 +557,8 @@ function missionAiFillTargetGroups(pending) {
 function missionCreateTargetSelection(side, definition, multiplier) {
   const reward = definition.reward || {};
   const own = typeof missionUnits === "function" ? missionUnits(side) : [];
-  const enemy = typeof missionEnemyUnits === "function" ? missionEnemyUnits(side) : (typeof combatUnits === "function" ? combatUnits(null).filter(unit => unit.side !== side) : []);
+  const enemySide = typeof missionEnemy === "function" ? missionEnemy(side) : (side === 1 ? 2 : 1);
+  const enemy = typeof missionUnits === "function" ? missionUnits(enemySide) : [];
   let groups = [];
   if (reward.kind === "distinct_units_per_condition") {
     groups = [
@@ -817,7 +728,7 @@ function missionCleanupEndOfRound(round) {
       for (const status of removed) if (typeof log === "function") log(`Scudo Fasico della Missione termina su ${unit.name} a fine round.`);
     }
   }
-  for (const side of missionRewardPlayerIds()) {
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     const rewardState = missionRewardStateForSide(side);
     if (rewardState && rewardState.repeatAttacksRound === round) {
       const wasted = rewardState.repeatAttacksRemaining || 0;

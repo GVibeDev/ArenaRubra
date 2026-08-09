@@ -26,7 +26,7 @@ with sync_playwright() as p:
       hasEvent: EventTypes.UNIT_DEFENSE_LOST === 'UNIT_DEFENSE_LOST',
       hasOverlay: !!document.getElementById('mapOverlayLayer')
     })''')
-    assert base['build'] in {'C2-STABLE-1-F9N2a-APK-M4c','C2-STABLE-1-F9O4a-APK-M4c','C2-STABLE-1-F9O4b-APK-M4c','C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c','C2-STABLE-1-F9S1b1-APK-M4c'}, base
+    assert base['build'] in {'C2-STABLE-1-F9N2a-APK-M4c','C2-STABLE-1-F9O4a-APK-M4c','C2-STABLE-1-F9O4b-APK-M4c','C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c'}, base
     assert base['hasFeedback'] and base['hasEvent'] and base['hasOverlay'], base
     page.evaluate('''() => {
       const board=document.getElementById('board');
