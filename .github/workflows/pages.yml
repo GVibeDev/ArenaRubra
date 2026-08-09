@@ -1,0 +1,64 @@
+name: Deploy Arena Rubra to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: arena-rubra-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Stage browser runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+
+          cp index.html _site/
+          cp -R assets _site/assets
+          cp -R css _site/css
+          cp -R data _site/data
+          cp -R src _site/src
+
+          test -f _site/index.html
+          test -f _site/css/style.css
+          test -f _site/data/maps.js
+          test -f _site/src/main.js
+          test -f _site/assets/intro/g-vibe-dev-logo.png
+          test -f _site/assets/intro/arena-rubra-title.png
+
+          echo "Arena Rubra static runtime staged successfully."
+          du -sh _site
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
