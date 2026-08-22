@@ -1,0 +1,62 @@
+Arena Rubra — F9V2a Test Report
+================================
+
+Candidate build:
+  C2-STABLE-1-F9V2a-APK-M4c
+
+Base:
+  F9V1a validated tutorial runtime
+  Logic baseline C2-STABLE-1-F9T2c4-APK-M4c
+  Remote main reference checked earlier: 05509e2209af3b325f3bef1d6f4e4bfb2094f4bb (F9T2d3)
+
+Scope under test:
+- five visible Tutorial Challenge definitions;
+- global 5/5 lesson unlock gate;
+- legacy tutorial storage migration without schema reset;
+- separate Challenge progress persistence;
+- freeplay Challenge setup contract;
+- challenge matches marked tutorialMode / tutorialChallengeMode and matchRecorded=false;
+- F9V1a authoritative interaction gate preserved byte-for-byte at function level.
+
+Checks actually executed:
+1. JavaScript syntax
+   node --check on all 19 JS files present in the cumulative overwrite package.
+   RESULT: PASS
+
+2. Python syntax
+   python -m py_compile on all 12 Python test files present in the cumulative overwrite package.
+   RESULT: PASS
+
+3. Dedicated Node smoke
+   tests/f9v2a_tutorial_challenge_framework_smoke.js
+   RESULT: PASS
+   - challenge definitions: 5
+   - unlock threshold: 5/5
+   - legacy store migration: PASS
+   - separate challenge progress: PASS
+   - freeplay scaffold: PASS
+   - BUILD_INFO: C2-STABLE-1-F9V2a-APK-M4c
+
+4. Dedicated Chromium browser smoke
+   tests/f9v2a_browser_challenge_unlock_smoke.py
+   RESULT: PASS
+   - lesson cards: 5
+   - challenge cards: 5
+   - initial gate: 0/5, all locked
+   - final gate: 5/5, all unlocked
+   - unlocked cards visible as isAvailable
+   - buttons remain "In preparazione" because F9V2b–F9V2f content is intentionally absent
+   - page errors: 0
+   - console errors: 0
+
+5. F9V1a authoritative contract preservation
+   SHA-256 comparison of function bodies F9V1a vs F9V2a:
+   - tutorialRuntimeActionMatch: IDENTICAL
+   - tutorialRuntimeGateInteraction: IDENTICAL
+   - tutorialRuntimeGateAction: IDENTICAL
+   - tutorialRuntimeNotifyAction: IDENTICAL
+   - tutorialRuntimeCaptureInteraction: IDENTICAL
+   RESULT: PASS
+
+Environment limitation:
+The complete ArenaRubra repository could not be cloned into the execution container because outbound DNS/network access is disabled there. Therefore the full historical 90-test Node suite and all full-app browser regressions were not re-run in this environment. The cumulative package updates the frozen build-version assertions it carries, but final regression should be executed on the user's complete local repository before formal validation/freeze.

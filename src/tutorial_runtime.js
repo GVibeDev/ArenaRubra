@@ -1,7 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V1a Tutorial Runtime 2.0 · Authoritative Interaction & Selector Drift Hotfix.
-// Basata sul runtime F9O7: conserva scenari/checkpoint e aggiunge un contratto di interazione autorevole.
+// Arena Rubra – F9V2a Tutorial Challenge Framework & Unlock System.
+// Basata su F9V1a: conserva il contratto di interazione autorevole delle lezioni e aggiunge
+// il secondo livello dell'Accademia, con cinque Challenge visibili e unlock globale 5/5.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -13,7 +14,16 @@ const TUTORIAL_STEP_MODES = Object.freeze({
   LOCKED:"locked"
 });
 
-let tutorialRuntimeMemoryStore = { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, updatedAt:null };
+let tutorialRuntimeMemoryStore = { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, challenges:{}, updatedAt:null };
+
+let tutorialChallengeRuntimeState = {
+  active:false,
+  challenge:null,
+  challengeId:"",
+  scenario:null,
+  startedAt:null,
+  lastResult:null
+};
 
 let tutorialRuntimeState = {
   active:false,
@@ -42,23 +52,33 @@ let tutorialRuntimeState = {
 
 function tutorialRuntimeStorageClone(value) {
   try { return JSON.parse(JSON.stringify(value)); }
-  catch (_) { return { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, updatedAt:null }; }
+  catch (_) { return { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, challenges:{}, updatedAt:null }; }
+}
+
+function tutorialRuntimeNormalizeStore(value) {
+  const safe = value && typeof value === "object" ? tutorialRuntimeStorageClone(value) : {};
+  safe.schemaVersion = TUTORIAL_RUNTIME_SCHEMA;
+  if (!safe.scenarios || typeof safe.scenarios !== "object") safe.scenarios = {};
+  if (!safe.lessons || typeof safe.lessons !== "object") safe.lessons = {};
+  if (!safe.challenges || typeof safe.challenges !== "object") safe.challenges = {};
+  if (!Object.prototype.hasOwnProperty.call(safe, "updatedAt")) safe.updatedAt = null;
+  return safe;
 }
 
 function tutorialRuntimeStorageRead() {
   try {
     const parsed = JSON.parse(localStorage.getItem(TUTORIAL_RUNTIME_STORAGE_KEY) || "null");
     if (!parsed || parsed.schemaVersion !== TUTORIAL_RUNTIME_SCHEMA) throw new Error("schema");
-    tutorialRuntimeMemoryStore = tutorialRuntimeStorageClone(parsed);
-    return parsed;
+    const normalized = tutorialRuntimeNormalizeStore(parsed);
+    tutorialRuntimeMemoryStore = tutorialRuntimeStorageClone(normalized);
+    return normalized;
   } catch (_) {
-    return tutorialRuntimeStorageClone(tutorialRuntimeMemoryStore);
+    return tutorialRuntimeNormalizeStore(tutorialRuntimeMemoryStore);
   }
 }
 
 function tutorialRuntimeStorageWrite(payload) {
-  const safe = payload && typeof payload === "object" ? payload : tutorialRuntimeStorageRead();
-  safe.schemaVersion = TUTORIAL_RUNTIME_SCHEMA;
+  const safe = tutorialRuntimeNormalizeStore(payload && typeof payload === "object" ? payload : tutorialRuntimeStorageRead());
   safe.updatedAt = new Date().toISOString();
   tutorialRuntimeMemoryStore = tutorialRuntimeStorageClone(safe);
   try { localStorage.setItem(TUTORIAL_RUNTIME_STORAGE_KEY, JSON.stringify(safe)); }
@@ -74,6 +94,69 @@ function tutorialRuntimeScenarioById(id) {
 function tutorialRuntimeProgressForScenario(id) {
   const store = tutorialRuntimeStorageRead();
   return store.scenarios && store.scenarios[id] ? { ...store.scenarios[id] } : null;
+}
+
+function tutorialRuntimeLessonPlan() {
+  return typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" && Array.isArray(TUTORIAL_LESSON_PLAN_F9O6)
+    ? TUTORIAL_LESSON_PLAN_F9O6
+    : [];
+}
+
+function tutorialRuntimeChallengePlan() {
+  return typeof TUTORIAL_CHALLENGE_PLAN_F9V2A !== "undefined" && Array.isArray(TUTORIAL_CHALLENGE_PLAN_F9V2A)
+    ? TUTORIAL_CHALLENGE_PLAN_F9V2A
+    : [];
+}
+
+function tutorialRuntimeChallengeById(id) {
+  return tutorialRuntimeChallengePlan().find(item => item && item.id === String(id || "")) || null;
+}
+
+function tutorialRuntimeChallengeScenarioById(id) {
+  if (!id || typeof TUTORIAL_CHALLENGE_SCENARIOS_F9V2 === "undefined" || !TUTORIAL_CHALLENGE_SCENARIOS_F9V2) return null;
+  return TUTORIAL_CHALLENGE_SCENARIOS_F9V2[String(id)] || null;
+}
+
+function tutorialRuntimeCompletedLessonCount(store=tutorialRuntimeStorageRead()) {
+  return tutorialRuntimeLessonPlan().filter(item => item && store.lessons && store.lessons[item.id] && store.lessons[item.id].completed).length;
+}
+
+function tutorialRuntimeChallengesUnlocked(store=tutorialRuntimeStorageRead()) {
+  const plan = tutorialRuntimeLessonPlan();
+  return plan.length > 0 && tutorialRuntimeCompletedLessonCount(store) === plan.length;
+}
+
+function tutorialRuntimeChallengeUnlockStatus(store=tutorialRuntimeStorageRead()) {
+  const required = tutorialRuntimeLessonPlan().length;
+  const completed = tutorialRuntimeCompletedLessonCount(store);
+  return {
+    unlocked:required > 0 && completed === required,
+    completedLessons:completed,
+    requiredLessons:required,
+    remainingLessons:Math.max(0, required - completed)
+  };
+}
+
+function tutorialRuntimeProgressForChallenge(id) {
+  const store = tutorialRuntimeStorageRead();
+  return store.challenges && store.challenges[id] ? { ...store.challenges[id] } : null;
+}
+
+function tutorialRuntimeSaveChallengeProgress(id, options={}) {
+  const challenge = tutorialRuntimeChallengeById(id);
+  if (!challenge) return null;
+  const store = tutorialRuntimeStorageRead();
+  const previous = store.challenges[challenge.id] || {};
+  store.challenges[challenge.id] = {
+    ...previous,
+    challengeId:challenge.id,
+    attempts:Math.max(0, Number(previous.attempts) || 0) + (options.incrementAttempt === true ? 1 : 0),
+    completed:options.completed === true || previous.completed === true,
+    lastOutcome:options.outcome || previous.lastOutcome || null,
+    lastReason:options.reason || previous.lastReason || null,
+    updatedAt:new Date().toISOString()
+  };
+  return tutorialRuntimeStorageWrite(store).challenges[challenge.id];
 }
 
 function tutorialRuntimeGameSnapshot() {
@@ -148,7 +231,7 @@ function tutorialRuntimeSaveProgress(options={}) {
 }
 
 function tutorialRuntimeResetProgress() {
-  tutorialRuntimeMemoryStore = { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, updatedAt:null };
+  tutorialRuntimeMemoryStore = { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, challenges:{}, updatedAt:null };
   try { localStorage.removeItem(TUTORIAL_RUNTIME_STORAGE_KEY); }
   catch (_) { /* no-op */ }
   tutorialRuntimeRenderMenu();
@@ -162,12 +245,82 @@ function tutorialRuntimeSetStatus(text) {
   if (el) el.textContent = String(text || "");
 }
 
+function tutorialRuntimeEnsureChallengeSection() {
+  if (typeof document === "undefined") return null;
+  const lessonGrid = document.getElementById("tutorialLessonGrid");
+  if (!lessonGrid || !lessonGrid.parentNode) return null;
+  let section = document.getElementById("tutorialChallengeSection");
+  if (!section) {
+    section = document.createElement("section");
+    section.id = "tutorialChallengeSection";
+    section.className = "tutorialChallengeSection";
+    section.setAttribute("aria-label", "Prove sul campo");
+    section.innerHTML = `
+      <div class="mainMenuSectionHeading tutorialChallengeHeading">
+        <span class="mainMenuSectionEyebrow">Dopo l'Accademia</span>
+        <h3>Prove sul campo</h3>
+        <p>Le cinque Challenge verificano in autonomia ciò che hai appreso. Sono visibili da subito e si sbloccano tutte insieme dopo aver completato le 5 lezioni guidate.</p>
+      </div>
+      <div id="tutorialChallengeGate" class="tutorialRuntimeStatus" aria-live="polite"></div>
+      <div id="tutorialChallengeGrid" class="tutorialLessonGrid"></div>`;
+    lessonGrid.insertAdjacentElement("afterend", section);
+  }
+  return section;
+}
+
+function tutorialRuntimeRenderChallenges(store=tutorialRuntimeStorageRead()) {
+  if (typeof document === "undefined") return false;
+  const section = tutorialRuntimeEnsureChallengeSection();
+  const grid = section && section.querySelector ? section.querySelector("#tutorialChallengeGrid") : null;
+  const gate = section && section.querySelector ? section.querySelector("#tutorialChallengeGate") : null;
+  if (!section || !grid || !gate) return false;
+
+  const unlock = tutorialRuntimeChallengeUnlockStatus(store);
+  const plan = tutorialRuntimeChallengePlan();
+  gate.textContent = unlock.unlocked
+    ? `Accademia completata ${unlock.completedLessons}/${unlock.requiredLessons} · ${plan.length} Prove sul campo sbloccate.`
+    : `Accademia ${unlock.completedLessons}/${unlock.requiredLessons} · Prove bloccate: completa tutte le ${unlock.requiredLessons} lezioni guidate per sbloccarle.`;
+
+  grid.innerHTML = plan.map(challenge => {
+    const progress = store.challenges && store.challenges[challenge.id] || null;
+    const completed = Boolean(progress && progress.completed);
+    const scenarioReady = Boolean(challenge.scenarioId && tutorialRuntimeChallengeScenarioById(challenge.scenarioId));
+    const unlocked = unlock.unlocked;
+    const playable = unlocked && scenarioReady;
+    const status = completed ? "Completata" : (!unlocked ? "Bloccata" : (scenarioReady ? "Disponibile" : "Sbloccata · in preparazione"));
+    const cardClass = unlocked ? " isAvailable" : " isLocked";
+    const unlockText = unlocked
+      ? "Sbloccata: Accademia completata."
+      : `Sblocco: completa tutte le ${unlock.requiredLessons} lezioni dell'Accademia (${unlock.completedLessons}/${unlock.requiredLessons}).`;
+    const actionLabel = !unlocked ? "Bloccata" : (scenarioReady ? (completed ? "Ripeti" : "Avvia") : "In preparazione");
+    const action = `<div class="tutorialLessonCardActions"><button class="${playable && !completed ? "primary" : "ghost"}" type="button" data-tutorial-challenge-start="${tutorialRuntimeEscape(challenge.id)}"${playable ? "" : " disabled"}>${tutorialRuntimeEscape(actionLabel)}</button></div>`;
+    return `<article class="tutorialLessonCard tutorialChallengeCard${cardClass}" data-tutorial-challenge="${tutorialRuntimeEscape(challenge.id)}" data-challenge-unlocked="${unlocked ? "true" : "false"}">
+      <h3>${challenge.order}. ${tutorialRuntimeEscape(challenge.subtitle || "Prova sul campo")}</h3>
+      <strong>${tutorialRuntimeEscape(challenge.title)}</strong>
+      <p>${tutorialRuntimeEscape(challenge.summary)}</p>
+      <div class="tutorialLessonMeta"><span>${tutorialRuntimeEscape(status)}</span><span>${tutorialRuntimeEscape(challenge.progression)}</span></div>
+      <p class="help"><strong>Obiettivo:</strong> ${tutorialRuntimeEscape(challenge.objective)}<br>${tutorialRuntimeEscape(unlockText)}</p>
+      ${action}
+    </article>`;
+  }).join("");
+
+  if (grid.dataset.bound !== "1") {
+    grid.dataset.bound = "1";
+    grid.addEventListener("click", event => {
+      const button = event.target && event.target.closest ? event.target.closest("[data-tutorial-challenge-start]") : null;
+      if (!button || button.disabled) return;
+      tutorialRuntimeStartChallenge(button.dataset.tutorialChallengeStart);
+    });
+  }
+  return true;
+}
+
 function tutorialRuntimeRenderMenu() {
   if (typeof document === "undefined") return false;
   const grid = document.getElementById("tutorialLessonGrid");
   if (!grid) return false;
   const store = tutorialRuntimeStorageRead();
-  const plan = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" ? TUTORIAL_LESSON_PLAN_F9O6 : [];
+  const plan = tutorialRuntimeLessonPlan();
   grid.innerHTML = plan.map(lesson => {
     const progress = store.lessons && store.lessons[lesson.id] || null;
     const scenarioProgress = lesson.scenarioId && store.scenarios && store.scenarios[lesson.scenarioId] || null;
@@ -226,9 +379,147 @@ function tutorialRuntimeRenderMenu() {
     resetBtn.addEventListener("click", tutorialRuntimeResetProgress);
   }
   const availableCount = plan.filter(item => item && item.scenarioId && tutorialRuntimeScenarioById(item.scenarioId)).length;
-  const completedCount = plan.filter(item => store.lessons && store.lessons[item.id] && store.lessons[item.id].completed).length;
-  tutorialRuntimeSetStatus(`${availableCount} lezioni disponibili · ${completedCount} completate. Seleziona Avvia o Riprendi nella lezione desiderata.`);
+  const completedCount = tutorialRuntimeCompletedLessonCount(store);
+  tutorialRuntimeRenderChallenges(store);
+  const unlock = tutorialRuntimeChallengeUnlockStatus(store);
+  tutorialRuntimeSetStatus(`${availableCount} lezioni disponibili · ${completedCount} completate · Prove sul campo ${unlock.unlocked ? "sbloccate" : "bloccate"}.`);
   return true;
+}
+
+
+function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
+  if (!challenge || !scenario || !scenario.setup || typeof newGame !== "function") return false;
+  const setup = scenario.setup;
+  if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.GAME);
+  newGame({
+    mapId:setup.mapId || undefined,
+    factions:{ ...(setup.factions || {1:"Exordium",2:"Nexus"}) },
+    selectedCommanders:{ ...(setup.selectedCommanders || {}) },
+    selectedDecks:{ ...(setup.selectedDecks || {1:{mode:"template"},2:{mode:"template"}}) },
+    modes:{ ...(setup.modes || {1:"human",2:"bot"}) },
+    autoResignEnabled:setup.autoResignEnabled === true,
+    aiMode:setup.aiMode || "advanced",
+    pacePreset:setup.pacePreset || "competitive",
+    gameScaleMode:setup.gameScaleMode || "tactical",
+    tutorialMode:true,
+    tutorialChallengeMode:true,
+    tutorialChallengeId:challenge.id,
+    tutorialTitle:scenario.title || challenge.title
+  });
+  if (!state) return false;
+  state.tutorialMode = true;
+  state.tutorialChallengeMode = true;
+  state.tutorialChallengeId = challenge.id;
+  state.tutorialScenarioId = null;
+  state.tutorialLessonId = null;
+  state.tutorialBotPaused = false;
+  state.autoResignEnabled = setup.autoResignEnabled === true;
+  state.matchRecorded = false;
+  if (setup.energy) state.energy = { ...state.energy, ...setup.energy };
+  for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
+    if (setup.starterCardsEnabled === false && state.starterCards) state.starterCards[side] = {};
+    if (setup.hand && Array.isArray(setup.hand[side])) state.hand[side] = setup.hand[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "hand")).filter(Boolean);
+    if (setup.deck && Array.isArray(setup.deck[side])) state.deck[side] = setup.deck[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "deck")).filter(Boolean);
+    if (setup.discard && Array.isArray(setup.discard[side])) state.discard[side] = setup.discard[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "discard")).filter(Boolean);
+  }
+  if (typeof syncCardDebugState === "function") syncCardDebugState();
+  if (typeof resetInteractionContext === "function") resetInteractionContext();
+  if (typeof renderAll === "function") renderAll();
+  return true;
+}
+
+function tutorialRuntimeStartChallenge(id, options={}) {
+  const challenge = tutorialRuntimeChallengeById(id);
+  if (!challenge) {
+    tutorialRuntimeSetStatus(`Prova sul campo non trovata: ${id}`);
+    return false;
+  }
+  const unlock = tutorialRuntimeChallengeUnlockStatus();
+  if (!unlock.unlocked) {
+    tutorialRuntimeSetStatus(`Prova bloccata: completa tutte le ${unlock.requiredLessons} lezioni dell'Accademia (${unlock.completedLessons}/${unlock.requiredLessons}).`);
+    return false;
+  }
+  const scenario = challenge.scenarioId ? tutorialRuntimeChallengeScenarioById(challenge.scenarioId) : null;
+  if (!scenario) {
+    tutorialRuntimeSetStatus(`${challenge.title} è sbloccata. Il contenuto giocabile sarà aggiunto nella milestone dedicata.`);
+    return false;
+  }
+
+  tutorialRuntimeAbort({ silent:true, keepScreen:true, reason:"challenge-start" });
+  tutorialRuntimeAbortChallenge({ silent:true, keepScreen:true, reason:"restart" });
+  tutorialChallengeRuntimeState.active = true;
+  tutorialChallengeRuntimeState.challenge = challenge;
+  tutorialChallengeRuntimeState.challengeId = challenge.id;
+  tutorialChallengeRuntimeState.scenario = scenario;
+  tutorialChallengeRuntimeState.startedAt = Date.now();
+  tutorialChallengeRuntimeState.lastResult = null;
+  if (typeof document !== "undefined" && document.body) document.body.classList.add("tutorial-challenge-active");
+  if (!tutorialRuntimeApplyChallengeSetup(challenge, scenario)) {
+    tutorialRuntimeAbortChallenge({ returnToTutorial:true, reason:"setup-failed" });
+    return false;
+  }
+  tutorialRuntimeSaveChallengeProgress(challenge.id, { incrementAttempt:true, outcome:"started" });
+  tutorialRuntimeSetStatus(`${challenge.title} · Prova sul campo avviata.`);
+  return true;
+}
+
+function tutorialRuntimeCompleteChallenge(options={}) {
+  if (!tutorialChallengeRuntimeState.active || !tutorialChallengeRuntimeState.challengeId) return false;
+  const challengeId = tutorialChallengeRuntimeState.challengeId;
+  const success = options.success !== false;
+  const outcome = options.outcome || (success ? "success" : "failure");
+  tutorialRuntimeSaveChallengeProgress(challengeId, { completed:success, outcome, reason:options.reason || null });
+  tutorialChallengeRuntimeState.lastResult = { success, outcome, reason:options.reason || null, at:Date.now() };
+  tutorialChallengeRuntimeState.active = false;
+  if (typeof state !== "undefined" && state) {
+    state.tutorialChallengeMode = false;
+    state.tutorialChallengeId = null;
+    state.tutorialMode = false;
+    state.tutorialBotPaused = false;
+  }
+  if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-challenge-active");
+  if (options.returnToTutorial !== false && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
+    setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
+    tutorialRuntimeRenderMenu();
+  }
+  tutorialRuntimeSetStatus(success ? "Prova sul campo completata." : "Prova sul campo terminata. Puoi riprovarla quando vuoi.");
+  return true;
+}
+
+function tutorialRuntimeAbortChallenge(options={}) {
+  const wasActive = tutorialChallengeRuntimeState.active;
+  tutorialChallengeRuntimeState.active = false;
+  tutorialChallengeRuntimeState.challenge = null;
+  tutorialChallengeRuntimeState.challengeId = "";
+  tutorialChallengeRuntimeState.scenario = null;
+  tutorialChallengeRuntimeState.startedAt = null;
+  if (typeof state !== "undefined" && state) {
+    state.tutorialChallengeMode = false;
+    state.tutorialChallengeId = null;
+    state.tutorialMode = false;
+    state.tutorialBotPaused = false;
+  }
+  if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-challenge-active");
+  if (!options.silent && options.returnToTutorial !== false && !options.keepScreen && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
+    setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
+    tutorialRuntimeRenderMenu();
+    tutorialRuntimeSetStatus(options.reason === "setup-failed" ? "Impossibile avviare la Prova sul campo." : "Prova sul campo chiusa.");
+  }
+  return wasActive;
+}
+
+function tutorialRuntimeChallengeDiagnostics() {
+  const unlock = tutorialRuntimeChallengeUnlockStatus();
+  return {
+    active:tutorialChallengeRuntimeState.active,
+    challengeId:tutorialChallengeRuntimeState.challengeId || null,
+    scenarioId:tutorialChallengeRuntimeState.scenario && tutorialChallengeRuntimeState.scenario.id || null,
+    unlocked:unlock.unlocked,
+    completedLessons:unlock.completedLessons,
+    requiredLessons:unlock.requiredLessons,
+    startedAt:tutorialChallengeRuntimeState.startedAt,
+    lastResult:tutorialChallengeRuntimeState.lastResult
+  };
 }
 
 function tutorialRuntimeEscape(value) {

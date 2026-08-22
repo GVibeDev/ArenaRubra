@@ -52,6 +52,79 @@ const TUTORIAL_LESSON_PLAN_F9O6 = Object.freeze([
   })
 ]);
 
+
+
+// F9V2a – Tutorial Challenge Framework & Unlock System.
+// Le cinque Prove sul campo sono sempre visibili nell'Accademia ma restano bloccate
+// finché tutte le cinque lezioni guidate non risultano completate. Il contenuto
+// eseguibile delle singole Challenge viene aggiunto nelle milestone F9V2b–F9V2f.
+const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
+  Object.freeze({
+    id:"challenge-1-elimination",
+    order:1,
+    title:"Eliminazione",
+    subtitle:"Prova sul campo I",
+    summary:"Solo unità sul campo. Distruggi 4 unità starter nemiche in 2 ondate da 2.",
+    progression:"Solo unità",
+    objective:"Elimina tutte le unità nemiche",
+    unlockRule:"all_tutorial_lessons_completed",
+    scenarioId:null,
+    contentStatus:"planned_f9v2b"
+  }),
+  Object.freeze({
+    id:"challenge-2-hold-ps",
+    order:2,
+    title:"Tenuta",
+    subtitle:"Prova sul campo II",
+    summary:"Unità e mano fissa, nessuna pesca dal deck. Mantieni il PS centrale per 3 tuoi turni mentre arrivano 6 unità starter avversarie.",
+    progression:"Unità + mano · deck vuoto",
+    objective:"Mantieni il PS centrale per 3 turni",
+    unlockRule:"all_tutorial_lessons_completed",
+    scenarioId:null,
+    contentStatus:"planned_f9v2c"
+  }),
+  Object.freeze({
+    id:"challenge-3-hq-breach",
+    order:3,
+    title:"Breccia",
+    subtitle:"Prova sul campo III",
+    summary:"Unità, mano iniziale e 10 carte di deck. Apri una via e occupa il QG nemico.",
+    progression:"Unità + mano + deck 10",
+    objective:"Occupa il QG nemico",
+    unlockRule:"all_tutorial_lessons_completed",
+    scenarioId:null,
+    contentStatus:"planned_f9v2d"
+  }),
+  Object.freeze({
+    id:"challenge-4-pressure",
+    order:4,
+    title:"Pressione",
+    subtitle:"Prova sul campo IV",
+    summary:"Unità, mano iniziale e 20 carte di deck. Porta il match a una vittoria per Pressione.",
+    progression:"Unità + mano + deck 20",
+    objective:"Vinci per Pressione",
+    unlockRule:"all_tutorial_lessons_completed",
+    scenarioId:null,
+    contentStatus:"planned_f9v2e"
+  }),
+  Object.freeze({
+    id:"challenge-5-final-exam",
+    order:5,
+    title:"Esame finale",
+    subtitle:"Prova sul campo V",
+    summary:"Partita normale in modalità Rapida sulla mappa Starter contro un Bot Nexus.",
+    progression:"Partita completa",
+    objective:"Vinci il match",
+    unlockRule:"all_tutorial_lessons_completed",
+    scenarioId:null,
+    contentStatus:"planned_f9v2f"
+  })
+]);
+
+// Registro stabile per gli scenari Challenge. F9V2a lo introduce vuoto: le milestone
+// successive aggiungono le definizioni senza cambiare il contratto del runtime.
+const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({});
+
 const TUTORIAL_PORTRAIT_MANIFEST_F9O6 = Object.freeze({
   exordium:Object.freeze({ id:"tutorial-exordium", label:"Narratore Exordium", faction:"Exordium", frames:Object.freeze({
     neutral:"assets/narrative/portraits/exordium/neutral.webp",

@@ -54,6 +54,7 @@
 // F9T2d2a Varran Stationary Attack Ownership Hotfix metadata.
 // F9T2d3 Commander Deployment Commitment metadata.
 // F9V1a Tutorial Runtime 2.0 · Authoritative Interaction & Selector Drift Hotfix metadata.
+// F9V2a Tutorial Challenge Framework & Unlock System metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -76,13 +77,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V1a-APK-M4c",
-  buildName: "Tutorial Runtime 2.0 · Authoritative Interaction Hotfix",
+  version: "C2-STABLE-1-F9V2a-APK-M4c",
+  buildName: "Tutorial Challenge Framework & Unlock System",
   buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-p0a",
+  buildChannel: "starter2-tutorial-v2a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V1a costruita sulla HEAD tecnica F9T2d3, con baseline logica validata F9T2c4. Corregge il drift dei selettori tutorial rispetto al Map HUD/Inspector correnti e introduce un contratto di interazione autorevole: durante le lezioni le azioni di gameplay fuori dallo step vengono rifiutate prima di mutare lo stato; l’auto-end-turn è bloccato salvo step previsto o comando scenario esplicito. Preserva scenari, checkpoint, carte, costi, statistiche, deck, mappe, Missioni, Advanced/Expert AI e bilanciamento, incluso Clear Occupation F9T2c4 sullo stato autorevole e la riorganizzazione del Pool carte F9U2a. Android resta fuori scope Starter. Schema telemetrico F9Q3e1-2, contratto Expert F9T1-1 ed estensione dottrinale F9T2d3-1 invariati."
+  notes: "Candidata Starter 2.0 F9V2a costruita sulla F9V1a validata e con baseline logica F9T2c4. Introduce il framework delle cinque Prove sul campo: tutte sono visibili nell’Accademia fin dall’inizio, restano bloccate finché non risultano completate tutte le 5 lezioni guidate e si sbloccano simultaneamente al raggiungimento 5/5. Aggiunge registro data-driven delle Challenge, stato di unlock derivato dai progressi esistenti, persistenza separata dei tentativi/completamenti e scheletro runtime freeplay predisposto per F9V2b–F9V2f. Non aggiunge ancora gli scenari giocabili delle cinque Challenge e non modifica regole, carte, costi, deck, mappe, Missioni, AI o bilanciamento. Le Challenge restano tutorialMode e sono predisposte per l’esclusione dalle statistiche competitive. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

@@ -27,9 +27,9 @@ vm.createContext(context);
 vm.runInContext(`${buildSource}\n${poolSource}\n;globalThis.__build=BUILD_INFO;globalThis.__stats=cardPoolPreviewStatsHtml;globalThis.__abilities=cardPoolAbilitiesHtml;globalThis.__technical=cardPoolTechnicalHtml;`, context, { filename:"f9u2a-smoke.js" });
 const build = context.__build;
 
-assert.equal(build.version, "C2-STABLE-1-F9V1a-APK-M4c");
+assert.equal(build.version, "C2-STABLE-1-F9V2a-APK-M4c");
 assert.equal(build.buildName, "Tutorial Runtime 2.0 · Authoritative Interaction Hotfix");
-assert.equal(build.buildChannel, "starter2-tutorial-p0a");
+assert.equal(build.buildChannel, "starter2-tutorial-v2a");
 assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c");
 assert.ok(build.notes.includes("Pool carte"));
 assert.ok(build.notes.includes("F9Q3e1-2"));
