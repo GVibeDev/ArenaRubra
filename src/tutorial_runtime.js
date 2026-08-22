@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V2f Tutorial Challenge V · Esame finale.
-// Basata su F9V2e validata: preserva Eliminazione, Tenuta, Breccia e Pressione e aggiunge
-// la quinta Prova come partita completa Rapida contro Nexus Advanced, senza regole speciali.
+// Arena Rubra – F9V3a Unified Result Modal.
+// Basata su F9V2f validata: preserva l’intero percorso Tutorial/Challenge e aggiunge
+// un popup conclusivo persistente condiviso con la normale modalità di gioco.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -52,6 +52,313 @@ let tutorialRuntimeState = {
   botPaused:false,
   lastAction:null
 };
+
+
+// =====================================================
+// F9V3a — Unified Result Modal
+// UI-only: presenta gli esiti terminali senza alterare regole, eventi VICTORY,
+// statistiche, telemetria o progressione Tutorial/Challenge.
+// =====================================================
+
+const ARENA_RESULT_MODAL_REASON_LABELS_F9V3A = Object.freeze({
+  qg:"Occupazione del QG nemico",
+  pressione:"Pressione Strategica",
+  eliminazione:"Ultimo giocatore attivo",
+  concessione:"Concessione",
+  resa_tecnica:"Resa tecnica",
+  spareggio:"Spareggio al limite round",
+  pareggio:"Pareggio tecnico",
+  all_enemy_units_destroyed:"Forze avversarie eliminate",
+  central_ps_held_three_turns:"PS centrale mantenuto per tre turni",
+  enemy_hq_occupied:"QG nemico occupato",
+  pressure_victory:"Vittoria per Pressione Strategica",
+  match_victory:"Match vinto",
+  all_player_units_destroyed:"Forze del giocatore eliminate",
+  enemy_victory:"Vittoria avversaria",
+  match_draw:"Pareggio",
+  wrong_victory_condition:"Condizione richiesta non soddisfatta",
+  wave_spawn_failed:"Errore nello scenario"
+});
+
+let arenaResultModalStateF9V3a = {
+  open:false,
+  payload:null,
+  dom:null,
+  previousFocus:null
+};
+
+function arenaResultModalEscapeF9V3a(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+
+function arenaResultModalReasonLabelF9V3a(reason) {
+  const key = String(reason || "").trim();
+  if (!key) return "Partita conclusa";
+  return ARENA_RESULT_MODAL_REASON_LABELS_F9V3A[key] || key.replace(/_/g, " ");
+}
+
+function arenaResultModalHumanSidesF9V3a() {
+  if (typeof state === "undefined" || !state || !state.modes) return [];
+  const ids = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2];
+  return ids.filter(side => state.modes[side] === "human");
+}
+
+function arenaResultModalFactionColorF9V3a(side, faction) {
+  try {
+    if (Number(side) && typeof factionMetaBySide === "function") {
+      const meta = factionMetaBySide(Number(side));
+      if (meta && meta.color) return meta.color;
+    }
+    if (faction && typeof factionMeta === "function") {
+      const meta = factionMeta(faction);
+      if (meta && meta.color) return meta.color;
+    }
+  } catch (_) {}
+  return "#c88b45";
+}
+
+function arenaResultModalEnsureStylesF9V3a() {
+  if (typeof document === "undefined" || !document.head) return;
+  if (document.getElementById("arenaResultModalStylesF9V3a")) return;
+  const style = document.createElement("style");
+  style.id = "arenaResultModalStylesF9V3a";
+  style.textContent = `
+    .arenaResultModalRootF9V3a{position:fixed;inset:0;z-index:1800;display:grid;place-items:center;padding:clamp(14px,3vw,36px);background:rgba(4,7,11,.74);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+    .arenaResultModalRootF9V3a[hidden]{display:none!important}
+    .arenaResultModalCardF9V3a{--result-accent:#c88b45;width:min(720px,100%);max-height:calc(100% - 8px);overflow:auto;box-sizing:border-box;border:1px solid rgba(200,139,69,.52);border-top:4px solid var(--result-accent);border-radius:18px;background:linear-gradient(180deg,rgba(24,29,36,.98),rgba(10,13,18,.985));box-shadow:0 24px 70px rgba(0,0,0,.55);padding:clamp(20px,4vw,36px);color:#f4f6f8;text-align:center}
+    .arenaResultModalEyebrowF9V3a{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:#b8c0ca;margin-bottom:8px}
+    .arenaResultModalTitleF9V3a{margin:0;font-size:clamp(1.9rem,6vw,3.7rem);line-height:.98;letter-spacing:.035em;color:#fff;text-transform:uppercase}
+    .arenaResultModalSubjectF9V3a{margin:18px auto 4px;font-size:clamp(1.15rem,3.4vw,1.65rem);font-weight:800;color:var(--result-accent)}
+    .arenaResultModalFactionF9V3a{margin:0 auto 12px;font-size:.86rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#e7ebef}
+    .arenaResultModalDetailF9V3a{margin:0 auto;max-width:58ch;color:#c9d0d8;line-height:1.5;font-size:.96rem}
+    .arenaResultModalMetaF9V3a{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px 0 0}
+    .arenaResultModalMetaF9V3a span{border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:6px 10px;background:rgba(255,255,255,.045);font-size:.76rem;color:#d8dde3}
+    .arenaResultModalDividerF9V3a{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);margin:24px 0 18px}
+    .arenaResultModalActionsF9V3a{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .arenaResultModalActionsF9V3a + .arenaResultModalActionsF9V3a{margin-top:10px}
+    .arenaResultModalBtnF9V3a{min-height:46px;border:1px solid rgba(255,255,255,.16);border-radius:10px;background:#242a32;color:#f6f7f9;font:inherit;font-weight:750;padding:10px 12px;cursor:pointer}
+    .arenaResultModalBtnF9V3a:hover{background:#303842;border-color:rgba(255,255,255,.28)}
+    .arenaResultModalBtnF9V3a:focus-visible{outline:3px solid var(--result-accent);outline-offset:2px}
+    .arenaResultModalBtnF9V3a[data-primary="true"]{background:var(--result-accent);border-color:var(--result-accent);color:#101317}
+    .arenaResultModalBtnF9V3a[data-primary="true"]:hover{filter:brightness(1.08)}
+    @media(max-width:620px){.arenaResultModalRootF9V3a{padding:10px}.arenaResultModalCardF9V3a{border-radius:13px;padding:20px 14px}.arenaResultModalActionsF9V3a{grid-template-columns:1fr}.arenaResultModalDividerF9V3a{margin:18px 0 14px}}
+    @media(prefers-reduced-motion:no-preference){.arenaResultModalCardF9V3a{animation:arenaResultModalInF9V3a .18s ease-out both}@keyframes arenaResultModalInF9V3a{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}}
+  `;
+  document.head.appendChild(style);
+}
+
+function arenaResultModalEnsureDomF9V3a() {
+  if (typeof document === "undefined") return null;
+  if (arenaResultModalStateF9V3a.dom && arenaResultModalStateF9V3a.dom.root && arenaResultModalStateF9V3a.dom.root.isConnected) return arenaResultModalStateF9V3a.dom;
+  arenaResultModalEnsureStylesF9V3a();
+  const host = document.body || document.getElementById("gameScreen");
+  if (!host) return null;
+  let root = document.getElementById("arenaResultModalRootF9V3a");
+  if (!root) {
+    root = document.createElement("div");
+    root.id = "arenaResultModalRootF9V3a";
+    root.className = "arenaResultModalRootF9V3a";
+    root.hidden = true;
+    root.innerHTML = `
+      <section class="arenaResultModalCardF9V3a" role="dialog" aria-modal="true" aria-labelledby="arenaResultModalTitleF9V3a" aria-describedby="arenaResultModalDetailF9V3a">
+        <div class="arenaResultModalEyebrowF9V3a"></div>
+        <h2 class="arenaResultModalTitleF9V3a" id="arenaResultModalTitleF9V3a"></h2>
+        <div class="arenaResultModalSubjectF9V3a"></div>
+        <div class="arenaResultModalFactionF9V3a"></div>
+        <p class="arenaResultModalDetailF9V3a" id="arenaResultModalDetailF9V3a"></p>
+        <div class="arenaResultModalMetaF9V3a"></div>
+        <div class="arenaResultModalDividerF9V3a" aria-hidden="true"></div>
+        <div class="arenaResultModalActionsF9V3a arenaResultModalAnalysisF9V3a">
+          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="log">Log</button>
+          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="telemetry">Telemetria</button>
+          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="statistics">Statistiche</button>
+        </div>
+        <div class="arenaResultModalActionsF9V3a arenaResultModalNavigationF9V3a"></div>
+      </section>`;
+    host.appendChild(root);
+  }
+  const card = root.querySelector(".arenaResultModalCardF9V3a");
+  const dom = {
+    root, card,
+    eyebrow:root.querySelector(".arenaResultModalEyebrowF9V3a"),
+    title:root.querySelector(".arenaResultModalTitleF9V3a"),
+    subject:root.querySelector(".arenaResultModalSubjectF9V3a"),
+    faction:root.querySelector(".arenaResultModalFactionF9V3a"),
+    detail:root.querySelector(".arenaResultModalDetailF9V3a"),
+    meta:root.querySelector(".arenaResultModalMetaF9V3a"),
+    navigation:root.querySelector(".arenaResultModalNavigationF9V3a")
+  };
+  if (!root.dataset.f9v3aBound) {
+    root.dataset.f9v3aBound = "1";
+    root.addEventListener("click", event => {
+      const button = event.target && event.target.closest ? event.target.closest("[data-result-action]") : null;
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      arenaResultModalHandleActionF9V3a(button.dataset.resultAction || "");
+    });
+    root.addEventListener("keydown", event => {
+      event.stopPropagation();
+      if (event.key === "Escape") { event.preventDefault(); return; }
+      if (event.key !== "Tab") return;
+      const buttons = [...root.querySelectorAll("button:not([disabled])")].filter(button => !button.hidden);
+      if (!buttons.length) return;
+      const first = buttons[0], last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+  }
+  arenaResultModalStateF9V3a.dom = dom;
+  return dom;
+}
+
+function arenaResultModalHideF9V3a(options={}) {
+  const dom = arenaResultModalEnsureDomF9V3a();
+  if (dom && dom.root) dom.root.hidden = true;
+  arenaResultModalStateF9V3a.open = false;
+  if (typeof document !== "undefined" && document.body) document.body.classList.remove("arena-result-modal-open-f9v3a");
+  if (options.restoreFocus !== false) {
+    const previous = arenaResultModalStateF9V3a.previousFocus;
+    if (previous && previous.isConnected && typeof previous.focus === "function") {
+      try { previous.focus(); } catch (_) {}
+    }
+  }
+  return true;
+}
+
+function arenaResultModalShowF9V3a(payload={}) {
+  const dom = arenaResultModalEnsureDomF9V3a();
+  if (!dom) return false;
+  const safe = {
+    kind:String(payload.kind || "match"),
+    title:String(payload.title || "PARTITA CONCLUSA"),
+    eyebrow:String(payload.eyebrow || "ARENA RUBRA"),
+    subject:String(payload.subject || ""),
+    faction:String(payload.faction || ""),
+    detail:String(payload.detail || ""),
+    round:Number.isFinite(Number(payload.round)) ? Number(payload.round) : null,
+    winType:String(payload.winType || ""),
+    side:Number(payload.side) || null,
+    showAcademy:payload.showAcademy === true,
+    primaryAction:String(payload.primaryAction || (payload.showAcademy ? "academy" : "new-game"))
+  };
+  arenaResultModalStateF9V3a.payload = safe;
+  arenaResultModalStateF9V3a.previousFocus = typeof document !== "undefined" ? document.activeElement : null;
+  dom.card.style.setProperty("--result-accent", arenaResultModalFactionColorF9V3a(safe.side, safe.faction));
+  dom.eyebrow.textContent = safe.eyebrow;
+  dom.title.textContent = safe.title;
+  dom.subject.textContent = safe.subject;
+  dom.subject.hidden = !safe.subject;
+  dom.faction.textContent = safe.faction;
+  dom.faction.hidden = !safe.faction;
+  dom.detail.textContent = safe.detail;
+  const chips = [];
+  if (safe.round != null && safe.round > 0) chips.push(`Round ${safe.round}`);
+  if (safe.winType) chips.push(arenaResultModalReasonLabelF9V3a(safe.winType));
+  dom.meta.innerHTML = chips.map(text => `<span>${arenaResultModalEscapeF9V3a(text)}</span>`).join("");
+  dom.meta.hidden = chips.length === 0;
+  const nav = [];
+  if (safe.showAcademy) nav.push({ action:"academy", label:"Torna all’Accademia" });
+  nav.push({ action:"main-menu", label:"Menu principale" });
+  nav.push({ action:"new-game", label:"Nuova partita" });
+  dom.navigation.innerHTML = nav.map(item => `<button class="arenaResultModalBtnF9V3a" type="button" data-result-action="${item.action}"${safe.primaryAction === item.action ? ' data-primary="true"' : ""}>${arenaResultModalEscapeF9V3a(item.label)}</button>`).join("");
+  dom.root.hidden = false;
+  arenaResultModalStateF9V3a.open = true;
+  if (typeof document !== "undefined" && document.body) document.body.classList.add("arena-result-modal-open-f9v3a");
+  const primary = dom.root.querySelector('[data-primary="true"]') || dom.root.querySelector("button");
+  if (primary && typeof primary.focus === "function") setTimeout(() => { try { primary.focus(); } catch (_) {} }, 0);
+  return true;
+}
+
+function arenaResultModalOpenAnalysisF9V3a(kind) {
+  arenaResultModalHideF9V3a({ restoreFocus:false });
+  if (kind === "log" && typeof openGamePanel === "function") {
+    openGamePanel("log", { focusId:"log" });
+    return true;
+  }
+  if (kind === "statistics" && typeof openGamePanel === "function") {
+    openGamePanel("stats", { focusId:"matchupStatsPanel" });
+    return true;
+  }
+  if (kind === "telemetry" && typeof controlCenterOpenPanel === "function") {
+    controlCenterOpenPanel("telemetry");
+    return true;
+  }
+  return false;
+}
+
+function arenaResultModalHandleActionF9V3a(action) {
+  const key = String(action || "");
+  if (key === "log" || key === "statistics" || key === "telemetry") return arenaResultModalOpenAnalysisF9V3a(key);
+  arenaResultModalHideF9V3a({ restoreFocus:false });
+  if (key === "academy") {
+    if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
+    if (typeof tutorialRuntimeRenderMenu === "function") tutorialRuntimeRenderMenu();
+    return true;
+  }
+  if (key === "main-menu") {
+    if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.MAIN_MENU);
+    return true;
+  }
+  if (key === "new-game") {
+    if (typeof openNewGameSetupScreen === "function") openNewGameSetupScreen();
+    else if (typeof startNewGameFromAppMenu === "function") startNewGameFromAppMenu();
+    else if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.SETUP);
+    return true;
+  }
+  return false;
+}
+
+function arenaResultModalShowMatchVictoryF9V3a(event) {
+  const data = event && event.data ? event.data : {};
+  const winner = Number(data.winner) || null;
+  const round = typeof state !== "undefined" && state ? Number(state.turn) || null : Number(data.round) || null;
+  if (!winner) {
+    return arenaResultModalShowF9V3a({
+      kind:"draw", eyebrow:"MATCH CONCLUSO", title:"PAREGGIO", subject:"Nessun vincitore", detail:data.message || "La partita si conclude senza un vincitore.", round, winType:data.winType || "pareggio", primaryAction:"new-game"
+    });
+  }
+  const faction = data.winnerFaction || (typeof state !== "undefined" && state && state.factions ? state.factions[winner] : "") || "";
+  const humanSides = arenaResultModalHumanSidesF9V3a();
+  const localDefeat = humanSides.length === 1 && humanSides[0] !== winner;
+  const winnerName = `Giocatore ${winner}`;
+  const detail = data.message || `Vittoria di ${winnerName}${faction ? ` (${faction})` : ""}.`;
+  return arenaResultModalShowF9V3a({
+    kind:localDefeat ? "defeat" : "victory",
+    eyebrow:"MATCH CONCLUSO",
+    title:localDefeat ? "SCONFITTA" : "VITTORIA",
+    subject:`Vincitore · ${winnerName}`,
+    faction,
+    detail,
+    round,
+    winType:data.winType || "",
+    side:winner,
+    primaryAction:"new-game"
+  });
+}
+
+function arenaResultModalShowLessonCompleteF9V3a(title) {
+  return arenaResultModalShowF9V3a({
+    kind:"lesson_complete", eyebrow:"ACCADEMIA", title:"LEZIONE COMPLETATA", subject:String(title || "Lezione guidata"), detail:"Progressi salvati. Puoi tornare all’Accademia, consultare i dati della sessione oppure avviare una nuova partita.", showAcademy:true, primaryAction:"academy"
+  });
+}
+
+function arenaResultModalShowChallengeResultF9V3a(challenge, success, reason) {
+  const title = challenge && challenge.title ? challenge.title : "Prova sul campo";
+  return arenaResultModalShowF9V3a({
+    kind:success ? "challenge_complete" : "challenge_failed",
+    eyebrow:"PROVA SUL CAMPO",
+    title:success ? "PROVA COMPLETATA" : "PROVA FALLITA",
+    subject:title,
+    detail:success ? "Obiettivo raggiunto. Il risultato è stato salvato nell’Accademia." : `La prova è terminata: ${arenaResultModalReasonLabelF9V3a(reason)}.`,
+    winType:reason || "",
+    round:typeof state !== "undefined" && state ? Number(state.turn) || null : null,
+    showAcademy:true,
+    primaryAction:"academy"
+  });
+}
 
 function tutorialRuntimeStorageClone(value) {
   try { return JSON.parse(JSON.stringify(value)); }
@@ -1075,10 +1382,12 @@ function tutorialRuntimeStartChallenge(id, options={}) {
 function tutorialRuntimeCompleteChallenge(options={}) {
   if (!tutorialChallengeRuntimeState.active || !tutorialChallengeRuntimeState.challengeId) return false;
   const challengeId = tutorialChallengeRuntimeState.challengeId;
+  const challenge = tutorialChallengeRuntimeState.challenge || tutorialRuntimeChallengeById(challengeId);
   const success = options.success !== false;
   const outcome = options.outcome || (success ? "success" : "failure");
-  tutorialRuntimeSaveChallengeProgress(challengeId, { completed:success, outcome, reason:options.reason || null });
-  tutorialChallengeRuntimeState.lastResult = { success, outcome, reason:options.reason || null, at:Date.now() };
+  const reason = options.reason || null;
+  tutorialRuntimeSaveChallengeProgress(challengeId, { completed:success, outcome, reason });
+  tutorialChallengeRuntimeState.lastResult = { success, outcome, reason, at:Date.now() };
   if (typeof invalidateBotRunForNewMatchF9T2c2 === "function") invalidateBotRunForNewMatchF9T2c2("tutorial_challenge_complete");
   tutorialRuntimeChallengeClearTimers();
   tutorialRuntimeChallengeRemoveHud();
@@ -1092,11 +1401,12 @@ function tutorialRuntimeCompleteChallenge(options={}) {
     state.tutorialBotPaused = false;
   }
   if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-challenge-active");
-  if (options.returnToTutorial !== false && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
+  tutorialRuntimeSetStatus(success ? "Prova sul campo completata." : "Prova sul campo terminata. Puoi riprovarla quando vuoi.");
+  if (options.showResultModal !== false) arenaResultModalShowChallengeResultF9V3a(challenge, success, reason);
+  else if (options.returnToTutorial !== false && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
     setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
     tutorialRuntimeRenderMenu();
   }
-  tutorialRuntimeSetStatus(success ? "Prova sul campo completata." : "Prova sul campo terminata. Puoi riprovarla quando vuoi.");
   return true;
 }
 
@@ -1278,7 +1588,7 @@ function tutorialRuntimeRegisterPortraits() {
 function tutorialRuntimeEnsureSpotlightDom() {
   if (typeof document === "undefined") return null;
   if (tutorialRuntimeState.spotlightDom && tutorialRuntimeState.spotlightDom.root && tutorialRuntimeState.spotlightDom.root.isConnected) return tutorialRuntimeState.spotlightDom;
-  const host = document.getElementById("gameScreen") || document.body;
+  const host = document.body || document.getElementById("gameScreen");
   if (!host) return null;
   let root = document.getElementById("tutorialSpotlightRoot");
   if (!root) {
@@ -1747,6 +2057,15 @@ function tutorialRuntimeMatchEvent(event, condition) {
 
 function tutorialRuntimeHandleGameEvent(event) {
   let handled = false;
+  const eventType = event && event.type ? event.type : "";
+  const victoryType = typeof EventTypes !== "undefined" && EventTypes.VICTORY ? EventTypes.VICTORY : "VICTORY";
+  // F9V3a: il tutorial runtime è già un subscriber globale degli eventi.
+  // Usiamo questo punto per il Result Modal della partita normale, ma non durante
+  // Tutorial/Challenge: quei flussi mostrano il proprio esito contestuale.
+  if (eventType === victoryType && !tutorialChallengeRuntimeState.active && !tutorialRuntimeState.active) {
+    arenaResultModalShowMatchVictoryF9V3a(event);
+    handled = true;
+  }
   if (tutorialChallengeRuntimeState.active) handled = tutorialRuntimeHandleChallengeGameEvent(event) || handled;
   if (!tutorialRuntimeState.active || !tutorialRuntimeState.step) return handled;
   const condition = tutorialRuntimeState.step.completeOn;
@@ -2186,11 +2505,9 @@ function tutorialRuntimeFinish() {
   tutorialRuntimeRestoreCardPreviews();
   const lessonPlanItem = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" ? TUTORIAL_LESSON_PLAN_F9O6.find(item => item && item.id === (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.lessonId)) : null;
   const completionMessage = lessonPlanItem && lessonPlanItem.title ? lessonPlanItem.title : (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.title || "Lezione guidata");
-  if (typeof eventOverlayEnqueue === "function") eventOverlayEnqueue({ title:"LEZIONE COMPLETATA", message:completionMessage, icon:"✓", priority:"high", durationMs:1100, key:`tutorial-complete:${Date.now()}` });
-  tutorialRuntimeSchedule(() => {
-    if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
-    tutorialRuntimeRenderMenu();
-  }, 1150, { stepToken:false });
+  // F9V3a: niente ritorno automatico. Il campo resta visibile finché il giocatore
+  // sceglie Accademia, Menu, Nuova partita oppure apre i dati della sessione.
+  arenaResultModalShowLessonCompleteF9V3a(completionMessage);
   return true;
 }
 

@@ -28,7 +28,7 @@ with sync_playwright() as p:
     page.evaluate("""() => { const splash=document.getElementById('appSplash'); if(splash){ splash.hidden=true; splash.style.display='none'; splash.setAttribute('aria-hidden','true'); } }""")
     page.wait_for_timeout(250)
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2f-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3a-APK-M4c"
     assert page.evaluate("tutorialRuntimeResetProgress()") is True
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(300)

@@ -32,7 +32,7 @@ with sync_playwright() as p:
       tutorialRuntimeRenderMenu();
     }""")
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2f-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3a-APK-M4c"
     assert page.evaluate("tutorialRuntimeStartChallenge('challenge-1-elimination')") is True
     page.wait_for_timeout(400)
 
@@ -117,26 +117,30 @@ with sync_playwright() as p:
       progress:tutorialRuntimeProgressForChallenge('challenge-1-elimination'),
       matchRecorded:state.matchRecorded,
       hudExists:Boolean(document.getElementById('tutorialChallengeHud')),
-      cardText:document.querySelector('[data-tutorial-challenge="challenge-1-elimination"]')?.innerText || '',
-      buttonText:document.querySelector('[data-tutorial-challenge="challenge-1-elimination"] [data-tutorial-challenge-start]')?.textContent.trim() || ''
+      resultModal:{
+        visible:!document.getElementById('arenaResultModalRootF9V3a')?.hidden,
+        text:document.getElementById('arenaResultModalRootF9V3a')?.innerText || '',
+        actions:[...document.querySelectorAll('#arenaResultModalRootF9V3a [data-result-action]')].map(el=>el.dataset.resultAction)
+      }
     })""")
 
     browser.close()
 
 unexpected = [msg for msg in console_errors if not msg.startswith("Arena AppShell: inizializzazione GameScreen non bloccante fallita")]
-assert final["screen"] == "tutorial", final
+assert final["screen"] == "game", final
 assert final["diag"]["active"] is False, final
 assert final["progress"]["completed"] is True and final["progress"]["attempts"] == 1, final
 assert final["progress"]["lastOutcome"] == "success" and final["progress"]["lastReason"] == "all_enemy_units_destroyed", final
 assert final["matchRecorded"] is False, final
 assert final["hudExists"] is False, final
-assert "Completata" in final["cardText"] and final["buttonText"] == "Ripeti", final
+assert final["resultModal"]["visible"] is True and "PROVA COMPLETATA" in final["resultModal"]["text"], final
+assert all(action in final["resultModal"]["actions"] for action in ["log","telemetry","statistics","academy","main-menu","new-game"]), final
 assert not page_errors, page_errors
 assert not unexpected, unexpected
 
 print(json.dumps({
     "ok":True,
-    "build":"C2-STABLE-1-F9V2f-APK-M4c",
+    "build":"C2-STABLE-1-F9V3a-APK-M4c",
     "initialPlayerUnits":len(initial["playerUnits"]),
     "wave1Enemies":2,
     "botAutonomyNoPurchases":True,

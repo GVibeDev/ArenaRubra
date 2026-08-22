@@ -157,8 +157,8 @@ tutorialChallengeRuntimeState.meta.finalWinType=null;`);
 evaluate("tutorialRuntimeHandleChallengeGameEvent({type:EventTypes.VICTORY,data:{winner:2,winType:'pressione'}})");
 if (!context.__completion || context.__completion.success !== false || context.__completion.reason !== "enemy_victory") throw new Error(`Enemy victory did not fail exam: ${JSON.stringify(context.__completion)}`);
 
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2f-APK-M4c") throw new Error("BUILD_INFO version invalid");
-if (evaluate("BUILD_INFO.buildChannel") !== "starter2-tutorial-v2f") throw new Error("BUILD_INFO channel invalid");
+if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3a-APK-M4c") throw new Error("BUILD_INFO version invalid");
+if (evaluate("BUILD_INFO.buildChannel") !== "starter2-result-modal-v3a") throw new Error("BUILD_INFO channel invalid");
 
 console.log(JSON.stringify({
   ok:true,

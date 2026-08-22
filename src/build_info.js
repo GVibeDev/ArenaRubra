@@ -60,6 +60,8 @@
 // F9V2d Tutorial Challenge III · Breccia metadata.
 // F9V2e Tutorial Challenge IV · Pressione metadata.
 // F9V2f Tutorial Challenge V · Esame finale metadata.
+// F9V2f validated-baseline compatibility markers: version: "C2-STABLE-1-F9V2f-APK-M4c" · buildChannel: "starter2-tutorial-v2f".
+// F9V3a Unified Result Modal metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -82,13 +84,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V2f-APK-M4c",
-  buildName: "Tutorial Challenge V · Esame finale",
+  version: "C2-STABLE-1-F9V3a-APK-M4c",
+  buildName: "Unified Result Modal",
   buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-v2f",
+  buildChannel: "starter2-result-modal-v3a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V2f costruita sulla F9V2e validata e con baseline logica F9T2c4. Preserva le Prove I · Eliminazione, II · Tenuta, III · Breccia e IV · Pressione e rende giocabile la Prova V · Esame finale dopo lo sblocco globale 5/5 dell’Accademia. L’Esame finale è intenzionalmente una partita completa, non uno scenario semplificato: Campo Starter, modalità Rapida, Exordium umano contro Nexus Advanced, Varran contro Avatex, deck template regolamentari da 30 carte complessive per lato con mano iniziale da 5 generata dal normale initializeCardZonesForGame, Starter reserve ordinaria, ENE e income ordinari, pesca e recupero deck ordinari, abilità/tattiche/dispiegamento ordinari e nessuna unità pre-schierata oltre ai QG. Il runtime Challenge non sostituisce mano, deck, ENE, Starter, Missioni o condizioni di vittoria; osserva soltanto l’evento VICTORY del core e completa l’Esame con qualunque condizione valida se winner=giocatore. Vittoria Nexus o pareggio falliscono la Prova. La partita resta tutorialMode e matchRecorded=false, quindi non alimenta lo storico/statistiche competitive. HUD dedicato mostra Mano, Deck, ENE e Pressione senza modificare il gameplay. Nessuna modifica a carte, costi, deck ufficiali, mappe, Missioni, regole QG/Pressione, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b/F9V2c/F9V2d/F9V2e, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V3a costruita sulla F9V2f validata. Aggiunge un Unified Result Modal persistente senza modificare il core di gioco: le cinque lezioni Tutorial mostrano LEZIONE COMPLETATA senza ritorno automatico; le cinque Challenge mostrano PROVA COMPLETATA o PROVA FALLITA e mantengono il campo finale visibile; la normale modalità di gioco mostra VITTORIA, SCONFITTA o PAREGGIO leggendo esclusivamente l’evento VICTORY autorevole del core e indicando chiaramente Giocatore vincitore, fazione, round e condizione di vittoria. Il popup espone Log, Telemetria, Statistiche, Menu principale e Nuova partita; nei flussi Accademia aggiunge Torna all’Accademia. Log e Statistiche riusano il PanelManager di gioco, Telemetria riusa il Control Center e Nuova partita riusa il Setup esistente. Le Carte Missione ordinarie continuano a usare l’event overlay non bloccante e non vengono trasformate in esiti terminali. Nessuna modifica a carte, deck, mappe, ENE, Missioni, AI, regole QG/Pressione, statistiche competitive o schema telemetrico. Preserva integralmente F9V2f e baseline logica F9T2c4. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

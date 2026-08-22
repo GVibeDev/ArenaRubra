@@ -1,0 +1,78 @@
+ARENA RUBRA — F9V3a TEST REPORT
+===============================
+
+Build candidata:
+  C2-STABLE-1-F9V3a-APK-M4c
+  Unified Result Modal
+
+Base:
+  C2-STABLE-1-F9V2f-APK-M4c VALIDATA
+  GitHub main: 683688a543298c7dbccd4d9096708b6e05dea3a5
+
+CONTROLLI ESEGUITI NEL CONTAINER
+--------------------------------
+PASS — node --check src/tutorial_runtime.js
+PASS — node --check src/build_info.js
+PASS — node --check su tutti i test JS inclusi
+PASS — python3 -m py_compile su tutti i test browser Python inclusi
+
+PASS — tests/f9v2a_tutorial_challenge_framework_smoke.js
+  - 5 Challenge preservate
+  - unlock globale 5/5 preservato
+  - progressi Challenge separati preservati
+
+PASS — tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
+  - Tenuta preservata
+
+PASS — tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+  - Breccia preservata
+
+PASS — tests/f9v2e_tutorial_challenge4_pressure_smoke.js
+  - Pressione preservata
+
+PASS — tests/f9v2f_tutorial_challenge5_final_exam_smoke.js
+  - Esame finale preservato
+  - deck/mano/Starter/economia/recupero deck normali preservati
+  - vittoria core umana supera l'Esame
+  - vittoria avversaria fallisce l'Esame
+
+PASS — tests/f9v3a_unified_result_modal_smoke.js
+  - match normale: victory / defeat / draw
+  - identità vincitore: Giocatore N + fazione
+  - round + winType preservati
+  - lezione: lesson_complete
+  - Challenge: challenge_complete / challenge_failed
+  - niente ritorno automatico all'Accademia
+  - routing Log -> Game Panel
+  - routing Statistiche -> Game Panel
+  - routing Telemetria -> Control Center
+  - routing Accademia / Menu / Nuova partita
+  - BUILD_INFO F9V3a
+
+BROWSER TEST PREPARATI / AGGIORNATI
+-----------------------------------
+- f9o7a_browser_lesson1_smoke.py ora verifica che la lezione conclusa resti sul GameScreen e mostri il Result Modal.
+- f9v2b_browser_challenge1_elimination_smoke.py ora verifica che la Challenge conclusa resti sul GameScreen e mostri il Result Modal.
+- f9v3a_browser_unified_result_modal_smoke.py verifica VITTORIA / SCONFITTA / PAREGGIO e routing Nuova partita -> Setup.
+
+NON ESEGUITO NEL CONTAINER
+--------------------------
+La suite Playwright browser completa non è stata eseguita qui perché questa consegna è una patch overwrite e il container non dispone del checkout completo del repository con tutti i file runtime/assets necessari.
+La validazione browser reale resta quindi il gate manuale della candidata F9V3a.
+
+CHECKLIST MANUALE CONSIGLIATA
+-----------------------------
+1. Completa una lezione Tutorial.
+   Atteso: LEZIONE COMPLETATA, nessun ritorno automatico, campo visibile dietro al popup.
+2. Verifica i pulsanti: Log, Telemetria, Statistiche, Torna all'Accademia, Menu principale, Nuova partita.
+3. Completa una Challenge.
+   Atteso: PROVA COMPLETATA e campo finale preservato.
+4. Fai fallire una Challenge.
+   Atteso: PROVA FALLITA con motivo leggibile.
+5. Concludi un match normale vincendo.
+   Atteso: VITTORIA, "Vincitore · Giocatore N", fazione, round e causa.
+6. Concludi un match normale perdendo contro Bot con un solo giocatore umano.
+   Atteso: SCONFITTA ma vincitore e fazione avversaria espliciti.
+7. Verifica Nuova partita.
+   Atteso: apertura Setup, non avvio immediato del match.
+8. Verifica che le normali Carte Missione continuino a mostrare il piccolo overlay rapido e non il Result Modal terminale.

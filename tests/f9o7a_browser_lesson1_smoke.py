@@ -91,6 +91,11 @@ with sync_playwright() as p:
       progress:tutorialRuntimeProgressForScenario('lesson-1-exordium'),
       store:tutorialRuntimeStorageRead(),
       screen:document.body.dataset.appScreen,
+      resultModal:{
+        visible:!document.getElementById('arenaResultModalRootF9V3a')?.hidden,
+        text:document.getElementById('arenaResultModalRootF9V3a')?.innerText || '',
+        actions:[...document.querySelectorAll('#arenaResultModalRootF9V3a [data-result-action]')].map(el=>el.dataset.resultAction)
+      },
       precheck:runPrecheck({quiet:true,source:'f9o7a-final'}),
       events:state.events.filter(e=>['UNIT_ATTACKED','UNIT_DESTROYED','ABILITY_USED','TACTIC_USED'].includes(e.type)).map(e=>({type:e.type,data:e.data})),
       startupLog:(state.logs||[])[0] || ''
@@ -109,9 +114,12 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9V2f-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V3a-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert final["active"] is False and final["progress"]["completed"] is True, final
+assert final["screen"] == "game", final
+assert final["resultModal"]["visible"] is True and "LEZIONE COMPLETATA" in final["resultModal"]["text"], final
+assert all(action in final["resultModal"]["actions"] for action in ["log","telemetry","statistics","academy","main-menu","new-game"]), final
 assert final["store"]["lessons"]["lesson-1-exordium"]["completed"] is True, final
 assert final["precheck"]["ok"], final["precheck"]
 assert any(e["type"] == "ABILITY_USED" and e["data"].get("abilityName") == "Colpo Pesante" for e in final["events"]), final["events"]
