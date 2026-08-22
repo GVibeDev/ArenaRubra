@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V2d Tutorial Challenge III · Breccia.
-// Basata su F9V2c validata: preserva Eliminazione e Tenuta e aggiunge la terza Prova
-// con mano iniziale, deck ridotto a 10, recupero disabilitato e occupazione autorevole del QG nemico.
+// Arena Rubra – F9V2e Tutorial Challenge IV · Pressione.
+// Basata su F9V2d validata: preserva Eliminazione, Tenuta e Breccia e aggiunge la quarta Prova
+// con mano iniziale, deck ridotto a 20 e vittoria autorevole per Pressione del core F9R3.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -452,6 +452,19 @@ function tutorialRuntimeChallengeRenderHud() {
     hud.title = objective.label || "Occupa il QG nemico.";
     return true;
   }
+  if (objective.kind === "win_by_pressure") {
+    const playerSide = Number(scenario && scenario.playerSide || 1);
+    const handSize = state && state.hand && Array.isArray(state.hand[playerSide]) ? state.hand[playerSide].length : 0;
+    const deckSize = state && state.deck && Array.isArray(state.deck[playerSide]) ? state.deck[playerSide].length : 0;
+    const target = Math.max(1, Number(meta.pressureTarget || objective.target) || 5);
+    const current = Math.max(0, Number(state && state.pressure && state.pressure[playerSide] != null ? state.pressure[playerSide] : meta.pressureValue) || 0);
+    const controlledPs = typeof countControlledPS === "function" ? countControlledPS(playerSide) : null;
+    const centralControl = typeof tutorialRuntimeChallengeCentralPsControl === "function" ? tutorialRuntimeChallengeCentralPsControl({ objective:{ coord:objective.centralCoord || [0,0,0] } }) : 0;
+    const qualification = controlledPs == null ? "" : ` · PS ${controlledPs}/${Math.max(1, Number(objective.totalPs) || 3)}${centralControl === playerSide ? "★" : ""}`;
+    hud.textContent = `PROVA IV · Pressione ${current}/${target}${qualification} · Mano ${handSize} · Deck ${deckSize}`;
+    hud.title = objective.label || "Vinci per Pressione.";
+    return true;
+  }
   const target = Math.max(0, Number(objective.target) || 0);
   const destroyed = Math.max(0, Number(meta.enemyDestroyed) || 0);
   const waves = Array.isArray(scenario && scenario.waves) ? scenario.waves.length : 0;
@@ -474,7 +487,7 @@ function tutorialRuntimeChallengeAnnounce(title, message, options={}) {
   }
   if (typeof log === "function" && message) {
     const eventType = typeof EventTypes !== "undefined" ? EventTypes.LOG_MESSAGE : undefined;
-    log(`${title}: ${message}`, eventType, { source:"F9V2d-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
+    log(`${title}: ${message}`, eventType, { source:"F9V2e-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
   }
 }
 
@@ -586,6 +599,9 @@ function tutorialRuntimeChallengeInitializeScenario() {
     hqOccupied:false,
     hqOccupantUid:null,
     targetHqCoord:null,
+    pressureWon:false,
+    pressureValue:0,
+    pressureTarget:0,
     playerUnitIds:new Set(),
     enemyUnitIds:new Set(),
     destroyedEnemyUnitIds:new Set(),
@@ -598,6 +614,11 @@ function tutorialRuntimeChallengeInitializeScenario() {
   const waves = Array.isArray(scenario.waves) ? scenario.waves : [];
   if (waves.length && !tutorialRuntimeChallengeStartWave(0)) return false;
   if (scenario.objective && scenario.objective.kind === "occupy_enemy_hq") tutorialChallengeRuntimeState.meta.targetHqCoord = tutorialRuntimeChallengeEnemyHqCoord(scenario);
+  if (scenario.objective && scenario.objective.kind === "win_by_pressure") {
+    const playerSide = Number(scenario.playerSide || 1);
+    tutorialChallengeRuntimeState.meta.pressureValue = Math.max(0, Number(state.pressure && state.pressure[playerSide]) || 0);
+    tutorialChallengeRuntimeState.meta.pressureTarget = Math.max(1, Number(scenario.objective.target) || (typeof pressureWinLimit === "function" ? pressureWinLimit() : 5));
+  }
   tutorialRuntimeChallengeRenderHud();
   const intro = scenario.intro || {};
   const objectiveKind = scenario.objective && scenario.objective.kind;
@@ -606,12 +627,16 @@ function tutorialRuntimeChallengeInitializeScenario() {
       ? "PROVA SUL CAMPO II · TENUTA"
       : objectiveKind === "occupy_enemy_hq"
         ? "PROVA SUL CAMPO III · BRECCIA"
-        : "PROVA SUL CAMPO I · ELIMINAZIONE"),
+        : objectiveKind === "win_by_pressure"
+          ? "PROVA SUL CAMPO IV · PRESSIONE"
+          : "PROVA SUL CAMPO I · ELIMINAZIONE"),
     intro.message || (objectiveKind === "hold_ps"
       ? "Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi."
       : objectiveKind === "occupy_enemy_hq"
         ? "Apri una via e porta una tua unità sulla cella del QG nemico."
-        : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
+        : objectiveKind === "win_by_pressure"
+          ? "Mantieni il PS centrale e almeno 2 dei 3 PS finché il core assegna la vittoria per Pressione."
+          : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
     { icon:"◆", durationMs:2200 }
   );
   return true;
@@ -741,6 +766,57 @@ function tutorialRuntimeChallengeHandleHqObjective(event) {
   return false;
 }
 
+function tutorialRuntimeChallengeHandlePressureObjective(event) {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta;
+  const objective = scenario && scenario.objective || {};
+  if (!scenario || !meta || objective.kind !== "win_by_pressure") return false;
+
+  const type = event && event.type;
+  const data = event && event.data || {};
+  const playerSide = Number(scenario.playerSide || 1);
+  const pressureChangedType = typeof EventTypes !== "undefined" ? EventTypes.PRESSURE_CHANGED : "PRESSURE_CHANGED";
+  const pressureEvaluatedType = typeof EventTypes !== "undefined" ? EventTypes.PRESSURE_EVALUATED : "PRESSURE_EVALUATED";
+  const victoryType = typeof EventTypes !== "undefined" ? EventTypes.VICTORY : "VICTORY";
+  const cardTypes = new Set([
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_DRAWN : "CARD_DRAWN",
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_PLAYED : "CARD_PLAYED",
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_DISCARDED : "CARD_DISCARDED",
+    typeof EventTypes !== "undefined" ? EventTypes.PS_CONTROL_CHANGED : "PS_CONTROL_CHANGED"
+  ]);
+
+  if (type === pressureChangedType && Number(data.player) === playerSide) {
+    meta.pressureValue = Math.max(0, Number(data.current) || Number(state && state.pressure && state.pressure[playerSide]) || 0);
+    meta.pressureTarget = Math.max(1, Number(data.limit) || Number(objective.target) || meta.pressureTarget || 5);
+    tutorialRuntimeChallengeRenderHud();
+    tutorialRuntimeChallengeAnnounce("PRESSIONE", `Avanzamento strategico: ${Math.min(meta.pressureValue,meta.pressureTarget)}/${meta.pressureTarget}.`, { icon:"◆", durationMs:900, priority:"normal" });
+    return true;
+  }
+
+  if (type === pressureEvaluatedType || cardTypes.has(type)) {
+    tutorialRuntimeChallengeRenderHud();
+    return true;
+  }
+
+  if (type === victoryType) {
+    const winner = Number(data.winner || 0);
+    const winType = String(data.winType || data.type || "").toLowerCase();
+    if (winner === playerSide && winType === "pressione") {
+      meta.pressureWon = true;
+      meta.pressureValue = Math.max(meta.pressureValue, Number(state && state.pressure && state.pressure[playerSide]) || Number(objective.target) || 5);
+      tutorialRuntimeChallengeRenderHud();
+      tutorialRuntimeChallengeAnnounce("PRESSIONE COMPLETATA", "Il dominio territoriale è stato convertito in vittoria per Pressione.", { icon:"✓", durationMs:1300 });
+      tutorialChallengeRuntimeState.completing = true;
+      tutorialRuntimeChallengeSchedule(() => {
+        tutorialChallengeRuntimeState.completing = false;
+        tutorialRuntimeCompleteChallenge({ success:true, outcome:"success", reason:"pressure_victory" });
+      }, 0);
+      return true;
+    }
+  }
+  return false;
+}
+
 function tutorialRuntimeHandleChallengeGameEvent(event) {
   if (!tutorialChallengeRuntimeState.active || !tutorialChallengeRuntimeState.scenario || tutorialChallengeRuntimeState.completing) return false;
   const scenario = tutorialChallengeRuntimeState.scenario;
@@ -757,6 +833,8 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
 
   if (objectiveKind === "hold_ps") tutorialRuntimeChallengeHandleHoldObjective(event);
   if (objectiveKind === "occupy_enemy_hq") tutorialRuntimeChallengeHandleHqObjective(event);
+  if (objectiveKind === "win_by_pressure") tutorialRuntimeChallengeHandlePressureObjective(event);
+  if (tutorialChallengeRuntimeState.completing) return true;
 
   if (type === destroyedType) {
     const uid = String(data.unitId || "");
@@ -801,7 +879,9 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
         ? meta.holdCount >= Math.max(1, Number(scenario.objective && (scenario.objective.consecutiveTurns || scenario.objective.target)) || 3)
         : objectiveKind === "occupy_enemy_hq"
           ? meta.hqOccupied === true
-          : false;
+          : objectiveKind === "win_by_pressure"
+            ? meta.pressureWon === true
+            : false;
     if (!objectiveComplete || winner !== playerSide) {
       tutorialChallengeRuntimeState.completing = true;
       tutorialRuntimeChallengeSchedule(() => {
@@ -862,6 +942,8 @@ function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
   state.tutorialBotPaused = false;
   state.autoResignEnabled = setup.autoResignEnabled === true;
   state.matchRecorded = false;
+  if (Number.isFinite(Number(setup.startingRound))) state.turn = Math.max(1, Math.trunc(Number(setup.startingRound)));
+  if (setup.pressure && typeof setup.pressure === "object") state.pressure = { ...state.pressure, ...setup.pressure };
   if (setup.energy) state.energy = { ...state.energy, ...setup.energy };
   for (const side of (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2])) {
     if (setup.starterCardsEnabled === false && state.starterCards) state.starterCards[side] = {};
@@ -996,6 +1078,10 @@ function tutorialRuntimeChallengeDiagnostics() {
     hqOccupied:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.hqOccupied === true : false,
     hqOccupantUid:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.hqOccupantUid : null,
     targetHqCoord:tutorialChallengeRuntimeState.meta && Array.isArray(tutorialChallengeRuntimeState.meta.targetHqCoord) ? [...tutorialChallengeRuntimeState.meta.targetHqCoord] : null,
+    round:state ? state.turn : null,
+    pressureWon:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.pressureWon === true : false,
+    pressureValue:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.pressureValue || 0 : 0,
+    pressureTarget:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.pressureTarget || 0 : 0,
     playerHandSize:state && tutorialChallengeRuntimeState.scenario && state.hand && Array.isArray(state.hand[tutorialChallengeRuntimeState.scenario.playerSide || 1]) ? state.hand[tutorialChallengeRuntimeState.scenario.playerSide || 1].length : 0,
     playerDeckSize:state && tutorialChallengeRuntimeState.scenario && state.deck && Array.isArray(state.deck[tutorialChallengeRuntimeState.scenario.playerSide || 1]) ? state.deck[tutorialChallengeRuntimeState.scenario.playerSide || 1].length : 0,
     playerTurnsEnded:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.playerTurnsEnded : 0,

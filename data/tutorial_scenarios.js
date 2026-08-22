@@ -104,8 +104,8 @@ const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
     progression:"Unità + mano + deck 20",
     objective:"Vinci per Pressione",
     unlockRule:"all_tutorial_lessons_completed",
-    scenarioId:null,
-    contentStatus:"planned_f9v2e"
+    scenarioId:"challenge-4-pressure",
+    contentStatus:"available_f9v2e"
   }),
   Object.freeze({
     id:"challenge-5-final-exam",
@@ -186,6 +186,30 @@ const TUTORIAL_CHALLENGE3_COORDS_F9V2D = Object.freeze({
     Object.freeze([3,0,-3]),
     Object.freeze([3,-1,-2]),
     Object.freeze([4,0,-4])
+  ])
+});
+
+// F9V2e – quarta Prova sul campo: Pressione Strategica.
+// La progressione porta il giocatore a una situazione da metà partita: mano iniziale da 5,
+// deck ridotto a 20 carte, nessuna Missione/Starter reserve e Pressione già attiva dal R20.
+// Il giocatore Agathoi parte con il centro e un PS laterale presidiati; l'Exordium Advanced
+// controlla il PS opposto e può spezzare la qualificazione. La vittoria deve arrivare dal core
+// ordinario con winType=pressione: PS centrale + almeno 2/3 PS fino a Pressione 5.
+const TUTORIAL_CHALLENGE4_COORDS_F9V2E = Object.freeze({
+  centerPs:Object.freeze([0,0,0]),
+  northPs:Object.freeze([0,-4,4]),
+  southPs:Object.freeze([0,4,-4]),
+  player:Object.freeze([
+    Object.freeze([0,0,0]),
+    Object.freeze([0,-4,4]),
+    Object.freeze([-2,-1,3]),
+    Object.freeze([-1,-1,2])
+  ]),
+  opposition:Object.freeze([
+    Object.freeze([2,0,-2]),
+    Object.freeze([1,0,-1]),
+    Object.freeze([2,-1,-1]),
+    Object.freeze([0,4,-4])
   ])
 });
 
@@ -417,6 +441,104 @@ const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({
     intro:Object.freeze({
       title:"PROVA SUL CAMPO III · BRECCIA",
       message:"Apri una via fino al QG Nexus. Hai 3 unità già in campo, 5 carte in mano e un deck ridotto di 10 carte. Nessuna Starter reserve, nessuna Missione e nessun recupero deck: la Prova termina quando una tua unità entra nel QG nemico."
+    })
+  }),
+  "challenge-4-pressure": Object.freeze({
+    id:"challenge-4-pressure",
+    schemaVersion:1,
+    title:"Prova sul campo IV · Pressione",
+    challengeId:"challenge-4-pressure",
+    playerSide:1,
+    enemySide:2,
+    objective:Object.freeze({
+      kind:"win_by_pressure",
+      target:5,
+      centralCoord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.centerPs,
+      requiredPs:2,
+      totalPs:3,
+      label:"Vinci per Pressione: PS centrale + almeno 2/3 PS fino a Pressione 5",
+      failureKind:"wrong_victory_condition"
+    }),
+    rules:Object.freeze({
+      deckRecoveryDisabled:true,
+      starterCardsDisabled:true,
+      enemyCardsDisabled:true,
+      missionsDisabled:true
+    }),
+    setup:Object.freeze({
+      mapId:"map1_starter",
+      factions:Object.freeze({ 1:"Agathoi", 2:"Exordium" }),
+      selectedCommanders:Object.freeze({ 1:"AGCMD02", 2:"EX0B00" }),
+      selectedDecks:Object.freeze({ 1:Object.freeze({ mode:"template" }), 2:Object.freeze({ mode:"template" }) }),
+      modes:Object.freeze({ 1:"human", 2:"bot" }),
+      autoResignEnabled:false,
+      aiMode:"advanced",
+      pacePreset:"competitive",
+      gameScaleMode:"tactical",
+      firstPlayer:1,
+      startingRound:20,
+      pressure:Object.freeze({ 1:0, 2:0 }),
+      energy:Object.freeze({ 1:10, 2:8 }),
+      starterCardsEnabled:false,
+      hand:Object.freeze({
+        1:Object.freeze([
+          "UNIT:AG2B02",
+          "UNIT:AGC1F02",
+          "TACTIC:AGTAC07",
+          "TACTIC:AGTAC05",
+          "TACTIC:AGTAC04"
+        ]),
+        2:Object.freeze([])
+      }),
+      deck:Object.freeze({
+        1:Object.freeze([
+          "UNIT:AG1B01",
+          "UNIT:AG1B02",
+          "UNIT:AG1B03",
+          "UNIT:AG2B01",
+          "UNIT:AG2B02",
+          "UNIT:AGC1F01",
+          "UNIT:AGC1F02",
+          "UNIT:AGC1F03",
+          "UNIT:AGC1F04",
+          "UNIT:AGC1F05",
+          "UNIT:AGC1F06",
+          "UNIT:AGC1F07",
+          "UNIT:AG4B01",
+          "TACTIC:AGTAC01",
+          "TACTIC:AGTAC02",
+          "TACTIC:AGTAC03",
+          "TACTIC:AGTAC06",
+          "TACTIC:AGTAC08",
+          "TACTIC:AGTAC09",
+          "TACTIC:AGTAC08"
+        ]),
+        2:Object.freeze([])
+      }),
+      discard:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) })
+    }),
+    initialUnits:Object.freeze([
+      Object.freeze({ side:1, blueprintId:"AGCMD02", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.player[0], acted:false }),
+      Object.freeze({ side:1, blueprintId:"AG1B02", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.player[1], acted:false }),
+      Object.freeze({ side:1, blueprintId:"AG2B01", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.player[2], acted:false }),
+      Object.freeze({ side:1, blueprintId:"AGC1F03", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.player[3], acted:false })
+    ]),
+    waves:Object.freeze([
+      Object.freeze({
+        id:"pressure-opposition",
+        label:"Linea Exordium",
+        message:"L'Exordium controlla il PS meridionale e minaccia il centro. Mantieni la maggioranza qualificata fino alla vittoria per Pressione.",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"EX0B00", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.opposition[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"EX1B04", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.opposition[1], acted:true }),
+          Object.freeze({ side:2, blueprintId:"EX2B03", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.opposition[2], acted:true }),
+          Object.freeze({ side:2, blueprintId:"EXC1F04", coord:TUTORIAL_CHALLENGE4_COORDS_F9V2E.opposition[3], acted:true })
+        ])
+      })
+    ]),
+    intro:Object.freeze({
+      title:"PROVA SUL CAMPO IV · PRESSIONE",
+      message:"La Prova inizia al round 20, quando la Pressione è già attiva in modalità Rapida. Dycaios presidia il centro e l'Oplita il PS settentrionale: devi mantenere il PS centrale e almeno 2 dei 3 PS fino a Pressione 5. Hai 5 carte in mano e un deck finito di 20 carte; nessuna Missione, Starter reserve o recupero deck."
     })
   })
 });

@@ -58,6 +58,7 @@
 // F9V2b Tutorial Challenge I · Elimination metadata.
 // F9V2c Tutorial Challenge II · Tenuta metadata.
 // F9V2d Tutorial Challenge III · Breccia metadata.
+// F9V2e Tutorial Challenge IV · Pressione metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -80,13 +81,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V2d-APK-M4c",
-  buildName: "Tutorial Challenge III · Breccia",
+  version: "C2-STABLE-1-F9V2e-APK-M4c",
+  buildName: "Tutorial Challenge IV · Pressione",
   buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-v2d",
+  buildChannel: "starter2-tutorial-v2e",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V2d costruita sulla F9V2c validata e con baseline logica F9T2c4. Preserva le Prove I · Eliminazione e II · Tenuta e rende giocabile la Prova III · Breccia dopo lo sblocco globale 5/5 dell’Accademia. Scenario su Campo Starter con Exordium umano contro Nexus Advanced: Varran e due unità leggere già in campo, mano iniziale deterministica di 5 carte e deck ridotto reale di 10 carte pescabili. Starter reserve e Missioni sono escluse; il recupero deck è disabilitato per mantenere finito il pool da 10. Il Nexus non usa carte né ENE e difende l’asse del QG con quattro unità iniziali. Obiettivo Challenge autorevole: una unità Exordium deve entrare sulla cella del QG Nexus; per questa Prova non è richiesto il prerequisito di controllo PS della vittoria QG ordinaria. HUD dedicato mostra Mano, Deck e stato del QG. Sconfitta se il giocatore resta senza unità combattenti o il match termina con una condizione incompatibile con l’obiettivo. Le Challenge restano tutorialMode e fuori da statistiche e storico competitivi. Le Challenge IV–V restano sbloccabili ma in preparazione. Nessuna modifica a carte, costi, deck ufficiali, mappe, Missioni, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b/F9V2c, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V2e costruita sulla F9V2d validata e con baseline logica F9T2c4. Preserva le Prove I · Eliminazione, II · Tenuta e III · Breccia e rende giocabile la Prova IV · Pressione dopo lo sblocco globale 5/5 dell’Accademia. Scenario su Campo Starter con Agathoi umano contro Exordium Advanced: Dycaios presidia il PS centrale, un Oplita il PS settentrionale e due unità supportano la linea; l’Exordium controlla il PS meridionale con quattro unità iniziali. La Prova parte direttamente dal round 20 della modalità Rapida, quando la Pressione F9R3 è attiva: il core ordinario richiede il PS centrale e almeno 2/3 PS per avanzare, con vittoria a Pressione 5. Mano iniziale deterministica di 5 carte e deck finito di 20 carte; Starter reserve, Missioni e recupero deck sono disabilitati. Il Bot non usa carte ma conserva ENE e abilità delle unità già schierate. L’obiettivo Challenge non simula né abbrevia la Pressione: completa soltanto su evento VICTORY del core con winner=giocatore e winType=pressione; qualunque altra condizione di vittoria è fallimento della Prova. HUD dedicato mostra Pressione, qualificazione PS/centro, Mano e Deck. Challenge fuori da statistiche e storico competitivi. La Challenge V resta sbloccabile ma in preparazione. Nessuna modifica alle regole di Pressione del match normale, a carte, costi, deck ufficiali, mappe, Missioni, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b/F9V2c/F9V2d, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

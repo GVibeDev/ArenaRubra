@@ -1,0 +1,149 @@
+ARENA RUBRA — F9V2e TEST REPORT
+================================
+Build candidata: C2-STABLE-1-F9V2e-APK-M4c
+Milestone: Tutorial Challenge IV · Pressione
+Data: 2026-08-22
+
+BASE VALIDATA
+-------------
+L'autore ha validato in questa sessione:
+  C2-STABLE-1-F9V2d-APK-M4c
+  Tutorial Challenge III · Breccia
+
+La patch F9V2e è stata costruita come overwrite cumulativo della F9V2d validata.
+
+RIFERIMENTO CORE REMOTO VERIFICATO
+----------------------------------
+GitHub main usata per verificare il contratto ordinario di Pressione e la MAP1:
+  16537833101b7ff1ffb0c07f72aa180301196003
+  F9V2c
+
+Contratto F9R3 verificato nel core:
+- modalità Rapida: Pressione attiva dal round 20;
+- MAP1: 3 PS, centrale [0,0,0], nord [0,-4,4], sud [0,4,-4];
+- qualificazione: PS centrale + almeno ceil(3/2)=2 PS complessivi;
+- soglia vittoria Rapida: Pressione 5;
+- avanzamento e VICTORY sono prodotti da resolveEndOfRound()/setWinner del core.
+
+CONTRATTO F9V2e
+----------------
+- Challenge IV: challenge-4-pressure / Pressione.
+- Progressione: unità già schierate + mano iniziale 5 + deck ridotto reale da 20 carte.
+- Agathoi umano contro Exordium Advanced su Campo Starter.
+- Round iniziale 20; Pressione 0-0.
+- 4 unità Agathoi iniziali:
+  AGCMD02 Dycaios, AG1B02 Oplita di Confine, AG2B01 Carro Falange, AGC1F03 Phylax Difensore.
+- Dycaios parte sul PS centrale e l'Oplita sul PS nord: Agathoi inizialmente qualificato 2/3 + centro.
+- 4 unità Exordium iniziali:
+  EX0B00 Varran, EX1B04 Legionario Pesante, EX2B03 Carro Medio, EXC1F04 Cursor.
+- Cursor parte sul PS sud.
+- Mano Agathoi: 5 carte deterministiche.
+- Deck Agathoi: 20 carte deterministiche pescabili.
+- Pool totale mano+deck: 25 carte, massimo 2 copie per ID.
+- Mano/deck Exordium vuoti; ENE Exordium NON bloccata (8 iniziale) per lasciare operative le abilità delle unità.
+- Starter reserve disabilitata per entrambi.
+- Missioni disabilitate per entrambi.
+- Recupero deck disabilitato: il pool ridotto non ricicla gli scarti.
+- Obiettivo autorevole: VICTORY del core con winner=1 e winType=pressione.
+- PRESSURE_CHANGED aggiorna soltanto il progresso/HUD e non completa la Challenge.
+- Vittoria del giocatore con winType diverso da pressione => wrong_victory_condition.
+- Vittoria avversaria => enemy_victory.
+- Challenge matchRecorded=false e tutorialMode=true.
+- Challenge V resta placeholder.
+
+AUDIT DATI CORRENTE
+-------------------
+Gli ID usati dalla Challenge sono stati verificati contro i file correnti del progetto/GitHub:
+- data/units_base.js per Agathoi ed Exordium;
+- data/tactics_cards_c2.js per le tattiche Agathoi;
+- data/map_definitions.js per MAP1 e i tre PS;
+- src/rules.js per il contratto Pressione F9R3;
+- src/turns.js per il confine round che richiama resolveEndOfRound().
+Nessuna nuova statistica, carta o regola di bilanciamento viene introdotta.
+
+CONTROLLI ESEGUITI REALMENTE IN CONTAINER
+-----------------------------------------
+PASS — node --check src/tutorial_runtime.js
+PASS — node --check data/tutorial_scenarios.js
+PASS — node --check src/build_info.js
+PASS — node --check su tutti i 12 test JS inclusi nella patch
+PASS — python3 -m py_compile su tutti i 10 test Python inclusi nella patch
+
+PASS — tests/f9v2a_tutorial_challenge_framework_smoke.js
+Risultato:
+- 5 Challenge registrate
+- unlock globale 5/5 preservato
+- migrazione storage legacy preservata
+- progresso Challenge separato preservato
+- Challenge I–III presenti
+- Challenge IV pubblicata
+- Challenge V ancora pending
+- build F9V2e corretta
+
+PASS — tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
+Regressione F9V2c:
+- Prova II preservata
+- mano fissa 5 / deck 0
+- 3 ondate / 6 Starter Exordium
+- Tenuta 3 turni e reset su perdita PS preservati
+- recupero deck e carte Bot bloccati
+- completion central_ps_held_three_turns preservata
+- build F9V2e corretta
+
+PASS — tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+Regressione F9V2d:
+- Prova III preservata
+- 3 unità Exordium iniziali
+- mano 5 / deck 10
+- 4 difensori Nexus
+- Starter reserve e Missioni rimosse
+- recupero deck disabilitato
+- obiettivo occupy_enemy_hq preservato
+- completion enemy_hq_occupied preservata
+- build F9V2e corretta
+
+PASS — tests/f9v2e_tutorial_challenge4_pressure_smoke.js
+Risultato:
+- scenario challenge-4-pressure presente
+- objective kind win_by_pressure / target 5
+- qualificazione dichiarata 2/3 PS + centro
+- startingRound 20
+- 4 unità Agathoi iniziali / 4 unità Exordium iniziali
+- mano iniziale 5
+- deck ridotto 20
+- 25 carte Agathoi totali, massimo 2 copie per ID
+- setup materializza realmente round 20, Pressione 0-0, ENE 10-8, mano 5 e deck 20
+- setup rimuove Missioni e Starter reserve
+- TURN_STARTED Exordium mantiene ENE 8 ma azzera mano/deck/Starter
+- recupero deck bloccato autoritativamente
+- PRESSURE_CHANGED 1/5 e 5/5 non completano la Challenge senza VICTORY
+- VICTORY del giocatore con winType=qg viene rifiutato come wrong_victory_condition
+- VICTORY del giocatore con winType=pressione completa con reason pressure_victory
+- build F9V2e corretta
+
+LIMITI DEL TEST IN QUESTO CONTAINER
+-----------------------------------
+I test JS storici che richiedono il checkout completo (index.html, src/expert_ai/* e altri file non inclusi nell'overwrite patch) non sono eseguibili direttamente dalla sola cartella patch. La loro sintassi è stata verificata, ma non vengono dichiarati PASS runtime.
+
+La suite browser Playwright completa non è stata rieseguita qui: il pacchetto generato è un overwrite patch, non il checkout integrale dell'app. I regression test browser inclusi hanno i marker di build aggiornati a F9V2e, ma non vengono dichiarati PASS senza esecuzione reale sul progetto locale completo.
+
+TEST MANUALE RICHIESTO PRIMA DELLA VALIDAZIONE F9V2e
+-----------------------------------------------------
+1. Accademia 5/5: verificare che Prova IV · Pressione mostri Avvia.
+2. Avviare Prova IV: Agathoi umano vs Exordium Advanced su Campo Starter.
+3. Verificare che la partita mostri Round 20 e Pressione 0/5.
+4. Verificare Dycaios sul PS centrale, Oplita sul PS nord e Cursor Exordium sul PS sud.
+5. Verificare HUD iniziale: Pressione 0/5 · PS 2/3★ · Mano 5 · Deck 20.
+6. Verificare assenza di Starter reserve e Missione.
+7. Verificare che l'Exordium non abbia carte, ma possa spendere ENE/usare abilità delle unità schierate.
+8. Chiudere un round mantenendo centro+nord: il core deve portare Agathoi a Pressione 1/5.
+9. Perdere il centro oppure scendere sotto 2 PS: al confine round non deve esserci incremento Pressione Agathoi.
+10. Ripristinare la qualificazione e verificare che gli incrementi riprendano secondo le regole core, senza reset artificiale della Pressione già guadagnata.
+11. Terminare almeno un proprio turno e verificare che la pesca consumi il deck ridotto (20 -> 19, salvo normale cap mano/scarto del core).
+12. Giocare almeno una unità e una tattica dalla mano per verificare il runtime carte Agathoi.
+13. Avvicinarsi all'esaurimento del deck: il recupero deck deve restare disabilitato.
+14. Se possibile, ottenere una vittoria QG prima di Pressione 5: la Prova deve risultare fallita, non completata.
+15. Portare la Pressione Agathoi a 5 tramite il normale confine round: il core deve emettere vittoria per Pressione e la Prova IV deve risultare completata/Ripeti.
+16. Verificare sconfitta se tutte le unità Agathoi vengono eliminate o se vince l'Exordium.
+17. Riprovare rapidamente Prove I, II e III per regressione.
+18. Verificare Prova V ancora visibile come In preparazione.

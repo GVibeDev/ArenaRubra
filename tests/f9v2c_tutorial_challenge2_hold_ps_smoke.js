@@ -104,7 +104,7 @@ evaluate("tutorialRuntimeChallengeHandleHoldObjective({type:EventTypes.TURN_ENDE
 setTimeout(() => {
   const completion = context.__completion;
   if (!completion || completion.success !== true || completion.reason !== "central_ps_held_three_turns") throw new Error(`Completion invalid: ${JSON.stringify(completion)}`);
-  if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2d-APK-M4c") throw new Error("BUILD_INFO version invalid");
+  if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2e-APK-M4c") throw new Error("BUILD_INFO version invalid");
   console.log(JSON.stringify({
     ok:true,
     challenge:"challenge-2-hold-ps",

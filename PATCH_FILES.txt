@@ -1,4 +1,4 @@
-ARENA RUBRA F9V2d — FILE PATCH
+ARENA RUBRA F9V2e — FILE PATCH
 ================================
 
 PATCH_README.txt
@@ -7,6 +7,8 @@ docs/Arena_Rubra_F9V2c_Test_Report.txt
 docs/Arena_Rubra_F9V2c_Tutorial_Challenge_II_Tenuta.md
 docs/Arena_Rubra_F9V2d_Test_Report.txt
 docs/Arena_Rubra_F9V2d_Tutorial_Challenge_III_Breccia.md
+docs/Arena_Rubra_F9V2e_Test_Report.txt
+docs/Arena_Rubra_F9V2e_Tutorial_Challenge_IV_Pressione.md
 src/build_info.js
 src/tutorial_runtime.js
 tests/f9o6_browser_tutorial_runtime_smoke.py
@@ -30,3 +32,4 @@ tests/f9v2a_tutorial_challenge_framework_smoke.js
 tests/f9v2b_browser_challenge1_elimination_smoke.py
 tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
 tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+tests/f9v2e_tutorial_challenge4_pressure_smoke.js

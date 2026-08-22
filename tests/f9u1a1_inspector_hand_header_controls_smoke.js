@@ -16,9 +16,9 @@ vm.createContext(context);
 vm.runInContext(`${buildSource}\n;globalThis.__build=BUILD_INFO;`, context, { filename:"build_info.js" });
 const build = context.__build;
 
-assert.equal(build.version, "C2-STABLE-1-F9V2d-APK-M4c");
+assert.equal(build.version, "C2-STABLE-1-F9V2e-APK-M4c");
 assert.equal(build.buildName, "Tutorial Challenge I · Elimination");
-assert.equal(build.buildChannel, "starter2-tutorial-v2d");
+assert.equal(build.buildChannel, "starter2-tutorial-v2e");
 assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c");
 assert.ok(build.notes.includes("F9Q3e1-2"));
 

@@ -32,7 +32,7 @@ with sync_playwright() as p:
     page.evaluate("document.dispatchEvent(new Event('DOMContentLoaded'))")
     page.evaluate("""() => { const s=document.getElementById('appSplash'); if(s){s.hidden=true;s.style.display='none';} }""")
     page.wait_for_timeout(350)
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2d-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2e-APK-M4c"
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(700)
 
