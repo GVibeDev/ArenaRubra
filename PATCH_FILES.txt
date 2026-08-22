@@ -1,35 +1,33 @@
-      3045  PATCH_README.txt
-    106488  data/tutorial_scenarios.js
-      3756  docs/Arena_Rubra_F9V1a_Tutorial_Runtime_2_0_Authoritative_Interaction_Hotfix.md
-      2488  docs/Arena_Rubra_F9V2a_Test_Report.txt
-      3196  docs/Arena_Rubra_F9V2a_Tutorial_Challenge_Framework_Unlock_System.md
-      8543  src/build_info.js
-     15787  src/controller.js
-     42106  src/deployment.js
-      4469  src/movement.js
-    116252  src/render.js
-    114133  src/tactics.js
-     13207  src/turns.js
-     80252  src/tutorial_runtime.js
-      5561  src/ui.js
+ARENA RUBRA F9V2b — FILE DELTA DA F9V2a
+================================================
+
+      1563  PATCH_FILES.txt
+      3063  PATCH_README.txt
+    109611  data/tutorial_scenarios.js
+      3002  docs/Arena_Rubra_F9V2b_Test_Report.txt
+      3273  docs/Arena_Rubra_F9V2b_Tutorial_Challenge_I_Elimination.md
+     37126  src/app.js
+      8987  src/build_info.js
+     93092  src/tutorial_runtime.js
       6137  tests/f9o6_browser_tutorial_runtime_smoke.py
-      4910  tests/f9o7a_browser_checkpoint_resume_smoke.py
       7518  tests/f9o7a_browser_lesson1_smoke.py
       6078  tests/f9o7b_browser_ui_state_resume_smoke.py
       9924  tests/f9o7c_browser_lesson2_smoke.py
      10725  tests/f9o7e_browser_lesson3_smoke.py
      13431  tests/f9o7f_browser_lesson4_smoke.py
      15194  tests/f9o7g_browser_lesson5_smoke.py
-      3299  tests/f9o7h_browser_mobile_adaptive_framing_smoke.py
       4859  tests/f9o7h_browser_tutorial_guidance_smoke.py
       9837  tests/f9t2c2_bootstrap_forward_pivot_impact_smoke.js
      12429  tests/f9t2d3_commander_deployment_commitment_smoke.js
      18652  tests/f9t2d_varran_assault_chain_smoke.js
-      2769  tests/f9u1a1_inspector_hand_header_controls_smoke.js
-      3742  tests/f9u1a_map_hud_layout_foundation_smoke.js
-      4569  tests/f9u1b_unit_inspector_ps_unit_bars_smoke.js
-      6326  tests/f9u2a_card_pool_reorganization_smoke.js
-      4069  tests/f9u3_control_center_smoke.js
+      2748  tests/f9u1a1_inspector_hand_header_controls_smoke.js
+      3721  tests/f9u1a_map_hud_layout_foundation_smoke.js
+      4548  tests/f9u1b_unit_inspector_ps_unit_bars_smoke.js
+      6305  tests/f9u2a_card_pool_reorganization_smoke.js
+      4048  tests/f9u3_control_center_smoke.js
       5762  tests/f9v1a_browser_authoritative_tutorial_smoke.py
-      4317  tests/f9v2a_browser_challenge_unlock_smoke.py
-      5687  tests/f9v2a_tutorial_challenge_framework_smoke.js
+      4375  tests/f9v2a_browser_challenge_unlock_smoke.py
+      5967  tests/f9v2a_tutorial_challenge_framework_smoke.js
+      8159  tests/f9v2b_browser_challenge1_elimination_smoke.py
+
+Totale file patch: 28

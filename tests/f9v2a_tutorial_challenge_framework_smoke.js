@@ -39,7 +39,8 @@ const plan = evaluate("tutorialRuntimeChallengePlan().map(item => ({...item}))")
 if (plan.length !== 5) throw new Error(`Expected 5 challenge definitions, got ${plan.length}`);
 if (new Set(plan.map(item => item.id)).size !== 5) throw new Error("Challenge IDs are not unique");
 if (!plan.every(item => item.unlockRule === "all_tutorial_lessons_completed")) throw new Error("Unexpected unlock rule");
-if (!plan.every(item => item.scenarioId === null)) throw new Error("F9V2a must not ship runnable challenge content yet");
+if (plan[0].scenarioId !== "challenge-1-elimination") throw new Error("F9V2b must publish Challenge 1 scenario");
+if (!plan.slice(1).every(item => item.scenarioId === null)) throw new Error("Only Challenge 1 may be runnable in F9V2b");
 
 let unlock = evaluate("tutorialRuntimeChallengeUnlockStatus()");
 if (unlock.unlocked || unlock.completedLessons !== 0 || unlock.requiredLessons !== 5) throw new Error(`Unexpected initial gate ${JSON.stringify(unlock)}`);
@@ -69,8 +70,9 @@ unlock = evaluate("tutorialRuntimeChallengeUnlockStatus()");
 if (!unlock.unlocked || unlock.completedLessons !== 5 || unlock.remainingLessons !== 0) throw new Error(`5/5 must unlock challenges: ${JSON.stringify(unlock)}`);
 if (!evaluate("tutorialRuntimeChallengesUnlocked()")) throw new Error("Global challenge unlock helper returned false at 5/5");
 
-// F9V2a intentionally exposes unlocked cards without runnable scenarios.
-if (evaluate("tutorialRuntimeStartChallenge('challenge-1-elimination')") !== false) throw new Error("F9V2a must not start Challenge 1 before F9V2b content exists");
+// F9V2b publishes Challenge 1 while keeping Challenges 2–5 as placeholders.
+if (!evaluate("tutorialRuntimeChallengeScenarioById('challenge-1-elimination')")) throw new Error("Challenge 1 scenario missing");
+if (evaluate("tutorialRuntimeChallengeScenarioById('challenge-2-hold-ps')") !== null) throw new Error("Challenge 2 must remain pending in F9V2b");
 
 // Challenge progress is separate from lesson/scenario progress.
 evaluate("tutorialRuntimeSaveChallengeProgress('challenge-1-elimination', {incrementAttempt:true, outcome:'started'})");
@@ -79,6 +81,7 @@ const challengeProgress = evaluate("tutorialRuntimeProgressForChallenge('challen
 if (!challengeProgress.completed || challengeProgress.attempts !== 1 || challengeProgress.lastOutcome !== "success") throw new Error(`Challenge progress invalid: ${JSON.stringify(challengeProgress)}`);
 
 // Generic freeplay scaffold keeps Challenge matches out of normal competitive recording.
+context.document = { getElementById:()=>null };
 context.newGame = options => {
   context.state = {
     modes:{1:"human",2:"bot"}, factions:{1:"Exordium",2:"Nexus"},
@@ -106,7 +109,7 @@ if (!stateCheck.tutorialMode || !stateCheck.tutorialChallengeMode || stateCheck.
   throw new Error(`Challenge state contract invalid: ${JSON.stringify(stateCheck)}`);
 }
 
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2a-APK-M4c") throw new Error("BUILD_INFO version not updated");
+if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2b-APK-M4c") throw new Error("BUILD_INFO version not updated");
 
 console.log(JSON.stringify({
   ok:true,

@@ -55,6 +55,7 @@
 // F9T2d3 Commander Deployment Commitment metadata.
 // F9V1a Tutorial Runtime 2.0 · Authoritative Interaction & Selector Drift Hotfix metadata.
 // F9V2a Tutorial Challenge Framework & Unlock System metadata.
+// F9V2b Tutorial Challenge I · Elimination metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -77,13 +78,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V2a-APK-M4c",
-  buildName: "Tutorial Challenge Framework & Unlock System",
+  version: "C2-STABLE-1-F9V2b-APK-M4c",
+  buildName: "Tutorial Challenge I · Elimination",
   buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-v2a",
+  buildChannel: "starter2-tutorial-v2b",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V2a costruita sulla F9V1a validata e con baseline logica F9T2c4. Introduce il framework delle cinque Prove sul campo: tutte sono visibili nell’Accademia fin dall’inizio, restano bloccate finché non risultano completate tutte le 5 lezioni guidate e si sbloccano simultaneamente al raggiungimento 5/5. Aggiunge registro data-driven delle Challenge, stato di unlock derivato dai progressi esistenti, persistenza separata dei tentativi/completamenti e scheletro runtime freeplay predisposto per F9V2b–F9V2f. Non aggiunge ancora gli scenari giocabili delle cinque Challenge e non modifica regole, carte, costi, deck, mappe, Missioni, AI o bilanciamento. Le Challenge restano tutorialMode e sono predisposte per l’esclusione dalle statistiche competitive. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V2b costruita sulla F9V2a validata e con baseline logica F9T2c4. Rende giocabile la Prova sul campo I · Eliminazione dopo lo sblocco globale 5/5 dell’Accademia. Scenario autonomo su Campo Starter: quattro unità Exordium già schierate, nessuna carta/deck/starter card e ENE bloccata a 0; il Nexus Advanced controlla esclusivamente quattro unità Starter, distribuite in due ondate da due. Vittoria Challenge al quarto abbattimento tracciato; sconfitta se vengono eliminate tutte le unità assegnate al giocatore o se il match termina con una condizione diversa dall’obiettivo. La seconda ondata viene generata solo dopo la distruzione completa della prima. HUD e feedback dedicati mostrano avanzamento eliminazioni/ondate. La Challenge resta tutorialMode e viene esclusa da statistiche e storico competitivi. Le altre quattro Challenge restano sbloccabili ma in preparazione. Nessuna modifica a carte, costi, deck ufficiali, mappe, Missioni, Advanced/Expert AI o bilanciamento generale. Preserva lo schema telemetrico F9Q3e1-2, il contratto Expert F9T1-1, l’estensione F9T2d3-1, lo stato autorevole del Tutorial Runtime F9V1a e il Pool carte F9U2a. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

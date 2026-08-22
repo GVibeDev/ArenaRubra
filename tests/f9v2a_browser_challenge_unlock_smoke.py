@@ -68,8 +68,9 @@ with sync_playwright() as p:
     assert all(card["unlocked"] == "true" for card in unlocked["cards"]), unlocked
     assert all("isAvailable" in card["cls"] for card in unlocked["cards"]), unlocked
     assert all("Sbloccata: Accademia completata." in card["text"] for card in unlocked["cards"]), unlocked
-    assert all(unlocked["disabled"]), unlocked  # content F9V2b–F9V2f not shipped yet
-    assert all(label == "In preparazione" for label in unlocked["labels"]), unlocked
+    assert unlocked["disabled"][0] is False and all(unlocked["disabled"][1:]), unlocked
+    assert unlocked["labels"][0] == "Avvia", unlocked
+    assert all(label == "In preparazione" for label in unlocked["labels"][1:]), unlocked
     assert "5/5" in unlocked["gate"] and "sbloccate" in unlocked["gate"].lower(), unlocked
     assert unlocked["diag"]["unlocked"] is True and unlocked["diag"]["completedLessons"] == 5, unlocked
 

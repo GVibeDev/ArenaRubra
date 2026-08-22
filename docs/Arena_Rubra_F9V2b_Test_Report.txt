@@ -1,0 +1,74 @@
+ARENA RUBRA — F9V2b TEST REPORT
+================================
+
+Build testata:
+  C2-STABLE-1-F9V2b-APK-M4c
+  Tutorial Challenge I · Elimination
+
+Base:
+  F9V2a Tutorial Challenge Framework & Unlock System — validata dall'utente
+  Logic baseline: C2-STABLE-1-F9T2c4-APK-M4c
+
+TEST STATICI / NODE ESEGUITI
+----------------------------
+1. node --check su JS di src/, data/, tests/
+   RISULTATO: PASS — 185 file controllati.
+
+2. Suite Node completa presente nel work tree
+   RISULTATO: PASS — 91 test / 91, 0 failure.
+   Include le regressioni storiche e lo smoke F9V2a aggiornato alla candidata F9V2b.
+
+TEST BROWSER CRITICI ESEGUITI
+-----------------------------
+- F9V1a Authoritative Tutorial smoke: PASS.
+- F9V2a Challenge Unlock smoke: PASS.
+- Lezione 1 Exordium completa: PASS — 30 step visitati, completata, 0 pageerror, 0 console error.
+- Lezione 2 Nexus completa: PASS — 31 step visitati, completata.
+- Lezione 3 Agathoi completa: PASS — 25 step visitati, completata.
+- Lezione 4 Liberti completa: PASS — 20 step visitati, completata.
+- Lezione 5 Fabeot completa: PASS — 23 step visitati, completata.
+- F9V2b Challenge I browser smoke: PASS.
+
+VERIFICHE SPECIFICHE CHALLENGE I
+--------------------------------
+Lo smoke browser dedicato ha verificato realmente:
+- unlock 5/5 prima dell'avvio;
+- 4 unità Exordium iniziali;
+- 2 unità Starter Nexus nella prima ondata;
+- mano/deck/Starter Card vuoti;
+- ENE a 0;
+- tutorialMode / tutorialChallengeMode attivi;
+- matchRecorded=false;
+- reset autoritativo dell'ENE a TURN_STARTED;
+- un turno reale del Bot Advanced;
+- nessun acquisto o aggiunta di unità da parte del bot;
+- nessuna carta/deck riattivata durante il turno bot;
+- distruzione dell'Ondata I attraverso il normale pipeline danno/eventi;
+- spawn dell'Ondata II soltanto dopo l'eliminazione completa della prima;
+- totale 4 unità Nexus tracciate distrutte;
+- completamento Challenge persistito;
+- ritorno alla schermata Tutorial;
+- HUD Challenge rimosso;
+- nessuna scrittura del match competitivo;
+- 0 page errors / 0 console errors.
+
+Output sintetico del test dedicato:
+  ok=true
+  build=C2-STABLE-1-F9V2b-APK-M4c
+  initialPlayerUnits=4
+  wave1Enemies=2
+  botAutonomyNoPurchases=true
+  wave2Enemies=2
+  enemyDestroyed=4
+  challengeCompleted=true
+  competitiveRecordWritten=false
+  pageErrors=[]
+  consoleErrors=[]
+
+NOTA SULLA SUITE BROWSER AGGREGATA
+----------------------------------
+Un tentativo di eseguire 13 smoke browser in un unico comando è terminato per timeout globale di 180 secondi durante l'ingresso nel test f9o7b. Non è stato osservato un errore funzionale in quel punto. Per evitare di trasformare un timeout di batch in un falso PASS, il presente report NON dichiara verde l'intera suite browser aggregata. I test critici sopra elencati sono stati eseguiti e verificati separatamente.
+
+ESITO TECNICO
+-------------
+F9V2b è tecnicamente candidata al test manuale. Il freeze definitivo richiede la validazione utente della giocabilità della Challenge I.

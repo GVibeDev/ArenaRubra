@@ -220,7 +220,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9V2a-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V2b-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available":5,"starts":5,"lesson4":True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

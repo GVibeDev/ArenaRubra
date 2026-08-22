@@ -64,12 +64,12 @@ const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
     order:1,
     title:"Eliminazione",
     subtitle:"Prova sul campo I",
-    summary:"Solo unità sul campo. Distruggi 4 unità starter nemiche in 2 ondate da 2.",
+    summary:"Solo unità sul campo. Distruggi 4 unità starter Nexus in 2 ondate da 2.",
     progression:"Solo unità",
     objective:"Elimina tutte le unità nemiche",
     unlockRule:"all_tutorial_lessons_completed",
-    scenarioId:null,
-    contentStatus:"planned_f9v2b"
+    scenarioId:"challenge-1-elimination",
+    contentStatus:"available_f9v2b"
   }),
   Object.freeze({
     id:"challenge-2-hold-ps",
@@ -121,9 +121,90 @@ const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
   })
 ]);
 
-// Registro stabile per gli scenari Challenge. F9V2a lo introduce vuoto: le milestone
-// successive aggiungono le definizioni senza cambiare il contratto del runtime.
-const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({});
+// F9V2b – prima Prova sul campo giocabile.
+// La Challenge 1 usa solo miniature già schierate: niente mano, deck, starter card,
+// acquisti o tattiche sostenute dall'ENE. Il Nexus attacca con due ondate identiche
+// formate dalle sue unità Starter fanteria/veicolo.
+const TUTORIAL_CHALLENGE1_COORDS_F9V2B = Object.freeze({
+  player:Object.freeze([
+    Object.freeze([-3,0,3]),
+    Object.freeze([-3,1,2]),
+    Object.freeze([-2,-1,3]),
+    Object.freeze([-2,0,2])
+  ]),
+  wave1:Object.freeze([
+    Object.freeze([1,0,-1]),
+    Object.freeze([1,-1,0])
+  ]),
+  wave2:Object.freeze([
+    Object.freeze([3,0,-3]),
+    Object.freeze([3,-1,-2])
+  ])
+});
+
+const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({
+  "challenge-1-elimination": Object.freeze({
+    id:"challenge-1-elimination",
+    schemaVersion:1,
+    title:"Prova sul campo I · Eliminazione",
+    challengeId:"challenge-1-elimination",
+    playerSide:1,
+    enemySide:2,
+    objective:Object.freeze({
+      kind:"destroy_tracked_enemies",
+      target:4,
+      label:"Distruggi 4 unità Starter Nexus",
+      failureKind:"all_player_units_destroyed"
+    }),
+    rules:Object.freeze({
+      energyLocked:true,
+      cardsDisabled:true,
+      purchasesDisabled:true,
+      pressureIgnored:true
+    }),
+    setup:Object.freeze({
+      mapId:"map1_starter",
+      factions:Object.freeze({ 1:"Exordium", 2:"Nexus" }),
+      selectedCommanders:Object.freeze({ 1:"EX0B00", 2:"NXCMD01" }),
+      selectedDecks:Object.freeze({ 1:Object.freeze({ mode:"template" }), 2:Object.freeze({ mode:"template" }) }),
+      modes:Object.freeze({ 1:"human", 2:"bot" }),
+      autoResignEnabled:false,
+      aiMode:"advanced",
+      pacePreset:"competitive",
+      gameScaleMode:"tactical",
+      firstPlayer:1,
+      energy:Object.freeze({ 1:0, 2:0 }),
+      starterCardsEnabled:false,
+      hand:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) }),
+      deck:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) }),
+      discard:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) })
+    }),
+    initialUnits:Object.freeze([
+      Object.freeze({ side:1, blueprintId:"EX1B01", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.player[0], acted:false }),
+      Object.freeze({ side:1, blueprintId:"EXC1F04", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.player[1], acted:false }),
+      Object.freeze({ side:1, blueprintId:"EXC1F05", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.player[2], acted:false }),
+      Object.freeze({ side:1, blueprintId:"EX2B01", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.player[3], acted:false })
+    ]),
+    waves:Object.freeze([
+      Object.freeze({
+        id:"wave-1",
+        label:"Ondata I",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"NX2B01", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.wave1[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"NX3B01", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.wave1[1], acted:true })
+        ])
+      }),
+      Object.freeze({
+        id:"wave-2",
+        label:"Ondata II",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"NX2B01", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.wave2[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"NX3B01", coord:TUTORIAL_CHALLENGE1_COORDS_F9V2B.wave2[1], acted:true })
+        ])
+      })
+    ])
+  })
+});
 
 const TUTORIAL_PORTRAIT_MANIFEST_F9O6 = Object.freeze({
   exordium:Object.freeze({ id:"tutorial-exordium", label:"Narratore Exordium", faction:"Exordium", frames:Object.freeze({

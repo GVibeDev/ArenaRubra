@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V2a Tutorial Challenge Framework & Unlock System.
-// Basata su F9V1a: conserva il contratto di interazione autorevole delle lezioni e aggiunge
-// il secondo livello dell'Accademia, con cinque Challenge visibili e unlock globale 5/5.
+// Arena Rubra – F9V2b Tutorial Challenge I · Elimination.
+// Basata su F9V2a: conserva unlock globale 5/5 e persistenza separata, rendendo giocabile
+// la prima Prova sul campo in freeplay controllato con due ondate Starter Nexus.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -22,7 +22,10 @@ let tutorialChallengeRuntimeState = {
   challengeId:"",
   scenario:null,
   startedAt:null,
-  lastResult:null
+  lastResult:null,
+  meta:null,
+  timers:new Set(),
+  completing:false
 };
 
 let tutorialRuntimeState = {
@@ -387,9 +390,262 @@ function tutorialRuntimeRenderMenu() {
 }
 
 
+
+function tutorialRuntimeChallengeClearTimers() {
+  for (const timerId of tutorialChallengeRuntimeState.timers || []) clearTimeout(timerId);
+  if (tutorialChallengeRuntimeState.timers && typeof tutorialChallengeRuntimeState.timers.clear === "function") tutorialChallengeRuntimeState.timers.clear();
+}
+
+function tutorialRuntimeChallengeSchedule(callback, delay=0) {
+  if (typeof callback !== "function") return null;
+  const challengeId = tutorialChallengeRuntimeState.challengeId;
+  const timerId = setTimeout(() => {
+    if (tutorialChallengeRuntimeState.timers) tutorialChallengeRuntimeState.timers.delete(timerId);
+    if (!tutorialChallengeRuntimeState.active || tutorialChallengeRuntimeState.challengeId !== challengeId) return;
+    callback();
+  }, Math.max(0, Number(delay) || 0));
+  tutorialChallengeRuntimeState.timers.add(timerId);
+  return timerId;
+}
+
+function tutorialRuntimeChallengeEnsureHud() {
+  if (typeof document === "undefined") return null;
+  let hud = document.getElementById("tutorialChallengeHud");
+  if (hud && hud.isConnected) return hud;
+  const strip = document.getElementById("gameHudStrip");
+  if (!strip) return null;
+  hud = document.createElement("span");
+  hud.id = "tutorialChallengeHud";
+  hud.className = "hudChip hudPrimary tutorialChallengeHud";
+  hud.setAttribute("aria-live", "polite");
+  strip.appendChild(hud);
+  return hud;
+}
+
+function tutorialRuntimeChallengeRemoveHud() {
+  if (typeof document === "undefined") return;
+  const hud = document.getElementById("tutorialChallengeHud");
+  if (hud) hud.remove();
+}
+
+function tutorialRuntimeChallengeRenderHud() {
+  const hud = tutorialRuntimeChallengeEnsureHud();
+  if (!hud) return false;
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta || {};
+  const objective = scenario && scenario.objective || {};
+  const target = Math.max(0, Number(objective.target) || 0);
+  const destroyed = Math.max(0, Number(meta.enemyDestroyed) || 0);
+  const wave = Math.max(1, Number(meta.waveIndex) + 1 || 1);
+  hud.textContent = `PROVA I · Eliminazione ${destroyed}/${target} · Ondata ${Math.min(wave, 2)}/2`;
+  hud.title = objective.label || "Elimina tutte le unità nemiche.";
+  return true;
+}
+
+function tutorialRuntimeChallengeAnnounce(title, message, options={}) {
+  if (typeof eventOverlayEnqueue === "function") {
+    eventOverlayEnqueue({
+      title:String(title || "PROVA SUL CAMPO"),
+      message:String(message || ""),
+      icon:options.icon || "◆",
+      priority:options.priority || "high",
+      durationMs:Number(options.durationMs) || 1500,
+      key:`tutorial-challenge:${tutorialChallengeRuntimeState.challengeId}:${String(title || "event")}:${Date.now()}`
+    });
+  }
+  if (typeof log === "function" && message) {
+    const eventType = typeof EventTypes !== "undefined" ? EventTypes.LOG_MESSAGE : undefined;
+    log(`${title}: ${message}`, eventType, { source:"F9V2b-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
+  }
+}
+
+function tutorialRuntimeChallengeResolveSpawnCoord(item) {
+  if (!state || !item) return null;
+  const preferred = Array.isArray(item.coord) ? [...item.coord] : null;
+  const free = coord => Array.isArray(coord)
+    && (typeof isInsideMap !== "function" || isInsideMap(coord))
+    && (typeof getUnitAt !== "function" || !getUnitAt(coord));
+  if (free(preferred)) return preferred;
+  if (!preferred || !Array.isArray(state.cells)) return null;
+  const candidates = state.cells
+    .map(cell => cell && Array.isArray(cell.coord) ? [...cell.coord] : null)
+    .filter(free)
+    .sort((a,b) => {
+      const da = typeof hexDistance === "function" ? hexDistance(a, preferred) : 0;
+      const db = typeof hexDistance === "function" ? hexDistance(b, preferred) : 0;
+      return da - db || a.join(",").localeCompare(b.join(","));
+    });
+  return candidates[0] || null;
+}
+
+function tutorialRuntimeChallengeSpawnTrackedUnit(item, kind, waveIndex=null) {
+  if (!item) return null;
+  const coord = tutorialRuntimeChallengeResolveSpawnCoord(item);
+  if (!coord) return null;
+  const unit = tutorialRuntimeSpawnUnit({ ...item, coord });
+  if (!unit) return null;
+  unit.tutorialChallengeUnit = true;
+  unit.tutorialChallengeId = tutorialChallengeRuntimeState.challengeId;
+  if (waveIndex != null) unit.tutorialChallengeWave = Number(waveIndex) + 1;
+  const meta = tutorialChallengeRuntimeState.meta;
+  if (meta) {
+    if (kind === "player") meta.playerUnitIds.add(String(unit.uid));
+    if (kind === "enemy") {
+      meta.enemyUnitIds.add(String(unit.uid));
+      const key = Number(waveIndex) || 0;
+      if (!meta.waveUnitIds[key]) meta.waveUnitIds[key] = new Set();
+      meta.waveUnitIds[key].add(String(unit.uid));
+      meta.enemiesSpawned += 1;
+    }
+  }
+  return unit;
+}
+
+function tutorialRuntimeChallengeStartWave(index) {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta;
+  const waves = scenario && Array.isArray(scenario.waves) ? scenario.waves : [];
+  const wave = waves[index];
+  if (!wave || !meta || meta.startedWaves.has(index)) return false;
+  meta.startedWaves.add(index);
+  meta.waveIndex = index;
+  const spawned = (wave.units || []).map(item => tutorialRuntimeChallengeSpawnTrackedUnit(item, "enemy", index)).filter(Boolean);
+  if (!spawned.length) {
+    tutorialRuntimeChallengeSchedule(() => tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:"wave_spawn_failed" }), 0);
+    return false;
+  }
+  tutorialRuntimeChallengeRenderHud();
+  tutorialRuntimeChallengeAnnounce(
+    wave.label || `Ondata ${index + 1}`,
+    index === 0
+      ? "Due unità Starter Nexus entrano nell'area. Distruggile."
+      : "Seconda e ultima ondata: elimina le due unità Starter Nexus rimaste.",
+    { icon:index === 0 ? "Ⅰ" : "Ⅱ", durationMs:1500 }
+  );
+  if (typeof renderAll === "function") renderAll();
+  return true;
+}
+
+function tutorialRuntimeChallengeLivingTrackedUnits(ids) {
+  if (!state || !Array.isArray(state.units) || !ids) return [];
+  return state.units.filter(unit => unit && unit.alive && ids.has(String(unit.uid)));
+}
+
+function tutorialRuntimeChallengeInitializeScenario() {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  if (!scenario || !state) return false;
+  tutorialChallengeRuntimeState.meta = {
+    waveIndex:-1,
+    enemyDestroyed:0,
+    enemiesSpawned:0,
+    playerUnitIds:new Set(),
+    enemyUnitIds:new Set(),
+    destroyedEnemyUnitIds:new Set(),
+    startedWaves:new Set(),
+    waveUnitIds:{}
+  };
+  const initial = Array.isArray(scenario.initialUnits) ? scenario.initialUnits : [];
+  const players = initial.map(item => tutorialRuntimeChallengeSpawnTrackedUnit(item, "player")).filter(Boolean);
+  if (!players.length) return false;
+  if (!tutorialRuntimeChallengeStartWave(0)) return false;
+  tutorialRuntimeChallengeRenderHud();
+  tutorialRuntimeChallengeAnnounce(
+    "PROVA SUL CAMPO I · ELIMINAZIONE",
+    "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate.",
+    { icon:"◆", durationMs:2100 }
+  );
+  return true;
+}
+
+function tutorialRuntimeChallengeApplyTurnRestrictions(event) {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  if (!scenario || !state || !event || event.type !== (typeof EventTypes !== "undefined" ? EventTypes.TURN_STARTED : "TURN_STARTED")) return false;
+  const rules = scenario.rules || {};
+  const side = Number(event.data && event.data.player);
+  if (rules.energyLocked && state.energy && Number.isFinite(side)) state.energy[side] = 0;
+  if (rules.cardsDisabled && Number.isFinite(side)) {
+    if (state.hand && Array.isArray(state.hand[side])) state.hand[side] = [];
+    if (state.deck && Array.isArray(state.deck[side])) state.deck[side] = [];
+    if (state.discard && Array.isArray(state.discard[side])) state.discard[side] = [];
+    if (state.starterCards) state.starterCards[side] = {};
+    if (typeof syncCardDebugState === "function") syncCardDebugState();
+  }
+  return true;
+}
+
+function tutorialRuntimeHandleChallengeGameEvent(event) {
+  if (!tutorialChallengeRuntimeState.active || !tutorialChallengeRuntimeState.scenario || tutorialChallengeRuntimeState.completing) return false;
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta;
+  if (!meta) return false;
+
+  tutorialRuntimeChallengeApplyTurnRestrictions(event);
+
+  const type = event && event.type;
+  const data = event && event.data || {};
+  const destroyedType = typeof EventTypes !== "undefined" ? EventTypes.UNIT_DESTROYED : "UNIT_DESTROYED";
+  const victoryType = typeof EventTypes !== "undefined" ? EventTypes.VICTORY : "VICTORY";
+
+  if (type === destroyedType) {
+    const uid = String(data.unitId || "");
+    if (uid && meta.enemyUnitIds.has(uid) && !meta.destroyedEnemyUnitIds.has(uid)) {
+      meta.destroyedEnemyUnitIds.add(uid);
+      meta.enemyDestroyed += 1;
+      tutorialRuntimeChallengeRenderHud();
+
+      const target = Math.max(1, Number(scenario.objective && scenario.objective.target) || 4);
+      if (meta.enemyDestroyed >= target) {
+        tutorialChallengeRuntimeState.completing = true;
+        tutorialRuntimeChallengeSchedule(() => {
+          tutorialChallengeRuntimeState.completing = false;
+          tutorialRuntimeCompleteChallenge({ success:true, outcome:"success", reason:"all_enemy_units_destroyed" });
+        }, 0);
+        return true;
+      }
+
+      if (meta.waveIndex === 0) {
+        const waveOneIds = meta.waveUnitIds[0] || new Set();
+        const waveOneLiving = tutorialRuntimeChallengeLivingTrackedUnits(waveOneIds);
+        if (waveOneIds.size > 0 && waveOneLiving.length === 0 && !meta.startedWaves.has(1)) {
+          tutorialRuntimeChallengeStartWave(1);
+        }
+      }
+    }
+
+    if (uid && meta.playerUnitIds.has(uid)) {
+      const livingPlayers = tutorialRuntimeChallengeLivingTrackedUnits(meta.playerUnitIds);
+      if (livingPlayers.length === 0) {
+        tutorialChallengeRuntimeState.completing = true;
+        tutorialRuntimeChallengeSchedule(() => {
+          tutorialChallengeRuntimeState.completing = false;
+          tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:"all_player_units_destroyed" });
+        }, 0);
+        return true;
+      }
+    }
+  }
+
+  if (type === victoryType) {
+    const playerSide = Number(scenario.playerSide || 1);
+    const winner = Number(data.winner || 0);
+    const target = Math.max(1, Number(scenario.objective && scenario.objective.target) || 4);
+    if (meta.enemyDestroyed < target || winner !== playerSide) {
+      tutorialChallengeRuntimeState.completing = true;
+      tutorialRuntimeChallengeSchedule(() => {
+        tutorialChallengeRuntimeState.completing = false;
+        tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:winner === playerSide ? "wrong_victory_condition" : "enemy_victory" });
+      }, 0);
+      return true;
+    }
+  }
+  return false;
+}
+
 function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
   if (!challenge || !scenario || !scenario.setup || typeof newGame !== "function") return false;
   const setup = scenario.setup;
+  const initiative = typeof document !== "undefined" ? document.getElementById("initiativeMode") : null;
+  if (initiative && setup.firstPlayer != null) initiative.value = String(setup.firstPlayer);
   if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.GAME);
   newGame({
     mapId:setup.mapId || undefined,
@@ -421,6 +677,10 @@ function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
     if (setup.hand && Array.isArray(setup.hand[side])) state.hand[side] = setup.hand[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "hand")).filter(Boolean);
     if (setup.deck && Array.isArray(setup.deck[side])) state.deck[side] = setup.deck[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "deck")).filter(Boolean);
     if (setup.discard && Array.isArray(setup.discard[side])) state.discard[side] = setup.discard[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "discard")).filter(Boolean);
+  }
+  if (scenario.rules && scenario.rules.cardsDisabled) {
+    state.missions = Object.fromEntries((typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2]).map(side => [side, null]));
+    state.missionPendingReward = null;
   }
   if (typeof syncCardDebugState === "function") syncCardDebugState();
   if (typeof resetInteractionContext === "function") resetInteractionContext();
@@ -458,6 +718,10 @@ function tutorialRuntimeStartChallenge(id, options={}) {
     tutorialRuntimeAbortChallenge({ returnToTutorial:true, reason:"setup-failed" });
     return false;
   }
+  if (!tutorialRuntimeChallengeInitializeScenario()) {
+    tutorialRuntimeAbortChallenge({ returnToTutorial:true, reason:"scenario-init-failed" });
+    return false;
+  }
   tutorialRuntimeSaveChallengeProgress(challenge.id, { incrementAttempt:true, outcome:"started" });
   tutorialRuntimeSetStatus(`${challenge.title} · Prova sul campo avviata.`);
   return true;
@@ -470,7 +734,11 @@ function tutorialRuntimeCompleteChallenge(options={}) {
   const outcome = options.outcome || (success ? "success" : "failure");
   tutorialRuntimeSaveChallengeProgress(challengeId, { completed:success, outcome, reason:options.reason || null });
   tutorialChallengeRuntimeState.lastResult = { success, outcome, reason:options.reason || null, at:Date.now() };
+  if (typeof invalidateBotRunForNewMatchF9T2c2 === "function") invalidateBotRunForNewMatchF9T2c2("tutorial_challenge_complete");
+  tutorialRuntimeChallengeClearTimers();
+  tutorialRuntimeChallengeRemoveHud();
   tutorialChallengeRuntimeState.active = false;
+  tutorialChallengeRuntimeState.completing = false;
   if (typeof state !== "undefined" && state) {
     state.tutorialChallengeMode = false;
     state.tutorialChallengeId = null;
@@ -488,11 +756,16 @@ function tutorialRuntimeCompleteChallenge(options={}) {
 
 function tutorialRuntimeAbortChallenge(options={}) {
   const wasActive = tutorialChallengeRuntimeState.active;
+  if (wasActive && typeof invalidateBotRunForNewMatchF9T2c2 === "function") invalidateBotRunForNewMatchF9T2c2("tutorial_challenge_abort");
+  tutorialRuntimeChallengeClearTimers();
+  tutorialRuntimeChallengeRemoveHud();
   tutorialChallengeRuntimeState.active = false;
   tutorialChallengeRuntimeState.challenge = null;
   tutorialChallengeRuntimeState.challengeId = "";
   tutorialChallengeRuntimeState.scenario = null;
   tutorialChallengeRuntimeState.startedAt = null;
+  tutorialChallengeRuntimeState.meta = null;
+  tutorialChallengeRuntimeState.completing = false;
   if (typeof state !== "undefined" && state) {
     state.tutorialChallengeMode = false;
     state.tutorialChallengeId = null;
@@ -518,7 +791,11 @@ function tutorialRuntimeChallengeDiagnostics() {
     completedLessons:unlock.completedLessons,
     requiredLessons:unlock.requiredLessons,
     startedAt:tutorialChallengeRuntimeState.startedAt,
-    lastResult:tutorialChallengeRuntimeState.lastResult
+    lastResult:tutorialChallengeRuntimeState.lastResult,
+    wave:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.waveIndex + 1 : 0,
+    enemyDestroyed:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.enemyDestroyed : 0,
+    enemiesSpawned:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.enemiesSpawned : 0,
+    playerUnitsAlive:tutorialChallengeRuntimeState.meta ? tutorialRuntimeChallengeLivingTrackedUnits(tutorialChallengeRuntimeState.meta.playerUnitIds).length : 0
   };
 }
 
@@ -1110,9 +1387,11 @@ function tutorialRuntimeMatchEvent(event, condition) {
 }
 
 function tutorialRuntimeHandleGameEvent(event) {
-  if (!tutorialRuntimeState.active || !tutorialRuntimeState.step) return false;
+  let handled = false;
+  if (tutorialChallengeRuntimeState.active) handled = tutorialRuntimeHandleChallengeGameEvent(event) || handled;
+  if (!tutorialRuntimeState.active || !tutorialRuntimeState.step) return handled;
   const condition = tutorialRuntimeState.step.completeOn;
-  if (!tutorialRuntimeMatchEvent(event, condition)) return false;
+  if (!tutorialRuntimeMatchEvent(event, condition)) return handled;
   tutorialRuntimeSchedule(() => tutorialRuntimeCompleteStep(`event:${event.type}`), 0);
   return true;
 }

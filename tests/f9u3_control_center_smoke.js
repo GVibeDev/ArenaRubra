@@ -16,10 +16,10 @@ let checks = 0;
 const ok = (value, message) => { assert.ok(value, message); checks += 1; };
 const once = id => (index.match(new RegExp(`id=["']${id}["']`, "g")) || []).length === 1;
 
-ok(build.includes('version: "C2-STABLE-1-F9V2a-APK-M4c"'), "versione F9T2c");
-ok(build.includes('buildName: "Tutorial Runtime 2.0 · Authoritative Interaction Hotfix"'), "nome build F9T2d");
+ok(build.includes('version: "C2-STABLE-1-F9V2b-APK-M4c"'), "versione F9T2c");
+ok(build.includes('buildName: "Tutorial Challenge I · Elimination"'), "nome build F9T2d");
 ok(build.includes('logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'), "baseline logica F9T2c4");
-ok(build.includes('buildChannel: "starter2-tutorial-v2a"'), "canale candidato F9T2c");
+ok(build.includes('buildChannel: "starter2-tutorial-v2b"'), "canale candidato F9T2c");
 ok(build.includes("F9Q3e1-2") && build.includes("F9T1-1") && build.includes("F9T2d3-1"), "schema base, contratto Expert ed estensione dottrinale dichiarati");
 
 [

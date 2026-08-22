@@ -28,7 +28,7 @@ with sync_playwright() as p:
     page.evaluate("""() => { const splash=document.getElementById('appSplash'); if(splash){ splash.hidden=true; splash.style.display='none'; splash.setAttribute('aria-hidden','true'); } }""")
     page.wait_for_timeout(300)
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2a-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2b-APK-M4c"
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(450)
 
@@ -95,7 +95,7 @@ assert not page_errors, page_errors
 assert not unexpected, unexpected
 print(json.dumps({
     "ok": True,
-    "build": "C2-STABLE-1-F9V2a-APK-M4c",
+    "build": "C2-STABLE-1-F9V2b-APK-M4c",
     "informativeGuard": informative_guard,
     "wrongCardGuard": wrong_card,
     "wrongHexGuard": wrong_hex,

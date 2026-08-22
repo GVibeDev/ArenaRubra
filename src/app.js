@@ -465,6 +465,9 @@ function syncLegacyControlsFromSetupScreen() {
 }
 
 function openNewGameSetupScreen() {
+  if (typeof tutorialRuntimeAbortChallenge === "function" && typeof tutorialChallengeRuntimeState !== "undefined" && tutorialChallengeRuntimeState.active) {
+    tutorialRuntimeAbortChallenge({ silent:true, keepScreen:true, reason:"open-new-game" });
+  }
   if (typeof refreshCommanderSelects === "function") refreshCommanderSelects();
   refreshSetupMapSelector(typeof mapEditorState !== "undefined" && mapEditorState && mapEditorState.labMapId ? mapEditorState.labMapId : "");
   syncSetupScreenFromLegacyControls();
@@ -544,6 +547,9 @@ function resumeGameFromAppMenu() {
 }
 
 function openMainMenu() {
+  if (typeof tutorialRuntimeAbortChallenge === "function" && typeof tutorialChallengeRuntimeState !== "undefined" && tutorialChallengeRuntimeState.active) {
+    tutorialRuntimeAbortChallenge({ silent:true, keepScreen:true, reason:"main-menu" });
+  }
   if (typeof controlCenterClosePanel === "function") controlCenterClosePanel();
   refreshSetupDeckSelectors();
   setAppScreen(ARENA_APP_SCREENS.MAIN_MENU);
