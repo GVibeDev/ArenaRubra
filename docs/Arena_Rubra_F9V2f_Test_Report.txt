@@ -1,0 +1,122 @@
+ARENA RUBRA — F9V2f TEST REPORT
+================================
+Build candidata: C2-STABLE-1-F9V2f-APK-M4c
+Milestone: Tutorial Challenge V · Esame finale
+Data: 2026-08-22
+
+BASE VALIDATA
+-------------
+L'autore ha validato in questa sessione:
+  C2-STABLE-1-F9V2e-APK-M4c
+  Tutorial Challenge IV · Pressione
+
+La patch F9V2f è stata costruita come overwrite cumulativo della F9V2e validata.
+
+RIFERIMENTO CORE REMOTO VERIFICATO
+----------------------------------
+GitHub main usata per verificare i contratti ordinari del match:
+  16537833101b7ff1ffb0c07f72aa180301196003
+  F9V2c
+
+Verifiche sul core remoto:
+- src/deck.js: deck regolamentare target 30 carte;
+- createInitialHandFromDeck(): mano iniziale target 5;
+- initializeCardZonesForGame(): inizializzazione normale di deck/mano/scarti/Starter per entrambi i lati;
+- src/rules.js: VICTORY tipizzato e condizioni QG/Pressione ordinarie;
+- data/map_definitions.js: Campo Starter e geometria ufficiale;
+- src/turns.js: flusso turni/pesca ordinario.
+
+CONTRATTO F9V2f
+----------------
+- Challenge V: challenge-5-final-exam / Esame finale.
+- Objective kind: win_match.
+- Exordium umano contro Nexus Advanced.
+- Campo Starter, modalità Rapida / Competitive, scala Tattica.
+- Varran (EX0B00) contro Avatex (NXCMD01).
+- Nessuna unità Challenge pre-schierata e nessuna ondata.
+- selectedDecks template per entrambi i lati.
+- Nessun override Challenge di energy/hand/deck/discard/Starter/pressure/startingRound.
+- Nessuna restrizione cardsDisabled, fixedHand, deckDisabled, enemyCardsDisabled, enemyEnergyLocked, missionsDisabled o deckRecoveryDisabled.
+- Auto-resign attivo.
+- Il runtime Challenge lascia intatto il normale setup prodotto da newGame()/initializeCardZonesForGame().
+- Obiettivo autorevole: VICTORY del core.
+- winner=giocatore => match_victory con qualunque winType legittimo.
+- winner=avversario => enemy_victory.
+- winner nullo => match_draw.
+- Nessun fallimento Challenge custom per temporanea assenza di unità combattenti: la conclusione resta responsabilità del core normale.
+- tutorialMode=true / tutorialChallengeMode=true / matchRecorded=false.
+
+CONTROLLI ESEGUITI REALMENTE IN CONTAINER
+-----------------------------------------
+PASS — node --check src/tutorial_runtime.js
+PASS — node --check data/tutorial_scenarios.js
+PASS — node --check src/build_info.js
+PASS — node --check su tutti i 13 test JS inclusi nella patch
+PASS — python3 -m py_compile su tutti i 10 test Python inclusi nella patch
+
+PASS — tests/f9v2a_tutorial_challenge_framework_smoke.js
+- 5 Challenge registrate;
+- unlock globale 5/5 preservato;
+- Challenge I–IV preservate;
+- Challenge V pubblicata e scenario risolvibile;
+- separazione progressi Challenge preservata;
+- matchRecorded=false preservato;
+- build F9V2f corretta.
+
+PASS — tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
+- regressione Challenge II verde;
+- completion central_ps_held_three_turns preservata;
+- build F9V2f corretta.
+
+PASS — tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+- regressione Challenge III verde;
+- completion enemy_hq_occupied preservata;
+- build F9V2f corretta.
+
+PASS — tests/f9v2e_tutorial_challenge4_pressure_smoke.js
+- regressione Challenge IV verde;
+- wrong_victory_condition e pressure_victory preservati;
+- build F9V2f corretta.
+
+PASS — tests/f9v2f_tutorial_challenge5_final_exam_smoke.js
+- scenario challenge-5-final-exam presente;
+- fullMatch=true / objective win_match;
+- Campo Starter / Rapida / Exordium vs Nexus Advanced;
+- nessun initialUnits/waves;
+- nessun override di mano/deck/ENE/Starter/Mission state;
+- simulazione setup normale preserva 5 carte in mano + 25 deck per lato = 30 conteggiate;
+- Starter reserve preservata;
+- ENE iniziale ordinaria preservata;
+- recupero deck non bloccato;
+- inizializzazione Challenge accetta il campo iniziale con soli QG;
+- attività carta non completa l'Esame;
+- VICTORY umano winType=qg => match_victory;
+- VICTORY Nexus winType=pressione => enemy_victory;
+- matchRecorded=false;
+- build/channel F9V2f corretti.
+
+TEST JS STORICI NON ESEGUIBILI DALLA SOLA PATCH
+-----------------------------------------------
+Gli smoke storici che leggono index.html, src/expert_ai/* o altri file del checkout completo non sono dichiarati PASS runtime dalla sola cartella overwrite. La sintassi di tutti i loro file è stata comunque verificata con node --check.
+
+TEST BROWSER
+------------
+I 10 test Python browser inclusi sono stati compilati con py_compile ma non eseguiti contro l'app completa dentro questa cartella patch. La validazione browser/manuale finale resta da eseguire dopo overwrite sul progetto locale completo.
+
+TEST MANUALE RICHIESTO PRIMA DELLA VALIDAZIONE F9V2f
+-----------------------------------------------------
+1. Accademia 5/5: verificare che Prova V · Esame finale mostri Avvia.
+2. Avviare Prova V: Exordium umano vs Nexus Advanced su Campo Starter, Rapida.
+3. Verificare che all'avvio non ci siano unità pre-schierate oltre ai due QG.
+4. Verificare Varran come comandante Exordium e Avatex come comandante Nexus.
+5. Verificare mano iniziale normale da 5 carte per il giocatore e deck residuo da 25.
+6. Verificare Starter reserve ordinaria disponibile.
+7. Verificare ENE/income normali e nessun blocco Challenge su pesca, scarti o recupero deck.
+8. Verificare che il Bot Nexus usi normalmente deck/mano, schieramenti, tattiche e abilità Advanced.
+9. Verificare schieramento di unità dalla mano e dalla Starter reserve secondo le regole normali.
+10. Verificare che l'HUD Challenge mostri Mano / Deck / ENE / Pressione senza alterare il normale HUD di partita.
+11. Proseguire abbastanza da verificare pesca, controllo PS e avanzamento Pressione normali.
+12. Ottenere una vittoria legittima del giocatore (QG o Pressione): la Prova deve risultare completata/Ripeti.
+13. Se possibile, ripetere e lasciare vincere Nexus: la Prova deve risultare fallita e non completata.
+14. Verificare che il match della Challenge non compaia nello storico/statistiche competitive.
+15. Riprovare rapidamente Prove I–IV per regressione.

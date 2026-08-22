@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V2e Tutorial Challenge IV · Pressione.
-// Basata su F9V2d validata: preserva Eliminazione, Tenuta e Breccia e aggiunge la quarta Prova
-// con mano iniziale, deck ridotto a 20 e vittoria autorevole per Pressione del core F9R3.
+// Arena Rubra – F9V2f Tutorial Challenge V · Esame finale.
+// Basata su F9V2e validata: preserva Eliminazione, Tenuta, Breccia e Pressione e aggiunge
+// la quinta Prova come partita completa Rapida contro Nexus Advanced, senza regole speciali.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -465,6 +465,17 @@ function tutorialRuntimeChallengeRenderHud() {
     hud.title = objective.label || "Vinci per Pressione.";
     return true;
   }
+  if (objective.kind === "win_match") {
+    const playerSide = Number(scenario && scenario.playerSide || 1);
+    const handSize = state && state.hand && Array.isArray(state.hand[playerSide]) ? state.hand[playerSide].length : 0;
+    const deckSize = state && state.deck && Array.isArray(state.deck[playerSide]) ? state.deck[playerSide].length : 0;
+    const energy = Math.max(0, Number(state && state.energy && state.energy[playerSide]) || 0);
+    const pressure = Math.max(0, Number(state && state.pressure && state.pressure[playerSide]) || 0);
+    const pressureTarget = typeof pressureWinLimit === "function" ? pressureWinLimit() : 5;
+    hud.textContent = `PROVA V · Esame finale · Mano ${handSize} · Deck ${deckSize} · ENE ${energy} · Pressione ${pressure}/${pressureTarget}`;
+    hud.title = objective.label || "Vinci il match.";
+    return true;
+  }
   const target = Math.max(0, Number(objective.target) || 0);
   const destroyed = Math.max(0, Number(meta.enemyDestroyed) || 0);
   const waves = Array.isArray(scenario && scenario.waves) ? scenario.waves.length : 0;
@@ -487,7 +498,7 @@ function tutorialRuntimeChallengeAnnounce(title, message, options={}) {
   }
   if (typeof log === "function" && message) {
     const eventType = typeof EventTypes !== "undefined" ? EventTypes.LOG_MESSAGE : undefined;
-    log(`${title}: ${message}`, eventType, { source:"F9V2e-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
+    log(`${title}: ${message}`, eventType, { source:"F9V2f-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
   }
 }
 
@@ -602,6 +613,8 @@ function tutorialRuntimeChallengeInitializeScenario() {
     pressureWon:false,
     pressureValue:0,
     pressureTarget:0,
+    matchWon:false,
+    finalWinType:null,
     playerUnitIds:new Set(),
     enemyUnitIds:new Set(),
     destroyedEnemyUnitIds:new Set(),
@@ -610,7 +623,9 @@ function tutorialRuntimeChallengeInitializeScenario() {
   };
   const initial = Array.isArray(scenario.initialUnits) ? scenario.initialUnits : [];
   const players = initial.map(item => tutorialRuntimeChallengeSpawnTrackedUnit(item, "player")).filter(Boolean);
-  if (!players.length) return false;
+  const objectiveKind = scenario.objective && scenario.objective.kind;
+  const fullMatch = Boolean(scenario.rules && scenario.rules.fullMatch === true);
+  if (!players.length && !fullMatch && objectiveKind !== "win_match") return false;
   const waves = Array.isArray(scenario.waves) ? scenario.waves : [];
   if (waves.length && !tutorialRuntimeChallengeStartWave(0)) return false;
   if (scenario.objective && scenario.objective.kind === "occupy_enemy_hq") tutorialChallengeRuntimeState.meta.targetHqCoord = tutorialRuntimeChallengeEnemyHqCoord(scenario);
@@ -621,7 +636,6 @@ function tutorialRuntimeChallengeInitializeScenario() {
   }
   tutorialRuntimeChallengeRenderHud();
   const intro = scenario.intro || {};
-  const objectiveKind = scenario.objective && scenario.objective.kind;
   tutorialRuntimeChallengeAnnounce(
     intro.title || (objectiveKind === "hold_ps"
       ? "PROVA SUL CAMPO II · TENUTA"
@@ -629,14 +643,18 @@ function tutorialRuntimeChallengeInitializeScenario() {
         ? "PROVA SUL CAMPO III · BRECCIA"
         : objectiveKind === "win_by_pressure"
           ? "PROVA SUL CAMPO IV · PRESSIONE"
-          : "PROVA SUL CAMPO I · ELIMINAZIONE"),
+          : objectiveKind === "win_match"
+            ? "PROVA SUL CAMPO V · ESAME FINALE"
+            : "PROVA SUL CAMPO I · ELIMINAZIONE"),
     intro.message || (objectiveKind === "hold_ps"
       ? "Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi."
       : objectiveKind === "occupy_enemy_hq"
         ? "Apri una via e porta una tua unità sulla cella del QG nemico."
         : objectiveKind === "win_by_pressure"
           ? "Mantieni il PS centrale e almeno 2 dei 3 PS finché il core assegna la vittoria per Pressione."
-          : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
+          : objectiveKind === "win_match"
+            ? "Partita completa: usa tutte le regole normali di Arena Rubra e sconfiggi Nexus Advanced con una qualunque condizione di vittoria valida."
+            : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
     { icon:"◆", durationMs:2200 }
   );
   return true;
@@ -668,6 +686,7 @@ function tutorialRuntimeChallengeApplyTurnRestrictions(event) {
 function tutorialRuntimeChallengeCheckPlayerSurvival(scenario, destroyedUid="") {
   const playerSide = Number(scenario && scenario.playerSide || 1);
   const objectiveKind = scenario && scenario.objective && scenario.objective.kind;
+  if (objectiveKind === "win_match") return true;
   if (objectiveKind === "destroy_tracked_enemies") {
     const meta = tutorialChallengeRuntimeState.meta;
     if (meta && destroyedUid && meta.playerUnitIds.has(String(destroyedUid)) && tutorialRuntimeChallengeLivingTrackedUnits(meta.playerUnitIds).length === 0) return false;
@@ -817,6 +836,53 @@ function tutorialRuntimeChallengeHandlePressureObjective(event) {
   return false;
 }
 
+function tutorialRuntimeChallengeHandleFinalExamObjective(event) {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta;
+  const objective = scenario && scenario.objective || {};
+  if (!scenario || !meta || objective.kind !== "win_match") return false;
+
+  const type = event && event.type;
+  const data = event && event.data || {};
+  const playerSide = Number(scenario.playerSide || 1);
+  const victoryType = typeof EventTypes !== "undefined" ? EventTypes.VICTORY : "VICTORY";
+  const hudTypes = new Set([
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_DRAWN : "CARD_DRAWN",
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_PLAYED : "CARD_PLAYED",
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_DISCARDED : "CARD_DISCARDED",
+    typeof EventTypes !== "undefined" ? EventTypes.PS_CONTROL_CHANGED : "PS_CONTROL_CHANGED",
+    typeof EventTypes !== "undefined" ? EventTypes.PRESSURE_CHANGED : "PRESSURE_CHANGED",
+    typeof EventTypes !== "undefined" ? EventTypes.TURN_STARTED : "TURN_STARTED"
+  ]);
+  if (hudTypes.has(type)) {
+    tutorialRuntimeChallengeRenderHud();
+    return true;
+  }
+  if (type !== victoryType) return false;
+
+  const winner = Number(data.winner || 0);
+  const winType = String(data.winType || data.type || "altro").toLowerCase();
+  meta.finalWinType = winType;
+  if (winner === playerSide) {
+    meta.matchWon = true;
+    tutorialRuntimeChallengeRenderHud();
+    tutorialRuntimeChallengeAnnounce("ESAME SUPERATO", `Vittoria ${winType}: hai completato le cinque Prove sul campo.`, { icon:"✓", durationMs:1500 });
+    tutorialChallengeRuntimeState.completing = true;
+    tutorialRuntimeChallengeSchedule(() => {
+      tutorialChallengeRuntimeState.completing = false;
+      tutorialRuntimeCompleteChallenge({ success:true, outcome:"success", reason:"match_victory" });
+    }, 0);
+    return true;
+  }
+
+  tutorialChallengeRuntimeState.completing = true;
+  tutorialRuntimeChallengeSchedule(() => {
+    tutorialChallengeRuntimeState.completing = false;
+    tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:winner > 0 ? "enemy_victory" : "match_draw" });
+  }, 0);
+  return true;
+}
+
 function tutorialRuntimeHandleChallengeGameEvent(event) {
   if (!tutorialChallengeRuntimeState.active || !tutorialChallengeRuntimeState.scenario || tutorialChallengeRuntimeState.completing) return false;
   const scenario = tutorialChallengeRuntimeState.scenario;
@@ -834,6 +900,7 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
   if (objectiveKind === "hold_ps") tutorialRuntimeChallengeHandleHoldObjective(event);
   if (objectiveKind === "occupy_enemy_hq") tutorialRuntimeChallengeHandleHqObjective(event);
   if (objectiveKind === "win_by_pressure") tutorialRuntimeChallengeHandlePressureObjective(event);
+  if (objectiveKind === "win_match") tutorialRuntimeChallengeHandleFinalExamObjective(event);
   if (tutorialChallengeRuntimeState.completing) return true;
 
   if (type === destroyedType) {
@@ -881,7 +948,9 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
           ? meta.hqOccupied === true
           : objectiveKind === "win_by_pressure"
             ? meta.pressureWon === true
-            : false;
+            : objectiveKind === "win_match"
+              ? meta.matchWon === true
+              : false;
     if (!objectiveComplete || winner !== playerSide) {
       tutorialChallengeRuntimeState.completing = true;
       tutorialRuntimeChallengeSchedule(() => {

@@ -112,12 +112,12 @@ const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
     order:5,
     title:"Esame finale",
     subtitle:"Prova sul campo V",
-    summary:"Partita normale in modalità Rapida sulla mappa Starter contro un Bot Nexus.",
+    summary:"Partita completa in modalità Rapida sul Campo Starter contro Nexus Advanced: nessuna regola speciale, usa il normale runtime di Arena Rubra.",
     progression:"Partita completa",
     objective:"Vinci il match",
     unlockRule:"all_tutorial_lessons_completed",
-    scenarioId:null,
-    contentStatus:"planned_f9v2f"
+    scenarioId:"challenge-5-final-exam",
+    contentStatus:"available_f9v2f"
   })
 ]);
 
@@ -190,6 +190,7 @@ const TUTORIAL_CHALLENGE3_COORDS_F9V2D = Object.freeze({
 });
 
 // F9V2e – quarta Prova sul campo: Pressione Strategica.
+// F9V2f – quinta Prova sul campo: Esame finale, partita completa Rapida contro Nexus Advanced.
 // La progressione porta il giocatore a una situazione da metà partita: mano iniziale da 5,
 // deck ridotto a 20 carte, nessuna Missione/Starter reserve e Pressione già attiva dal R20.
 // Il giocatore Agathoi parte con il centro e un PS laterale presidiati; l'Exordium Advanced
@@ -539,6 +540,40 @@ const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({
     intro:Object.freeze({
       title:"PROVA SUL CAMPO IV · PRESSIONE",
       message:"La Prova inizia al round 20, quando la Pressione è già attiva in modalità Rapida. Dycaios presidia il centro e l'Oplita il PS settentrionale: devi mantenere il PS centrale e almeno 2 dei 3 PS fino a Pressione 5. Hai 5 carte in mano e un deck finito di 20 carte; nessuna Missione, Starter reserve o recupero deck."
+    })
+  }),
+  "challenge-5-final-exam": Object.freeze({
+    id:"challenge-5-final-exam",
+    schemaVersion:1,
+    title:"Prova sul campo V · Esame finale",
+    challengeId:"challenge-5-final-exam",
+    playerSide:1,
+    enemySide:2,
+    objective:Object.freeze({
+      kind:"win_match",
+      label:"Vinci una partita completa contro Nexus Advanced",
+      failureKind:"enemy_victory"
+    }),
+    rules:Object.freeze({
+      fullMatch:true
+    }),
+    setup:Object.freeze({
+      mapId:"map1_starter",
+      factions:Object.freeze({ 1:"Exordium", 2:"Nexus" }),
+      selectedCommanders:Object.freeze({ 1:"EX0B00", 2:"NXCMD01" }),
+      selectedDecks:Object.freeze({ 1:Object.freeze({ mode:"template" }), 2:Object.freeze({ mode:"template" }) }),
+      modes:Object.freeze({ 1:"human", 2:"bot" }),
+      autoResignEnabled:true,
+      aiMode:"advanced",
+      pacePreset:"competitive",
+      gameScaleMode:"tactical",
+      firstPlayer:1
+    }),
+    initialUnits:Object.freeze([]),
+    waves:Object.freeze([]),
+    intro:Object.freeze({
+      title:"PROVA SUL CAMPO V · ESAME FINALE",
+      message:"Ora giochi Arena Rubra senza regole speciali di Challenge: Campo Starter, modalità Rapida, Exordium contro Nexus Advanced. Mano, deck regolamentare, Starter reserve, ENE, pesca, recupero deck e condizioni di vittoria sono quelle del match normale. Vinci con qualunque condizione valida del core."
     })
   })
 });

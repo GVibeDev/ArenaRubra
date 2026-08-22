@@ -59,6 +59,7 @@
 // F9V2c Tutorial Challenge II · Tenuta metadata.
 // F9V2d Tutorial Challenge III · Breccia metadata.
 // F9V2e Tutorial Challenge IV · Pressione metadata.
+// F9V2f Tutorial Challenge V · Esame finale metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -81,13 +82,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V2e-APK-M4c",
-  buildName: "Tutorial Challenge IV · Pressione",
+  version: "C2-STABLE-1-F9V2f-APK-M4c",
+  buildName: "Tutorial Challenge V · Esame finale",
   buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-v2e",
+  buildChannel: "starter2-tutorial-v2f",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V2e costruita sulla F9V2d validata e con baseline logica F9T2c4. Preserva le Prove I · Eliminazione, II · Tenuta e III · Breccia e rende giocabile la Prova IV · Pressione dopo lo sblocco globale 5/5 dell’Accademia. Scenario su Campo Starter con Agathoi umano contro Exordium Advanced: Dycaios presidia il PS centrale, un Oplita il PS settentrionale e due unità supportano la linea; l’Exordium controlla il PS meridionale con quattro unità iniziali. La Prova parte direttamente dal round 20 della modalità Rapida, quando la Pressione F9R3 è attiva: il core ordinario richiede il PS centrale e almeno 2/3 PS per avanzare, con vittoria a Pressione 5. Mano iniziale deterministica di 5 carte e deck finito di 20 carte; Starter reserve, Missioni e recupero deck sono disabilitati. Il Bot non usa carte ma conserva ENE e abilità delle unità già schierate. L’obiettivo Challenge non simula né abbrevia la Pressione: completa soltanto su evento VICTORY del core con winner=giocatore e winType=pressione; qualunque altra condizione di vittoria è fallimento della Prova. HUD dedicato mostra Pressione, qualificazione PS/centro, Mano e Deck. Challenge fuori da statistiche e storico competitivi. La Challenge V resta sbloccabile ma in preparazione. Nessuna modifica alle regole di Pressione del match normale, a carte, costi, deck ufficiali, mappe, Missioni, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b/F9V2c/F9V2d, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V2f costruita sulla F9V2e validata e con baseline logica F9T2c4. Preserva le Prove I · Eliminazione, II · Tenuta, III · Breccia e IV · Pressione e rende giocabile la Prova V · Esame finale dopo lo sblocco globale 5/5 dell’Accademia. L’Esame finale è intenzionalmente una partita completa, non uno scenario semplificato: Campo Starter, modalità Rapida, Exordium umano contro Nexus Advanced, Varran contro Avatex, deck template regolamentari da 30 carte complessive per lato con mano iniziale da 5 generata dal normale initializeCardZonesForGame, Starter reserve ordinaria, ENE e income ordinari, pesca e recupero deck ordinari, abilità/tattiche/dispiegamento ordinari e nessuna unità pre-schierata oltre ai QG. Il runtime Challenge non sostituisce mano, deck, ENE, Starter, Missioni o condizioni di vittoria; osserva soltanto l’evento VICTORY del core e completa l’Esame con qualunque condizione valida se winner=giocatore. Vittoria Nexus o pareggio falliscono la Prova. La partita resta tutorialMode e matchRecorded=false, quindi non alimenta lo storico/statistiche competitive. HUD dedicato mostra Mano, Deck, ENE e Pressione senza modificare il gameplay. Nessuna modifica a carte, costi, deck ufficiali, mappe, Missioni, regole QG/Pressione, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b/F9V2c/F9V2d/F9V2e, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {
