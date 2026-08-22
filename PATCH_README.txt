@@ -1,70 +1,38 @@
-ARENA RUBRA — F9V2b OVERWRITE PATCH
+ARENA RUBRA — F9V2c PATCH OVERWRITE
 ====================================
 
-Target remoto verificato al momento della preparazione:
-  GitHub main commit f7fab59402d779835ef0ec270383cc9a50b9e805
-  F9V2a CUMULATIVE OVERWRITE PATCH
-  Build: C2-STABLE-1-F9V2a-APK-M4c
+Milestone:
+  C2-STABLE-1-F9V2c-APK-M4c
+  Tutorial Challenge II · Tenuta
 
-Questa patch è un DELTA sopra F9V2a validata.
-Non è necessario riapplicare F9V1a/F9V2a se il repository è già alla main indicata sopra.
+Base richiesta:
+  F9V2b validata.
 
-BUILD DOPO LA PATCH
--------------------
-C2-STABLE-1-F9V2b-APK-M4c
-Build name: Tutorial Challenge I · Elimination
-Logic baseline: C2-STABLE-1-F9T2c4-APK-M4c
+La main GitHub è stata verificata prima della generazione: i file logici modificati
+coincidono ancora esattamente con F9V2b; gli ultimi commit osservati riguardano asset.
 
 INSTALLAZIONE
 -------------
-1. Assicurati che la copia locale corrisponda alla F9V2a validata / main indicata sopra.
-2. Fai un backup oppure verifica che il working tree Git sia pulito.
-3. Estrai IL CONTENUTO di questo ZIP nella root di ArenaRubra.
-4. Consenti la sovrascrittura dei file esistenti.
-5. Non cancellare gli altri file del repository: lo ZIP contiene solo file modificati/aggiunti da F9V2b rispetto a F9V2a.
-6. Controlla git diff / git status prima del commit.
+1. Apri la root locale del repository ArenaRubra.
+2. Estrai IL CONTENUTO di questo ZIP nella root.
+3. Consenti la sovrascrittura dei file esistenti.
+4. Non cancellare gli asset o altri file non presenti nello ZIP.
 
-COSA AGGIUNGE F9V2b
--------------------
-- Rende giocabile la Challenge I · Eliminazione dopo lo sblocco globale 5/5.
-- Campo Starter, Exordium umano contro Nexus Bot Advanced.
-- 4 unità Exordium già in campo.
-- Nessuna mano, deck, Starter Card o acquisto; ENE bloccata a 0.
-- 4 unità Starter Nexus in due ondate da due:
-    NX2B01 Droide di Sicurezza
-    NX3B01 Quad Ricognitore
-- Ondata II solo dopo l'eliminazione completa dell'Ondata I.
-- Vittoria Challenge al quarto abbattimento tracciato.
-- Sconfitta se vengono eliminate tutte le unità assegnate al giocatore oppure il match termina con una condizione incompatibile con l'obiettivo.
-- HUD dedicato con eliminazioni e ondata corrente.
-- Persistenza tentativo/completamento nel registro Challenge F9V2a.
-- Pulizia runtime quando si lascia la Challenge.
-- Esclusione dai dati competitivi: tutorialMode=true e matchRecorded=false.
-
-NON CAMBIA
-----------
-- Challenge II–V: restano visibili/sbloccabili ma In preparazione.
-- Le 5 lezioni guidate F9V1a/F9V2a.
-- Carte, costi, deck ufficiali, mappe, Missioni e bilanciamento.
-- Advanced AI / Expert AI.
-- Logic baseline F9T2c4.
-
-TEST ESEGUITI
+COSA AGGIUNGE
 -------------
-- JS syntax: 185 file PASS.
-- Suite Node: 91/91 PASS.
-- Browser: F9V1a authority PASS.
-- Browser: F9V2a unlock PASS.
-- Browser: tutte e 5 le lezioni guidate complete PASS, eseguite separatamente.
-- Browser: Challenge I PASS con turno reale Bot Advanced, nessun acquisto, due ondate, completamento, nessun record competitivo, 0 page/console errors.
+- Challenge II · Tenuta giocabile.
+- Nexus umano vs Exordium Advanced su Campo Starter.
+- 4 unità Nexus iniziali.
+- Mano fissa 5 carte; deck vuoto e nessuna pesca.
+- Recupero deck disabilitato durante la Challenge.
+- 6 Starter Exordium in 3 ondate da 2.
+- Ondate II/III dopo il primo/secondo TURN_ENDED Nexus.
+- Obiettivo: PS centrale controllato per 3 turni Nexus consecutivi.
+- Perdita del PS durante il turno avversario => reset 0/3.
+- HUD Tenuta x/3 + Minaccia y/6.
+- Progresso persistente e nessuna statistica competitiva.
+- Prova I preservata; Prove III–V ancora in preparazione.
 
-Vedi docs/Arena_Rubra_F9V2b_Test_Report.txt per il dettaglio e la nota sul timeout del batch browser aggregato.
-
-TEST MANUALE RICHIESTO PRIMA DEL FREEZE
----------------------------------------
-Gioca realmente Challenge I dopo lo sblocco 5/5 e verifica soprattutto:
-- nessuna carta/ENE/acquisto disponibile;
-- comportamento sensato del Nexus con sole due unità per ondata;
-- seconda ondata non anticipata;
-- vittoria esattamente al quarto abbattimento;
-- ritorno corretto all'Accademia e possibilità di Ripeti.
+TEST
+----
+Vedi docs/Arena_Rubra_F9V2c_Test_Report.txt.

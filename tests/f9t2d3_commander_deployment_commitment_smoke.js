@@ -113,7 +113,7 @@ const decisions=h=>h.emitted.filter(e=>e.type==="AI_EXPERT_DECISION").map(e=>e.d
   const build=fs.readFileSync(path.join(ROOT,"src/build_info.js"),"utf8");
   const runtime=fs.readFileSync(path.join(ROOT,"src/expert_ai/expert_runtime.js"),"utf8");
   const telemetry=fs.readFileSync(path.join(ROOT,"src/match_telemetry.js"),"utf8");
-  ok(build.includes('version: "C2-STABLE-1-F9V2b-APK-M4c"'),"versione build F9T2d3");
+  ok(build.includes('version: "C2-STABLE-1-F9V2c-APK-M4c"'),"versione build F9T2d3");
   ok(build.includes('logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'),"baseline logica F9T2c4 preservata");
   ok(runtime.includes('EXPERT_AI_DOCTRINE_SCHEMA_VERSION_F9T2 = "F9T2d3-1"'),"schema runtime F9T2d3-1");
   ok(telemetry.includes('MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION = "F9T2d3-1"'),"schema telemetria F9T2d3-1");

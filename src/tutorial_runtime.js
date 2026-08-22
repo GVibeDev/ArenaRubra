@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V2b Tutorial Challenge I · Elimination.
-// Basata su F9V2a: conserva unlock globale 5/5 e persistenza separata, rendendo giocabile
-// la prima Prova sul campo in freeplay controllato con due ondate Starter Nexus.
+// Arena Rubra – F9V2c Tutorial Challenge II · Tenuta.
+// Basata su F9V2b validata: preserva Eliminazione e aggiunge la seconda Prova sul campo
+// con mano fissa, deck vuoto, recupero deck disabilitato e Tenuta del PS centrale 3 turni.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -434,10 +434,20 @@ function tutorialRuntimeChallengeRenderHud() {
   const scenario = tutorialChallengeRuntimeState.scenario;
   const meta = tutorialChallengeRuntimeState.meta || {};
   const objective = scenario && scenario.objective || {};
+  if (objective.kind === "hold_ps") {
+    const target = Math.max(1, Number(objective.consecutiveTurns || objective.target) || 3);
+    const held = Math.max(0, Number(meta.holdCount) || 0);
+    const spawned = Math.max(0, Number(meta.enemiesSpawned) || 0);
+    const totalThreat = Math.max(spawned, Array.isArray(scenario && scenario.waves) ? scenario.waves.reduce((sum,w)=>sum + ((w && w.units && w.units.length) || 0), 0) : 6);
+    hud.textContent = `PROVA II · Tenuta ${held}/${target} · Minaccia ${spawned}/${totalThreat}`;
+    hud.title = objective.label || "Mantieni il PS centrale.";
+    return true;
+  }
   const target = Math.max(0, Number(objective.target) || 0);
   const destroyed = Math.max(0, Number(meta.enemyDestroyed) || 0);
+  const waves = Array.isArray(scenario && scenario.waves) ? scenario.waves.length : 0;
   const wave = Math.max(1, Number(meta.waveIndex) + 1 || 1);
-  hud.textContent = `PROVA I · Eliminazione ${destroyed}/${target} · Ondata ${Math.min(wave, 2)}/2`;
+  hud.textContent = `PROVA I · Eliminazione ${destroyed}/${target} · Ondata ${Math.min(wave, Math.max(1,waves))}/${Math.max(1,waves)}`;
   hud.title = objective.label || "Elimina tutte le unità nemiche.";
   return true;
 }
@@ -455,7 +465,7 @@ function tutorialRuntimeChallengeAnnounce(title, message, options={}) {
   }
   if (typeof log === "function" && message) {
     const eventType = typeof EventTypes !== "undefined" ? EventTypes.LOG_MESSAGE : undefined;
-    log(`${title}: ${message}`, eventType, { source:"F9V2b-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
+    log(`${title}: ${message}`, eventType, { source:"F9V2c-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
   }
 }
 
@@ -508,7 +518,7 @@ function tutorialRuntimeChallengeStartWave(index) {
   const wave = waves[index];
   if (!wave || !meta || meta.startedWaves.has(index)) return false;
   meta.startedWaves.add(index);
-  meta.waveIndex = index;
+  meta.waveIndex = Math.max(meta.waveIndex, index);
   const spawned = (wave.units || []).map(item => tutorialRuntimeChallengeSpawnTrackedUnit(item, "enemy", index)).filter(Boolean);
   if (!spawned.length) {
     tutorialRuntimeChallengeSchedule(() => tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:"wave_spawn_failed" }), 0);
@@ -517,10 +527,8 @@ function tutorialRuntimeChallengeStartWave(index) {
   tutorialRuntimeChallengeRenderHud();
   tutorialRuntimeChallengeAnnounce(
     wave.label || `Ondata ${index + 1}`,
-    index === 0
-      ? "Due unità Starter Nexus entrano nell'area. Distruggile."
-      : "Seconda e ultima ondata: elimina le due unità Starter Nexus rimaste.",
-    { icon:index === 0 ? "Ⅰ" : "Ⅱ", durationMs:1500 }
+    wave.message || (index === 0 ? "Due unità nemiche entrano nell'area." : "Nuovi rinforzi nemici entrano nell'area."),
+    { icon:String(index + 1), durationMs:1500 }
   );
   if (typeof renderAll === "function") renderAll();
   return true;
@@ -531,6 +539,18 @@ function tutorialRuntimeChallengeLivingTrackedUnits(ids) {
   return state.units.filter(unit => unit && unit.alive && ids.has(String(unit.uid)));
 }
 
+function tutorialRuntimeChallengeLivingCombatUnits(side) {
+  if (!state || !Array.isArray(state.units)) return [];
+  return state.units.filter(unit => unit && unit.alive && unit.type !== "QG" && Number(unit.side) === Number(side));
+}
+
+function tutorialRuntimeChallengeCentralPsControl(scenario=tutorialChallengeRuntimeState.scenario) {
+  const objective = scenario && scenario.objective || {};
+  const coord = Array.isArray(objective.coord) ? objective.coord : [0,0,0];
+  const cell = typeof getCellAt === "function" ? getCellAt(coord) : (state && Array.isArray(state.cells) ? state.cells.find(item => item && Array.isArray(item.coord) && item.coord.join(",") === coord.join(",")) : null);
+  return cell ? Number(cell.control || 0) : 0;
+}
+
 function tutorialRuntimeChallengeInitializeScenario() {
   const scenario = tutorialChallengeRuntimeState.scenario;
   if (!scenario || !state) return false;
@@ -538,6 +558,8 @@ function tutorialRuntimeChallengeInitializeScenario() {
     waveIndex:-1,
     enemyDestroyed:0,
     enemiesSpawned:0,
+    playerTurnsEnded:0,
+    holdCount:0,
     playerUnitIds:new Set(),
     enemyUnitIds:new Set(),
     destroyedEnemyUnitIds:new Set(),
@@ -547,12 +569,17 @@ function tutorialRuntimeChallengeInitializeScenario() {
   const initial = Array.isArray(scenario.initialUnits) ? scenario.initialUnits : [];
   const players = initial.map(item => tutorialRuntimeChallengeSpawnTrackedUnit(item, "player")).filter(Boolean);
   if (!players.length) return false;
-  if (!tutorialRuntimeChallengeStartWave(0)) return false;
+  const waves = Array.isArray(scenario.waves) ? scenario.waves : [];
+  if (waves.length && !tutorialRuntimeChallengeStartWave(0)) return false;
   tutorialRuntimeChallengeRenderHud();
+  const intro = scenario.intro || {};
+  const objectiveKind = scenario.objective && scenario.objective.kind;
   tutorialRuntimeChallengeAnnounce(
-    "PROVA SUL CAMPO I · ELIMINAZIONE",
-    "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate.",
-    { icon:"◆", durationMs:2100 }
+    intro.title || (objectiveKind === "hold_ps" ? "PROVA SUL CAMPO II · TENUTA" : "PROVA SUL CAMPO I · ELIMINAZIONE"),
+    intro.message || (objectiveKind === "hold_ps"
+      ? "Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi."
+      : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
+    { icon:"◆", durationMs:2200 }
   );
   return true;
 }
@@ -562,13 +589,73 @@ function tutorialRuntimeChallengeApplyTurnRestrictions(event) {
   if (!scenario || !state || !event || event.type !== (typeof EventTypes !== "undefined" ? EventTypes.TURN_STARTED : "TURN_STARTED")) return false;
   const rules = scenario.rules || {};
   const side = Number(event.data && event.data.player);
+  const enemySide = Number(scenario.enemySide || 2);
   if (rules.energyLocked && state.energy && Number.isFinite(side)) state.energy[side] = 0;
-  if (rules.cardsDisabled && Number.isFinite(side)) {
-    if (state.hand && Array.isArray(state.hand[side])) state.hand[side] = [];
-    if (state.deck && Array.isArray(state.deck[side])) state.deck[side] = [];
-    if (state.discard && Array.isArray(state.discard[side])) state.discard[side] = [];
-    if (state.starterCards) state.starterCards[side] = {};
-    if (typeof syncCardDebugState === "function") syncCardDebugState();
+  if (rules.enemyEnergyLocked && state.energy && side === enemySide) state.energy[side] = 0;
+  const clearCardsForSide = targetSide => {
+    if (!Number.isFinite(targetSide)) return;
+    if (state.hand && Array.isArray(state.hand[targetSide])) state.hand[targetSide] = [];
+    if (state.deck && Array.isArray(state.deck[targetSide])) state.deck[targetSide] = [];
+    if (state.discard && Array.isArray(state.discard[targetSide])) state.discard[targetSide] = [];
+    if (state.starterCards) state.starterCards[targetSide] = {};
+  };
+  if (rules.cardsDisabled && Number.isFinite(side)) clearCardsForSide(side);
+  if (rules.enemyCardsDisabled && side === enemySide) clearCardsForSide(side);
+  if (rules.deckDisabled && state.deck && Number.isFinite(side)) state.deck[side] = [];
+  if ((rules.starterCardsDisabled || rules.cardsDisabled) && state.starterCards && Number.isFinite(side)) state.starterCards[side] = {};
+  if ((rules.cardsDisabled || rules.enemyCardsDisabled || rules.deckDisabled || rules.starterCardsDisabled) && typeof syncCardDebugState === "function") syncCardDebugState();
+  return true;
+}
+
+function tutorialRuntimeChallengeCheckPlayerSurvival(scenario, destroyedUid="") {
+  const playerSide = Number(scenario && scenario.playerSide || 1);
+  const objectiveKind = scenario && scenario.objective && scenario.objective.kind;
+  if (objectiveKind === "destroy_tracked_enemies") {
+    const meta = tutorialChallengeRuntimeState.meta;
+    if (meta && destroyedUid && meta.playerUnitIds.has(String(destroyedUid)) && tutorialRuntimeChallengeLivingTrackedUnits(meta.playerUnitIds).length === 0) return false;
+    return true;
+  }
+  return tutorialRuntimeChallengeLivingCombatUnits(playerSide).length > 0;
+}
+
+function tutorialRuntimeChallengeHandleHoldObjective(event) {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta;
+  const objective = scenario && scenario.objective || {};
+  if (!scenario || !meta || objective.kind !== "hold_ps") return false;
+  const playerSide = Number(scenario.playerSide || 1);
+  const type = event && event.type;
+  const data = event && event.data || {};
+  const turnStartedType = typeof EventTypes !== "undefined" ? EventTypes.TURN_STARTED : "TURN_STARTED";
+  const turnEndedType = typeof EventTypes !== "undefined" ? EventTypes.TURN_ENDED : "TURN_ENDED";
+
+  if (type === turnStartedType && Number(data.player) === playerSide && meta.holdCount > 0 && tutorialRuntimeChallengeCentralPsControl(scenario) !== playerSide) {
+    meta.holdCount = 0;
+    tutorialRuntimeChallengeRenderHud();
+    tutorialRuntimeChallengeAnnounce("CONTROLLO INTERROTTO", "Il PS centrale è stato perso: il conteggio di Tenuta riparte da 0/3.", { icon:"!", durationMs:1300 });
+    return true;
+  }
+
+  if (type !== turnEndedType || Number(data.player) !== playerSide) return false;
+  meta.playerTurnsEnded += 1;
+  const waves = Array.isArray(scenario.waves) ? scenario.waves : [];
+  if (meta.playerTurnsEnded < waves.length && !meta.startedWaves.has(meta.playerTurnsEnded)) tutorialRuntimeChallengeStartWave(meta.playerTurnsEnded);
+
+  const controlled = tutorialRuntimeChallengeCentralPsControl(scenario) === playerSide;
+  meta.holdCount = controlled ? meta.holdCount + 1 : 0;
+  tutorialRuntimeChallengeRenderHud();
+  const target = Math.max(1, Number(objective.consecutiveTurns || objective.target) || 3);
+  tutorialRuntimeChallengeAnnounce(
+    controlled ? "TENUTA" : "PS NON CONTROLLATO",
+    controlled ? `Controllo centrale mantenuto: ${Math.min(meta.holdCount,target)}/${target}.` : `Il PS centrale non è sotto controllo Nexus: Tenuta 0/${target}.`,
+    { icon:controlled ? "✓" : "!", durationMs:1100, priority:controlled ? "normal" : "high" }
+  );
+  if (meta.holdCount >= target) {
+    tutorialChallengeRuntimeState.completing = true;
+    tutorialRuntimeChallengeSchedule(() => {
+      tutorialChallengeRuntimeState.completing = false;
+      tutorialRuntimeCompleteChallenge({ success:true, outcome:"success", reason:"central_ps_held_three_turns" });
+    }, 0);
   }
   return true;
 }
@@ -585,10 +672,13 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
   const data = event && event.data || {};
   const destroyedType = typeof EventTypes !== "undefined" ? EventTypes.UNIT_DESTROYED : "UNIT_DESTROYED";
   const victoryType = typeof EventTypes !== "undefined" ? EventTypes.VICTORY : "VICTORY";
+  const objectiveKind = scenario.objective && scenario.objective.kind;
+
+  if (objectiveKind === "hold_ps") tutorialRuntimeChallengeHandleHoldObjective(event);
 
   if (type === destroyedType) {
     const uid = String(data.unitId || "");
-    if (uid && meta.enemyUnitIds.has(uid) && !meta.destroyedEnemyUnitIds.has(uid)) {
+    if (objectiveKind === "destroy_tracked_enemies" && uid && meta.enemyUnitIds.has(uid) && !meta.destroyedEnemyUnitIds.has(uid)) {
       meta.destroyedEnemyUnitIds.add(uid);
       meta.enemyDestroyed += 1;
       tutorialRuntimeChallengeRenderHud();
@@ -606,30 +696,29 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
       if (meta.waveIndex === 0) {
         const waveOneIds = meta.waveUnitIds[0] || new Set();
         const waveOneLiving = tutorialRuntimeChallengeLivingTrackedUnits(waveOneIds);
-        if (waveOneIds.size > 0 && waveOneLiving.length === 0 && !meta.startedWaves.has(1)) {
-          tutorialRuntimeChallengeStartWave(1);
-        }
+        if (waveOneIds.size > 0 && waveOneLiving.length === 0 && !meta.startedWaves.has(1)) tutorialRuntimeChallengeStartWave(1);
       }
     }
 
-    if (uid && meta.playerUnitIds.has(uid)) {
-      const livingPlayers = tutorialRuntimeChallengeLivingTrackedUnits(meta.playerUnitIds);
-      if (livingPlayers.length === 0) {
-        tutorialChallengeRuntimeState.completing = true;
-        tutorialRuntimeChallengeSchedule(() => {
-          tutorialChallengeRuntimeState.completing = false;
-          tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:"all_player_units_destroyed" });
-        }, 0);
-        return true;
-      }
+    if (!tutorialRuntimeChallengeCheckPlayerSurvival(scenario, uid)) {
+      tutorialChallengeRuntimeState.completing = true;
+      tutorialRuntimeChallengeSchedule(() => {
+        tutorialChallengeRuntimeState.completing = false;
+        tutorialRuntimeCompleteChallenge({ success:false, outcome:"failure", reason:"all_player_units_destroyed" });
+      }, 0);
+      return true;
     }
   }
 
   if (type === victoryType) {
     const playerSide = Number(scenario.playerSide || 1);
     const winner = Number(data.winner || 0);
-    const target = Math.max(1, Number(scenario.objective && scenario.objective.target) || 4);
-    if (meta.enemyDestroyed < target || winner !== playerSide) {
+    const objectiveComplete = objectiveKind === "destroy_tracked_enemies"
+      ? meta.enemyDestroyed >= Math.max(1, Number(scenario.objective && scenario.objective.target) || 4)
+      : objectiveKind === "hold_ps"
+        ? meta.holdCount >= Math.max(1, Number(scenario.objective && (scenario.objective.consecutiveTurns || scenario.objective.target)) || 3)
+        : false;
+    if (!objectiveComplete || winner !== playerSide) {
       tutorialChallengeRuntimeState.completing = true;
       tutorialRuntimeChallengeSchedule(() => {
         tutorialChallengeRuntimeState.completing = false;
@@ -639,6 +728,22 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
     }
   }
   return false;
+}
+
+function tutorialRuntimeChallengeInstallDeckRecoveryGuard() {
+  if (typeof canRecoverDeck !== "function" || canRecoverDeck.__tutorialChallengeGuardF9V2c) return false;
+  const original = canRecoverDeck;
+  const guarded = function(side) {
+    if (typeof state !== "undefined" && state && state.tutorialChallengeMode && state.tutorialChallengeDeckRecoveryDisabled) {
+      const cfg = typeof deckRecoveryConfig === "function" ? deckRecoveryConfig() : { cost:5, draw:3, missionOrdinaryDraw:4 };
+      return { ok:false, reason:"Recupero deck disabilitato in questa Prova sul campo", cost:cfg.cost, draw:cfg.draw, missionOrdinaryDraw:cfg.missionOrdinaryDraw };
+    }
+    return original(side);
+  };
+  guarded.__tutorialChallengeGuardF9V2c = true;
+  guarded.__original = original;
+  canRecoverDeck = guarded;
+  return true;
 }
 
 function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
@@ -663,9 +768,11 @@ function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
     tutorialTitle:scenario.title || challenge.title
   });
   if (!state) return false;
+  const rules = scenario.rules || {};
   state.tutorialMode = true;
   state.tutorialChallengeMode = true;
   state.tutorialChallengeId = challenge.id;
+  state.tutorialChallengeDeckRecoveryDisabled = rules.deckRecoveryDisabled === true;
   state.tutorialScenarioId = null;
   state.tutorialLessonId = null;
   state.tutorialBotPaused = false;
@@ -678,13 +785,16 @@ function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
     if (setup.deck && Array.isArray(setup.deck[side])) state.deck[side] = setup.deck[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "deck")).filter(Boolean);
     if (setup.discard && Array.isArray(setup.discard[side])) state.discard[side] = setup.discard[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "discard")).filter(Boolean);
   }
-  if (scenario.rules && scenario.rules.cardsDisabled) {
-    state.missions = Object.fromEntries((typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2]).map(side => [side, null]));
+  if (rules.cardsDisabled || rules.enemyCardsDisabled || rules.fixedHand) {
+    const sides = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2];
+    const clearMissionSides = (rules.cardsDisabled || rules.fixedHand) ? sides : [Number(scenario.enemySide || 2)];
+    if (state.missions) for (const side of clearMissionSides) state.missions[side] = null;
     state.missionPendingReward = null;
   }
   if (typeof syncCardDebugState === "function") syncCardDebugState();
   if (typeof resetInteractionContext === "function") resetInteractionContext();
   if (typeof renderAll === "function") renderAll();
+  tutorialRuntimeChallengeInstallDeckRecoveryGuard();
   return true;
 }
 
@@ -742,6 +852,7 @@ function tutorialRuntimeCompleteChallenge(options={}) {
   if (typeof state !== "undefined" && state) {
     state.tutorialChallengeMode = false;
     state.tutorialChallengeId = null;
+    state.tutorialChallengeDeckRecoveryDisabled = false;
     state.tutorialMode = false;
     state.tutorialBotPaused = false;
   }
@@ -769,6 +880,7 @@ function tutorialRuntimeAbortChallenge(options={}) {
   if (typeof state !== "undefined" && state) {
     state.tutorialChallengeMode = false;
     state.tutorialChallengeId = null;
+    state.tutorialChallengeDeckRecoveryDisabled = false;
     state.tutorialMode = false;
     state.tutorialBotPaused = false;
   }
@@ -787,6 +899,7 @@ function tutorialRuntimeChallengeDiagnostics() {
     active:tutorialChallengeRuntimeState.active,
     challengeId:tutorialChallengeRuntimeState.challengeId || null,
     scenarioId:tutorialChallengeRuntimeState.scenario && tutorialChallengeRuntimeState.scenario.id || null,
+    objectiveKind:tutorialChallengeRuntimeState.scenario && tutorialChallengeRuntimeState.scenario.objective && tutorialChallengeRuntimeState.scenario.objective.kind || null,
     unlocked:unlock.unlocked,
     completedLessons:unlock.completedLessons,
     requiredLessons:unlock.requiredLessons,
@@ -795,7 +908,9 @@ function tutorialRuntimeChallengeDiagnostics() {
     wave:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.waveIndex + 1 : 0,
     enemyDestroyed:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.enemyDestroyed : 0,
     enemiesSpawned:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.enemiesSpawned : 0,
-    playerUnitsAlive:tutorialChallengeRuntimeState.meta ? tutorialRuntimeChallengeLivingTrackedUnits(tutorialChallengeRuntimeState.meta.playerUnitIds).length : 0
+    holdCount:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.holdCount : 0,
+    playerTurnsEnded:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.playerTurnsEnded : 0,
+    playerUnitsAlive:tutorialChallengeRuntimeState.meta ? tutorialRuntimeChallengeLivingCombatUnits(tutorialChallengeRuntimeState.scenario && tutorialChallengeRuntimeState.scenario.playerSide || 1).length : 0
   };
 }
 

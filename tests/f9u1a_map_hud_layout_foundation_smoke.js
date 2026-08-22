@@ -18,9 +18,9 @@ vm.createContext(context);
 vm.runInContext(`${buildSource}\n;globalThis.__build=BUILD_INFO;`, context, { filename:"build_info.js" });
 const build = context.__build;
 
-assert.equal(build.version, "C2-STABLE-1-F9V2b-APK-M4c", "versione candidata corretta");
+assert.equal(build.version, "C2-STABLE-1-F9V2c-APK-M4c", "versione candidata corretta");
 assert.equal(build.buildName, "Tutorial Challenge I · Elimination", "nome build corretto");
-assert.equal(build.buildChannel, "starter2-tutorial-v2b", "canale candidato corretto");
+assert.equal(build.buildChannel, "starter2-tutorial-v2c", "canale candidato corretto");
 assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c", "baseline logica validata corretta");
 assert.ok(build.notes.includes("F9Q3e1-2"), "schema telemetrico dichiarato invariato");
 

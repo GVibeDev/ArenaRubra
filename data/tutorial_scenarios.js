@@ -80,8 +80,8 @@ const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
     progression:"Unità + mano · deck vuoto",
     objective:"Mantieni il PS centrale per 3 turni",
     unlockRule:"all_tutorial_lessons_completed",
-    scenarioId:null,
-    contentStatus:"planned_f9v2c"
+    scenarioId:"challenge-2-hold-ps",
+    contentStatus:"available_f9v2c"
   }),
   Object.freeze({
     id:"challenge-3-hq-breach",
@@ -139,6 +139,33 @@ const TUTORIAL_CHALLENGE1_COORDS_F9V2B = Object.freeze({
   wave2:Object.freeze([
     Object.freeze([3,0,-3]),
     Object.freeze([3,-1,-2])
+  ])
+});
+
+// F9V2c – seconda Prova sul campo: Tenuta del PS centrale.
+// Il giocatore Nexus dispone di quattro unità iniziali e di una mano fissa di cinque carte.
+// Il deck resta vuoto per tutta la prova; il recupero deck viene disabilitato dal runtime Challenge.
+// Sei unità Starter Exordium entrano in tre ondate da due, una nuova ondata dopo ciascuno
+// dei primi due turni personali del giocatore.
+const TUTORIAL_CHALLENGE2_COORDS_F9V2C = Object.freeze({
+  centerPs:Object.freeze([0,0,0]),
+  player:Object.freeze([
+    Object.freeze([-3,0,3]),
+    Object.freeze([-3,1,2]),
+    Object.freeze([-2,-1,3]),
+    Object.freeze([-2,0,2])
+  ]),
+  wave1:Object.freeze([
+    Object.freeze([3,0,-3]),
+    Object.freeze([3,-1,-2])
+  ]),
+  wave2:Object.freeze([
+    Object.freeze([2,1,-3]),
+    Object.freeze([2,0,-2])
+  ]),
+  wave3:Object.freeze([
+    Object.freeze([3,1,-4]),
+    Object.freeze([3,-2,-1])
   ])
 });
 
@@ -203,6 +230,90 @@ const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({
         ])
       })
     ])
+  }),
+  "challenge-2-hold-ps": Object.freeze({
+    id:"challenge-2-hold-ps",
+    schemaVersion:1,
+    title:"Prova sul campo II · Tenuta",
+    challengeId:"challenge-2-hold-ps",
+    playerSide:1,
+    enemySide:2,
+    objective:Object.freeze({
+      kind:"hold_ps",
+      coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.centerPs,
+      consecutiveTurns:3,
+      target:3,
+      label:"Mantieni il PS centrale per 3 tuoi turni consecutivi",
+      failureKind:"all_player_units_destroyed"
+    }),
+    rules:Object.freeze({
+      fixedHand:true,
+      deckDisabled:true,
+      deckRecoveryDisabled:true,
+      starterCardsDisabled:true,
+      enemyCardsDisabled:true,
+      enemyEnergyLocked:true,
+      pressureIgnored:true
+    }),
+    setup:Object.freeze({
+      mapId:"map1_starter",
+      factions:Object.freeze({ 1:"Nexus", 2:"Exordium" }),
+      selectedCommanders:Object.freeze({ 1:"NXCMD01", 2:"EX0B00" }),
+      selectedDecks:Object.freeze({ 1:Object.freeze({ mode:"template" }), 2:Object.freeze({ mode:"template" }) }),
+      modes:Object.freeze({ 1:"human", 2:"bot" }),
+      autoResignEnabled:false,
+      aiMode:"advanced",
+      pacePreset:"competitive",
+      gameScaleMode:"tactical",
+      firstPlayer:1,
+      energy:Object.freeze({ 1:12, 2:0 }),
+      starterCardsEnabled:false,
+      hand:Object.freeze({
+        1:Object.freeze(["UNIT:NXC1F03", "UNIT:NX3B03", "TACTIC:NXTAC01", "TACTIC:NXTAC03", "TACTIC:NXTAC12"]),
+        2:Object.freeze([])
+      }),
+      deck:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) }),
+      discard:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) })
+    }),
+    initialUnits:Object.freeze([
+      Object.freeze({ side:1, blueprintId:"NX2B01", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.player[0], acted:false }),
+      Object.freeze({ side:1, blueprintId:"NX3B01", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.player[1], acted:false }),
+      Object.freeze({ side:1, blueprintId:"NXC1F01", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.player[2], acted:false }),
+      Object.freeze({ side:1, blueprintId:"NXC1F03", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.player[3], acted:false })
+    ]),
+    waves:Object.freeze([
+      Object.freeze({
+        id:"wave-1",
+        label:"Ondata I",
+        message:"La prima coppia Starter Exordium avanza verso il centro.",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"EX1B01", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.wave1[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"EXC1F04", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.wave1[1], acted:true })
+        ])
+      }),
+      Object.freeze({
+        id:"wave-2",
+        label:"Ondata II",
+        message:"Seconda coppia in ingresso: il presidio centrale deve reggere.",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"EX1B01", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.wave2[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"EXC1F04", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.wave2[1], acted:true })
+        ])
+      }),
+      Object.freeze({
+        id:"wave-3",
+        label:"Ondata III",
+        message:"Ultima coppia Starter Exordium. Mantieni il controllo fino al terzo turno valido.",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"EX1B01", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.wave3[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"EXC1F04", coord:TUTORIAL_CHALLENGE2_COORDS_F9V2C.wave3[1], acted:true })
+        ])
+      })
+    ]),
+    intro:Object.freeze({
+      title:"PROVA SUL CAMPO II · TENUTA",
+      message:"Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi. Hai una mano fissa e nessun deck: usa bene le carte. Sei Starter Exordium arriveranno in tre ondate da due."
+    })
   })
 });
 

@@ -49,9 +49,9 @@ const build = context.__build;
 const snapshot = vm.runInContext("__snapshot(state)", context);
 const normalized = JSON.parse(JSON.stringify(snapshot));
 
-assert.equal(build.version, "C2-STABLE-1-F9V2b-APK-M4c");
+assert.equal(build.version, "C2-STABLE-1-F9V2c-APK-M4c");
 assert.equal(build.buildName, "Tutorial Challenge I · Elimination");
-assert.equal(build.buildChannel, "starter2-tutorial-v2b");
+assert.equal(build.buildChannel, "starter2-tutorial-v2c");
 assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c");
 assert.ok(build.notes.includes("stato autorevole"));
 assert.ok(build.notes.includes("F9Q3e1-2"));
