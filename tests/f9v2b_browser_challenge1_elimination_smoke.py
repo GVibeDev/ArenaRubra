@@ -32,7 +32,7 @@ with sync_playwright() as p:
       tutorialRuntimeRenderMenu();
     }""")
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2c-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V2d-APK-M4c"
     assert page.evaluate("tutorialRuntimeStartChallenge('challenge-1-elimination')") is True
     page.wait_for_timeout(400)
 
@@ -136,7 +136,7 @@ assert not unexpected, unexpected
 
 print(json.dumps({
     "ok":True,
-    "build":"C2-STABLE-1-F9V2c-APK-M4c",
+    "build":"C2-STABLE-1-F9V2d-APK-M4c",
     "initialPlayerUnits":len(initial["playerUnits"]),
     "wave1Enemies":2,
     "botAutonomyNoPurchases":True,

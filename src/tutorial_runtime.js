@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V2c Tutorial Challenge II · Tenuta.
-// Basata su F9V2b validata: preserva Eliminazione e aggiunge la seconda Prova sul campo
-// con mano fissa, deck vuoto, recupero deck disabilitato e Tenuta del PS centrale 3 turni.
+// Arena Rubra – F9V2d Tutorial Challenge III · Breccia.
+// Basata su F9V2c validata: preserva Eliminazione e Tenuta e aggiunge la terza Prova
+// con mano iniziale, deck ridotto a 10, recupero disabilitato e occupazione autorevole del QG nemico.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -443,6 +443,15 @@ function tutorialRuntimeChallengeRenderHud() {
     hud.title = objective.label || "Mantieni il PS centrale.";
     return true;
   }
+  if (objective.kind === "occupy_enemy_hq") {
+    const playerSide = Number(scenario && scenario.playerSide || 1);
+    const handSize = state && state.hand && Array.isArray(state.hand[playerSide]) ? state.hand[playerSide].length : 0;
+    const deckSize = state && state.deck && Array.isArray(state.deck[playerSide]) ? state.deck[playerSide].length : 0;
+    const status = meta.hqOccupied ? "QG OCCUPATO" : "QG da occupare";
+    hud.textContent = `PROVA III · Breccia · Mano ${handSize} · Deck ${deckSize} · ${status}`;
+    hud.title = objective.label || "Occupa il QG nemico.";
+    return true;
+  }
   const target = Math.max(0, Number(objective.target) || 0);
   const destroyed = Math.max(0, Number(meta.enemyDestroyed) || 0);
   const waves = Array.isArray(scenario && scenario.waves) ? scenario.waves.length : 0;
@@ -465,7 +474,7 @@ function tutorialRuntimeChallengeAnnounce(title, message, options={}) {
   }
   if (typeof log === "function" && message) {
     const eventType = typeof EventTypes !== "undefined" ? EventTypes.LOG_MESSAGE : undefined;
-    log(`${title}: ${message}`, eventType, { source:"F9V2c-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
+    log(`${title}: ${message}`, eventType, { source:"F9V2d-tutorial-challenge", challengeId:tutorialChallengeRuntimeState.challengeId });
   }
 }
 
@@ -551,6 +560,20 @@ function tutorialRuntimeChallengeCentralPsControl(scenario=tutorialChallengeRunt
   return cell ? Number(cell.control || 0) : 0;
 }
 
+function tutorialRuntimeChallengeEnemyHqCoord(scenario=tutorialChallengeRuntimeState.scenario) {
+  if (!scenario || !state) return null;
+  const objective = scenario.objective || {};
+  const enemySide = Number(objective.targetSide || scenario.enemySide || 2);
+  const hq = typeof getHq === "function" ? getHq(enemySide) : (Array.isArray(state.units) ? state.units.find(unit => unit && unit.type === "QG" && Number(unit.side) === enemySide) : null);
+  return hq && Array.isArray(hq.pos) ? [...hq.pos] : null;
+}
+
+function tutorialRuntimeChallengeSameCoord(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  if (typeof sameCoord === "function") return sameCoord(a, b);
+  return a.length === b.length && a.every((value,index) => Number(value) === Number(b[index]));
+}
+
 function tutorialRuntimeChallengeInitializeScenario() {
   const scenario = tutorialChallengeRuntimeState.scenario;
   if (!scenario || !state) return false;
@@ -560,6 +583,9 @@ function tutorialRuntimeChallengeInitializeScenario() {
     enemiesSpawned:0,
     playerTurnsEnded:0,
     holdCount:0,
+    hqOccupied:false,
+    hqOccupantUid:null,
+    targetHqCoord:null,
     playerUnitIds:new Set(),
     enemyUnitIds:new Set(),
     destroyedEnemyUnitIds:new Set(),
@@ -571,14 +597,21 @@ function tutorialRuntimeChallengeInitializeScenario() {
   if (!players.length) return false;
   const waves = Array.isArray(scenario.waves) ? scenario.waves : [];
   if (waves.length && !tutorialRuntimeChallengeStartWave(0)) return false;
+  if (scenario.objective && scenario.objective.kind === "occupy_enemy_hq") tutorialChallengeRuntimeState.meta.targetHqCoord = tutorialRuntimeChallengeEnemyHqCoord(scenario);
   tutorialRuntimeChallengeRenderHud();
   const intro = scenario.intro || {};
   const objectiveKind = scenario.objective && scenario.objective.kind;
   tutorialRuntimeChallengeAnnounce(
-    intro.title || (objectiveKind === "hold_ps" ? "PROVA SUL CAMPO II · TENUTA" : "PROVA SUL CAMPO I · ELIMINAZIONE"),
+    intro.title || (objectiveKind === "hold_ps"
+      ? "PROVA SUL CAMPO II · TENUTA"
+      : objectiveKind === "occupy_enemy_hq"
+        ? "PROVA SUL CAMPO III · BRECCIA"
+        : "PROVA SUL CAMPO I · ELIMINAZIONE"),
     intro.message || (objectiveKind === "hold_ps"
       ? "Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi."
-      : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
+      : objectiveKind === "occupy_enemy_hq"
+        ? "Apri una via e porta una tua unità sulla cella del QG nemico."
+        : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
     { icon:"◆", durationMs:2200 }
   );
   return true;
@@ -660,6 +693,54 @@ function tutorialRuntimeChallengeHandleHoldObjective(event) {
   return true;
 }
 
+function tutorialRuntimeChallengeHandleHqObjective(event) {
+  const scenario = tutorialChallengeRuntimeState.scenario;
+  const meta = tutorialChallengeRuntimeState.meta;
+  const objective = scenario && scenario.objective || {};
+  if (!scenario || !meta || objective.kind !== "occupy_enemy_hq") return false;
+
+  const type = event && event.type;
+  const data = event && event.data || {};
+  const movedType = typeof EventTypes !== "undefined" ? EventTypes.UNIT_MOVED : "UNIT_MOVED";
+  const victoryType = typeof EventTypes !== "undefined" ? EventTypes.VICTORY : "VICTORY";
+  const playerSide = Number(scenario.playerSide || 1);
+  const targetCoord = tutorialRuntimeChallengeEnemyHqCoord(scenario) || meta.targetHqCoord;
+
+  if (type === movedType && Number(data.player) === playerSide && tutorialRuntimeChallengeSameCoord(data.to, targetCoord)) {
+    meta.hqOccupied = true;
+    meta.hqOccupantUid = data.unitId == null ? null : String(data.unitId);
+    meta.targetHqCoord = Array.isArray(targetCoord) ? [...targetCoord] : null;
+    tutorialRuntimeChallengeRenderHud();
+    tutorialRuntimeChallengeAnnounce("BRECCIA COMPLETATA", "Una unità Exordium ha raggiunto il QG Nexus.", { icon:"✓", durationMs:1300 });
+    tutorialChallengeRuntimeState.completing = true;
+    tutorialRuntimeChallengeSchedule(() => {
+      tutorialChallengeRuntimeState.completing = false;
+      tutorialRuntimeCompleteChallenge({ success:true, outcome:"success", reason:"enemy_hq_occupied" });
+    }, 0);
+    return true;
+  }
+
+  if (type === victoryType && Number(data.winner || 0) === playerSide && String(data.winType || data.type || "").toLowerCase() === "qg") {
+    meta.hqOccupied = true;
+    meta.targetHqCoord = Array.isArray(targetCoord) ? [...targetCoord] : null;
+    tutorialRuntimeChallengeRenderHud();
+    tutorialChallengeRuntimeState.completing = true;
+    tutorialRuntimeChallengeSchedule(() => {
+      tutorialChallengeRuntimeState.completing = false;
+      tutorialRuntimeCompleteChallenge({ success:true, outcome:"success", reason:"enemy_hq_occupied" });
+    }, 0);
+    return true;
+  }
+
+  const cardTypes = new Set([
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_DRAWN : "CARD_DRAWN",
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_PLAYED : "CARD_PLAYED",
+    typeof EventTypes !== "undefined" ? EventTypes.CARD_DISCARDED : "CARD_DISCARDED"
+  ]);
+  if (cardTypes.has(type)) tutorialRuntimeChallengeRenderHud();
+  return false;
+}
+
 function tutorialRuntimeHandleChallengeGameEvent(event) {
   if (!tutorialChallengeRuntimeState.active || !tutorialChallengeRuntimeState.scenario || tutorialChallengeRuntimeState.completing) return false;
   const scenario = tutorialChallengeRuntimeState.scenario;
@@ -675,6 +756,7 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
   const objectiveKind = scenario.objective && scenario.objective.kind;
 
   if (objectiveKind === "hold_ps") tutorialRuntimeChallengeHandleHoldObjective(event);
+  if (objectiveKind === "occupy_enemy_hq") tutorialRuntimeChallengeHandleHqObjective(event);
 
   if (type === destroyedType) {
     const uid = String(data.unitId || "");
@@ -717,7 +799,9 @@ function tutorialRuntimeHandleChallengeGameEvent(event) {
       ? meta.enemyDestroyed >= Math.max(1, Number(scenario.objective && scenario.objective.target) || 4)
       : objectiveKind === "hold_ps"
         ? meta.holdCount >= Math.max(1, Number(scenario.objective && (scenario.objective.consecutiveTurns || scenario.objective.target)) || 3)
-        : false;
+        : objectiveKind === "occupy_enemy_hq"
+          ? meta.hqOccupied === true
+          : false;
     if (!objectiveComplete || winner !== playerSide) {
       tutorialChallengeRuntimeState.completing = true;
       tutorialRuntimeChallengeSchedule(() => {
@@ -785,9 +869,9 @@ function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
     if (setup.deck && Array.isArray(setup.deck[side])) state.deck[side] = setup.deck[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "deck")).filter(Boolean);
     if (setup.discard && Array.isArray(setup.discard[side])) state.discard[side] = setup.discard[side].map((cardId,index) => tutorialRuntimeCardInstance(cardId, side, index, "discard")).filter(Boolean);
   }
-  if (rules.cardsDisabled || rules.enemyCardsDisabled || rules.fixedHand) {
+  if (rules.cardsDisabled || rules.enemyCardsDisabled || rules.fixedHand || rules.missionsDisabled) {
     const sides = typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2];
-    const clearMissionSides = (rules.cardsDisabled || rules.fixedHand) ? sides : [Number(scenario.enemySide || 2)];
+    const clearMissionSides = (rules.cardsDisabled || rules.fixedHand || rules.missionsDisabled) ? sides : [Number(scenario.enemySide || 2)];
     if (state.missions) for (const side of clearMissionSides) state.missions[side] = null;
     state.missionPendingReward = null;
   }
@@ -909,6 +993,11 @@ function tutorialRuntimeChallengeDiagnostics() {
     enemyDestroyed:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.enemyDestroyed : 0,
     enemiesSpawned:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.enemiesSpawned : 0,
     holdCount:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.holdCount : 0,
+    hqOccupied:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.hqOccupied === true : false,
+    hqOccupantUid:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.hqOccupantUid : null,
+    targetHqCoord:tutorialChallengeRuntimeState.meta && Array.isArray(tutorialChallengeRuntimeState.meta.targetHqCoord) ? [...tutorialChallengeRuntimeState.meta.targetHqCoord] : null,
+    playerHandSize:state && tutorialChallengeRuntimeState.scenario && state.hand && Array.isArray(state.hand[tutorialChallengeRuntimeState.scenario.playerSide || 1]) ? state.hand[tutorialChallengeRuntimeState.scenario.playerSide || 1].length : 0,
+    playerDeckSize:state && tutorialChallengeRuntimeState.scenario && state.deck && Array.isArray(state.deck[tutorialChallengeRuntimeState.scenario.playerSide || 1]) ? state.deck[tutorialChallengeRuntimeState.scenario.playerSide || 1].length : 0,
     playerTurnsEnded:tutorialChallengeRuntimeState.meta ? tutorialChallengeRuntimeState.meta.playerTurnsEnded : 0,
     playerUnitsAlive:tutorialChallengeRuntimeState.meta ? tutorialRuntimeChallengeLivingCombatUnits(tutorialChallengeRuntimeState.scenario && tutorialChallengeRuntimeState.scenario.playerSide || 1).length : 0
   };

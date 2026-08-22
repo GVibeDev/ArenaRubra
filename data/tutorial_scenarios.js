@@ -92,8 +92,8 @@ const TUTORIAL_CHALLENGE_PLAN_F9V2A = Object.freeze([
     progression:"Unità + mano + deck 10",
     objective:"Occupa il QG nemico",
     unlockRule:"all_tutorial_lessons_completed",
-    scenarioId:null,
-    contentStatus:"planned_f9v2d"
+    scenarioId:"challenge-3-hq-breach",
+    contentStatus:"available_f9v2d"
   }),
   Object.freeze({
     id:"challenge-4-pressure",
@@ -166,6 +166,26 @@ const TUTORIAL_CHALLENGE2_COORDS_F9V2C = Object.freeze({
   wave3:Object.freeze([
     Object.freeze([3,1,-4]),
     Object.freeze([3,-2,-1])
+  ])
+});
+
+// F9V2d – terza Prova sul campo: Breccia del QG nemico.
+// La progressione introduce per la prima volta un deck ridotto reale: 5 carte iniziali
+// in mano e 10 carte nel deck, senza Starter reserve, Missione o recupero deck.
+// Il giocatore Exordium deve aprirsi un corridoio attraverso una linea Nexus e portare
+// una propria unità sulla cella del QG nemico. L'obiettivo Challenge è autorevole e non
+// richiede il prerequisito PS della vittoria QG della partita ordinaria.
+const TUTORIAL_CHALLENGE3_COORDS_F9V2D = Object.freeze({
+  player:Object.freeze([
+    Object.freeze([-2,0,2]),
+    Object.freeze([-1,0,1]),
+    Object.freeze([-2,1,1])
+  ]),
+  defenders:Object.freeze([
+    Object.freeze([2,0,-2]),
+    Object.freeze([3,0,-3]),
+    Object.freeze([3,-1,-2]),
+    Object.freeze([4,0,-4])
   ])
 });
 
@@ -313,6 +333,90 @@ const TUTORIAL_CHALLENGE_SCENARIOS_F9V2 = Object.freeze({
     intro:Object.freeze({
       title:"PROVA SUL CAMPO II · TENUTA",
       message:"Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi. Hai una mano fissa e nessun deck: usa bene le carte. Sei Starter Exordium arriveranno in tre ondate da due."
+    })
+  }),
+  "challenge-3-hq-breach": Object.freeze({
+    id:"challenge-3-hq-breach",
+    schemaVersion:1,
+    title:"Prova sul campo III · Breccia",
+    challengeId:"challenge-3-hq-breach",
+    playerSide:1,
+    enemySide:2,
+    objective:Object.freeze({
+      kind:"occupy_enemy_hq",
+      targetSide:2,
+      label:"Occupa il QG Nexus con una unità Exordium",
+      failureKind:"all_player_units_destroyed"
+    }),
+    rules:Object.freeze({
+      deckRecoveryDisabled:true,
+      starterCardsDisabled:true,
+      enemyCardsDisabled:true,
+      enemyEnergyLocked:true,
+      missionsDisabled:true,
+      pressureIgnored:true
+    }),
+    setup:Object.freeze({
+      mapId:"map1_starter",
+      factions:Object.freeze({ 1:"Exordium", 2:"Nexus" }),
+      selectedCommanders:Object.freeze({ 1:"EX0B00", 2:"NXCMD01" }),
+      selectedDecks:Object.freeze({ 1:Object.freeze({ mode:"template" }), 2:Object.freeze({ mode:"template" }) }),
+      modes:Object.freeze({ 1:"human", 2:"bot" }),
+      autoResignEnabled:false,
+      aiMode:"advanced",
+      pacePreset:"competitive",
+      gameScaleMode:"tactical",
+      firstPlayer:1,
+      energy:Object.freeze({ 2:0 }),
+      starterCardsEnabled:false,
+      hand:Object.freeze({
+        1:Object.freeze([
+          "UNIT:EXC1F04",
+          "UNIT:EXC1F05",
+          "UNIT:EXC1F01",
+          "TACTIC:EXTAC05",
+          "TACTIC:EXTAC01"
+        ]),
+        2:Object.freeze([])
+      }),
+      deck:Object.freeze({
+        1:Object.freeze([
+          "UNIT:EX1B01",
+          "UNIT:EXC1F02",
+          "UNIT:EX2B03",
+          "UNIT:EXC1F06",
+          "UNIT:EX2B01",
+          "TACTIC:EXTAC03",
+          "TACTIC:EXTAC06",
+          "TACTIC:EXTAC09",
+          "TACTIC:EXTAC11",
+          "TACTIC:EXTAC12"
+        ]),
+        2:Object.freeze([])
+      }),
+      discard:Object.freeze({ 1:Object.freeze([]), 2:Object.freeze([]) })
+    }),
+    initialUnits:Object.freeze([
+      Object.freeze({ side:1, blueprintId:"EX0B00", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.player[0], acted:false }),
+      Object.freeze({ side:1, blueprintId:"EXC1F04", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.player[1], acted:false }),
+      Object.freeze({ side:1, blueprintId:"EX2B01", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.player[2], acted:false })
+    ]),
+    waves:Object.freeze([
+      Object.freeze({
+        id:"defense-line",
+        label:"Linea Nexus",
+        message:"Quattro unità Nexus difendono l'asse verso il QG. Apri la breccia e continua ad avanzare.",
+        units:Object.freeze([
+          Object.freeze({ side:2, blueprintId:"NX2B01", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.defenders[0], acted:true }),
+          Object.freeze({ side:2, blueprintId:"NX3B01", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.defenders[1], acted:true }),
+          Object.freeze({ side:2, blueprintId:"NXC1F01", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.defenders[2], acted:true }),
+          Object.freeze({ side:2, blueprintId:"NXC1F03", coord:TUTORIAL_CHALLENGE3_COORDS_F9V2D.defenders[3], acted:true })
+        ])
+      })
+    ]),
+    intro:Object.freeze({
+      title:"PROVA SUL CAMPO III · BRECCIA",
+      message:"Apri una via fino al QG Nexus. Hai 3 unità già in campo, 5 carte in mano e un deck ridotto di 10 carte. Nessuna Starter reserve, nessuna Missione e nessun recupero deck: la Prova termina quando una tua unità entra nel QG nemico."
     })
   })
 });

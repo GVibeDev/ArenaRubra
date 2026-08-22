@@ -1,0 +1,116 @@
+ARENA RUBRA — F9V2d TEST REPORT
+================================
+Build candidata: C2-STABLE-1-F9V2d-APK-M4c
+Milestone: Tutorial Challenge III · Breccia
+Data: 2026-08-22
+
+BASE REMOTA VERIFICATA
+----------------------
+GitHub main HEAD verificata prima della generazione:
+  16537833101b7ff1ffb0c07f72aa180301196003
+  F9V2c
+
+I tre file logici di partenza coincidono esattamente con la patch F9V2c VALIDATA fornita dall'autore:
+- src/tutorial_runtime.js
+  Git blob remoto/local F9V2c: ec687d31a28681cb46e16f11cc2676ed2e773206
+- data/tutorial_scenarios.js
+  Git blob remoto/local F9V2c: fb40208e35e96bdbe9e9f12f99525596338dcc3b
+- src/build_info.js
+  Git blob remoto/local F9V2c: 4de17d8e5bebd73fb21f81820bccff09372003a8
+
+CONTRATTO F9V2d
+----------------
+- Challenge III: challenge-3-hq-breach / Breccia.
+- Progressione: unità già schierate + mano iniziale + deck ridotto reale da 10 carte.
+- Exordium umano contro Nexus Advanced su Campo Starter.
+- 3 unità Exordium iniziali: EX0B00 Varran, EXC1F04 Cursor, EX2B01 Veicolo Ricognitore.
+- Mano iniziale Exordium: 5 carte deterministiche.
+- Deck Exordium: 10 carte deterministiche pescabili.
+- 4 difensori Nexus iniziali: NX2B01, NX3B01, NXC1F01, NXC1F03.
+- Mano/deck Nexus vuoti; ENE Nexus riportata a 0 a ogni TURN_STARTED Nexus.
+- Starter reserve disabilitata per entrambi.
+- Missioni disabilitate per entrambi.
+- Recupero deck disabilitato: il pool ridotto non ricicla gli scarti.
+- Obiettivo autorevole: UNIT_MOVED del giocatore sulla posizione runtime del QG Nexus.
+- La Challenge non richiede il prerequisito PS della vittoria QG ordinaria.
+- Challenge matchRecorded=false e tutorialMode=true.
+- Challenge IV–V restano placeholder.
+
+AUDIT DATI CORRENTE
+-------------------
+Gli ID usati dalla Challenge sono stati verificati contro i file correnti della main F9V2c:
+- data/units_base.js per le unità Exordium/Nexus.
+- data/tactics_cards_c2.js per le tattiche Exordium.
+Sono state usate soltanto unità e tattiche esistenti/playable del runtime corrente; nessuna nuova carta o statistica è stata introdotta.
+
+CONTROLLI ESEGUITI REALMENTE IN CONTAINER
+-----------------------------------------
+PASS — node --check src/tutorial_runtime.js
+PASS — node --check data/tutorial_scenarios.js
+PASS — node --check src/build_info.js
+PASS — node --check su tutti gli 11 test JS inclusi nella patch
+PASS — python3 -m py_compile su tutti i 10 test Python inclusi nella patch
+
+PASS — tests/f9v2a_tutorial_challenge_framework_smoke.js
+Risultato:
+- 5 Challenge registrate
+- unlock globale 5/5 preservato
+- migrazione storage legacy preservata
+- progresso Challenge separato preservato
+- Challenge I presente
+- Challenge II presente
+- Challenge III pubblicata
+- Challenge IV–V ancora pending
+- build F9V2d corretta
+
+PASS — tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
+Regressione F9V2c:
+- Prova II preservata
+- mano fissa 5 / deck 0
+- 3 ondate / 6 Starter Exordium
+- Tenuta 3 turni e reset su perdita PS preservati
+- recupero deck e carte Bot bloccati
+- completamento central_ps_held_three_turns preservato
+- build F9V2d corretta
+
+PASS — tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+Risultato:
+- scenario challenge-3-hq-breach presente
+- objective kind occupy_enemy_hq / targetSide 2
+- 3 unità Exordium iniziali
+- mano iniziale 5
+- deck ridotto 10
+- 15 carte Exordium deterministiche e senza ID duplicati tra mano/deck
+- una linea Nexus da 4 difensori
+- setup materializza realmente mano 5 / deck 10
+- setup rimuove Starter reserve e Missioni
+- ENE/carte/deck del Bot Nexus bloccati senza toccare mano/deck del giocatore
+- recupero deck bloccato autoritativamente
+- movimento su cella non-QG non completa la Challenge
+- UNIT_MOVED sulla posizione runtime del QG Nexus completa la Challenge
+- UID dell'occupante QG tracciato
+- completion reason enemy_hq_occupied verificato
+- build F9V2d corretta
+
+NON ESEGUITO IN QUESTO CONTAINER
+--------------------------------
+La suite browser completa Playwright del repository non è stata rieseguita qui: il container non dispone del checkout completo del repository e non può risolvere github.com via git clone.
+I regression test browser inclusi nella patch hanno marker di build aggiornati a F9V2d, ma non vengono dichiarati PASS senza esecuzione reale.
+
+TEST MANUALE RICHIESTO PRIMA DELLA VALIDAZIONE
+----------------------------------------------
+1. Accademia 5/5: verificare che Prova III · Breccia mostri Avvia.
+2. Avviare Prova III: Exordium umano vs Nexus Advanced su Campo Starter.
+3. Verificare 3 unità Exordium iniziali: Varran, Cursor, Veicolo Ricognitore.
+4. Verificare 4 difensori Nexus lungo l'asse verso il QG.
+5. Verificare Mano = 5 e Deck = 10 nel nuovo HUD Challenge.
+6. Verificare assenza di Starter reserve e Missione.
+7. Terminare almeno un turno: la pesca normale deve consumare il deck ridotto (10 -> 9, salvo cap mano/scarto previsto dal core).
+8. Giocare almeno una unità e una tattica dalla mano per verificare il normale runtime carte.
+9. Verificare che il Nexus non giochi carte e che non spenda ENE.
+10. Consumare/avvicinarsi all'esaurimento del deck: il recupero deck deve restare disabilitato.
+11. Portare una unità Exordium sulla cella del QG Nexus: completamento immediato della Prova III, ritorno in Accademia e stato Ripeti.
+12. Verificare che la Challenge non chieda il controllo di un PS per il proprio obiettivo Breccia.
+13. Verificare sconfitta se tutte le unità combattenti Exordium vengono eliminate o se il match termina a favore Nexus.
+14. Riprovare rapidamente Prova I e Prova II per regressione.
+15. Verificare Prova IV e V ancora visibili come In preparazione.

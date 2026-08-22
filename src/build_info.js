@@ -57,6 +57,7 @@
 // F9V2a Tutorial Challenge Framework & Unlock System metadata.
 // F9V2b Tutorial Challenge I · Elimination metadata.
 // F9V2c Tutorial Challenge II · Tenuta metadata.
+// F9V2d Tutorial Challenge III · Breccia metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -79,13 +80,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V2c-APK-M4c",
-  buildName: "Tutorial Challenge II · Tenuta",
+  version: "C2-STABLE-1-F9V2d-APK-M4c",
+  buildName: "Tutorial Challenge III · Breccia",
   buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-v2c",
+  buildChannel: "starter2-tutorial-v2d",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V2c costruita sulla F9V2b validata e con baseline logica F9T2c4. Preserva la Prova I · Eliminazione e rende giocabile la Prova II · Tenuta dopo lo sblocco globale 5/5 dell’Accademia. Scenario su Campo Starter con Nexus umano contro Exordium Advanced: quattro unità Nexus iniziali, mano fissa di cinque carte, deck e Starter reserve vuoti, nessuna pesca e recupero deck disabilitato. Obiettivo autorevole: controllare il PS centrale alla fine di 3 propri turni consecutivi; se il PS viene perso durante il turno nemico il conteggio riparte da zero. Sei unità Starter Exordium entrano progressivamente in tre ondate da due: la prima all’avvio, la seconda dopo il primo turno personale e la terza dopo il secondo. HUD dedicato mostra Tenuta e minaccia cumulativa. Sconfitta se il giocatore resta senza unità combattenti o il match termina con una condizione diversa dall’obiettivo. Le Challenge restano tutorialMode e fuori da statistiche e storico competitivi. Le Challenge III–V restano sbloccabili ma in preparazione. Nessuna modifica a carte, costi, deck ufficiali, mappe, Missioni, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V2d costruita sulla F9V2c validata e con baseline logica F9T2c4. Preserva le Prove I · Eliminazione e II · Tenuta e rende giocabile la Prova III · Breccia dopo lo sblocco globale 5/5 dell’Accademia. Scenario su Campo Starter con Exordium umano contro Nexus Advanced: Varran e due unità leggere già in campo, mano iniziale deterministica di 5 carte e deck ridotto reale di 10 carte pescabili. Starter reserve e Missioni sono escluse; il recupero deck è disabilitato per mantenere finito il pool da 10. Il Nexus non usa carte né ENE e difende l’asse del QG con quattro unità iniziali. Obiettivo Challenge autorevole: una unità Exordium deve entrare sulla cella del QG Nexus; per questa Prova non è richiesto il prerequisito di controllo PS della vittoria QG ordinaria. HUD dedicato mostra Mano, Deck e stato del QG. Sconfitta se il giocatore resta senza unità combattenti o il match termina con una condizione incompatibile con l’obiettivo. Le Challenge restano tutorialMode e fuori da statistiche e storico competitivi. Le Challenge IV–V restano sbloccabili ma in preparazione. Nessuna modifica a carte, costi, deck ufficiali, mappe, Missioni, Advanced/Expert AI o bilanciamento generale. Preserva F9V1a/F9V2a/F9V2b/F9V2c, schema telemetrico F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1 e Pool carte F9U2a. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

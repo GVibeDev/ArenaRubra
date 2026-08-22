@@ -39,9 +39,10 @@ const plan = evaluate("tutorialRuntimeChallengePlan().map(item => ({...item}))")
 if (plan.length !== 5) throw new Error(`Expected 5 challenge definitions, got ${plan.length}`);
 if (new Set(plan.map(item => item.id)).size !== 5) throw new Error("Challenge IDs are not unique");
 if (!plan.every(item => item.unlockRule === "all_tutorial_lessons_completed")) throw new Error("Unexpected unlock rule");
-if (plan[0].scenarioId !== "challenge-1-elimination") throw new Error("F9V2b/F9V2c must preserve Challenge 1 scenario");
-if (plan[1].scenarioId !== "challenge-2-hold-ps") throw new Error("F9V2c must publish Challenge 2 scenario");
-if (!plan.slice(2).every(item => item.scenarioId === null)) throw new Error("Challenges 3–5 must remain pending in F9V2c");
+if (plan[0].scenarioId !== "challenge-1-elimination") throw new Error("F9V2d must preserve Challenge 1 scenario");
+if (plan[1].scenarioId !== "challenge-2-hold-ps") throw new Error("F9V2d must preserve Challenge 2 scenario");
+if (plan[2].scenarioId !== "challenge-3-hq-breach") throw new Error("F9V2d must publish Challenge 3 scenario");
+if (!plan.slice(3).every(item => item.scenarioId === null)) throw new Error("Challenges 4–5 must remain pending in F9V2d");
 
 let unlock = evaluate("tutorialRuntimeChallengeUnlockStatus()");
 if (unlock.unlocked || unlock.completedLessons !== 0 || unlock.requiredLessons !== 5) throw new Error(`Unexpected initial gate ${JSON.stringify(unlock)}`);
@@ -71,10 +72,11 @@ unlock = evaluate("tutorialRuntimeChallengeUnlockStatus()");
 if (!unlock.unlocked || unlock.completedLessons !== 5 || unlock.remainingLessons !== 0) throw new Error(`5/5 must unlock challenges: ${JSON.stringify(unlock)}`);
 if (!evaluate("tutorialRuntimeChallengesUnlocked()")) throw new Error("Global challenge unlock helper returned false at 5/5");
 
-// F9V2c preserves Challenge 1 and publishes Challenge 2 while keeping Challenges 3–5 as placeholders.
+// F9V2d preserves Challenges 1–2 and publishes Challenge 3 while keeping Challenges 4–5 as placeholders.
 if (!evaluate("tutorialRuntimeChallengeScenarioById('challenge-1-elimination')")) throw new Error("Challenge 1 scenario missing");
 if (!evaluate("tutorialRuntimeChallengeScenarioById('challenge-2-hold-ps')")) throw new Error("Challenge 2 scenario missing");
-if (evaluate("tutorialRuntimeChallengeScenarioById('challenge-3-hq-breach')") !== null) throw new Error("Challenge 3 must remain pending in F9V2c");
+if (!evaluate("tutorialRuntimeChallengeScenarioById('challenge-3-hq-breach')")) throw new Error("Challenge 3 scenario missing in F9V2d");
+if (evaluate("tutorialRuntimeChallengeScenarioById('challenge-4-pressure')") !== null) throw new Error("Challenge 4 must remain pending in F9V2d");
 
 // Challenge progress is separate from lesson/scenario progress.
 evaluate("tutorialRuntimeSaveChallengeProgress('challenge-1-elimination', {incrementAttempt:true, outcome:'started'})");
@@ -111,7 +113,7 @@ if (!stateCheck.tutorialMode || !stateCheck.tutorialChallengeMode || stateCheck.
   throw new Error(`Challenge state contract invalid: ${JSON.stringify(stateCheck)}`);
 }
 
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2c-APK-M4c") throw new Error("BUILD_INFO version not updated");
+if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V2d-APK-M4c") throw new Error("BUILD_INFO version not updated");
 
 console.log(JSON.stringify({
   ok:true,
