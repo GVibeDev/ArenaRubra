@@ -1,6 +1,7 @@
 "use strict";
 
-// Arena Rubra – F9O7c Multi-Lesson Tutorial Runtime: Lezioni 1–2.
+// Arena Rubra – F9V1a Tutorial Runtime 2.0 · Authoritative Interaction & Selector Drift Hotfix.
+// Basata sul runtime F9O7: conserva scenari/checkpoint e aggiunge un contratto di interazione autorevole.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -282,12 +283,11 @@ function tutorialRuntimeHandStateFromDom() {
   if (typeof document === "undefined") return "unknown";
   const overlay = document.getElementById("mapHandOverlay");
   if (!overlay) return "unknown";
-  const show = overlay.querySelector(".mapHandShowBtn");
   const collapse = overlay.querySelector(".mapHandCollapseBtn");
   if (overlay.classList.contains("isTargeting") || overlay.classList.contains("isMovementHidden")) return "collapsed";
-  if (tutorialRuntimeElementIsVisible(show)) return "collapsed";
   if (tutorialRuntimeElementIsVisible(collapse)) return "open";
-  return "unknown";
+  if (typeof MAP_HAND_OVERLAY_STATE !== "undefined" && MAP_HAND_OVERLAY_STATE && MAP_HAND_OVERLAY_STATE.manuallyCollapsed) return "collapsed";
+  return overlay.firstElementChild ? "open" : "collapsed";
 }
 
 function tutorialRuntimeDesiredHandState(step) {
@@ -299,7 +299,7 @@ function tutorialRuntimeDesiredHandState(step) {
   if (["unit", "hex", "hq", "ps"].includes(target.type)) return "collapsed";
   const selector = String(target.selector || "");
   if (selector.includes("mapHandCollapseBtn")) return "open";
-  if (selector.includes("mapHandShowBtn") || selector.includes("actionPanel")) return "collapsed";
+  if (selector.includes("mapLeftHandBtn") || selector.includes("mapHandShowBtn") || selector.includes("selectedUnitPrimaryAbilitySlot") || selector.includes("actionPanel")) return "collapsed";
   return "preserve";
 }
 
@@ -836,15 +836,17 @@ function tutorialRuntimeCaptureInteraction(event) {
   if (!tutorialRuntimeState.active || !tutorialRuntimeState.step || tutorialRuntimeState.closing) return;
   if (!event.target || event.type !== "click") return;
   const step = tutorialRuntimeState.step;
+  const inNarrative = Boolean(event.target.closest && event.target.closest(".narrativeDialog"));
   const allowed = tutorialRuntimeElementAllowed(event.target);
-  if (step.mode === TUTORIAL_STEP_MODES.LOCKED && !allowed) {
+  const mustBlock = (step.mode === TUTORIAL_STEP_MODES.INFORMATIVE && !inNarrative)
+    || ((step.mode === TUTORIAL_STEP_MODES.LOCKED || step.mode === TUTORIAL_STEP_MODES.GUIDED) && !allowed);
+  if (mustBlock) {
     event.preventDefault();
     event.stopPropagation();
     if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-    tutorialRuntimeShowHint(step.wrongActionText || "Segui l'elemento evidenziato.");
+    tutorialRuntimeShowHint(step.wrongActionText || (step.mode === TUTORIAL_STEP_MODES.INFORMATIVE ? "Continua dal riquadro della lezione." : "Segui l'elemento evidenziato."));
     return;
   }
-  if (step.mode === TUTORIAL_STEP_MODES.GUIDED && !allowed) tutorialRuntimeShowHint(step.wrongActionText || "Questa azione non completa il passo.");
   if (allowed && step.completeOn && step.completeOn.kind === "click") {
     tutorialRuntimeState.lastAction = { kind:"click", stepId:step.id, at:Date.now() };
     tutorialRuntimeSchedule(() => tutorialRuntimeCompleteStep("click"), 0);
@@ -856,6 +858,87 @@ function tutorialRuntimeActionMatch(condition, action, data={}) {
   const expected = condition.match || {};
   for (const [key, value] of Object.entries(expected)) if (data[key] !== value) return { handled:true, matched:false, key, expected:value, actual:data[key] };
   return { handled:true, matched:true };
+}
+
+function tutorialRuntimeComparable(value) {
+  if (Array.isArray(value)) return value.map(item => String(item)).join(",");
+  if (value == null) return "";
+  return String(value);
+}
+
+function tutorialRuntimeInteractionFieldMatches(expected, actual) {
+  return tutorialRuntimeComparable(expected) === tutorialRuntimeComparable(actual);
+}
+
+function tutorialRuntimeExpectedInteraction(step=tutorialRuntimeState.step) {
+  if (!step) return null;
+  const completion = step.completeOn || null;
+  if (completion && completion.kind === "action" && completion.action) {
+    return { action:String(completion.action), match:{ ...(completion.match || {}) }, source:"completeOn" };
+  }
+
+  const target = step.spotlight && step.spotlight.target ? step.spotlight.target : null;
+  if (!target) return null;
+  if (target.type === "card") {
+    const match = {};
+    if (target.side != null) match.side = Number(target.side);
+    if (target.cardId) match.cardId = String(target.cardId);
+    return { action:"card_selected", match, source:"spotlight" };
+  }
+  if (target.type === "hex") {
+    return { action:"cell_click", match:{ coord:Array.isArray(target.coord) ? [...target.coord] : target.coord }, source:"spotlight" };
+  }
+  if (target.type === "unit") {
+    const match = {};
+    if (target.side != null) match.side = Number(target.side);
+    if (target.uid) match.uid = String(target.uid);
+    if (target.blueprintId) match.blueprintId = String(target.blueprintId);
+    return { action:"unit_click", match, source:"spotlight" };
+  }
+  if (target.type === "selector") {
+    const selector = String(target.selector || "");
+    if (selector.includes("mapHandCollapseBtn")) return { action:"hand_collapse", match:{}, source:"spotlight" };
+    if (selector.includes("mapLeftHandBtn") || selector.includes("mapHandShowBtn")) return { action:"hand_show", match:{}, source:"spotlight" };
+    if (/endturnbtn/i.test(selector)) {
+      const match = {};
+      if (completion && completion.match && completion.match.player != null) match.player = Number(completion.match.player);
+      return { action:"end_turn", match, source:"spotlight" };
+    }
+    if (selector.includes('data-unit-action="ability"') || selector.includes("data-unit-action='ability'")) {
+      return { action:"ability_toggle", match:{}, source:"spotlight" };
+    }
+  }
+  return null;
+}
+
+function tutorialRuntimeInteractionMatch(expected, action, data={}) {
+  if (!expected || expected.action !== action) return { matched:false, reason:"action", expected:expected && expected.action || null, actual:action };
+  for (const [key, value] of Object.entries(expected.match || {})) {
+    if (!tutorialRuntimeInteractionFieldMatches(value, data[key])) return { matched:false, reason:key, expected:value, actual:data[key] };
+  }
+  return { matched:true };
+}
+
+function tutorialRuntimeGateInteraction(action, data={}) {
+  if (!tutorialRuntimeState.active || !tutorialRuntimeState.step) return { handled:false, allowed:true };
+  if (data && data.tutorialBypass === true) return { handled:true, allowed:true, bypass:true };
+  const step = tutorialRuntimeState.step;
+  const expected = tutorialRuntimeExpectedInteraction(step);
+  const blockedByPhase = tutorialRuntimeState.preparingStep || tutorialRuntimeState.closing;
+  const result = blockedByPhase ? { matched:false, reason:"step_transition" } : tutorialRuntimeInteractionMatch(expected, action, data);
+  const allowed = Boolean(!blockedByPhase && step.mode !== TUTORIAL_STEP_MODES.INFORMATIVE && expected && result.matched);
+  if (!allowed) {
+    if (!data || data.quiet !== true) tutorialRuntimeShowHint(step.wrongActionText || (step.mode === TUTORIAL_STEP_MODES.INFORMATIVE ? "Continua dal riquadro della lezione." : "Segui l’azione evidenziata."));
+    tutorialRuntimeState.lastAction = {
+      kind:"interaction-rejected", action, data, stepId:step.id,
+      expected:expected ? { action:expected.action, match:{ ...(expected.match || {}) } } : null,
+      reason:result.reason || (step.mode === TUTORIAL_STEP_MODES.INFORMATIVE ? "informative_step" : "no_expected_interaction"),
+      at:Date.now()
+    };
+    return { handled:true, allowed:false, expected, reason:result.reason || "blocked" };
+  }
+  tutorialRuntimeState.lastAction = { kind:"interaction-allowed", action, data, stepId:step.id, at:Date.now() };
+  return { handled:true, allowed:true, expected };
 }
 
 function tutorialRuntimeGateAction(action, data={}) {
@@ -1040,7 +1123,7 @@ function tutorialRuntimeExecuteCommand(command) {
     case "pass_turn": {
       if (!state || typeof endTurn !== "function") return false;
       if (item.side && Number(item.side) !== Number(state.currentPlayer)) return false;
-      endTurn();
+      endTurn({ source:"tutorial_script", tutorialBypass:true });
       return true;
     }
     case "script_attack_and_end_turn": {
@@ -1053,7 +1136,7 @@ function tutorialRuntimeExecuteCommand(command) {
       attacker.attacksMade = 0;
       attackUnit(attacker, target);
       if (attacker.alive && typeof endUnitAction === "function") endUnitAction(attacker);
-      if (!state.winner) endTurn();
+      if (!state.winner) endTurn({ source:"tutorial_script", tutorialBypass:true });
       return true;
     }
     default:
@@ -1229,6 +1312,7 @@ function tutorialRuntimeDiagnostics() {
     previewPortals:tutorialRuntimeState.previewPortals.length,
     botPaused:tutorialRuntimeState.botPaused,
     progress:tutorialRuntimeState.scenarioId ? tutorialRuntimeProgressForScenario(tutorialRuntimeState.scenarioId) : null,
+    expectedInteraction:tutorialRuntimeExpectedInteraction(tutorialRuntimeState.step),
     lastAction:tutorialRuntimeState.lastAction
   };
 }

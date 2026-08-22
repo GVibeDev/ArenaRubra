@@ -133,7 +133,7 @@ with sync_playwright() as playwright:
     page.locator(f'.unitToken[data-unit-uid="{hierarch_uid}"]').click()
     page.wait_for_timeout(300)
     assert snap(page, "activate-sentence")["step"] == "activate-purple-sentence"
-    page.locator('#actionPanel [data-unit-action="ability"]').click()
+    page.locator('#selectedUnitPrimaryAbilitySlot [data-unit-action="ability"]').click()
     page.wait_for_timeout(320)
     assert snap(page, "mark-target")["step"] == "mark-fante-with-vulnerability"
 
@@ -164,7 +164,7 @@ with sync_playwright() as playwright:
     page.locator(f'.unitToken[data-unit-uid="{citadel_uid}"]').click()
     page.wait_for_timeout(280)
     assert snap(page, "activate-acquisition")["step"] == "activate-acquisition-clause"
-    page.locator('#actionPanel [data-unit-action="ability"]').click()
+    page.locator('#selectedUnitPrimaryAbilitySlot [data-unit-action="ability"]').click()
     page.wait_for_timeout(300)
     assert snap(page, "convert-target")["step"] == "convert-marked-fante"
     page.locator(f'.unitToken[data-unit-uid="{target_uid}"]').click()
@@ -300,7 +300,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9S1b1-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V1a-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["audit"]["scenarios"] == 5 and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available": 5, "starts": 5, "lesson5": True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

@@ -77,7 +77,7 @@ with sync_playwright() as p:
     oplite_uid = page.evaluate("state.units.find(u=>u.alive&&u.id==='AG1B02').uid")
     page.locator(f'.unitToken[data-unit-uid="{oplite_uid}"]').click(); page.wait_for_timeout(520); snap(page,"thorns-ready")
     next_step("end-wave-one")
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(850); wave1 = snap(page,"wave-one-resolved")
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(850); wave1 = snap(page,"wave-one-resolved")
     assert wave1["step"] == "wave-one-resolved", wave1
     assert not any(e["id"] == "EX1B01" for e in wave1["enemies"]), wave1
     next_step("choose-counterattack-before-resume")
@@ -104,7 +104,7 @@ with sync_playwright() as p:
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{counter_uid}"]').first.click(); page.wait_for_timeout(320); snap(page,"target-counterattack")
     page.locator(f'.unitToken[data-unit-uid="{oplite_uid}"]').click(); page.wait_for_timeout(520); snap(page,"counterattack-ready")
     next_step("end-wave-two")
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(950); wave2 = snap(page,"wave-two-resolved")
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(950); wave2 = snap(page,"wave-two-resolved")
     assert wave2["step"] == "wave-two-resolved", wave2
     assert not any(e["id"] == "EX1B04" for e in wave2["enemies"]), wave2
     assert wave2["oplite"]["hp"] == 3, wave2
@@ -117,7 +117,7 @@ with sync_playwright() as p:
     page.locator(f'.unitToken[data-unit-uid="{grove_uid}"]').click(); page.wait_for_timeout(550); fort = snap(page,"fortification-ready")
     assert fort["grove"]["def"] == fort["grove"]["hp"] == 4, fort
     next_step("end-wave-three")
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(950); wave3 = snap(page,"wave-three-survived")
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(950); wave3 = snap(page,"wave-three-survived")
     assert wave3["step"] == "wave-three-survived", wave3
     assert wave3["grove"] == {"hp":4,"def":0}, wave3
     assert any(e["id"] == "EX2B04" and e["hp"] == 2 and e["def"] == 0 for e in wave3["enemies"]), wave3
@@ -163,7 +163,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9S1b1-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V1a-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available":5,"starts":5,"lesson3":True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

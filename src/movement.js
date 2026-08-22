@@ -30,6 +30,11 @@ function vehicleMoveRange() { return currentPace().vehicleMove || 1; }
 
 function toggleMoveMode() {
       if ((typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) || !getSelectedUnit()) return;
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const unit = getSelectedUnit();
+        const gate = tutorialRuntimeGateInteraction("move_toggle", { player:state && state.currentPlayer, side:unit && unit.side, uid:unit && unit.uid, blueprintId:unit && unit.id });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       mode = mode === "move" ? "idle" : "move";
       pendingAbility = null;
       pendingBuildBlueprintId = null;

@@ -30,7 +30,7 @@ with sync_playwright() as p:
     page.locator('.narrativeNextBtn').click(); page.wait_for_timeout(400)
     page.locator('.narrativeNextBtn').click(); page.wait_for_timeout(400)
     page.locator('#mapHandOverlay .mapHandCollapseBtn').click(); page.wait_for_timeout(400)
-    page.locator('.mapHandShowBtn').first.click(); page.wait_for_timeout(400)
+    page.locator('#mapActionDock .mapLeftHandBtn').first.click(); page.wait_for_timeout(400)
     uid=page.evaluate("state.hand[1].find(c=>c.id==='UNIT:EXC1F01').cardUid")
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{uid}"]').first.click(); page.wait_for_timeout(1000)
     result=page.evaluate("""() => { const target=tutorialRuntimeResolveTarget(tutorialRuntimeState.step.spotlight.target); const tr=target.getBoundingClientRect(); const nr=document.querySelector('.narrativeDialog').getBoundingClientRect(); const safe=tutorialRuntimeSafeViewport(); return {mobile:document.body.classList.contains('mobile-apk-m4'),step:tutorialRuntimeDiagnostics().stepId,target:{left:tr.left,top:tr.top,right:tr.right,bottom:tr.bottom},overlap:!(tr.right<=nr.left||tr.left>=nr.right||tr.bottom<=nr.top||tr.top>=nr.bottom),safe,attention:target.classList.contains('tutorialAttentionTarget')}; }""")

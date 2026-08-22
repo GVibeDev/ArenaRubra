@@ -51,13 +51,13 @@ with sync_playwright() as p:
     next_step("read-card")
     next_step("collapse")
     page.locator("#mapHandOverlay .mapHandCollapseBtn").click(); page.wait_for_timeout(240); snap(page,"show-hand")
-    page.locator(".mapHandShowBtn").click(); page.wait_for_timeout(240); snap(page,"select-tribune")
+    page.locator("#mapActionDock .mapLeftHandBtn").click(); page.wait_for_timeout(240); snap(page,"select-tribune")
     trib_card = page.evaluate("state.hand[1].find(c=>c.id==='UNIT:EXC1F01').cardUid")
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{trib_card}"]').first.click(); page.wait_for_timeout(300); snap(page,"deploy-tribune")
     page.locator('.hex[data-coord-key="-5,0,5"]').click(); page.wait_for_timeout(450); snap(page,"fante-arrives")
     next_step("defense")
     next_step("end-turn")
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(500); snap(page,"nexus-yields")
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(500); snap(page,"nexus-yields")
     next_step("select-legionary-card")
     leg_card = page.evaluate("state.hand[1].find(c=>c.id==='UNIT:EX1B04').cardUid")
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{leg_card}"]').first.click(); page.wait_for_timeout(300); snap(page,"deploy-legionary")
@@ -69,7 +69,7 @@ with sync_playwright() as p:
     next_step("select-legionary-unit")
     leg_uid = page.evaluate("state.units.find(u=>u.alive&&u.id==='EX1B04').uid")
     page.locator(f'.unitToken[data-unit-uid="{leg_uid}"]').click(); page.wait_for_timeout(260); snap(page,"activate-ability")
-    page.locator('#actionPanel [data-unit-action="ability"]').click(); page.wait_for_timeout(260); snap(page,"ability-target")
+    page.locator('#selectedUnitPrimaryAbilitySlot [data-unit-action="ability"]').click(); page.wait_for_timeout(260); snap(page,"ability-target")
     page.locator(f'.unitToken[data-unit-uid="{fante_uid}"]').click(); page.wait_for_timeout(650); snap(page,"mech-arrival")
     next_step("read-emp")
     next_step("select-emp")
@@ -109,7 +109,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9S1b1-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V1a-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert final["active"] is False and final["progress"]["completed"] is True, final
 assert final["store"]["lessons"]["lesson-1-exordium"]["completed"] is True, final

@@ -28,7 +28,7 @@ with sync_playwright() as p:
     page.evaluate("""() => { const splash=document.getElementById('appSplash'); if(splash){ splash.hidden=true; splash.style.display='none'; splash.setAttribute('aria-hidden','true'); } }""")
     page.wait_for_timeout(250)
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9S1b1-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V1a-APK-M4c"
     assert page.evaluate("tutorialRuntimeResetProgress()") is True
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(300)
@@ -40,7 +40,7 @@ with sync_playwright() as p:
     next_step()  # read card
     # Riproduce l'inciampo: Mano chiusa prima di entrare nel passo che chiede di chiuderla.
     assert page.evaluate("mapHandOverlayCollapse()") is True
-    assert page.locator(".mapHandShowBtn").is_visible()
+    assert page.locator("#mapActionDock .mapLeftHandBtn").is_visible()
     next_step()  # collapse-hand: il contratto deve riaprirla
     collapse_state = page.evaluate("tutorialRuntimeDiagnostics()")
     assert collapse_state["stepId"] == "collapse-hand", collapse_state
@@ -50,14 +50,14 @@ with sync_playwright() as p:
     show_state = page.evaluate("tutorialRuntimeDiagnostics()")
     assert show_state["stepId"] == "show-hand", show_state
     assert show_state["actualHandState"] == "collapsed", show_state
-    page.locator(".mapHandShowBtn").click(); page.wait_for_timeout(240)
+    page.locator("#mapActionDock .mapLeftHandBtn").click(); page.wait_for_timeout(240)
 
     trib_card = page.evaluate("state.hand[1].find(c=>c.id==='UNIT:EXC1F01').cardUid")
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{trib_card}"]').first.click(); page.wait_for_timeout(220)
     assert page.evaluate("tutorialRuntimeDiagnostics().actualHandState") == "collapsed"
     page.locator('.hex[data-coord-key="-5,0,5"]').click(); page.wait_for_timeout(350)
     next_step(); next_step()
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(420)
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(420)
     next_step()  # checkpoint -> select-legionary-card
 
     before = page.evaluate("""() => ({

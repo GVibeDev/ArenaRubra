@@ -45,7 +45,7 @@ $("newGameBtn").addEventListener("click", newGame);
     if ($("copyMatchHistoryJsonBtn")) $("copyMatchHistoryJsonBtn").addEventListener("click", copyPersistentMatchHistoryJson);
     if ($("importMatchHistoryJsonBtn")) $("importMatchHistoryJsonBtn").addEventListener("click", importPersistentMatchHistoryJson);
     if ($("resetMatchHistoryBtn")) $("resetMatchHistoryBtn").addEventListener("click", resetPersistentMatchHistory);
-    $("endTurnBtn").addEventListener("click", endTurn);
+    $("endTurnBtn").addEventListener("click", () => endTurn({ source:"ui" }));
     $("runBotBtn").addEventListener("click", maybeRunBot);
     $("concedeBtn").addEventListener("click", () => concedeMatch(state.currentPlayer));
     $("autoResignToggle").addEventListener("change", () => { if (state) state.autoResignEnabled = $("autoResignToggle").checked; });

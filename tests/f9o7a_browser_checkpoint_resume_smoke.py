@@ -39,13 +39,13 @@ with sync_playwright() as p:
     next_step()  # read card
     next_step()  # collapse
     page.locator("#mapHandOverlay .mapHandCollapseBtn").click(); page.wait_for_timeout(180)
-    page.locator(".mapHandShowBtn").click(); page.wait_for_timeout(180)
+    page.locator("#mapActionDock .mapLeftHandBtn").click(); page.wait_for_timeout(180)
     trib_card = page.evaluate("state.hand[1].find(c=>c.id==='UNIT:EXC1F01').cardUid")
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{trib_card}"]').first.click(); page.wait_for_timeout(220)
     page.locator('.hex[data-coord-key="-5,0,5"]').click(); page.wait_for_timeout(350)
     next_step()  # explain defense
     next_step()  # end turn prompt
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(420)
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(420)
     next_step()  # checkpoint completion -> select-legionary-card
 
     before = page.evaluate("""() => ({

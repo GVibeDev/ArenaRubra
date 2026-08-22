@@ -80,6 +80,10 @@
 
     function toggleTacticMode(tactic) {
       if (!canUseTactic(state.currentPlayer, tactic)) return;
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("starter_tactic_toggle", { player:state && state.currentPlayer, tacticId:tactic && tactic.id });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       if (typeof starterTacticRequiresPlayerTarget === "function" && starterTacticRequiresPlayerTarget(tactic)) {
         const player = state.currentPlayer;
         const targets = tacticTargets(player, tactic);

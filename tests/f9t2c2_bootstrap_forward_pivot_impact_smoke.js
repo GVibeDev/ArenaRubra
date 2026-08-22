@@ -81,5 +81,5 @@ ok(ai.includes("botRunTokenCurrentF9T2c2")&&ai.includes("activeBotRunTokenF9T2c2
 ok(game.indexOf("invalidateBotRunForNewMatchF9T2c2")<game.indexOf("createInitialGameState"),"invalidazione precedente alla creazione del nuovo stato");
 ok(telemetry.includes('MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION = "F9T2d3-1"'),"schema telemetrico F9T2c2");
 ok(telemetry.includes("expertForwardPivotsDeployed")&&telemetry.includes("allExordiumPivotsTracked")&&telemetry.includes("forwardPivotLateImpacts"),"denominatori Pivot separati");
-ok(build.includes('version: "C2-STABLE-1-F9T2d3-APK-M4c"')&&build.includes('buildChannel: "f9t2d3-candidate"'),"metadata candidata corretti");
+ok(build.includes('version: "C2-STABLE-1-F9V1a-APK-M4c"')&&build.includes('buildChannel: "starter2-tutorial-p0a"'),"metadata candidata corretti");
 console.log(`F9T2c2 Bootstrap & Forward Pivot Impact smoke: ${checks}/${checks} verifiche superate`);

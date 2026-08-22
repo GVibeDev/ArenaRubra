@@ -7,7 +7,7 @@ function postActionChecks(autoEnd=true) {
       removeDeadControl();
       checkVictory();
       if (!state.winner && autoEnd && hasAnyCombatUnits(state.currentPlayer) && activeCombatUnits(state.currentPlayer).length === 0) {
-        endTurn();
+        endTurn({ source:"auto" });
       } else {
         renderAll();
       }
@@ -49,6 +49,16 @@ function advanceToNextActivePlayer() {
 
 function endTurn(options={}) {
       if (state.winner) return;
+      const tutorialBypass = Boolean(options && options.tutorialBypass === true);
+      const turnSource = options && options.source ? String(options.source) : "runtime";
+      const tutorialSystemTurn = turnSource === "auto" || turnSource === "bot" || turnSource === "tutorial_script";
+      if (!tutorialBypass && !tutorialSystemTurn && typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("end_turn", { player:state.currentPlayer, source:turnSource });
+        if (gate && gate.handled && gate.allowed === false) {
+          if (typeof renderAll === "function") renderAll();
+          return false;
+        }
+      }
       const eliminatedCurrent = options.eliminatedCurrent === true || (typeof isPlayerEliminated === "function" && isPlayerEliminated(state.currentPlayer));
       if (!eliminatedCurrent && typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) { if (typeof log === "function") log("Completa la scelta della ricompensa Missione prima di terminare il turno."); if (typeof renderAll === "function") renderAll(); return; }
       updateControlFromOccupants();

@@ -71,7 +71,7 @@ with sync_playwright() as p:
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{droid_card}"]').first.click(); page.wait_for_timeout(320); snap(page,"deploy-droid")
     page.locator('.hex[data-coord-key="-5,0,5"]').click(); page.wait_for_timeout(500); snap(page,"starter-remains")
     next_step("end-turn-droid")
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(520); snap(page,"opponent-pass-droid")
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(520); snap(page,"opponent-pass-droid")
     next_step("select-droid-unit")
     droid_uid = page.evaluate("state.units.find(u=>u.alive&&u.id==='NX2B01').uid")
     page.locator(f'.unitToken[data-unit-uid="{droid_uid}"]').click(); page.wait_for_timeout(300); snap(page,"move-droid")
@@ -102,7 +102,7 @@ with sync_playwright() as p:
     page.locator(f'#mapHandOverlay [data-preview-card-uid="{quad_card}"]').first.click(); page.wait_for_timeout(320); snap(page,"deploy-quad")
     page.locator('.hex[data-coord-key="-2,0,2"]').click(); page.wait_for_timeout(550); snap(page,"quad-exhausted")
     next_step("end-turn-quad")
-    page.locator(".mapHandEndTurnBtn").first.click(); page.wait_for_timeout(520); snap(page,"opponent-pass-quad")
+    page.locator(".mapLeftEndTurnBtn").first.click(); page.wait_for_timeout(520); snap(page,"opponent-pass-quad")
     next_step("select-quad-unit")
     quad_uid = page.evaluate("state.units.find(u=>u.alive&&u.id==='NX3B01').uid")
     page.locator(f'.unitToken[data-unit-uid="{quad_uid}"]').click(); page.wait_for_timeout(300); snap(page,"quad-center")
@@ -147,7 +147,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9S1b1-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V1a-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available":5,"starts":5,"lesson2":True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

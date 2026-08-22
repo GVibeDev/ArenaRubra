@@ -32,7 +32,7 @@ with sync_playwright() as p:
     page.evaluate("document.dispatchEvent(new Event('DOMContentLoaded'))")
     page.evaluate("""() => { const s=document.getElementById('appSplash'); if(s){s.hidden=true;s.style.display='none';} }""")
     page.wait_for_timeout(350)
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9S1b1-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V1a-APK-M4c"
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(700)
 
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     collapse=page.locator("#mapHandOverlay .mapHandCollapseBtn")
     assert collapse.evaluate("e=>e.classList.contains('tutorialAttentionTarget')")
     collapse.click(); page.wait_for_timeout(450)
-    show=page.locator(".mapHandShowBtn").first
+    show=page.locator("#mapActionDock .mapLeftHandBtn").first
     assert show.evaluate("e=>e.classList.contains('tutorialAttentionTarget')")
     show.click(); page.wait_for_timeout(450)
 

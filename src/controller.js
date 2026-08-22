@@ -22,6 +22,13 @@ function handleCellClick(coord) {
       }
 
       if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const tutorialInteraction = unit
+          ? { action:"unit_click", data:{ coord:[...coord], uid:unit.uid, side:unit.side, blueprintId:unit.id, player:state.currentPlayer } }
+          : { action:"cell_click", data:{ coord:[...coord], player:state.currentPlayer } };
+        const gate = tutorialRuntimeGateInteraction(tutorialInteraction.action, tutorialInteraction.data);
+        if (gate && gate.handled && gate.allowed === false) return;
+      }
       if (typeof gameScreenClearInspection === "function") gameScreenClearInspection();
 
       if (mode === "spawn") {
@@ -265,6 +272,10 @@ function completeAbilityActivation(unit) {
 function toggleAbilityMode(unit) {
       if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
       if (!unit.ability) return;
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("ability_toggle", { player:state && state.currentPlayer, side:unit.side, uid:unit.uid, blueprintId:unit.id, abilityName:unit.ability.name || "" });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       if (typeof abilityRequiresPlayerTarget === "function" && abilityRequiresPlayerTarget(unit.ability)) {
         const targets = abilityTargets(unit, unit.ability);
         if (!targets.length) { log(`${unit.ability.name}: nessun avversario attivo valido.`); renderAll(); return; }
@@ -296,6 +307,10 @@ function toggleAbilityMode(unit) {
 
 function passUnit(unit) {
       if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("pass_unit", { player:state && state.currentPlayer, side:unit && unit.side, uid:unit && unit.uid, blueprintId:unit && unit.id });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       log(`${unit.name} passa l'azione.`);
       endUnitAction(unit);
       clearSelection();

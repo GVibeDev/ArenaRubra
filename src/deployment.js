@@ -72,6 +72,10 @@
       if (!state || state.winner || botRunning || (typeof missionInteractionBlocked === "function" && missionInteractionBlocked())) return false;
       const player = state.currentPlayer;
       const card = starterCardByUid(player, cardUid);
+      if (card && typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("card_selected", { side:player, cardId:String(card.id || ""), cardUid:String(card.cardUid || cardUid || ""), source:"starter" });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       if (!card) {
         log("Carta starter non trovata per il giocatore corrente.");
         renderAll();
@@ -407,6 +411,10 @@
 
       const player = state.currentPlayer;
       const card = handCardByUid(player, cardUid);
+      if (card && typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("card_selected", { side:player, cardId:String(card.id || ""), cardUid:String(card.cardUid || cardUid || ""), source:"hand" });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       if (!card) {
         log("Carta in mano non trovata per il giocatore corrente.");
         renderAll();
@@ -544,6 +552,10 @@
 
     function toggleBuildMode(unit) {
       if (typeof missionInteractionBlocked === "function" && missionInteractionBlocked()) return;
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("build_toggle", { player:state && state.currentPlayer, side:unit && unit.side, uid:unit && unit.uid, blueprintId:unit && unit.id });
+        if (gate && gate.handled && gate.allowed === false) return false;
+      }
       const structure = structureBlueprintFor(unit.side);
       if (!structure || !canBuildStructures(unit) || state.energy[unit.side] < effectiveBlueprintCost(unit.side, structure)) return;
       mode = mode === "build" ? "idle" : "build";

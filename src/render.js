@@ -1434,8 +1434,8 @@ ${reason}`);
       MAP_HAND_OVERLAY_STATE.selectedCardUid = "";
       MAP_HAND_OVERLAY_STATE.selectedSource = "";
       if (typeof endTurn === "function") {
-        endTurn();
-        return true;
+        const result = endTurn({ source:"ui" });
+        return result !== false;
       }
       const legacy = $("endTurnBtn");
       if (legacy && !legacy.disabled) legacy.click();
@@ -1488,7 +1488,10 @@ ${reason}`);
       const card = mapHandOverlayCardByUid(side, cardUid, source);
       if (!card) return false;
       const tutorialCardAction = { side:Number(side) || 0, cardId:String(card.id || ""), cardUid:String(card.cardUid || cardUid || ""), source:String(source || "hand") };
-      if (typeof tutorialRuntimeGateAction === "function") {
+      if (typeof tutorialRuntimeGateInteraction === "function") {
+        const gate = tutorialRuntimeGateInteraction("card_selected", tutorialCardAction);
+        if (gate && gate.handled && gate.allowed === false) return false;
+      } else if (typeof tutorialRuntimeGateAction === "function") {
         const gate = tutorialRuntimeGateAction("card_selected", tutorialCardAction);
         if (gate && gate.handled && gate.allowed === false) return false;
       }

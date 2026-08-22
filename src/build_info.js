@@ -53,6 +53,7 @@
 // F9T2d2 Clear Effective Damage Preview Hotfix metadata.
 // F9T2d2a Varran Stationary Attack Ownership Hotfix metadata.
 // F9T2d3 Commander Deployment Commitment metadata.
+// F9V1a Tutorial Runtime 2.0 · Authoritative Interaction & Selector Drift Hotfix metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -75,13 +76,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9T2d3-APK-M4c",
-  buildName: "Commander Deployment Commitment",
-  buildDate: "2026-08-09",
-  buildChannel: "f9t2d3-candidate",
+  version: "C2-STABLE-1-F9V1a-APK-M4c",
+  buildName: "Tutorial Runtime 2.0 · Authoritative Interaction Hotfix",
+  buildDate: "2026-08-22",
+  buildChannel: "starter2-tutorial-p0a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata F9T2d3 basata sulla baseline validata F9T2c4 e sulle candidate tecniche F9T2d1/F9T2d2/F9T2d2a. Introduce Commander Deployment Commitment per impedire la starvation del comandante: da una soglia faction-specific crea un commitment persistente, riserva ENE contro tattiche e acquisti marginali, rispetta rischio QG e micro-piani Expert prioritari, e propone lo schieramento del comandante entro una deadline bounded con ragioni di differimento telemetriche. Per Exordium/Varran: earliest round 4, finestra base 2 round. Preserva Varran Stationary Attack Ownership F9T2d2a, Varran Effective Assault Value F9T2d1, Clear Effective Damage Preview F9T2d2, il commitment Clear Occupation F9T2c4 sullo stato autorevole, aggregati F9T2c3a, Bastion Relay, Survival Check, Forward Pivot, bootstrap Expert, fallback Advanced F9T0 e la riorganizzazione del Pool carte F9U2a. Nessuna modifica a carte, costi, statistiche, deck, mappe, Missioni o bilanciamento. Schema principale F9Q3e1-2, contratto Expert F9T1-1, estensione F9T2d3-1."
+  notes: "Candidata Starter 2.0 F9V1a costruita sulla HEAD tecnica F9T2d3, con baseline logica validata F9T2c4. Corregge il drift dei selettori tutorial rispetto al Map HUD/Inspector correnti e introduce un contratto di interazione autorevole: durante le lezioni le azioni di gameplay fuori dallo step vengono rifiutate prima di mutare lo stato; l’auto-end-turn è bloccato salvo step previsto o comando scenario esplicito. Preserva scenari, checkpoint, carte, costi, statistiche, deck, mappe, Missioni, Advanced/Expert AI e bilanciamento, incluso Clear Occupation F9T2c4 sullo stato autorevole e la riorganizzazione del Pool carte F9U2a. Android resta fuori scope Starter. Schema telemetrico F9Q3e1-2, contratto Expert F9T1-1 ed estensione dottrinale F9T2d3-1 invariati."
 });
 
 function buildInfoLabel() {

@@ -179,7 +179,7 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"show-hand",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandShowBtn" }), padding:8, label:"Mostra mano" }),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#mapActionDock .mapLeftHandBtn" }), padding:8, label:"Mostra mano" }),
         message:Object.freeze({ speaker:"Narratore Exordium", portraitSet:"tutorial-exordium", expression:"approve", side:"right", text:"Riapri la Mano. Potrai ridurla e mostrarla ogni volta che serve." }),
         completeOn:Object.freeze({ kind:"click" }),
         wrongActionText:"Premi Mostra mano."
@@ -225,8 +225,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-first-turn",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Exordium", portraitSet:"tutorial-exordium", expression:"explain", side:"right", text:"Il Tribuno è esausto. Termina il turno per renderlo pronto nel prossimo." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -303,7 +303,7 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"activate-heavy-blow",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#actionPanel [data-unit-action=\"ability\"]" }), padding:8, label:"Colpo Pesante" }),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#selectedUnitPrimaryAbilitySlot [data-unit-action=\"ability\"]" }), padding:8, label:"Colpo Pesante" }),
         message:Object.freeze({ speaker:"Narratore Exordium", portraitSet:"tutorial-exordium", expression:"explain", side:"right", text:"Premi il pulsante dell’abilità. Colpo Pesante costa 1 ENE, infligge 2 danni entro raggio 2 e poi entra in ricarica." }),
         completeOn:Object.freeze({ kind:"click" }),
         wrongActionText:"Attiva Colpo Pesante."
@@ -497,8 +497,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-turn-for-infantry",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Nexus", portraitSet:"tutorial-nexus", expression:"explain", side:"right", text:"Termina il turno. Il Droide sarà pronto quando la rete tornerà sotto il tuo controllo." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -608,8 +608,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-turn-for-quad",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Nexus", portraitSet:"tutorial-nexus", expression:"explain", side:"right", text:"Termina il turno per rendere pronto il Quad." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -793,8 +793,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-turn-wave-one",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Agathoi", portraitSet:"tutorial-agathoi", expression:"stern", side:"right", text:"Termina il turno e lascia che l’Exordium urti contro la linea." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -850,8 +850,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-turn-wave-two",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Agathoi", portraitSet:"tutorial-agathoi", expression:"stern", side:"right", text:"Termina il turno e prepara la risposta dell’Oplita." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -907,8 +907,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-turn-wave-three",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Agathoi", portraitSet:"tutorial-agathoi", expression:"stern", side:"right", text:"Termina il turno. L’ultima ondata tenterà di demolire la Struttura." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -1059,8 +1059,8 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"end-turn-for-bleed",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn" }), padding:8, label:"Fine turno" }),
-        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapHandEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn" }), padding:8, label:"Fine turno" }),
+        allowedTargets:Object.freeze([Object.freeze({ type:"selector", selector:".mapLeftEndTurnBtn", all:true }), Object.freeze({ type:"selector", selector:"#endTurnBtn", all:true })]),
         message:Object.freeze({ speaker:"Narratore Liberti", portraitSet:"tutorial-liberti", expression:"stern", side:"right", text:"Termina il turno per far scattare il Sanguinamento." }),
         completeOn:Object.freeze({ kind:"event", event:"TURN_ENDED", match:Object.freeze({ player:1 }) }),
         wrongActionText:"Termina il turno con il pulsante evidenziato."
@@ -1193,7 +1193,7 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"activate-purple-sentence",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#actionPanel [data-unit-action=\"ability\"]" }), padding:8, label:"Sentenza Porpora" }),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#selectedUnitPrimaryAbilitySlot [data-unit-action=\"ability\"]" }), padding:8, label:"Sentenza Porpora" }),
         message:Object.freeze({ speaker:"Narratore Fabeot", portraitSet:"tutorial-fabeot", expression:"stern", side:"right", text:"Attiva Sentenza Porpora." }),
         completeOn:Object.freeze({ kind:"click" }),
         wrongActionText:"Attiva Sentenza Porpora dal pannello dell’unità."
@@ -1256,7 +1256,7 @@ const TUTORIAL_SCENARIOS_F9O6 = Object.freeze({
         id:"activate-acquisition-clause",
         mode:"locked",
         uiState:Object.freeze({ hand:"collapsed" }),
-        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#actionPanel [data-unit-action=\"ability\"]" }), padding:8, label:"Clausola di Acquisizione" }),
+        spotlight:Object.freeze({ target:Object.freeze({ type:"selector", selector:"#selectedUnitPrimaryAbilitySlot [data-unit-action=\"ability\"]" }), padding:8, label:"Clausola di Acquisizione" }),
         message:Object.freeze({ speaker:"Narratore Fabeot", portraitSet:"tutorial-fabeot", expression:"stern", side:"right", text:"Attiva Clausola di Acquisizione. Costa 4 ENE e converte un bersaglio valido già marchiato." }),
         completeOn:Object.freeze({ kind:"click" }),
         wrongActionText:"Attiva Clausola di Acquisizione."

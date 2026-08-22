@@ -134,7 +134,7 @@ with sync_playwright() as p:
     assert any(s["kind"] == "bleed" and s["value"] == 2 for s in first_attack["enemy"]["statuses"]), first_attack
 
     next_step("end-turn-for-bleed")
-    page.locator(".mapHandEndTurnBtn").first.click()
+    page.locator(".mapLeftEndTurnBtn").first.click()
     page.wait_for_timeout(900)
     bleed = snap(page, "bleed-resolved")
     assert bleed["step"] == "bleed-resolved" and bleed["currentPlayer"] == 1, bleed
@@ -220,7 +220,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9S1b1-APK-M4c", initial
+assert initial["build"] == "C2-STABLE-1-F9V1a-APK-M4c", initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available":5,"starts":5,"lesson4":True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

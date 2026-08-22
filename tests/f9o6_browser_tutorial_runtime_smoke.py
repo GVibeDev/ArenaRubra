@@ -62,7 +62,7 @@ with sync_playwright() as p:
     collapse = page.evaluate("""() => ({diag:tutorialRuntimeDiagnostics(),allowed:tutorialRuntimeState.allowedTargets.length})""")
     page.locator("#mapHandOverlay .mapHandCollapseBtn").click(); page.wait_for_timeout(220)
     show = page.evaluate("""() => ({diag:tutorialRuntimeDiagnostics(),compact:document.getElementById('mapHandOverlay').classList.contains('isMovementHidden')})""")
-    page.locator(".mapHandShowBtn").click(); page.wait_for_timeout(220)
+    page.locator("#mapActionDock .mapLeftHandBtn").click(); page.wait_for_timeout(220)
 
     card_step = page.evaluate("""() => ({diag:tutorialRuntimeDiagnostics(),visible:tutorialRuntimeElementIsVisible(tutorialRuntimeState.target)})""")
     card_uid = page.evaluate("state.hand[1].find(card=>card.id==='UNIT:EXC1F01').cardUid")
@@ -80,7 +80,7 @@ with sync_playwright() as p:
 unexpected = [msg for msg in console_errors if not msg.startswith("Arena AppShell: inizializzazione GameScreen non bloccante fallita")]
 result = {"initial":initial,"started":started,"welcome":welcome,"readCard":read_card,"collapse":collapse,"show":show,"cardStep":card_step,"deploy":deploy,"aborted":aborted,"pageErrors":page_errors,"consoleErrors":unexpected}
 print(json.dumps({"ok":True,**result}, ensure_ascii=False, indent=2))
-assert initial["build"] in {"C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c","C2-STABLE-1-F9O7g-APK-M4c",'C2-STABLE-1-F9S1b1-APK-M4c'}, initial
+assert initial["build"] in {"C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c","C2-STABLE-1-F9O7g-APK-M4c",'C2-STABLE-1-F9V1a-APK-M4c'}, initial
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menuButton"] and initial["runtimeApi"] == "function"
 assert started is True
