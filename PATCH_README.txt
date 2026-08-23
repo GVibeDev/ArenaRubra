@@ -1,38 +1,98 @@
-ARENA RUBRA — F9W1a CANDIDATE PATCH OVERWRITE
+ARENA RUBRA — F9W2a CANDIDATE PATCH OVERWRITE
 ==============================================
 
-Milestone:
-  C2-STABLE-1-F9W1a-APK-M4c
-  Match Data 2.0 Foundation
+Milestone
+  C2-STABLE-1-F9W2a-APK-M4c
+  Player / DEV Runtime Profile Foundation
 
-Base richiesta:
-  C2-STABLE-1-F9V4a-APK-M4c VALIDATA
+Base richiesta
+  C2-STABLE-1-F9W1a-APK-M4c VALIDATA
 
-Riferimento remoto verificato prima della patch:
-  GitHub main 0d1aa4ee68e745c275c70c543306fd9f58049f6e
+Applicazione
+  Sovrascrivere i file della baseline F9W1a mantenendo la stessa struttura cartelle.
 
-SCOPO
------
-Apre S2-C3 Match Data 2.0.
+Scopo
+  Avvia S2-C4 formalizzando un unico runtime Arena Rubra con due profili di
+  esposizione: DEV e Demo / Distribution. Nessun fork della logica di gioco.
 
-- MatchRecord canonico AR-MATCH-2, N-player.
-- partecipanti 2P/3P/4P con human/bot, fazione, comandante, deck, lifecycle e finali.
-- MatchTelemetry tecnica separata in arenaRubra.matchTelemetry.v2 / AR-TELEMETRY-2.
-- collegamento MatchRecord <-> Telemetry tramite matchId.
-- migrazione idempotente dello storico legacy con estrazione della telemetria incorporata.
-- alias p1/p2 mantenuti temporaneamente per compatibilità.
-- Cronologia, Statistiche, pannello in-game e CSV aggiornati per N-player.
-- nuovo store incluso nei backup Control Center e persistito nel Local Data Vault.
-- Tutorial/Challenge e Match Lab restano esclusi dalle statistiche competitive.
+Profilo DEV
+  - gioco / Tutorial / Challenge
+  - Deck Builder / Pool carte
+  - Card Editor
+  - Map Editor / custom maps / Match Lab
+  - Statistiche e Cronologia
+  - Telemetria raw e Log tecnico
+  - Debug / Precheck / diagnostica
+  - Expert AI sperimentale
+  - full vault Import / Export
+  - Layout Calibration Lab
+  - Renderer Calibration Lab
 
-NESSUNA MODIFICA CORE
----------------------
-Nessuna modifica a regole, carte, costi, deck, ENE, mappe, Missioni, AI, QG,
-Pressione, Action Contract, Tutorial/Challenge o contenuti F9V4a.
+Profilo Demo / Distribution
+  - gioco / Tutorial / Challenge
+  - Deck Builder / Pool carte
+  - mappe ufficiali
+  - Statistiche Player / Cronologia
+  - Impostazioni / Versione
+  - NASCONDE e GUARDA gli entrypoint di Card Editor, Map Editor, custom maps,
+    Telemetria raw, Log tecnico, Debug, Expert, full vault e calibratori.
+  - Il pulsante Statistiche del Result Modal resta Player-facing; Log e
+    Telemetria non vengono esposti.
 
-INSTALLAZIONE
--------------
-Sovrascrivere i file del pacchetto sulla cartella completa F9V4a validata mantenendo
-la stessa struttura relativa.
+Contratto build
+  Questa candidata parte in DEV ed è switchabile dalle Impostazioni per poter
+  testare entrambe le superfici nello stesso runtime.
 
-Questa è una CANDIDATA. Non diventa baseline fino a VALIDATA manuale.
+  BUILD_INFO.productProfileDefault = "dev"
+  BUILD_INFO.productProfileSwitchable = true
+
+  Una futura build pubblica potrà usare:
+
+  productProfileDefault = "distribution"
+  productProfileSwitchable = false
+
+  In questo caso la preferenza locale DEV non può riattivare il profilo di
+  sviluppo. Questo è un contratto di esposizione prodotto, non un sandbox di
+  sicurezza: il codice DEV continua intenzionalmente a esistere nella codebase.
+
+Preservazione strumenti DEV
+  Il codice dei due calibratori era ancora presente nella baseline F9W1a, ma
+  la raggiungibilità non era più sufficientemente esplicita. F9W2a li rende
+  strumenti DEV permanenti:
+
+  - Debug -> Apri Layout Calibration Lab
+  - Debug -> Apri Renderer Calibration Lab
+
+  Inoltre le letture/scritture dei due store di calibrazione passano dal facade
+  arenaStorage quando disponibile, mantenendo OPFS / IndexedDB / localStorage
+  coerenti con il Data Vault.
+
+Invarianti
+  Nessuna modifica a:
+  - regole e condizioni di vittoria;
+  - carte, roster, costi, deck, ENE;
+  - mappe ufficiali e terreni;
+  - Missioni;
+  - AI di gioco / decisioni Expert;
+  - QG / PS / Pressione;
+  - Tutorial Action Contract e contenuti F9V4a;
+  - MatchRecord / MatchTelemetry F9W1a.
+
+Nota roadmap
+  Il sistema di temi menu NON fa parte di F9W2a: resta la fase immediatamente
+  successiva alla fondazione Player/DEV, così il tema viene costruito sopra un
+  profilo prodotto già stabile.
+
+Test automatici eseguiti in ambiente patch-only
+  PASS  node --check src/ui.js
+  PASS  node --check src/build_info.js
+  PASS  tests/f9w2a_product_profile_smoke.js
+  PASS  tests/f9w2a_profile_static_smoke.js
+  PASS  tests/f9w1a_match_data_v2_smoke.js
+  PASS  python -m py_compile tests/f9w2a_browser_product_profile_smoke.py
+
+Browser E2E
+  Preparato tests/f9w2a_browser_product_profile_smoke.py.
+  Non eseguito nel container patch-only perché il pacchetto overwrite non
+  contiene index.html, CSS, asset e l'intero checkout. Eseguirlo sul progetto
+  completo è parte del gate manuale.

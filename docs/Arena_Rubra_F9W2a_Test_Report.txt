@@ -1,0 +1,40 @@
+ARENA RUBRA F9W2a — TEST REPORT
+================================
+
+Candidate
+  C2-STABLE-1-F9W2a-APK-M4c
+  Player / DEV Runtime Profile Foundation
+
+Automated checks executed
+  PASS  node --check src/ui.js
+  PASS  node --check src/build_info.js
+  PASS  f9w2a_product_profile_smoke.js
+        - DEV default contract
+        - Distribution capability matrix
+        - persistence / F9U3 compatibility
+        - locked Distribution build cannot be elevated by persisted DEV setting
+        - invalid query cannot silently elevate profile
+        - Control Center panel guards
+        - Card/Map/Layout direct entrypoint guards
+        - Result Modal raw-analysis guards
+        - AppScreen guards
+        - calibration storage facade
+        - both calibration labs preserved in DEV
+        - transient hidden-state restoration
+  PASS  f9w2a_profile_static_smoke.js
+        - profile capability markers
+        - DEV-only selector coverage
+        - calibration preservation markers
+        - F9W2a BUILD_INFO metadata
+  PASS  f9w1a_match_data_v2_smoke.js
+        - Match Data 2.0 regression
+  PASS  python -m py_compile f9w2a_browser_product_profile_smoke.py
+
+Browser smoke status
+  PREPARED, NOT EXECUTED in the patch-only container.
+  Reason: the overwrite package does not contain the full application checkout
+  (index.html, CSS, assets and all runtime modules). The browser test is intended
+  to be run after applying the patch to the complete F9W1a validated project.
+
+Gameplay scope
+  No gameplay mechanics changed. No new balance values introduced.

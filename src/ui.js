@@ -853,6 +853,707 @@ globalThis.controlCenterKnownStorageKeys = function controlCenterKnownStorageKey
 
 // F9W1a END
 
+// =====================================================
+// F9W2a — Player / DEV Runtime Profile Foundation
+// Un solo runtime, due profili di esposizione. Gli strumenti DEV restano nel
+// codice e nel vault ma vengono nascosti/guardati nel profilo Distribution.
+// Il profilo pubblico futuro potrà bloccare lo switch via BUILD_INFO senza
+// creare una seconda codebase.
+// =====================================================
+
+const ARENA_PRODUCT_PROFILE_SCHEMA_F9W2A = "F9W2a-1";
+const ARENA_PRODUCT_PROFILE_SETTINGS_KEY_F9W2A = "productProfile";
+const ARENA_PRODUCT_PROFILES_F9W2A = Object.freeze({
+  DEV:"dev",
+  DISTRIBUTION:"distribution"
+});
+
+const ARENA_PRODUCT_PROFILE_CAPABILITIES_F9W2A = Object.freeze({
+  play:Object.freeze(["dev","distribution"]),
+  tutorial:Object.freeze(["dev","distribution"]),
+  deckBuilder:Object.freeze(["dev","distribution"]),
+  cardPool:Object.freeze(["dev","distribution"]),
+  playerStatistics:Object.freeze(["dev","distribution"]),
+  playerHistory:Object.freeze(["dev","distribution"]),
+  settings:Object.freeze(["dev","distribution"]),
+  version:Object.freeze(["dev","distribution"]),
+  cardEditor:Object.freeze(["dev"]),
+  mapEditor:Object.freeze(["dev"]),
+  rawTelemetry:Object.freeze(["dev"]),
+  rawLog:Object.freeze(["dev"]),
+  debug:Object.freeze(["dev"]),
+  calibration:Object.freeze(["dev"]),
+  expertAi:Object.freeze(["dev"]),
+  fullVaultTransfer:Object.freeze(["dev"]),
+  customMaps:Object.freeze(["dev"])
+});
+
+const arenaProductProfileStateF9W2a = {
+  sessionOverride:null,
+  mutationObserver:null,
+  applyScheduled:false,
+  installed:false,
+  initialized:false,
+  originalFunctions:{},
+  lastApplied:null
+};
+
+function arenaProductProfileNormalizeF9W2a(value, fallback="dev") {
+  const text = String(value || "").trim().toLowerCase();
+  if (["distribution","demo","player","public"].includes(text)) return ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION;
+  if (["dev","developer","development"].includes(text)) return ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+  return fallback === ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION ? ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION : ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+}
+
+function arenaProductProfileParseF9W2a(value) {
+  const text = String(value || "").trim().toLowerCase();
+  if (["distribution","demo","player","public"].includes(text)) return ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION;
+  if (["dev","developer","development"].includes(text)) return ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+  return null;
+}
+
+function arenaProductProfileBuildDefaultF9W2a() {
+  try {
+    const configured = typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.productProfileDefault : null;
+    return arenaProductProfileNormalizeF9W2a(configured, ARENA_PRODUCT_PROFILES_F9W2A.DEV);
+  } catch (_) {
+    return ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+  }
+}
+
+function arenaProductProfileSwitchableF9W2a() {
+  try {
+    if (typeof BUILD_INFO !== "undefined" && BUILD_INFO && BUILD_INFO.productProfileSwitchable === false) return false;
+  } catch (_) {}
+  return true;
+}
+
+function arenaProductProfileReadSettingsF9W2a() {
+  try {
+    const settings = typeof arenaStorageReadSettings === "function" ? arenaStorageReadSettings() : {};
+    return settings && typeof settings === "object" && !Array.isArray(settings) ? settings : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function arenaProductProfileQueryOverrideF9W2a() {
+  if (!arenaProductProfileSwitchableF9W2a()) return null;
+  try {
+    if (typeof window === "undefined" || !window.location) return null;
+    const params = new URLSearchParams(window.location.search || "");
+    const raw = params.get("profile");
+    if (!raw) return null;
+    return arenaProductProfileParseF9W2a(raw);
+  } catch (_) {
+    return null;
+  }
+}
+
+function arenaProductProfileStoredF9W2a() {
+  if (!arenaProductProfileSwitchableF9W2a()) return null;
+  const settings = arenaProductProfileReadSettingsF9W2a();
+  const cfg = settings[ARENA_PRODUCT_PROFILE_SETTINGS_KEY_F9W2A];
+  if (cfg && typeof cfg === "object" && cfg.profile) return arenaProductProfileParseF9W2a(cfg.profile);
+
+  // Migrazione compatibile dal vecchio toggle F9U3.
+  const legacy = settings.controlCenter;
+  if (legacy && typeof legacy === "object" && typeof legacy.developerMode === "boolean") {
+    return legacy.developerMode ? ARENA_PRODUCT_PROFILES_F9W2A.DEV : ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION;
+  }
+  return null;
+}
+
+function arenaProductProfileCurrentF9W2a() {
+  const buildDefault = arenaProductProfileBuildDefaultF9W2a();
+  if (!arenaProductProfileSwitchableF9W2a()) return buildDefault;
+  if (arenaProductProfileStateF9W2a.sessionOverride) return arenaProductProfileStateF9W2a.sessionOverride;
+  const query = arenaProductProfileQueryOverrideF9W2a();
+  if (query) return query;
+  return arenaProductProfileStoredF9W2a() || buildDefault;
+}
+
+function arenaProductProfileIsDevF9W2a() {
+  return arenaProductProfileCurrentF9W2a() === ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+}
+
+function arenaProductProfileAllowsF9W2a(capability, profile=arenaProductProfileCurrentF9W2a()) {
+  const allowed = ARENA_PRODUCT_PROFILE_CAPABILITIES_F9W2A[String(capability || "")];
+  if (!allowed) return false;
+  return allowed.includes(arenaProductProfileNormalizeF9W2a(profile, arenaProductProfileBuildDefaultF9W2a()));
+}
+
+function arenaProductProfilePersistF9W2a(profile) {
+  if (typeof arenaStorageWriteSettings !== "function") return false;
+  try {
+    const settings = arenaProductProfileReadSettingsF9W2a();
+    const next = { ...settings };
+    next[ARENA_PRODUCT_PROFILE_SETTINGS_KEY_F9W2A] = {
+      schemaVersion:ARENA_PRODUCT_PROFILE_SCHEMA_F9W2A,
+      profile,
+      updatedAt:new Date().toISOString()
+    };
+    // Compatibilità con il Control Center F9U3 finché il vecchio campo esiste.
+    next.controlCenter = {
+      ...(next.controlCenter && typeof next.controlCenter === "object" ? next.controlCenter : {}),
+      developerMode:profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV
+    };
+    return Boolean(arenaStorageWriteSettings(next));
+  } catch (_) {
+    return false;
+  }
+}
+
+function arenaProductProfileSetF9W2a(profile, options={}) {
+  const buildDefault = arenaProductProfileBuildDefaultF9W2a();
+  const requested = arenaProductProfileNormalizeF9W2a(profile, buildDefault);
+  const next = arenaProductProfileSwitchableF9W2a() ? requested : buildDefault;
+  arenaProductProfileStateF9W2a.sessionOverride = next;
+  if (options.persist !== false && arenaProductProfileSwitchableF9W2a()) arenaProductProfilePersistF9W2a(next);
+  arenaProductProfileApplyDomF9W2a();
+  // Ricostruisce il selector mappe quando si cambia profilo: Distribution filtra
+  // le custom, DEV le ripristina senza richiedere un reload.
+  if (typeof refreshSetupMapSelector === "function") {
+    try { refreshSetupMapSelector(); } catch (_) {}
+  }
+  if (next === ARENA_PRODUCT_PROFILES_F9W2A.DEV && typeof rendererCalibrationInjectButtons === "function") {
+    try { rendererCalibrationInjectButtons(); } catch (_) {}
+  }
+  return next;
+}
+
+function arenaProductProfilePanelAllowedF9W2a(panelKey) {
+  const key = String(panelKey || "");
+  if (key === "telemetry") return arenaProductProfileAllowsF9W2a("rawTelemetry");
+  if (key === "log") return arenaProductProfileAllowsF9W2a("rawLog");
+  if (key === "debug") return arenaProductProfileAllowsF9W2a("debug");
+  if (key === "transfer") return arenaProductProfileAllowsF9W2a("fullVaultTransfer");
+  return true;
+}
+
+function arenaProductProfileGuardScreenF9W2a(screen) {
+  const key = String(screen || "");
+  if (key === "cardEditor" && !arenaProductProfileAllowsF9W2a("cardEditor")) return "mainMenu";
+  if (key === "mapEditor" && !arenaProductProfileAllowsF9W2a("mapEditor")) return "mainMenu";
+  if (key === "layoutLab" && !arenaProductProfileAllowsF9W2a("calibration")) return "mainMenu";
+  return key;
+}
+
+function arenaProductProfileSetElementVisibleF9W2a(element, visible, options={}) {
+  if (!element) return;
+  const isOption = String(element.tagName || "").toUpperCase() === "OPTION";
+  const shouldDisable = options.disable === true || isOption;
+  if (!visible) {
+    if (element.dataset && element.dataset.f9w2aProfileHidden !== "1") {
+      element.dataset.f9w2aProfileHidden = "1";
+      element.dataset.f9w2aPreviousHidden = element.hidden ? "1" : "0";
+      if (shouldDisable) element.dataset.f9w2aPreviousDisabled = element.disabled ? "1" : "0";
+    }
+    element.hidden = true;
+    if (!isOption && typeof element.setAttribute === "function") element.setAttribute("aria-hidden", "true");
+    if (shouldDisable) element.disabled = true;
+    return;
+  }
+
+  if (element.dataset && element.dataset.f9w2aProfileHidden === "1") {
+    element.hidden = element.dataset.f9w2aPreviousHidden === "1";
+    if (shouldDisable) element.disabled = element.dataset.f9w2aPreviousDisabled === "1";
+    delete element.dataset.f9w2aProfileHidden;
+    delete element.dataset.f9w2aPreviousHidden;
+    delete element.dataset.f9w2aPreviousDisabled;
+  }
+  if (!isOption && typeof element.setAttribute === "function" && !element.hidden) element.setAttribute("aria-hidden", "false");
+}
+
+function arenaProductProfileSetTextF9W2a(element, value) {
+  if (!element) return;
+  const text = String(value == null ? "" : value);
+  if (element.textContent !== text) element.textContent = text;
+}
+
+function arenaProductProfileApplySelectorF9W2a(selector, visible, options={}) {
+  if (typeof document === "undefined" || typeof document.querySelectorAll !== "function") return;
+  document.querySelectorAll(selector).forEach(element => arenaProductProfileSetElementVisibleF9W2a(element, visible, options));
+}
+
+function arenaProductProfileEnsureChipF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const host = document.querySelector(".mainMenuHeroStatus");
+  if (!host) return;
+  let chip = document.getElementById("arenaProductProfileChipF9W2a");
+  if (!chip) {
+    chip = document.createElement("span");
+    chip.id = "arenaProductProfileChipF9W2a";
+    chip.className = "mainMenuBuildChip";
+    host.appendChild(chip);
+  }
+  arenaProductProfileSetTextF9W2a(chip, profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV ? "Profilo DEV" : "Demo / Distribution");
+  chip.title = profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV
+    ? "Runtime completo con editor, telemetria, debug e laboratori."
+    : "Profilo Player: strumenti di sviluppo nascosti, runtime di gioco invariato.";
+}
+
+function arenaProductProfileUpdateSettingsCopyF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const checkbox = document.getElementById("controlCenterDeveloperModeToggle");
+  if (!checkbox) return;
+  checkbox.checked = profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+  checkbox.disabled = !arenaProductProfileSwitchableF9W2a();
+  const section = checkbox.closest ? checkbox.closest("section") : null;
+  if (!section) return;
+  arenaProductProfileSetElementVisibleF9W2a(section, arenaProductProfileSwitchableF9W2a() || profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV);
+  const heading = section.querySelector("h3");
+  if (heading) arenaProductProfileSetTextF9W2a(heading, "Profilo prodotto");
+  const span = checkbox.parentElement && checkbox.parentElement.querySelector("span");
+  if (span) arenaProductProfileSetTextF9W2a(span, arenaProductProfileSwitchableF9W2a()
+    ? "Profilo DEV (disattiva per simulare Demo / Distribution)"
+    : (profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV ? "Profilo DEV" : "Demo / Distribution"));
+  const paragraph = section.querySelector("p");
+  if (paragraph) arenaProductProfileSetTextF9W2a(paragraph, arenaProductProfileSwitchableF9W2a()
+    ? "Un solo runtime: DEV espone editor, telemetria, debug, Expert e calibratori; Distribution conserva solo le funzioni Player."
+    : "Profilo fissato dalla build: gli strumenti DEV restano nel codice ma non sono esposti al giocatore.");
+}
+
+function arenaProductProfileUpdateMenuCopyF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const distribution = profile === ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION;
+  const cardsText = document.querySelector(".controlCenterAreaCards .mainMenuSectionHeading p");
+  arenaProductProfileSetTextF9W2a(cardsText, distribution
+    ? "Costruisci i mazzi e consulta il catalogo delle carte disponibili."
+    : "Costruisci i mazzi, consulta il catalogo e crea carte custom senza alterare i contenuti ufficiali.");
+  const mapsText = document.querySelector(".controlCenterAreaMaps .mainMenuSectionHeading p");
+  arenaProductProfileSetTextF9W2a(mapsText, distribution
+    ? "Consulta e usa i campi di battaglia ufficiali disponibili."
+    : "Consulta mappe ufficiali e custom oppure apri l’editor tecnico con validazione live.");
+  const analysisText = document.querySelector(".controlCenterAreaAnalysis .mainMenuSectionHeading p");
+  arenaProductProfileSetTextF9W2a(analysisText, distribution
+    ? "Consulta statistiche e cronologia delle partite senza dati tecnici di sviluppo."
+    : "Leggi record persistenti e dati runtime senza dover entrare nel pannello Debug della partita.");
+  const systemText = document.querySelector(".controlCenterAreaSystem .mainMenuSectionHeading p");
+  arenaProductProfileSetTextF9W2a(systemText, distribution
+    ? "Versione, preferenze e archivio Player sono raccolti nel menu applicazione."
+    : "Versione, preferenze, diagnostica di sviluppo e backup sono riuniti in un unico punto.");
+}
+
+function arenaProductProfileFilterOfficialMapsF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const customAllowed = arenaProductProfileAllowsF9W2a("customMaps", profile);
+
+  const setup = document.getElementById("setupMapName");
+  if (!customAllowed && setup && setup.options && typeof getMapDefinitionById === "function") {
+    [...setup.options].forEach(option => {
+      const definition = getMapDefinitionById(option.value);
+      if (definition && definition.official === false) option.remove();
+    });
+    const selected = getMapDefinitionById(setup.value);
+    if (selected && selected.official === false) setup.value = "map1_starter";
+  }
+
+  document.querySelectorAll("[data-control-center-map-row]").forEach(row => {
+    const mapId = row.dataset.controlCenterMapRow;
+    const definition = typeof getMapDefinitionById === "function" ? getMapDefinitionById(mapId) : null;
+    const visible = customAllowed || !definition || definition.official !== false;
+    arenaProductProfileSetElementVisibleF9W2a(row, visible);
+  });
+}
+
+function arenaProductProfileNormalizeAiControlsF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const allowExpert = arenaProductProfileAllowsF9W2a("expertAi", profile);
+  ["setupBotAiMode","botAiMode"].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const option = select.querySelector('option[value="expert"]');
+    if (option) arenaProductProfileSetElementVisibleF9W2a(option, allowExpert, { disable:true });
+    if (!allowExpert && select.value === "expert") select.value = "advanced";
+  });
+}
+
+function arenaProductProfileCleanPlayerStatsF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const dev = profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+  ["copyMatchTelemetryJsonBtn","copyEventsJsonBtn","copyStatsFullLogBtn"].forEach(id => {
+    arenaProductProfileSetElementVisibleF9W2a(document.getElementById(id), dev, { disable:true });
+  });
+  const telemetryPanel = document.getElementById("matchTelemetryPanel");
+  if (telemetryPanel && telemetryPanel.closest) {
+    const details = telemetryPanel.closest("details");
+    if (details) arenaProductProfileSetElementVisibleF9W2a(details, dev);
+  }
+}
+
+function arenaProductProfileUpdateLocalSummaryF9W2a(profile) {
+  if (typeof document === "undefined") return;
+  const summary = document.getElementById("mainMenuLocalSummary");
+  if (!summary) return;
+  const deckStore = typeof arenaStorageReadCustomDecks === "function" ? arenaStorageReadCustomDecks() : {};
+  const decks = deckStore && typeof deckStore === "object" ? Object.keys(deckStore).length : 0;
+  const stats = typeof arenaStorageReadMatchupStats === "function" ? arenaStorageReadMatchupStats().length : 0;
+  const history = typeof arenaStorageReadMatchHistory === "function" ? arenaStorageReadMatchHistory().length : 0;
+  if (profile === ARENA_PRODUCT_PROFILES_F9W2A.DISTRIBUTION) {
+    arenaProductProfileSetTextF9W2a(summary, `${decks} deck locali · ${stats} record statistici · ${history} partite nello storico`);
+    return;
+  }
+  const cards = typeof cardEditorReadCustomCards === "function" ? cardEditorReadCustomCards().length : 0;
+  const maps = typeof getCustomMapDefinitions === "function" ? getCustomMapDefinitions().length : 0;
+  arenaProductProfileSetTextF9W2a(summary, `${cards} carte custom · ${decks} deck custom · ${maps} mappe custom · ${stats} record matchup · ${history} partite nello storico`);
+}
+
+function arenaProductProfileRefreshCalibrationCopyF9W2a() {
+  if (typeof document === "undefined") return;
+  const panel = document.getElementById("rendererCalibrationLab");
+  if (panel) {
+    const kicker = panel.querySelector(".mainMenuKicker");
+    if (kicker) arenaProductProfileSetTextF9W2a(kicker, "Strumento DEV permanente");
+    const note = panel.querySelector(".rendererCalibrationNote");
+    if (note) arenaProductProfileSetTextF9W2a(note, "Strumento DEV permanente: gli override servono per preview e possono essere esportati per fissare le coordinate nel renderer stabile.");
+  }
+  const layout = document.getElementById("menuLayoutLabScreen");
+  if (layout) layout.dataset.devOnly = "true";
+}
+
+function arenaProductProfileApplyDomF9W2a() {
+  if (typeof document === "undefined" || arenaProductProfileStateF9W2a.applyScheduled) return;
+  arenaProductProfileStateF9W2a.applyScheduled = true;
+  const run = () => {
+    arenaProductProfileStateF9W2a.applyScheduled = false;
+    const profile = arenaProductProfileCurrentF9W2a();
+    const dev = profile === ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+    arenaProductProfileStateF9W2a.lastApplied = profile;
+
+    if (document.documentElement) {
+      document.documentElement.dataset.arenaProductProfile = profile;
+      document.documentElement.dataset.arenaDeveloperMode = dev ? "on" : "off";
+    }
+    if (document.body) document.body.dataset.arenaProductProfile = profile;
+
+    arenaProductProfileEnsureChipF9W2a(profile);
+    arenaProductProfileUpdateSettingsCopyF9W2a(profile);
+    arenaProductProfileUpdateMenuCopyF9W2a(profile);
+
+    const devOnlySelectors = [
+      "[data-control-center-dev-only]",
+      "[data-dev-only]",
+      "[data-app-open-card-editor]",
+      "[data-app-open-map-editor]",
+      "[data-app-open-layout-lab]",
+      "#mainMenuTelemetryBtn",
+      "#mainMenuLogBtn",
+      "#mainMenuOptionsBtn",
+      "#mainMenuTransferBtn",
+      "#controlCenterTelemetrySchemaCard",
+      "#controlCenterDiagnosticCard",
+      "#gameDebugHeaderBtn",
+      "#gameDebugBtn",
+      "#gameDebugMenu",
+      "#logDock",
+      "[data-game-panel=\"market\"]",
+      "#cardPoolDebugDetails",
+      ".rendererCalibrationOpenBtn",
+      "#rendererCalibrationLab",
+      "[data-result-action=\"log\"]",
+      "[data-result-action=\"telemetry\"]",
+      "[data-control-center-map-edit]"
+    ];
+    devOnlySelectors.forEach(selector => arenaProductProfileApplySelectorF9W2a(selector, dev, { disable:false }));
+
+    arenaProductProfileCleanPlayerStatsF9W2a(profile);
+    arenaProductProfileNormalizeAiControlsF9W2a(profile);
+    arenaProductProfileFilterOfficialMapsF9W2a(profile);
+    arenaProductProfileUpdateLocalSummaryF9W2a(profile);
+    arenaProductProfileRefreshCalibrationCopyF9W2a();
+
+    // Se un pannello DEV era aperto e si passa a Distribution, lo chiudiamo.
+    if (!dev && typeof controlCenterStateF9U3 !== "undefined" && controlCenterStateF9U3 && !arenaProductProfilePanelAllowedF9W2a(controlCenterStateF9U3.activePanel)) {
+      try { if (typeof controlCenterClosePanel === "function") controlCenterClosePanel(); } catch (_) {}
+    }
+    if (!dev && typeof currentAppScreen === "function" && ["cardEditor","mapEditor","layoutLab"].includes(currentAppScreen())) {
+      try { if (typeof openMainMenu === "function") openMainMenu(); } catch (_) {}
+    }
+  };
+  if (typeof queueMicrotask === "function") queueMicrotask(run);
+  else if (typeof setTimeout === "function") setTimeout(run, 0);
+  else run();
+}
+
+function arenaProductProfileScheduleApplyF9W2a() {
+  arenaProductProfileApplyDomF9W2a();
+}
+
+function arenaProductProfileInstallMutationObserverF9W2a() {
+  if (typeof MutationObserver === "undefined" || typeof document === "undefined" || arenaProductProfileStateF9W2a.mutationObserver) return false;
+  const host = document.body || document.documentElement;
+  if (!host) return false;
+  const observer = new MutationObserver(() => arenaProductProfileScheduleApplyF9W2a());
+  observer.observe(host, { childList:true, subtree:true });
+  arenaProductProfileStateF9W2a.mutationObserver = observer;
+  return true;
+}
+
+function arenaProductProfilePatchCalibrationStorageF9W2a() {
+  if (typeof menuLayoutCalibrationReadJson === "function" && !menuLayoutCalibrationReadJson.__f9w2aStorage) {
+    const read = function(key, fallback) {
+      if (typeof arenaStorageReadJson === "function") return arenaStorageReadJson(key, fallback);
+      try {
+        if (typeof localStorage === "undefined") return fallback;
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (_) { return fallback; }
+    };
+    read.__f9w2aStorage = true;
+    menuLayoutCalibrationReadJson = read;
+  }
+  if (typeof menuLayoutCalibrationWriteJson === "function" && !menuLayoutCalibrationWriteJson.__f9w2aStorage) {
+    const write = function(key, value) {
+      if (typeof arenaStorageWriteJson === "function") return arenaStorageWriteJson(key, value);
+      try { localStorage.setItem(key, JSON.stringify(value, null, 2)); return true; } catch (_) { return false; }
+    };
+    write.__f9w2aStorage = true;
+    menuLayoutCalibrationWriteJson = write;
+  }
+  if (typeof rendererCalibrationReadJson === "function" && !rendererCalibrationReadJson.__f9w2aStorage) {
+    const read = function(key, fallback) {
+      if (typeof arenaStorageReadJson === "function") return arenaStorageReadJson(key, fallback);
+      try {
+        if (typeof localStorage === "undefined") return fallback;
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (_) { return fallback; }
+    };
+    read.__f9w2aStorage = true;
+    rendererCalibrationReadJson = read;
+  }
+  if (typeof rendererCalibrationWriteJson === "function" && !rendererCalibrationWriteJson.__f9w2aStorage) {
+    const write = function(key, value) {
+      if (typeof arenaStorageWriteJson === "function") return arenaStorageWriteJson(key, value);
+      try { localStorage.setItem(key, JSON.stringify(value, null, 2)); return true; } catch (_) { return false; }
+    };
+    write.__f9w2aStorage = true;
+    rendererCalibrationWriteJson = write;
+  }
+}
+
+function arenaProductProfileInstallFunctionGuardsF9W2a() {
+  if (arenaProductProfileStateF9W2a.installed) return true;
+  arenaProductProfileStateF9W2a.installed = true;
+  arenaProductProfilePatchCalibrationStorageF9W2a();
+
+  // Compatibilità con la vecchia API "developerMode" del Control Center.
+  if (typeof controlCenterDeveloperDefault === "function") {
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterDeveloperDefault = controlCenterDeveloperDefault;
+    controlCenterDeveloperDefault = () => arenaProductProfileBuildDefaultF9W2a() === ARENA_PRODUCT_PROFILES_F9W2A.DEV;
+  }
+  if (typeof controlCenterReadDeveloperMode === "function") {
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterReadDeveloperMode = controlCenterReadDeveloperMode;
+    controlCenterReadDeveloperMode = () => arenaProductProfileIsDevF9W2a();
+  }
+  if (typeof controlCenterSetDeveloperMode === "function") {
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterSetDeveloperMode = controlCenterSetDeveloperMode;
+    controlCenterSetDeveloperMode = (enabled, options={}) => arenaProductProfileSetF9W2a(enabled ? "dev" : "distribution", options);
+  }
+  if (typeof controlCenterApplyDeveloperMode === "function") {
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterApplyDeveloperMode = controlCenterApplyDeveloperMode;
+    controlCenterApplyDeveloperMode = () => { arenaProductProfileApplyDomF9W2a(); return arenaProductProfileIsDevF9W2a(); };
+  }
+
+  if (typeof controlCenterOpenPanel === "function") {
+    const original = controlCenterOpenPanel;
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterOpenPanel = original;
+    controlCenterOpenPanel = function(panelKey) {
+      if (!arenaProductProfilePanelAllowedF9W2a(panelKey)) return false;
+      const result = original.apply(this, arguments);
+      arenaProductProfileApplyDomF9W2a();
+      return result;
+    };
+  }
+
+  if (typeof controlCenterOpenMapInEditor === "function") {
+    const original = controlCenterOpenMapInEditor;
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterOpenMapInEditor = original;
+    controlCenterOpenMapInEditor = function(mapId) {
+      if (!arenaProductProfileAllowsF9W2a("mapEditor")) return false;
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof controlCenterOpenMapInSetup === "function") {
+    const original = controlCenterOpenMapInSetup;
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterOpenMapInSetup = original;
+    controlCenterOpenMapInSetup = function(mapId) {
+      if (!arenaProductProfileAllowsF9W2a("customMaps") && typeof getMapDefinitionById === "function") {
+        const definition = getMapDefinitionById(String(mapId || ""));
+        if (definition && definition.official === false) return false;
+      }
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof controlCenterDebugHtml === "function") {
+    const original = controlCenterDebugHtml;
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterDebugHtml = original;
+    controlCenterDebugHtml = function() {
+      let html = original.apply(this, arguments);
+      const marker = '<button class="ghost" type="button" data-control-center-action="open-layout-lab">Apri Layout Calibration Lab</button>';
+      if (html.includes(marker) && !html.includes('data-control-center-action="open-renderer-lab"')) {
+        html = html.replace(marker, `${marker}\n      <button class="ghost" type="button" data-control-center-action="open-renderer-lab">Apri Renderer Calibration Lab</button>`);
+      }
+      return html;
+    };
+  }
+
+  if (typeof controlCenterHandleAction === "function") {
+    const original = controlCenterHandleAction;
+    arenaProductProfileStateF9W2a.originalFunctions.controlCenterHandleAction = original;
+    controlCenterHandleAction = function(action) {
+      const key = String(action || "");
+      if (key === "open-renderer-lab") {
+        if (!arenaProductProfileAllowsF9W2a("calibration")) return false;
+        if (typeof openRendererCalibrationLab === "function") return openRendererCalibrationLab(typeof rendererCalibrationCurrentCard === "function" ? rendererCalibrationCurrentCard() : null);
+        if (typeof rendererCalibrationOpen === "function") return rendererCalibrationOpen(typeof rendererCalibrationCurrentCard === "function" ? rendererCalibrationCurrentCard() : null);
+        return false;
+      }
+      if (key === "open-layout-lab" && !arenaProductProfileAllowsF9W2a("calibration")) return false;
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof setAppScreen === "function") {
+    const original = setAppScreen;
+    arenaProductProfileStateF9W2a.originalFunctions.setAppScreen = original;
+    setAppScreen = function(screen) {
+      const guarded = arenaProductProfileGuardScreenF9W2a(screen);
+      const result = original.call(this, guarded);
+      arenaProductProfileApplyDomF9W2a();
+      return result;
+    };
+  }
+
+  if (typeof openCardEditorScreen === "function") {
+    const original = openCardEditorScreen;
+    arenaProductProfileStateF9W2a.originalFunctions.openCardEditorScreen = original;
+    openCardEditorScreen = function() {
+      if (!arenaProductProfileAllowsF9W2a("cardEditor")) return false;
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof openMapEditorScreen === "function") {
+    const original = openMapEditorScreen;
+    arenaProductProfileStateF9W2a.originalFunctions.openMapEditorScreen = original;
+    openMapEditorScreen = function() {
+      if (!arenaProductProfileAllowsF9W2a("mapEditor")) return false;
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof openMenuLayoutCalibrationLabScreen === "function") {
+    const original = openMenuLayoutCalibrationLabScreen;
+    arenaProductProfileStateF9W2a.originalFunctions.openMenuLayoutCalibrationLabScreen = original;
+    openMenuLayoutCalibrationLabScreen = function() {
+      if (!arenaProductProfileAllowsF9W2a("calibration")) return false;
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof rendererCalibrationOpen === "function") {
+    const original = rendererCalibrationOpen;
+    arenaProductProfileStateF9W2a.originalFunctions.rendererCalibrationOpen = original;
+    rendererCalibrationOpen = function() {
+      if (!arenaProductProfileAllowsF9W2a("calibration")) return false;
+      return original.apply(this, arguments);
+    };
+    try { if (typeof window !== "undefined") window.openRendererCalibrationLab = rendererCalibrationOpen; } catch (_) {}
+  }
+
+  if (typeof rendererCalibrationInjectButtons === "function") {
+    const original = rendererCalibrationInjectButtons;
+    arenaProductProfileStateF9W2a.originalFunctions.rendererCalibrationInjectButtons = original;
+    rendererCalibrationInjectButtons = function() {
+      if (!arenaProductProfileAllowsF9W2a("calibration")) return false;
+      const result = original.apply(this, arguments);
+      arenaProductProfileApplyDomF9W2a();
+      return result;
+    };
+  }
+
+  if (typeof arenaResultModalHandleActionF9V3a === "function") {
+    const original = arenaResultModalHandleActionF9V3a;
+    arenaProductProfileStateF9W2a.originalFunctions.arenaResultModalHandleActionF9V3a = original;
+    arenaResultModalHandleActionF9V3a = function(action) {
+      const key = String(action || "");
+      if (key === "telemetry" && !arenaProductProfileAllowsF9W2a("rawTelemetry")) return false;
+      if (key === "log" && !arenaProductProfileAllowsF9W2a("rawLog")) return false;
+      return original.apply(this, arguments);
+    };
+  }
+
+  if (typeof refreshSetupMapSelector === "function") {
+    const original = refreshSetupMapSelector;
+    arenaProductProfileStateF9W2a.originalFunctions.refreshSetupMapSelector = original;
+    refreshSetupMapSelector = function() {
+      const result = original.apply(this, arguments);
+      arenaProductProfileFilterOfficialMapsF9W2a(arenaProductProfileCurrentF9W2a());
+      return result;
+    };
+  }
+
+  if (typeof refreshMainMenuLocalDataSummary === "function") {
+    const original = refreshMainMenuLocalDataSummary;
+    arenaProductProfileStateF9W2a.originalFunctions.refreshMainMenuLocalDataSummary = original;
+    refreshMainMenuLocalDataSummary = function() {
+      const result = original.apply(this, arguments);
+      arenaProductProfileApplyDomF9W2a();
+      return result;
+    };
+  }
+
+  return true;
+}
+
+function arenaProductProfileSnapshotF9W2a() {
+  const profile = arenaProductProfileCurrentF9W2a();
+  return {
+    schemaVersion:ARENA_PRODUCT_PROFILE_SCHEMA_F9W2A,
+    profile,
+    buildDefault:arenaProductProfileBuildDefaultF9W2a(),
+    switchable:arenaProductProfileSwitchableF9W2a(),
+    capabilities:Object.fromEntries(Object.keys(ARENA_PRODUCT_PROFILE_CAPABILITIES_F9W2A).map(key => [key, arenaProductProfileAllowsF9W2a(key, profile)])),
+    calibration:{
+      layoutAvailable:typeof openMenuLayoutCalibrationLabScreen === "function",
+      rendererAvailable:typeof rendererCalibrationOpen === "function" || typeof openRendererCalibrationLab === "function",
+      storageFacade:Boolean(typeof arenaStorageReadJson === "function" && typeof arenaStorageWriteJson === "function")
+    }
+  };
+}
+
+function arenaProductProfileInitializeF9W2a() {
+  arenaProductProfileInstallFunctionGuardsF9W2a();
+  arenaProductProfileStateF9W2a.initialized = true;
+  arenaProductProfileApplyDomF9W2a();
+  arenaProductProfileInstallMutationObserverF9W2a();
+  if (arenaProductProfileIsDevF9W2a() && typeof initializeRendererCalibrationLab === "function") {
+    try { initializeRendererCalibrationLab(); } catch (_) {}
+  }
+  if (arenaProductProfileIsDevF9W2a() && typeof rendererCalibrationInjectButtons === "function") {
+    try { rendererCalibrationInjectButtons(); } catch (_) {}
+  }
+  return arenaProductProfileSnapshotF9W2a();
+}
+
+// API esplicita per test, Dev QA e futura build Distribution bloccata.
+try {
+  globalThis.arenaProductProfileCurrentF9W2a = arenaProductProfileCurrentF9W2a;
+  globalThis.arenaProductProfileSetF9W2a = arenaProductProfileSetF9W2a;
+  globalThis.arenaProductProfileAllowsF9W2a = arenaProductProfileAllowsF9W2a;
+  globalThis.arenaProductProfileApplyDomF9W2a = arenaProductProfileApplyDomF9W2a;
+  globalThis.arenaProductProfileSnapshotF9W2a = arenaProductProfileSnapshotF9W2a;
+} catch (_) {}
+
+arenaProductProfileInstallFunctionGuardsF9W2a();
+// F9W2a END
+
+
+
 async function bootArenaRubra() {
   if (typeof document !== "undefined" && document.body) document.body.classList.add("arena-storage-loading");
   try {
@@ -873,6 +1574,7 @@ async function bootArenaRubra() {
   bindUiEvents();
   if (typeof initializeArenaAppShell === "function") initializeArenaAppShell();
   else newGame();
+  if (typeof arenaProductProfileInitializeF9W2a === "function") arenaProductProfileInitializeF9W2a();
 }
 
 bootArenaRubra();

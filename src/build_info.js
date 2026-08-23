@@ -66,6 +66,7 @@
 // F9V3c Result Flow, Tutorial UX & Deck Recovery Visibility metadata.
 // F9V4a Strategic Tutorial Content & Faction Voice Pass metadata.
 // F9W1a Match Data 2.0 Foundation metadata.
+// F9W2a Player / DEV Runtime Profile Foundation metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -88,13 +89,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W1a-APK-M4c",
-  buildName: "Match Data 2.0 Foundation",
+  version: "C2-STABLE-1-F9W2a-APK-M4c",
+  buildName: "Player / DEV Runtime Profile Foundation",
   buildDate: "2026-08-23",
-  buildChannel: "starter2-match-data-w1a",
+  buildChannel: "starter2-product-profile-w2a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
+  productProfileDefault: "dev",
+  productProfileSwitchable: true,
+  distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9W1a costruita sulla F9V4a validata. Avvia S2-C3 Match Data 2.0: introduce MatchRecord canonico AR-MATCH-2 nativamente N-player, conserva partecipanti/controllo/comandanti/deck/mappa/build/esito e statistiche finali per 2P/3P/4P, separa i payload tecnici nello store arenaRubra.matchTelemetry.v2 con schema AR-TELEMETRY-2 e collegamento tramite matchId, migra in modo idempotente lo storico legacy estraendo la telemetria incorporata, mantiene alias p1/p2 temporanei per compatibilità con renderer/export storici e aggiorna viste/CSV del registro per non perdere giocatori oltre G2. Tutorial, Challenge e Match Lab restano esclusi dalle statistiche competitive. Nessuna modifica a regole, carte, costi, deck, ENE, mappe, Missioni, AI, QG, Pressione, Action Contract o contenuti Tutorial F9V4a. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9W2a costruita sulla F9W1a validata. Avvia S2-C4 con un unico runtime e due profili di esposizione: DEV conserva Card Editor, Map Editor, telemetria/log raw, Debug/Precheck, Expert sperimentale, full vault e i laboratori di calibrazione; Demo / Distribution mantiene gioco, Tutorial/Challenge, Deck Builder, Pool carte, mappe ufficiali, statistiche/cronologia Player, impostazioni e versione, nascondendo e guardando gli entrypoint tecnici. Il profilo della candidata parte in DEV ed è switchabile dalle Impostazioni per simulare la Distribution; una futura build pubblica può fissarlo tramite BUILD_INFO senza fork del codice. Layout Calibration e Renderer Calibration vengono formalizzati come strumenti DEV permanenti e i loro store passano attraverso il facade del Data Vault quando disponibile. Match Data 2.0 F9W1a resta invariato. Nessuna modifica a regole, carte, costi, deck, ENE, mappe ufficiali, Missioni, AI di gioco, QG, Pressione, Tutorial Action Contract o bilanciamento. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {
@@ -123,6 +127,9 @@ function buildInfoExportMeta() {
     buildDate: BUILD_INFO.buildDate || "",
     buildChannel: BUILD_INFO.buildChannel || "",
     logicBaseline: BUILD_INFO.logicBaseline || "",
+    productProfileDefault: BUILD_INFO.productProfileDefault || "",
+    productProfileSwitchable: BUILD_INFO.productProfileSwitchable !== false,
+    distributionProfileName: BUILD_INFO.distributionProfileName || "",
     map: BUILD_INFO.map || "",
     notes: BUILD_INFO.notes || ""
   };

@@ -1,9 +1,20 @@
-src/build_info.js
-src/ui.js
-docs/Arena_Rubra_F9W1a_Match_Data_2_0.md
-docs/Arena_Rubra_F9W1a_Test_Report.txt
-tests/f9w1a_match_data_v2_smoke.js
-tests/f9w1a_browser_match_data_v2_smoke.py
-tests/f9v4a_strategic_tutorial_content_voice_smoke.js
-PATCH_README.txt
-PATCH_FILES.txt
+F9W2a files
+============
+
+Runtime overwrite
+  src/ui.js
+  src/build_info.js
+
+New tests
+  tests/f9w2a_product_profile_smoke.js
+  tests/f9w2a_profile_static_smoke.js
+  tests/f9w2a_browser_product_profile_smoke.py
+
+Regression test copied for convenience
+  tests/f9w1a_match_data_v2_smoke.js
+
+Documentation
+  docs/Arena_Rubra_F9W2a_Player_DEV_Profile.md
+  docs/Arena_Rubra_F9W2a_Test_Report.txt
+  PATCH_README.txt
+  PATCH_FILES.txt
