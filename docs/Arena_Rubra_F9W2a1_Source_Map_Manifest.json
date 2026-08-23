@@ -1,0 +1,99 @@
+{
+  "sourceFile": "Mappa_SnowBF_4gg_x3mov.json",
+  "sourceFileSha256": "aa71953c7325c687aaf5f58170b463c9ce56ab5cc4ae9aa2bb6fdb21e96254b5",
+  "sourceFileBytes": 956208,
+  "sourcePackageKind": "arena-rubra-map-package",
+  "sourceMapId": "custom_triple_mt6bju0j",
+  "sourceMapName": "Snow BF - 4PL - 3x",
+  "promotedMapId": "map10_snow_bf_4pl_3x",
+  "promotedMapName": "Snow BF - 4PL - 3x",
+  "classification": [
+    "Standard",
+    "Classic"
+  ],
+  "promotionChanges": {
+    "id": {
+      "from": "custom_triple_mt6bju0j",
+      "to": "map10_snow_bf_4pl_3x"
+    },
+    "official": {
+      "from": false,
+      "to": true
+    },
+    "editable": {
+      "from": true,
+      "to": false
+    },
+    "description": {
+      "from": "Mappa custom creata nel Map & Terrain Lab.",
+      "to": "Mappa Standard / Classic per 4 giocatori, formato Large, movimento ×3 e 13 Punti Strategici."
+    },
+    "presentation.backgroundAssetId": {
+      "from": "map-bg-custom_triple_mt6bju0j-battlefield_webp-mt6cpnf2",
+      "to": "map-bg-snow-bf-4pl-3x"
+    },
+    "presentation.backgroundAssetPath": {
+      "from": "maps/backgrounds/map-bg-custom_triple_mt6bju0j-battlefield_webp-mt6cpnf2.webp",
+      "to": "assets/maps/backgrounds/snow_bf_4pl_3x.webp"
+    },
+    "metadata.tags": {
+      "from": [
+        "Standard",
+        "Classic",
+        "4-players",
+        "Large"
+      ],
+      "to": [
+        "official",
+        "standard",
+        "classic",
+        "four-player",
+        "4-players",
+        "large",
+        "triple-hex"
+      ]
+    },
+    "metadata.source": {
+      "from": "F9Q3-editor",
+      "to": "F9W2a1-official-promotion"
+    },
+    "metadata.sourceMapId": {
+      "from": null,
+      "to": "custom_triple_mt6bju0j"
+    }
+  },
+  "gameplayPayloadPreserved": true,
+  "gameplayPayloadSha256": "119055f3cc7cfcbd7b36a0fd5ce0f856b4369e8164f71ca4b162432a0da90a8f",
+  "backgroundSha256": "6cb3ea1fa2f67c7b509a6e57dca0d787fcf5deac3c7e8059796d605be779e8dd",
+  "summary": {
+    "players": 4,
+    "movementMultiplier": 3,
+    "cells": 349,
+    "strategicPoints": 13,
+    "headquarters": 4,
+    "initialHazards": 4,
+    "terrainCounts": {
+      "obstacle": 44,
+      "free": 285,
+      "difficult": 6,
+      "exposed": 8,
+      "defensive": 6
+    },
+    "centralStrategicPointId": "ps-center",
+    "centralLinearDistances": [
+      15,
+      15,
+      15,
+      15
+    ],
+    "traversableCells": 305,
+    "reachableTraversableCells": 305,
+    "nearestStrategicPointPathCosts": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "singleCellChokes": 0
+  }
+}

@@ -67,6 +67,7 @@
 // F9V4a Strategic Tutorial Content & Faction Voice Pass metadata.
 // F9W1a Match Data 2.0 Foundation metadata.
 // F9W2a Player / DEV Runtime Profile Foundation metadata.
+// F9W2a1 Snow Battlefield Standard / Classic Official Map metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -89,16 +90,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2a-APK-M4c",
-  buildName: "Player / DEV Runtime Profile Foundation",
-  buildDate: "2026-08-23",
-  buildChannel: "starter2-product-profile-w2a",
+  version: "C2-STABLE-1-F9W2a1-APK-M4c",
+  buildName: "Snow Battlefield · Standard / Classic Official Map",
+  buildDate: "2026-08-24",
+  buildChannel: "starter2-official-map-snowbf-w2a1",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
-  map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9W2a costruita sulla F9W1a validata. Avvia S2-C4 con un unico runtime e due profili di esposizione: DEV conserva Card Editor, Map Editor, telemetria/log raw, Debug/Precheck, Expert sperimentale, full vault e i laboratori di calibrazione; Demo / Distribution mantiene gioco, Tutorial/Challenge, Deck Builder, Pool carte, mappe ufficiali, statistiche/cronologia Player, impostazioni e versione, nascondendo e guardando gli entrypoint tecnici. Il profilo della candidata parte in DEV ed è switchabile dalle Impostazioni per simulare la Distribution; una futura build pubblica può fissarlo tramite BUILD_INFO senza fork del codice. Layout Calibration e Renderer Calibration vengono formalizzati come strumenti DEV permanenti e i loro store passano attraverso il facade del Data Vault quando disponibile. Match Data 2.0 F9W1a resta invariato. Nessuna modifica a regole, carte, costi, deck, ENE, mappe ufficiali, Missioni, AI di gioco, QG, Pressione, Tutorial Action Contract o bilanciamento. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
+  notes: "Candidata F9W2a1 costruita sulla F9W2a validata. Promuove la mappa utente Snow BF - 4PL - 3x a mappa ufficiale Standard / Classic: 4 giocatori, geometria triple_hex da 349 celle, movimento ×3, 13 Punti Strategici, 4 QG, 4 trap iniziali e sfondo WebP statico incluso. La geometria e tutti i campi di gameplay del JSON sorgente sono preservati; cambiano soltanto id canonico, flag official/editable, metadata di catalogo e riferimento allo sfondo statico. La mappa resta disponibile anche nel profilo Demo / Distribution perché è built-in ufficiale. Player / DEV Runtime Profile F9W2a e Match Data 2.0 F9W1a restano invariati. Nessuna modifica a regole, carte, costi, deck, ENE, Missioni, AI, QG, Pressione, Tutorial Action Contract o bilanciamento. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

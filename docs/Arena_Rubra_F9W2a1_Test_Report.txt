@@ -1,0 +1,57 @@
+Arena Rubra — F9W2a1 Test Report
+=====================================
+
+Input: Mappa_SnowBF_4gg_x3mov.json
+SHA-256 input: aa71953c7325c687aaf5f58170b463c9ce56ab5cc4ae9aa2bb6fdb21e96254b5
+Dimensione input: 956208 byte
+
+PROMOZIONE
+source id: custom_triple_mt6bju0j
+official: false -> true
+editable: true -> false
+target id: map10_snow_bf_4pl_3x
+classificazione: Standard / Classic
+
+AUDIT STRUTTURALE
+players: 4
+movementMultiplier: 3
+geometry.type: triple_hex
+cells: 349
+HQ: 4
+PS: 13
+initial hazards: 4
+terrain: free 285 · obstacle 44 · exposed 8 · difficult 6 · defensive 6
+duplicate coordinates: 0
+invalid cube coordinates: 0
+HQ missing/mismatched: 0
+PS missing/mismatched: 0
+hazard invalid/outside: 0
+central PS: ps-center
+central linear distance from HQ: 15, 15, 15, 15
+traversable connectivity: 305/305
+unreachable PS from any HQ: 0
+nearest PS weighted cost per HQ: 4, 4, 4, 4
+single-cell articulation chokes: 0
+
+PRESERVATION
+Gameplay payload SHA-256: 119055f3cc7cfcbd7b36a0fd5ce0f856b4369e8164f71ca4b162432a0da90a8f
+Source and promoted gameplay projections: IDENTICAL
+
+BACKGROUND
+WebP bytes: 626004
+dimensions declared: 906×1061
+SHA-256: 6cb3ea1fa2f67c7b509a6e57dca0d787fcf5deac3c7e8059796d605be779e8dd
+
+AUTOMATED
+node --check src/ui.js: PASS
+node --check src/build_info.js: PASS
+node --check tests/f9w2a_profile_static_smoke.js: PASS
+node --check tests/f9w2a1_snow_bf_official_map_smoke.js: PASS
+python compile tests/f9w2a1_browser_snow_bf_smoke.py: PASS
+F9W2a profile static smoke: PASS
+F9W2a product profile smoke: PASS
+F9W1a Match Data 2.0 smoke: PASS
+F9W2a1 Snow BF official map smoke: PASS
+
+Browser / Playwright:
+NOT EXECUTED — richiede checkout completo con index.html, CSS e asset base.

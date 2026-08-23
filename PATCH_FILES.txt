@@ -1,20 +1,10 @@
-F9W2a files
-============
-
-Runtime overwrite
-  src/ui.js
-  src/build_info.js
-
-New tests
-  tests/f9w2a_product_profile_smoke.js
-  tests/f9w2a_profile_static_smoke.js
-  tests/f9w2a_browser_product_profile_smoke.py
-
-Regression test copied for convenience
-  tests/f9w1a_match_data_v2_smoke.js
-
-Documentation
-  docs/Arena_Rubra_F9W2a_Player_DEV_Profile.md
-  docs/Arena_Rubra_F9W2a_Test_Report.txt
-  PATCH_README.txt
-  PATCH_FILES.txt
+src/ui.js
+src/build_info.js
+assets/maps/backgrounds/snow_bf_4pl_3x.webp
+tests/f9w2a_profile_static_smoke.js
+tests/f9w2a1_snow_bf_official_map_smoke.js
+tests/f9w2a1_browser_snow_bf_smoke.py
+docs/Arena_Rubra_F9W2a1_Test_Report.txt
+docs/Arena_Rubra_F9W2a1_Source_Map_Manifest.json
+PATCH_README.txt
+PATCH_FILES.txt

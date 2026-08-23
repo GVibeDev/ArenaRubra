@@ -1,98 +1,82 @@
-ARENA RUBRA — F9W2a CANDIDATE PATCH OVERWRITE
-==============================================
+Arena Rubra — F9W2a1 · Snow Battlefield Standard / Classic Official Map
+============================================================================
 
-Milestone
-  C2-STABLE-1-F9W2a-APK-M4c
-  Player / DEV Runtime Profile Foundation
+BASELINE RICHIESTA
+- F9W2a · Player / DEV Runtime Profile Foundation — VALIDATA
+- Versione baseline: C2-STABLE-1-F9W2a-APK-M4c
 
-Base richiesta
-  C2-STABLE-1-F9W1a-APK-M4c VALIDATA
+CANDIDATA
+- Versione: C2-STABLE-1-F9W2a1-APK-M4c
+- Build name: Snow Battlefield · Standard / Classic Official Map
+- Canale: starter2-official-map-snowbf-w2a1
+- Baseline logica: C2-STABLE-1-F9T2c4-APK-M4c
+- Data: 2026-08-24
 
-Applicazione
-  Sovrascrivere i file della baseline F9W1a mantenendo la stessa struttura cartelle.
+SCOPO
+Promuove il file utente allegato Mappa_SnowBF_4gg_x3mov.json a mappa built-in ufficiale
+classificata Standard / Classic. Il JSON sorgente viene usato come autorità per geometria
+e gameplay; nessuna regola della mappa è stata reinterpretata o riequilibrata.
 
-Scopo
-  Avvia S2-C4 formalizzando un unico runtime Arena Rubra con due profili di
-  esposizione: DEV e Demo / Distribution. Nessun fork della logica di gioco.
+MAPPA UFFICIALE
+- ID canonico: map10_snow_bf_4pl_3x
+- Nome: Snow BF - 4PL - 3x
+- 4 giocatori
+- movimento globale ×3
+- geometria triple_hex
+- 349 celle
+- 13 Punti Strategici
+- 4 QG
+- 4 trap iniziali
+- sfondo statico WebP 906×1061
+- tag catalogo: official, standard, classic, four-player, 4-players, large, triple-hex
 
-Profilo DEV
-  - gioco / Tutorial / Challenge
-  - Deck Builder / Pool carte
-  - Card Editor
-  - Map Editor / custom maps / Match Lab
-  - Statistiche e Cronologia
-  - Telemetria raw e Log tecnico
-  - Debug / Precheck / diagnostica
-  - Expert AI sperimentale
-  - full vault Import / Export
-  - Layout Calibration Lab
-  - Renderer Calibration Lab
+PRESERVAZIONE DATI
+Sono identici al JSON sorgente:
+schemaVersion, playerCount, movementMultiplier, turnOrder, geometry completa,
+playerSlots, strategicPoints, centralStrategicPointId e initialHazards.
+SHA-256 payload gameplay canonico:
+119055f3cc7cfcbd7b36a0fd5ce0f856b4369e8164f71ca4b162432a0da90a8f
 
-Profilo Demo / Distribution
-  - gioco / Tutorial / Challenge
-  - Deck Builder / Pool carte
-  - mappe ufficiali
-  - Statistiche Player / Cronologia
-  - Impostazioni / Versione
-  - NASCONDE e GUARDA gli entrypoint di Card Editor, Map Editor, custom maps,
-    Telemetria raw, Log tecnico, Debug, Expert, full vault e calibratori.
-  - Il pulsante Statistiche del Result Modal resta Player-facing; Log e
-    Telemetria non vengono esposti.
+Le sole trasformazioni intenzionali sono di promozione/catalogo:
+- id custom -> id canonico built-in;
+- official false -> true;
+- editable true -> false;
+- descrizione da custom a Standard / Classic;
+- metadata/tag ufficiali;
+- background embedded -> asset WebP statico incluso nella patch.
 
-Contratto build
-  Questa candidata parte in DEV ed è switchabile dalle Impostazioni per poter
-  testare entrambe le superfici nello stesso runtime.
+BACKGROUND
+assets/maps/backgrounds/snow_bf_4pl_3x.webp
+SHA-256: 6cb3ea1fa2f67c7b509a6e57dca0d787fcf5deac3c7e8059796d605be779e8dd
 
-  BUILD_INFO.productProfileDefault = "dev"
-  BUILD_INFO.productProfileSwitchable = true
+INSTALLAZIONE
+Estrarre questa patch sopra una installazione F9W2a VALIDATA mantenendo i percorsi.
+La mappa viene registrata a runtime come built-in ufficiale e resta disponibile anche
+nel profilo Demo / Distribution, che nasconde le mappe custom ma conserva quelle ufficiali.
 
-  Una futura build pubblica potrà usare:
+TEST AUTOMATICI ESEGUITI
+- node --check src/ui.js: PASS
+- node --check src/build_info.js: PASS
+- F9W2a profile static smoke: PASS
+- F9W2a product profile regression: PASS
+- F9W1a Match Data 2.0 regression: PASS
+- F9W2a1 Snow BF official map smoke: PASS
+- JSON sorgente: 0 incongruenze strutturali rilevate
+- celle percorribili connesse: 305/305
+- PS centrale equidistante dai 4 QG: 15/15/15/15
+- costo minimo QG -> PS più vicino: 4/4/4/4
+- PS irraggiungibili: 0
+- strozzature a singola cella: 0
+- browser E2E preparato ma NON eseguito nel container overwrite-only.
 
-  productProfileDefault = "distribution"
-  productProfileSwitchable = false
+VALIDAZIONE MANUALE CONSIGLIATA
+1. Avviare F9W2a1 in DEV e verificare la presenza di Snow BF - 4PL - 3x nel Setup.
+2. Selezionarla: devono comparire 4 giocatori e movimento ×3.
+3. Avviare un match e verificare sfondo, 4 QG, 13 PS, terreni e trap.
+4. Tornare al menu, passare a Demo / Distribution e verificare che Snow BF resti disponibile
+   perché ufficiale Standard / Classic.
+5. Verificare che Card/Map Editor e tool DEV seguano ancora il profilo F9W2a senza regressioni.
 
-  In questo caso la preferenza locale DEV non può riattivare il profilo di
-  sviluppo. Questo è un contratto di esposizione prodotto, non un sandbox di
-  sicurezza: il codice DEV continua intenzionalmente a esistere nella codebase.
-
-Preservazione strumenti DEV
-  Il codice dei due calibratori era ancora presente nella baseline F9W1a, ma
-  la raggiungibilità non era più sufficientemente esplicita. F9W2a li rende
-  strumenti DEV permanenti:
-
-  - Debug -> Apri Layout Calibration Lab
-  - Debug -> Apri Renderer Calibration Lab
-
-  Inoltre le letture/scritture dei due store di calibrazione passano dal facade
-  arenaStorage quando disponibile, mantenendo OPFS / IndexedDB / localStorage
-  coerenti con il Data Vault.
-
-Invarianti
-  Nessuna modifica a:
-  - regole e condizioni di vittoria;
-  - carte, roster, costi, deck, ENE;
-  - mappe ufficiali e terreni;
-  - Missioni;
-  - AI di gioco / decisioni Expert;
-  - QG / PS / Pressione;
-  - Tutorial Action Contract e contenuti F9V4a;
-  - MatchRecord / MatchTelemetry F9W1a.
-
-Nota roadmap
-  Il sistema di temi menu NON fa parte di F9W2a: resta la fase immediatamente
-  successiva alla fondazione Player/DEV, così il tema viene costruito sopra un
-  profilo prodotto già stabile.
-
-Test automatici eseguiti in ambiente patch-only
-  PASS  node --check src/ui.js
-  PASS  node --check src/build_info.js
-  PASS  tests/f9w2a_product_profile_smoke.js
-  PASS  tests/f9w2a_profile_static_smoke.js
-  PASS  tests/f9w1a_match_data_v2_smoke.js
-  PASS  python -m py_compile tests/f9w2a_browser_product_profile_smoke.py
-
-Browser E2E
-  Preparato tests/f9w2a_browser_product_profile_smoke.py.
-  Non eseguito nel container patch-only perché il pacchetto overwrite non
-  contiene index.html, CSS, asset e l'intero checkout. Eseguirlo sul progetto
-  completo è parte del gate manuale.
+NOTA
+F9W2a è ora baseline VALIDATA. F9W2a1 resta CANDIDATA finché non viene esplicitamente
+validata dopo il test manuale.
