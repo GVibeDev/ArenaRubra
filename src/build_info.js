@@ -65,6 +65,7 @@
 // F9V3b Tutorial Runtime Hardening & Action Contract Closure metadata.
 // F9V3c Result Flow, Tutorial UX & Deck Recovery Visibility metadata.
 // F9V4a Strategic Tutorial Content & Faction Voice Pass metadata.
+// F9W1a Match Data 2.0 Foundation metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -87,13 +88,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V4a-APK-M4c",
-  buildName: "Strategic Tutorial Content & Faction Voice Pass",
+  version: "C2-STABLE-1-F9W1a-APK-M4c",
+  buildName: "Match Data 2.0 Foundation",
   buildDate: "2026-08-23",
-  buildChannel: "starter2-tutorial-content-v4a",
+  buildChannel: "starter2-match-data-w1a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V4a costruita sulla F9V3c validata. Avvia S2-C2 Tutorial Content Pass senza modificare i 116 step, i checkpoint, il contratto semantico F9V3b-1 o le regole di scenario: un copy overlay indicizzato per scenario/step arricchisce i dialoghi con strategia sui PS, Strutture come presidi/nodi di sbarco, schieramento avanzato nello stesso turno, efficienza ATT–DEF–HP, concentrazione del fuoco, timing tra Depot ENE/ricariche/tattiche, conservazione e ribaltamento del vantaggio territoriale. Introduce cinque voci distinte: Exordium militaresco e audace, Nexus neutro/robotico, Agathoi cauto e sospettoso, Liberti selvaggio/aggressivo, Fabeot aristocratico e subdolo; rivalità e disprezzo restano indiretti e integrati nelle istruzioni, mai esposti come spiegoni di lore. Mantiene integralmente Terminal Result Lock F9V3c, UX Accademia, deck recovery visibility, Challenge I–V e core congelato. Nessuna modifica a carte, costi, deck rules, ENE, mappe, Missioni, AI, QG, Pressione, statistiche o schema telemetrico. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9W1a costruita sulla F9V4a validata. Avvia S2-C3 Match Data 2.0: introduce MatchRecord canonico AR-MATCH-2 nativamente N-player, conserva partecipanti/controllo/comandanti/deck/mappa/build/esito e statistiche finali per 2P/3P/4P, separa i payload tecnici nello store arenaRubra.matchTelemetry.v2 con schema AR-TELEMETRY-2 e collegamento tramite matchId, migra in modo idempotente lo storico legacy estraendo la telemetria incorporata, mantiene alias p1/p2 temporanei per compatibilità con renderer/export storici e aggiorna viste/CSV del registro per non perdere giocatori oltre G2. Tutorial, Challenge e Match Lab restano esclusi dalle statistiche competitive. Nessuna modifica a regole, carte, costi, deck, ENE, mappe, Missioni, AI, QG, Pressione, Action Contract o contenuti Tutorial F9V4a. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

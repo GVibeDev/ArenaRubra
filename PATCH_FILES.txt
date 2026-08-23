@@ -1,12 +1,9 @@
-src/tutorial_runtime.js
 src/build_info.js
+src/ui.js
+docs/Arena_Rubra_F9W1a_Match_Data_2_0.md
+docs/Arena_Rubra_F9W1a_Test_Report.txt
+tests/f9w1a_match_data_v2_smoke.js
+tests/f9w1a_browser_match_data_v2_smoke.py
 tests/f9v4a_strategic_tutorial_content_voice_smoke.js
-tests/f9o7a_browser_lesson1_smoke.py
-tests/f9o7c_browser_lesson2_smoke.py
-tests/f9o7e_browser_lesson3_smoke.py
-tests/f9o7f_browser_lesson4_smoke.py
-tests/f9o7g_browser_lesson5_smoke.py
-docs/Arena_Rubra_F9V4a_Strategic_Tutorial_Content_Pass.md
-docs/Arena_Rubra_F9V4a_Test_Report.txt
 PATCH_README.txt
 PATCH_FILES.txt

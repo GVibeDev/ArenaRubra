@@ -1,0 +1,68 @@
+ARENA RUBRA — F9W1a MATCH DATA 2.0 FOUNDATION — TEST REPORT
+============================================================
+
+Candidata: C2-STABLE-1-F9W1a-APK-M4c
+Base:      C2-STABLE-1-F9V4a-APK-M4c VALIDATA
+Data:      2026-08-23
+
+REMOTE SOURCE CHECK
+-------------------
+GitHub main verificato prima della patch:
+0d1aa4ee68e745c275c70c543306fd9f58049f6e
+F9V4a CANDIDATE PATCH OVERWRITE (successivamente validata manualmente dall'utente).
+
+TEST ESEGUITI NEL CONTAINER
+---------------------------
+PASS  node --check src/ui.js
+PASS  node --check src/build_info.js
+PASS  python -m py_compile tests/f9w1a_browser_match_data_v2_smoke.py
+PASS  tests/f9w1a_match_data_v2_smoke.js
+PASS  regressione tests/f9v4a_strategic_tutorial_content_voice_smoke.js con metadata F9W1a
+
+COPERTURA f9w1a_match_data_v2_smoke.js
+--------------------------------------
+PASS  MatchRecord AR-MATCH-2 su scenario sintetico 4P
+PASS  4 partecipanti conservati, incluse modalità human/bot
+PASS  vincitore G4 e metadati mappa/build
+PASS  valori finali N-player PS/Pressione/ENE/unità
+PASS  nessun matchTelemetry/f9n3Telemetry incorporato nello storico
+PASS  telemetryRef -> matchId
+PASS  store separato AR-TELEMETRY-2
+PASS  payload F9Q3e1-2, developerStats, aiTelemetry, f9n3Telemetry separati
+PASS  copia compatibility matchupStats senza telemetryRef
+PASS  Control Center History/Statistics conserva G3/G4
+PASS  CSV N-player conserva G3/G4 e human/bot
+PASS  telemetry source persistente risolta tramite matchId
+PASS  export history dichiara record schema + telemetry storage key
+PASS  backup keys includono arenaRubra.matchTelemetry.v2
+PASS  vault path stabile stats/match-telemetry.json
+PASS  migrazione legacy -> AR-MATCH-2
+PASS  estrazione telemetria legacy nello store separato
+PASS  migrazione idempotente: secondo pass 0 duplicati
+PASS  Tutorial escluso
+PASS  Match Lab escluso
+
+REGRESSIONE F9V4a
+-----------------
+PASS  Terminal Result Lock ereditato
+PASS  Deck Recovery visibility ereditata
+PASS  5 faction voices / 27 dialogue overrides / 10 temi strategici
+PASS  scenario-step contract invariato
+
+BROWSER E2E
+-----------
+PREPARATO ma NON ESEGUITO nel container:
+tests/f9w1a_browser_match_data_v2_smoke.py
+
+Motivo: il pacchetto di lavoro è un overwrite e non contiene il checkout completo con index.html,
+CSS, asset e tutti i moduli runtime. Il browser smoke va eseguito dopo sovrascrittura sulla baseline completa.
+
+CHECK MANUALE CONSIGLIATO
+-------------------------
+1. Avvia e completa un match Human-Bot 2P; apri Cronologia e Statistiche.
+2. Completa almeno un match su mappa 3P e uno su mappa 4P; verifica che G1..G3/G4 siano tutti visibili.
+3. Apri Telemetria dopo un match, chiudila e riaprila dal Control Center: deve risolvere il payload del match più recente.
+4. Riavvia l'app e ricontrolla Cronologia + Telemetria: verifica persistenza effettiva del nuovo store.
+5. Se esiste storico precedente a F9W1a, verifica che resti visibile dopo il primo avvio e che non si duplichi al secondo.
+6. Verifica che Tutorial/Challenge non aggiungano record competitivi.
+7. Verifica un export JSON storico e un CSV: nessun partecipante G3/G4 deve sparire.
