@@ -1,0 +1,141 @@
+ARENA RUBRA — F9V3b TEST REPORT
+===============================
+
+Build candidata:
+  C2-STABLE-1-F9V3b-APK-M4c
+  Tutorial Runtime Hardening & Action Contract Closure
+
+Base validata:
+  C2-STABLE-1-F9V3a-APK-M4c
+  Unified Result Modal
+
+Riferimento remoto verificato prima della lavorazione:
+  GitHub main commit a785b2460f440fe6ee5da9216950374667c1962a
+  F9V3a PATCH OVERWRITE
+
+SCOPO
+-----
+Chiudere il contratto tecnico del Tutorial Runtime 2.0:
+- gate semantico prima dell'ingresso nei mutatori;
+- fallback anti selector-drift centralizzati;
+- nessuna nuova regola o contenuto Tutorial.
+
+CONTROLLI ESEGUITI NEL CONTAINER
+--------------------------------
+PASS — node --check src/tutorial_runtime.js
+PASS — node --check src/build_info.js
+PASS — node --check su tutti i test JS inclusi nella candidata
+PASS — python3 -m py_compile sui test browser Python inclusi
+
+PASS — tests/f9v2a_tutorial_challenge_framework_smoke.js
+  - 5 Challenge preservate
+  - unlock globale 5/5 preservato
+  - progressi Challenge separati preservati
+  - build F9V3b
+
+PASS — tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
+  - Tenuta preservata
+  - build F9V3b
+
+PASS — tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+  - Breccia preservata
+  - build F9V3b
+
+PASS — tests/f9v2e_tutorial_challenge4_pressure_smoke.js
+  - Pressione preservata
+  - vittoria errata respinta
+  - build F9V3b
+
+PASS — tests/f9v2f_tutorial_challenge5_final_exam_smoke.js
+  - Esame finale preservato
+  - mano/deck/Starter/economia/recupero deck normali preservati
+  - vittoria core umana supera l'Esame
+  - vittoria avversaria fallisce l'Esame
+  - build F9V3b
+
+PASS — tests/f9v3a_unified_result_modal_smoke.js
+  - VITTORIA / SCONFITTA / PAREGGIO preservati
+  - LEZIONE COMPLETATA preservata
+  - PROVA COMPLETATA / PROVA FALLITA preservati
+  - Log / Telemetria / Statistiche / Accademia / Menu / Nuova partita preservati
+  - build F9V3b
+
+PASS — tests/f9v3b_tutorial_contract_coverage_smoke.js
+  - 5 scenari Tutorial
+  - 116 step totali
+  - 64 step interattivi locked/guided
+  - contratti coperti: ability_toggle, card_selected, cell_context, end_turn,
+    hand_collapse, hand_show, unit_context
+  - 0 contratti sconosciuti
+  - 0 selector drift sconosciuti
+
+PASS — tests/f9v3b_tutorial_action_contract_smoke.js
+  - unit_select semantico
+  - attack semantico anche dopo auto-prime movimento
+  - move / deploy / build distinti
+  - ability_target / tactic_target distinti
+  - end_turn / ability_toggle stabili
+  - 7 entrypoint pre-mutation guardati
+  - azione errata: 0 mutazioni core
+  - azione corretta: 1 esecuzione core
+  - schema F9V3b-1
+
+TEST STORICI NON ESEGUIBILI RUNTIME NELLA CARTELLA PATCH-ONLY
+-------------------------------------------------------------
+I seguenti smoke storici hanno superato `node --check`, ma il loro runtime non è
+eseguibile nella cartella di validazione composta dalle sole patch overwrite:
+- f9t2c2_bootstrap_forward_pivot_impact_smoke.js
+- f9t2d3_commander_deployment_commitment_smoke.js
+- f9t2d_varran_assault_chain_smoke.js
+  Motivo: richiedono `src/expert_ai/expert_common_strategy.js`, non incluso nelle patch overwrite.
+- f9u1a_map_hud_layout_foundation_smoke.js
+- f9u1a1_inspector_hand_header_controls_smoke.js
+- f9u1b_unit_inspector_ps_unit_bars_smoke.js
+- f9u2a_card_pool_reorganization_smoke.js
+- f9u3_control_center_smoke.js
+  Motivo: richiedono `index.html`, non incluso nelle patch overwrite.
+
+Questi sono limiti dell'ambiente patch-only, non failure rilevate sul codice F9V3b.
+
+BROWSER SUITE PREPARATA
+-----------------------
+tests/f9v3b_browser_tutorial_5x5_suite.py aggrega:
+- f9o7a_browser_lesson1_smoke.py
+- f9o7c_browser_lesson2_smoke.py
+- f9o7e_browser_lesson3_smoke.py
+- f9o7f_browser_lesson4_smoke.py
+- f9o7g_browser_lesson5_smoke.py
+- f9o7b_browser_ui_state_resume_smoke.py
+- f9o7h_browser_tutorial_guidance_smoke.py
+- f9v3a_browser_unified_result_modal_smoke.py
+
+NON ESEGUITO NEL CONTAINER
+--------------------------
+La suite Playwright completa non è stata eseguita nel container perché la consegna
+è un PATCH OVERWRITE e non contiene il checkout completo del repository con index,
+CSS, asset e tutti i moduli runtime richiesti dai browser smoke.
+
+La compilazione Python della suite è PASS; il gate browser reale resta manuale sulla
+copia locale completa del progetto.
+
+CHECKLIST MANUALE DI VALIDAZIONE
+--------------------------------
+1. Refresh completo dopo overwrite.
+2. Avvia Lezione 1 e prova deliberatamente a cliccare una cella/unità diversa da
+   quella evidenziata: nessuna mutazione di gioco deve avvenire.
+3. Completa Lezione 1: deploy, attacco, abilità, tattica e Result Modal.
+4. Lezione 2: Starter fanteria, movimento, build struttura, Starter veicolo,
+   cattura PS, checkpoint e ripresa.
+5. Lezione 3: tre tattiche Agathoi e tre ondate.
+6. Lezione 4: selezione Sanguis/Assalto Coordinato, attacco, sanguinamento, PS.
+7. Lezione 5: Marchio, attacco, conversione, Embargo e Usura.
+8. In almeno una lezione interrompi/ripristina da checkpoint e verifica che target,
+   Mano e currentPlayer siano coerenti dopo resume.
+9. Verifica che i pulsanti Mano, Fine turno e Abilità vengano ancora spotlightati.
+10. Completa una Challenge e verifica il Result Modal F9V3a.
+11. Avvia Challenge V e verifica che la partita completa non subisca gate Tutorial.
+12. Avvia un match normale e verifica che interazioni e Result Modal siano invariati.
+
+GATE DI VALIDAZIONE
+-------------------
+F9V3b resta CANDIDATA finché non supera il test manuale sulla build browser completa.

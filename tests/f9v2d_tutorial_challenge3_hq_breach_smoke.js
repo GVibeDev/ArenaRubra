@@ -141,7 +141,7 @@ if (evaluate("tutorialChallengeRuntimeState.meta.hqOccupantUid") !== "p1") throw
 setTimeout(() => {
   const completion = context.__completion;
   if (!completion || completion.success !== true || completion.reason !== "enemy_hq_occupied") throw new Error(`Completion invalid: ${JSON.stringify(completion)}`);
-  if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3a-APK-M4c") throw new Error("BUILD_INFO version invalid");
+  if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3b-APK-M4c") throw new Error("BUILD_INFO version invalid");
   console.log(JSON.stringify({
     ok:true,
     challenge:"challenge-3-hq-breach",

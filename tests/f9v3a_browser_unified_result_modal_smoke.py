@@ -38,7 +38,7 @@ with sync_playwright() as p:
       };
     }""")
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3a-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3b-APK-M4c"
 
     page.evaluate("""() => emitGameEvent({
       type:EventTypes.VICTORY,
@@ -87,7 +87,7 @@ assert not page_errors, page_errors
 assert not unexpected, unexpected
 print(json.dumps({
     "ok": True,
-    "build": "C2-STABLE-1-F9V3a-APK-M4c",
+    "build": "C2-STABLE-1-F9V3b-APK-M4c",
     "normalVictory": True,
     "singleHumanDefeat": True,
     "draw": True,

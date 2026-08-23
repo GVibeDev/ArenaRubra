@@ -1,8 +1,8 @@
 "use strict";
 
-// Arena Rubra – F9V3a Unified Result Modal.
-// Basata su F9V2f validata: preserva l’intero percorso Tutorial/Challenge e aggiunge
-// un popup conclusivo persistente condiviso con la normale modalità di gioco.
+// Arena Rubra – F9V3b Tutorial Runtime Hardening & Action Contract Closure.
+// Basata sulla F9V3a validata: preserva l’intero percorso Tutorial/Challenge e
+// l’Unified Result Modal, consolidando gate semantico pre-mutation e selector fallback.
 // Motore data-driven con spotlight, vignette, input controllato, setup deterministico,
 // comandi di scenario, eventi di completamento e checkpoint con ripristino dello stato.
 
@@ -13,6 +13,70 @@ const TUTORIAL_STEP_MODES = Object.freeze({
   GUIDED:"guided",
   LOCKED:"locked"
 });
+
+// F9V3b — Tutorial Runtime Hardening / Action Contract Closure.
+// Il contratto semantico separa l'intenzione didattica dai selettori DOM e
+// classifica l'azione PRIMA di entrare nei mutatori del core. I selettori
+// storici restano validi, ma hanno fallback semantici per evitare selector drift.
+const TUTORIAL_ACTION_CONTRACT_F9V3B = Object.freeze({
+  schemaVersion:"F9V3b-1",
+  selectorTargets:Object.freeze({
+    hand_collapse:Object.freeze([
+      "#mapHandOverlay .mapHandCollapseBtn",
+      "#mapHandCollapseBtn",
+      "[data-map-hand-action=\"collapse\"]"
+    ]),
+    hand_show:Object.freeze([
+      "#mapActionDock .mapLeftHandBtn",
+      "#mapActionDock .mapHandShowBtn",
+      "#mapLeftHandBtn",
+      "[data-map-hand-action=\"show\"]"
+    ]),
+    end_turn:Object.freeze([
+      ".mapLeftEndTurnBtn",
+      "#endTurnBtn",
+      "[data-game-action=\"end-turn\"]",
+      "[data-action=\"end-turn\"]"
+    ]),
+    ability_toggle:Object.freeze([
+      "#selectedUnitPrimaryAbilitySlot [data-unit-action=\"ability\"]",
+      "[data-unit-action=\"ability\"]",
+      "#abilityBtn"
+    ]),
+    hand_cards:Object.freeze([
+      "#mapHandOverlay .mapHandOverlayCards",
+      "#mapHandOverlay [data-preview-card-uid]",
+      "[data-preview-card-uid]"
+    ]),
+    opponent_score:Object.freeze([
+      "#p2Score",
+      "[data-player-score=\"2\"]"
+    ])
+  }),
+  guardedEntrypoints:Object.freeze([
+    "handleCellClick",
+    "endTurn",
+    "beginStarterCardPurchase",
+    "beginHandCardPlay",
+    "toggleAbilityMode",
+    "toggleBuildMode",
+    "passUnit"
+  ]),
+  semanticActions:Object.freeze([
+    "unit_select", "move", "attack", "ability_toggle", "ability_target",
+    "tactic_target", "deploy", "build", "card_selected", "end_turn",
+    "hand_collapse", "hand_show", "pass_unit", "build_toggle",
+    "unit_click", "cell_click"
+  ])
+});
+
+let tutorialActionContractBypassDepthF9V3b = 0;
+const tutorialActionContractStateF9V3b = {
+  installCount:0,
+  wrapped:new Set(),
+  missing:new Set(),
+  lastInstallAt:null
+};
 
 let tutorialRuntimeMemoryStore = { schemaVersion:TUTORIAL_RUNTIME_SCHEMA, scenarios:{}, lessons:{}, challenges:{}, updatedAt:null };
 
@@ -1535,8 +1599,9 @@ function tutorialRuntimeDesiredHandState(step) {
   if (target.type === "card") return "open";
   if (["unit", "hex", "hq", "ps"].includes(target.type)) return "collapsed";
   const selector = String(target.selector || "");
-  if (selector.includes("mapHandCollapseBtn")) return "open";
-  if (selector.includes("mapLeftHandBtn") || selector.includes("mapHandShowBtn") || selector.includes("selectedUnitPrimaryAbilitySlot") || selector.includes("actionPanel")) return "collapsed";
+  const semanticTarget = tutorialRuntimeSemanticKeyForSelectorF9V3b(selector);
+  if (semanticTarget === "hand_collapse") return "open";
+  if (["hand_show", "ability_toggle"].includes(semanticTarget) || selector.includes("actionPanel")) return "collapsed";
   return "preserve";
 }
 
@@ -1645,14 +1710,51 @@ function tutorialRuntimeBestVisibleTarget(nodes) {
     || list[0];
 }
 
+function tutorialRuntimeSemanticKeyForSelectorF9V3b(selector) {
+  const text = String(selector || "");
+  if (!text) return null;
+  if (text.includes("mapHandCollapseBtn")) return "hand_collapse";
+  if (text.includes("mapLeftHandBtn") || text.includes("mapHandShowBtn")) return "hand_show";
+  if (/endturnbtn/i.test(text) || text.includes('data-game-action="end-turn"') || text.includes("data-game-action='end-turn'")) return "end_turn";
+  if (text.includes('data-unit-action="ability"') || text.includes("data-unit-action='ability'") || text.includes("selectedUnitPrimaryAbilitySlot")) return "ability_toggle";
+  if (text.includes("mapHandOverlayCards") || text.includes("data-preview-card-uid")) return "hand_cards";
+  if (text.includes("p2Score") || text.includes('data-player-score="2"') || text.includes("data-player-score='2'")) return "opponent_score";
+  return null;
+}
+
+function tutorialRuntimeSelectorCandidatesF9V3b(specOrSelector) {
+  const direct = typeof specOrSelector === "string"
+    ? String(specOrSelector || "")
+    : String(specOrSelector && specOrSelector.selector || "");
+  const semantic = (specOrSelector && typeof specOrSelector === "object" && specOrSelector.semanticTarget)
+    ? String(specOrSelector.semanticTarget)
+    : tutorialRuntimeSemanticKeyForSelectorF9V3b(direct);
+  const fallbacks = semantic && TUTORIAL_ACTION_CONTRACT_F9V3B.selectorTargets[semantic]
+    ? TUTORIAL_ACTION_CONTRACT_F9V3B.selectorTargets[semantic]
+    : [];
+  return [...new Set([direct, ...fallbacks].filter(Boolean))];
+}
+
+function tutorialRuntimeQuerySelectorCandidatesF9V3b(specOrSelector, options={}) {
+  if (typeof document === "undefined") return options.all ? [] : null;
+  const nodes = [];
+  for (const selector of tutorialRuntimeSelectorCandidatesF9V3b(specOrSelector)) {
+    try {
+      for (const node of document.querySelectorAll(selector)) if (!nodes.includes(node)) nodes.push(node);
+    } catch (_) { /* selettore legacy non valido: prova il fallback semantico */ }
+  }
+  if (options.all) return nodes.filter(tutorialRuntimeElementIsVisible);
+  return tutorialRuntimeBestVisibleTarget(nodes);
+}
+
 function tutorialRuntimeResolveTarget(spec) {
   if (typeof document === "undefined" || !spec) return null;
-  if (typeof spec === "string") return tutorialRuntimeBestVisibleTarget(document.querySelectorAll(spec));
-  if (spec.type === "selector") return tutorialRuntimeBestVisibleTarget(document.querySelectorAll(spec.selector || ""));
+  if (typeof spec === "string") return tutorialRuntimeQuerySelectorCandidatesF9V3b(spec);
+  if (spec.type === "selector") return tutorialRuntimeQuerySelectorCandidatesF9V3b(spec);
   if (spec.type === "ui") {
     const byId = document.getElementById(spec.id || spec.target || "");
     if (tutorialRuntimeElementIsVisible(byId)) return byId;
-    return tutorialRuntimeBestVisibleTarget(document.querySelectorAll(spec.selector || "")) || byId;
+    return tutorialRuntimeQuerySelectorCandidatesF9V3b(spec) || byId;
   }
   if (spec.type === "card") {
     const card = tutorialRuntimeFindCard(spec);
@@ -1686,8 +1788,7 @@ function tutorialRuntimeResolveTarget(spec) {
 function tutorialRuntimeResolveTargets(spec) {
   if (typeof document === "undefined" || !spec) return [];
   if (spec.all === true && (spec.type === "selector" || typeof spec === "string")) {
-    const selector = typeof spec === "string" ? spec : (spec.selector || "");
-    return Array.from(document.querySelectorAll(selector)).filter(tutorialRuntimeElementIsVisible);
+    return tutorialRuntimeQuerySelectorCandidatesF9V3b(spec, { all:true });
   }
   const target = tutorialRuntimeResolveTarget(spec);
   return target ? [target] : [];
@@ -2145,16 +2246,15 @@ function tutorialRuntimeExpectedInteraction(step=tutorialRuntimeState.step) {
   }
   if (target.type === "selector") {
     const selector = String(target.selector || "");
-    if (selector.includes("mapHandCollapseBtn")) return { action:"hand_collapse", match:{}, source:"spotlight" };
-    if (selector.includes("mapLeftHandBtn") || selector.includes("mapHandShowBtn")) return { action:"hand_show", match:{}, source:"spotlight" };
-    if (/endturnbtn/i.test(selector)) {
+    const semanticTarget = tutorialRuntimeSemanticKeyForSelectorF9V3b(selector);
+    if (semanticTarget === "hand_collapse") return { action:"hand_collapse", match:{}, source:"spotlight" };
+    if (semanticTarget === "hand_show") return { action:"hand_show", match:{}, source:"spotlight" };
+    if (semanticTarget === "end_turn") {
       const match = {};
       if (completion && completion.match && completion.match.player != null) match.player = Number(completion.match.player);
       return { action:"end_turn", match, source:"spotlight" };
     }
-    if (selector.includes('data-unit-action="ability"') || selector.includes("data-unit-action='ability'")) {
-      return { action:"ability_toggle", match:{}, source:"spotlight" };
-    }
+    if (semanticTarget === "ability_toggle") return { action:"ability_toggle", match:{}, source:"spotlight" };
   }
   return null;
 }
@@ -2167,26 +2267,236 @@ function tutorialRuntimeInteractionMatch(expected, action, data={}) {
   return { matched:true };
 }
 
+function tutorialRuntimeUnitForInteractionF9V3b(data={}) {
+  if (!state || !Array.isArray(state.units)) return null;
+  const uid = data.uid || data.unitUid || null;
+  if (uid) {
+    const byUid = state.units.find(unit => unit && unit.uid === uid);
+    if (byUid) return byUid;
+  }
+  if (Array.isArray(data.coord)) {
+    const byCoord = state.units.find(unit => unit && unit.alive && Array.isArray(unit.pos) && tutorialRuntimeInteractionFieldMatches(unit.pos, data.coord));
+    if (byCoord) return byCoord;
+  }
+  const side = Number(data.side) || null;
+  const blueprintId = data.blueprintId || data.unitId || null;
+  if (blueprintId) {
+    const byBlueprint = state.units.find(unit => unit && unit.alive && unit.id === blueprintId && (!side || Number(unit.side) === side));
+    if (byBlueprint) return byBlueprint;
+  }
+  return null;
+}
+
+function tutorialRuntimeSelectedUnitF9V3b() {
+  if (typeof getSelectedUnit === "function") {
+    try { return getSelectedUnit(); } catch (_) {}
+  }
+  if (!state || !Array.isArray(state.units) || typeof selectedId === "undefined" || !selectedId) return null;
+  return state.units.find(unit => unit && unit.uid === selectedId) || null;
+}
+
+function tutorialRuntimeSemanticActionForInteractionF9V3b(action, data={}) {
+  const raw = String(action || "");
+  if (!raw) return raw;
+  if (TUTORIAL_ACTION_CONTRACT_F9V3B.semanticActions.includes(raw) && !["unit_click","cell_click"].includes(raw)) return raw;
+  if (raw === "card_selected" || raw === "end_turn" || raw === "ability_toggle" || raw === "build_toggle" || raw === "pass_unit" || raw === "hand_collapse" || raw === "hand_show") return raw;
+
+  const runtimeMode = typeof mode !== "undefined" ? String(mode || "idle") : "idle";
+  if (raw === "cell_click") {
+    if (runtimeMode === "spawn") return "deploy";
+    if (runtimeMode === "build") return "build";
+    if (runtimeMode === "move") return "move";
+    if (runtimeMode === "ability") return "ability_target";
+    if (runtimeMode === "tactic") return "tactic_target";
+    return "cell_click";
+  }
+
+  if (raw === "unit_click") {
+    if (runtimeMode === "ability") return "ability_target";
+    if (runtimeMode === "tactic") return "tactic_target";
+    const target = tutorialRuntimeUnitForInteractionF9V3b(data);
+    const selected = tutorialRuntimeSelectedUnitF9V3b();
+    if (selected && target && Number(selected.side) !== Number(target.side)) return "attack";
+    if (target && state && Number(target.side) === Number(state.currentPlayer)) return "unit_select";
+    return "unit_click";
+  }
+  return raw;
+}
+
+function tutorialRuntimeExpectedSemanticInteractionF9V3b(step=tutorialRuntimeState.step) {
+  const expected = tutorialRuntimeExpectedInteraction(step);
+  if (!expected) return null;
+  return {
+    ...expected,
+    rawAction:expected.action,
+    action:tutorialRuntimeSemanticActionForInteractionF9V3b(expected.action, expected.match || {}),
+    semantic:true
+  };
+}
+
+function tutorialRuntimeWithActionContractBypassF9V3b(callback) {
+  tutorialActionContractBypassDepthF9V3b += 1;
+  try { return callback(); }
+  finally { tutorialActionContractBypassDepthF9V3b = Math.max(0, tutorialActionContractBypassDepthF9V3b - 1); }
+}
+
+function tutorialRuntimeActionDescriptorForEntrypointF9V3b(name, args=[]) {
+  if (!tutorialRuntimeState.active || !tutorialRuntimeState.step || tutorialRuntimeState.closing) return null;
+  const player = state && Number(state.currentPlayer) || null;
+  if (name === "handleCellClick") {
+    const coord = Array.isArray(args[0]) ? [...args[0]] : args[0];
+    const unit = state && Array.isArray(state.units) && Array.isArray(coord)
+      ? state.units.find(candidate => candidate && candidate.alive && Array.isArray(candidate.pos) && tutorialRuntimeInteractionFieldMatches(candidate.pos, coord))
+      : null;
+    const rawAction = unit ? "unit_click" : "cell_click";
+    const data = unit
+      ? { coord, uid:unit.uid, side:unit.side, blueprintId:unit.id, player }
+      : { coord, player };
+    return { action:tutorialRuntimeSemanticActionForInteractionF9V3b(rawAction, data), data };
+  }
+  if (name === "endTurn") {
+    const options = args[0] && typeof args[0] === "object" ? args[0] : {};
+    const source = options.source ? String(options.source) : "runtime";
+    if (options.tutorialBypass === true || ["auto","bot","tutorial_script"].includes(source)) return null;
+    return { action:"end_turn", data:{ player, source } };
+  }
+  if (name === "beginStarterCardPurchase" || name === "beginHandCardPlay") {
+    const cardUid = String(args[0] || "");
+    let card = null;
+    try {
+      if (name === "beginStarterCardPurchase" && typeof starterCardByUid === "function") card = starterCardByUid(player, cardUid);
+      if (name === "beginHandCardPlay" && typeof handCardByUid === "function") card = handCardByUid(player, cardUid);
+    } catch (_) {}
+    return {
+      action:"card_selected",
+      data:{ side:player, cardId:String(card && card.id || ""), cardUid:String(card && card.cardUid || cardUid), source:name === "beginStarterCardPurchase" ? "starter" : "hand" }
+    };
+  }
+  if (name === "toggleAbilityMode") {
+    const unit = args[0] || null;
+    return { action:"ability_toggle", data:{ player, side:unit && unit.side, uid:unit && unit.uid, blueprintId:unit && unit.id, abilityName:unit && unit.ability && unit.ability.name || "" } };
+  }
+  if (name === "toggleBuildMode") {
+    const unit = args[0] || null;
+    return { action:"build_toggle", data:{ player, side:unit && unit.side, uid:unit && unit.uid, blueprintId:unit && unit.id } };
+  }
+  if (name === "passUnit") {
+    const unit = args[0] || null;
+    return { action:"pass_unit", data:{ player, side:unit && unit.side, uid:unit && unit.uid, blueprintId:unit && unit.id } };
+  }
+  return null;
+}
+
+function tutorialRuntimeInstallActionContractF9V3b() {
+  const root = typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : null);
+  if (!root) return false;
+  tutorialActionContractStateF9V3b.installCount += 1;
+  tutorialActionContractStateF9V3b.lastInstallAt = Date.now();
+  tutorialActionContractStateF9V3b.missing.clear();
+  for (const name of TUTORIAL_ACTION_CONTRACT_F9V3B.guardedEntrypoints) {
+    const current = root[name];
+    if (typeof current !== "function") {
+      tutorialActionContractStateF9V3b.missing.add(name);
+      continue;
+    }
+    if (current.__arenaTutorialActionContractF9V3b === true) {
+      tutorialActionContractStateF9V3b.wrapped.add(name);
+      continue;
+    }
+    const original = current;
+    const wrapped = function(...args) {
+      const descriptor = tutorialRuntimeActionDescriptorForEntrypointF9V3b(name, args);
+      if (!descriptor) return original.apply(this, args);
+      const gate = tutorialRuntimeGateInteraction(descriptor.action, descriptor.data || {});
+      if (gate && gate.handled && gate.allowed === false) return false;
+      return tutorialRuntimeWithActionContractBypassF9V3b(() => original.apply(this, args));
+    };
+    wrapped.__arenaTutorialActionContractF9V3b = true;
+    wrapped.__arenaTutorialActionContractOriginalF9V3b = original;
+    root[name] = wrapped;
+    tutorialActionContractStateF9V3b.wrapped.add(name);
+  }
+  return tutorialActionContractStateF9V3b.wrapped.size > 0;
+}
+
+function tutorialRuntimeActionContractScenarioAuditF9V3b() {
+  const scenarios = typeof TUTORIAL_SCENARIOS_F9O6 !== "undefined" && TUTORIAL_SCENARIOS_F9O6
+    ? Object.values(TUTORIAL_SCENARIOS_F9O6).filter(Boolean)
+    : [];
+  const errors = [];
+  let totalSteps = 0;
+  let interactiveSteps = 0;
+  for (const scenario of scenarios) {
+    const steps = Array.isArray(scenario.steps) ? scenario.steps : [];
+    totalSteps += steps.length;
+    for (const step of steps) {
+      if (!step || ![TUTORIAL_STEP_MODES.LOCKED, TUTORIAL_STEP_MODES.GUIDED].includes(step.mode)) continue;
+      interactiveSteps += 1;
+      const target = step.spotlight && step.spotlight.target;
+      if (!target) {
+        errors.push(`${scenario.id}/${step.id || "?"}: step interattivo senza target`);
+        continue;
+      }
+      if (["card","unit","hex","hq","ps","ui"].includes(target.type)) continue;
+      if (target.type === "selector") {
+        const completionAction = step.completeOn && step.completeOn.kind === "action" && step.completeOn.action;
+        const semanticTarget = tutorialRuntimeSemanticKeyForSelectorF9V3b(target.selector || "");
+        if (!completionAction && !semanticTarget) errors.push(`${scenario.id}/${step.id || "?"}: selector senza contratto semantico`);
+        continue;
+      }
+      errors.push(`${scenario.id}/${step.id || "?"}: target interattivo non riconosciuto ${String(target.type || "unknown")}`);
+    }
+  }
+  return {
+    ok:errors.length === 0,
+    schemaVersion:TUTORIAL_ACTION_CONTRACT_F9V3B.schemaVersion,
+    scenarios:scenarios.length,
+    totalSteps,
+    interactiveSteps,
+    errors
+  };
+}
+
+function tutorialRuntimeActionContractDiagnosticsF9V3b() {
+  return {
+    schemaVersion:TUTORIAL_ACTION_CONTRACT_F9V3B.schemaVersion,
+    guardedEntrypoints:[...TUTORIAL_ACTION_CONTRACT_F9V3B.guardedEntrypoints],
+    wrapped:[...tutorialActionContractStateF9V3b.wrapped],
+    missing:[...tutorialActionContractStateF9V3b.missing],
+    installCount:tutorialActionContractStateF9V3b.installCount,
+    lastInstallAt:tutorialActionContractStateF9V3b.lastInstallAt,
+    semanticActions:[...TUTORIAL_ACTION_CONTRACT_F9V3B.semanticActions],
+    scenarioAudit:tutorialRuntimeActionContractScenarioAuditF9V3b()
+  };
+}
+
 function tutorialRuntimeGateInteraction(action, data={}) {
   if (!tutorialRuntimeState.active || !tutorialRuntimeState.step) return { handled:false, allowed:true };
-  if (data && data.tutorialBypass === true) return { handled:true, allowed:true, bypass:true };
+  if (tutorialActionContractBypassDepthF9V3b > 0 || (data && data.tutorialBypass === true)) {
+    return { handled:true, allowed:true, bypass:true };
+  }
   const step = tutorialRuntimeState.step;
-  const expected = tutorialRuntimeExpectedInteraction(step);
+  const expected = tutorialRuntimeExpectedSemanticInteractionF9V3b(step);
+  const semanticAction = tutorialRuntimeSemanticActionForInteractionF9V3b(action, data);
   const blockedByPhase = tutorialRuntimeState.preparingStep || tutorialRuntimeState.closing;
-  const result = blockedByPhase ? { matched:false, reason:"step_transition" } : tutorialRuntimeInteractionMatch(expected, action, data);
+  const result = blockedByPhase ? { matched:false, reason:"step_transition" } : tutorialRuntimeInteractionMatch(expected, semanticAction, data);
   const allowed = Boolean(!blockedByPhase && step.mode !== TUTORIAL_STEP_MODES.INFORMATIVE && expected && result.matched);
   if (!allowed) {
     if (!data || data.quiet !== true) tutorialRuntimeShowHint(step.wrongActionText || (step.mode === TUTORIAL_STEP_MODES.INFORMATIVE ? "Continua dal riquadro della lezione." : "Segui l’azione evidenziata."));
     tutorialRuntimeState.lastAction = {
-      kind:"interaction-rejected", action, data, stepId:step.id,
-      expected:expected ? { action:expected.action, match:{ ...(expected.match || {}) } } : null,
+      kind:"interaction-rejected",
+      action,
+      semanticAction,
+      data,
+      stepId:step.id,
+      expected:expected ? { action:expected.action, rawAction:expected.rawAction || expected.action, match:{ ...(expected.match || {}) } } : null,
       reason:result.reason || (step.mode === TUTORIAL_STEP_MODES.INFORMATIVE ? "informative_step" : "no_expected_interaction"),
       at:Date.now()
     };
-    return { handled:true, allowed:false, expected, reason:result.reason || "blocked" };
+    return { handled:true, allowed:false, expected, semanticAction, reason:result.reason || "blocked" };
   }
-  tutorialRuntimeState.lastAction = { kind:"interaction-allowed", action, data, stepId:step.id, at:Date.now() };
-  return { handled:true, allowed:true, expected };
+  tutorialRuntimeState.lastAction = { kind:"interaction-allowed", action, semanticAction, data, stepId:step.id, at:Date.now() };
+  return { handled:true, allowed:true, expected, semanticAction };
 }
 
 function tutorialRuntimeGateAction(action, data={}) {
@@ -2459,6 +2769,9 @@ function tutorialRuntimeCompleteStep(source="runtime") {
 }
 
 function tutorialRuntimeStartScenario(id, options={}) {
+  // F9V3b: installazione lazy dopo il caricamento del core. È intenzionale:
+  // tutorial_runtime.js viene caricato prima di turns/controller/deployment.
+  tutorialRuntimeInstallActionContractF9V3b();
   const scenario = tutorialRuntimeScenarioById(id);
   if (!scenario) {
     tutorialRuntimeSetStatus(`Scenario tutorial non trovato: ${id}`);
@@ -2559,12 +2872,15 @@ function tutorialRuntimeDiagnostics() {
     botPaused:tutorialRuntimeState.botPaused,
     progress:tutorialRuntimeState.scenarioId ? tutorialRuntimeProgressForScenario(tutorialRuntimeState.scenarioId) : null,
     expectedInteraction:tutorialRuntimeExpectedInteraction(tutorialRuntimeState.step),
+    expectedSemanticInteraction:tutorialRuntimeExpectedSemanticInteractionF9V3b(tutorialRuntimeState.step),
+    actionContract:tutorialRuntimeActionContractDiagnosticsF9V3b(),
     lastAction:tutorialRuntimeState.lastAction
   };
 }
 
 function tutorialRuntimeInit() {
   tutorialRuntimeRegisterPortraits();
+  tutorialRuntimeInstallActionContractF9V3b();
   tutorialRuntimeEnsureSpotlightDom();
   if (typeof document !== "undefined") {
     document.addEventListener("click", tutorialRuntimeCaptureInteraction, true);

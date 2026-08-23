@@ -132,8 +132,8 @@ for (const expected of ['["gamePanel","log","log"]','["gamePanel","stats","match
   if (!callText.includes(expected)) throw new Error(`Action routing missing ${expected}: ${callText}`);
 }
 
-if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9V3a-APK-M4c") throw new Error("BUILD_INFO version invalid");
-if (ev("BUILD_INFO.buildChannel") !== "starter2-result-modal-v3a") throw new Error("BUILD_INFO channel invalid");
+if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9V3b-APK-M4c") throw new Error("BUILD_INFO version invalid");
+if (ev("BUILD_INFO.buildChannel") !== "starter2-tutorial-hardening-v3b") throw new Error("BUILD_INFO channel invalid");
 
 console.log(JSON.stringify({
   ok:true,

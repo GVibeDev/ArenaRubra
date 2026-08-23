@@ -143,7 +143,7 @@ evaluate("tutorialRuntimeHandleChallengeGameEvent({type:EventTypes.VICTORY,data:
 const completion = context.__completion;
 if (!completion || completion.success !== true || completion.reason !== "pressure_victory") throw new Error(`Completion invalid: ${JSON.stringify(completion)}`);
 if (evaluate("tutorialChallengeRuntimeState.meta.pressureWon") !== true) throw new Error("Pressure victory flag not tracked");
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3a-APK-M4c") throw new Error("BUILD_INFO version invalid");
+if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3b-APK-M4c") throw new Error("BUILD_INFO version invalid");
 console.log(JSON.stringify({
   ok:true,
   challenge:"challenge-4-pressure",
