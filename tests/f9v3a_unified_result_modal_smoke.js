@@ -99,12 +99,12 @@ ev("tutorialChallengeRuntimeState.active=false;");
 // Lesson completion must persist on the game screen and show the Academy result modal.
 context.__result = null;
 context.state = { tutorialBotPaused:true, turn:3, modes:{1:"human",2:"bot"}, factions:{1:"Exordium",2:"Nexus"} };
-ev("tutorialRuntimeState.scenarioId='lesson-1-combat'; tutorialRuntimeState.scenario={id:'lesson-1-combat',lessonId:'lesson-1',title:'Lezione test',steps:[{id:'done'}]}; tutorialRuntimeState.active=true;");
+ev("tutorialRuntimeState.scenarioId='lesson-1-exordium'; tutorialRuntimeState.scenario={id:'lesson-1-exordium',lessonId:'lesson-1-exordium',title:'Lezione test',steps:[{id:'done'}]}; tutorialRuntimeState.active=true;");
 ev("tutorialRuntimeSaveProgress=()=>({}); tutorialRuntimeHideSpotlight=()=>{}; tutorialRuntimeRestoreCardPreviews=()=>{};");
 const beforeLessonScreens = calls.filter(x=>x[0]==="screen").length;
 ev("tutorialRuntimeFinish()");
 result = context.__result;
-if (!result || result.kind !== "lesson_complete" || result.title !== "LEZIONE COMPLETATA" || result.showAcademy !== true) throw new Error(`Lesson result modal invalid: ${JSON.stringify(result)}`);
+if (!result || result.kind !== "lesson_complete" || result.title !== "LEZIONE COMPLETATA" || result.showAcademy !== true || result.analysisAllowed !== false || result.nextAction !== "next-lesson" || result.nextScenarioId !== "lesson-2-nexus") throw new Error(`Lesson result modal invalid: ${JSON.stringify(result)}`);
 if (calls.filter(x=>x[0]==="screen").length !== beforeLessonScreens) throw new Error("Lesson completion still changes screen automatically");
 
 // Challenge completion/failure must show contextual persistent modal and not auto-switch screen.
@@ -115,7 +115,7 @@ ev("tutorialRuntimeSaveChallengeProgress=()=>({}); tutorialRuntimeChallengeClear
 const beforeChallengeScreens = calls.filter(x=>x[0]==="screen").length;
 ev("tutorialRuntimeCompleteChallenge({success:true,outcome:'success',reason:'enemy_hq_occupied'})");
 result = context.__result;
-if (!result || result.kind !== "challenge_complete" || result.title !== "PROVA COMPLETATA" || result.showAcademy !== true) throw new Error(`Challenge success modal invalid: ${JSON.stringify(result)}`);
+if (!result || result.kind !== "challenge_complete" || result.title !== "PROVA COMPLETATA" || result.showAcademy !== true || result.analysisAllowed !== false || result.nextAction !== "next-challenge" || result.nextChallengeId !== "challenge-4-pressure") throw new Error(`Challenge success modal invalid: ${JSON.stringify(result)}`);
 if (calls.filter(x=>x[0]==="screen").length !== beforeChallengeScreens) throw new Error("Challenge completion still changes screen automatically");
 
 context.__result = null;
@@ -123,24 +123,41 @@ ev("arenaResultModalShowChallengeResultF9V3a({title:'Prova test'},false,'all_pla
 result = context.__result;
 if (!result || result.kind !== "challenge_failed" || result.title !== "PROVA FALLITA" || !/Forze del giocatore eliminate/.test(result.detail)) throw new Error(`Challenge failure modal invalid: ${JSON.stringify(result)}`);
 
-// Action routing reuses existing app surfaces.
+// Educational results suppress analysis; normal results still route to existing analysis surfaces.
 calls.length = 0;
-ev("arenaResultModalHideF9V3a=()=>true;");
-ev("arenaResultModalHandleActionF9V3a('log'); arenaResultModalHandleActionF9V3a('statistics'); arenaResultModalHandleActionF9V3a('telemetry'); arenaResultModalHandleActionF9V3a('academy'); arenaResultModalHandleActionF9V3a('main-menu'); arenaResultModalHandleActionF9V3a('new-game');");
-const callText = JSON.stringify(calls);
-for (const expected of ['["gamePanel","log","log"]','["gamePanel","stats","matchupStatsPanel"]','["controlCenter","telemetry"]','["screen","tutorial"]','["screen","mainMenu"]','["newGameSetup"]']) {
-  if (!callText.includes(expected)) throw new Error(`Action routing missing ${expected}: ${callText}`);
+ev("arenaResultModalStateF9V3a.payload={analysisAllowed:false};");
+for (const key of ["log","statistics","telemetry"]) {
+  if (ev(`arenaResultModalHandleActionF9V3a(${JSON.stringify(key)})`) !== false) throw new Error(`Educational result unexpectedly allowed ${key}`);
+}
+if (calls.length) throw new Error(`Educational analysis leaked calls: ${JSON.stringify(calls)}`);
+
+calls.length = 0;
+ev("arenaResultModalStateF9V3a.payload={analysisAllowed:true}; arenaResultModalStateF9V3a.locked=true; arenaResultModalStateF9V3a.resolved=false;");
+ev("arenaResultModalHandleActionF9V3a('log'); arenaResultModalHandleActionF9V3a('statistics'); arenaResultModalHandleActionF9V3a('telemetry');");
+const analysisText = JSON.stringify(calls);
+for (const expected of ['["gamePanel","log","log"]','["gamePanel","stats","matchupStatsPanel"]','["controlCenter","telemetry"]']) {
+  if (!analysisText.includes(expected)) throw new Error(`Analysis routing missing ${expected}: ${analysisText}`);
 }
 
-if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9V3b-APK-M4c") throw new Error("BUILD_INFO version invalid");
-if (ev("BUILD_INFO.buildChannel") !== "starter2-tutorial-hardening-v3b") throw new Error("BUILD_INFO channel invalid");
+calls.length = 0;
+ev("arenaResultModalStateF9V3a.payload={analysisAllowed:true}; arenaResultModalStateF9V3a.locked=true; arenaResultModalStateF9V3a.resolved=false;");
+ev("arenaResultModalHandleActionF9V3a('academy');");
+ev("arenaResultModalStateF9V3a.payload={analysisAllowed:true}; arenaResultModalStateF9V3a.locked=true; arenaResultModalStateF9V3a.resolved=false; arenaResultModalHandleActionF9V3a('main-menu');");
+ev("arenaResultModalStateF9V3a.payload={analysisAllowed:true}; arenaResultModalStateF9V3a.locked=true; arenaResultModalStateF9V3a.resolved=false; arenaResultModalHandleActionF9V3a('new-game');");
+const navText = JSON.stringify(calls);
+for (const expected of ['["screen","tutorial"]','["screen","mainMenu"]','["newGameSetup"]']) {
+  if (!navText.includes(expected)) throw new Error(`Navigation routing missing ${expected}: ${navText}`);
+}
+
+if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("BUILD_INFO version invalid");
+if (ev("BUILD_INFO.buildChannel") !== "starter2-result-flow-v3c") throw new Error("BUILD_INFO channel invalid");
 
 console.log(JSON.stringify({
   ok:true,
   feature:"Unified Result Modal",
   normalMatch:["victory","defeat","draw"],
   academy:["lesson_complete","challenge_complete","challenge_failed"],
-  actions:["log","telemetry","statistics","academy(contextual)","main-menu","new-game"],
+  actions:["analysis only for normal match","next lesson/challenge/retry for Academy","academy(contextual)","main-menu","new-game"],
   automaticAcademyReturn:false,
   coreVictoryRulesModified:false,
   build:ev("BUILD_INFO.version")

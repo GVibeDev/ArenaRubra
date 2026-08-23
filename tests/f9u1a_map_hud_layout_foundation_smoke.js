@@ -18,7 +18,7 @@ vm.createContext(context);
 vm.runInContext(`${buildSource}\n;globalThis.__build=BUILD_INFO;`, context, { filename:"build_info.js" });
 const build = context.__build;
 
-assert.equal(build.version, "C2-STABLE-1-F9V3b-APK-M4c", "versione candidata corretta");
+assert.equal(build.version, "C2-STABLE-1-F9V3c-APK-M4c", "versione candidata corretta");
 assert.equal(build.buildName, "Tutorial Challenge I · Elimination", "nome build corretto");
 assert.equal(build.buildChannel, "starter2-tutorial-v2e", "canale candidato corretto");
 assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c", "baseline logica validata corretta");

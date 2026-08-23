@@ -63,6 +63,7 @@
 // F9V2f validated-baseline compatibility markers: version: "C2-STABLE-1-F9V2f-APK-M4c" · buildChannel: "starter2-tutorial-v2f".
 // F9V3a Unified Result Modal metadata.
 // F9V3b Tutorial Runtime Hardening & Action Contract Closure metadata.
+// F9V3c Result Flow, Tutorial UX & Deck Recovery Visibility metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -85,13 +86,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V3b-APK-M4c",
-  buildName: "Tutorial Runtime Hardening & Action Contract Closure",
-  buildDate: "2026-08-22",
-  buildChannel: "starter2-tutorial-hardening-v3b",
+  version: "C2-STABLE-1-F9V3c-APK-M4c",
+  buildName: "Result Flow & Tutorial UX Polish",
+  buildDate: "2026-08-23",
+  buildChannel: "starter2-result-flow-v3c",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V3b costruita sulla F9V3a validata. Chiude il contratto azioni del Tutorial Runtime 2.0 senza modificare il core di gioco: introduce un registry semantico F9V3b-1, classifica prima della mutazione selezione unità, movimento, attacco, bersaglio abilità, bersaglio tattica, deploy, build, selezione carta e fine turno; installa guard pre-mutation sugli entrypoint handleCellClick, endTurn, beginStarterCardPurchase, beginHandCardPlay, toggleAbilityMode, toggleBuildMode e passUnit; il gate legacy interno viene bypassato soltanto dopo l’accettazione semantica per evitare doppi blocchi. I selettori storici del Tutorial mantengono fallback semantici per Mano, Fine turno, Abilità, area carte e score avversario, riducendo il selector drift senza riscrivere i 116 step. Diagnostica runtime espone expectedSemanticInteraction e stato Action Contract. Preserva integralmente Unified Result Modal F9V3a, cinque lezioni, cinque Challenge, checkpoint/ripresa, carte, deck, mappe, ENE, Missioni, AI, regole QG/Pressione, statistiche competitive e schema telemetrico. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V3c costruita sulla F9V3b validata. Mantiene integralmente il Tutorial Runtime 2.0 robusto e il contratto semantico F9V3b-1. Introduce Terminal Result Lock: Log, Telemetria e Statistiche sospendono soltanto il Result Modal e, alla chiusura del pannello, il risultato terminale ricompare; il lock si risolve solo con Menu principale/Nuova partita o con transizioni didattiche esplicite. I risultati Tutorial/Challenge non mostrano Log, Telemetria o Statistiche e propongono Lezione successiva, Prova successiva o Riprova quando pertinente. L’Accademia mostra progressione grafica 5/5 e badge di completamento sulle singole lezioni/Prove. Rimuove la label tecnica delle espressioni narrative (neutral/explain/etc.) lasciando il ritratto pulito. Il recupero deck resta regolisticamente invariato ma, a deck vuoto, il controllo è sempre visibile e spiega il motivo del blocco; le tre Starter restano fuori dalla mano e non vengono conteggiate come carte ordinarie. Nessuna modifica a carte, deck rules, mappe, ENE, Missioni, AI, QG, Pressione, statistiche o schema telemetrico. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

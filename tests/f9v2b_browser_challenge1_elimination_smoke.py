@@ -32,7 +32,7 @@ with sync_playwright() as p:
       tutorialRuntimeRenderMenu();
     }""")
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3b-APK-M4c"
+    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3c-APK-M4c"
     assert page.evaluate("tutorialRuntimeStartChallenge('challenge-1-elimination')") is True
     page.wait_for_timeout(400)
 
@@ -134,13 +134,14 @@ assert final["progress"]["lastOutcome"] == "success" and final["progress"]["last
 assert final["matchRecorded"] is False, final
 assert final["hudExists"] is False, final
 assert final["resultModal"]["visible"] is True and "PROVA COMPLETATA" in final["resultModal"]["text"], final
-assert all(action in final["resultModal"]["actions"] for action in ["log","telemetry","statistics","academy","main-menu","new-game"]), final
+assert all(action in final["resultModal"]["actions"] for action in ["next-challenge","academy","main-menu","new-game"]), final
+assert all(action not in final["resultModal"]["actions"] for action in ["log","telemetry","statistics"]), final
 assert not page_errors, page_errors
 assert not unexpected, unexpected
 
 print(json.dumps({
     "ok":True,
-    "build":"C2-STABLE-1-F9V3b-APK-M4c",
+    "build":"C2-STABLE-1-F9V3c-APK-M4c",
     "initialPlayerUnits":len(initial["playerUnits"]),
     "wave1Enemies":2,
     "botAutonomyNoPurchases":True,

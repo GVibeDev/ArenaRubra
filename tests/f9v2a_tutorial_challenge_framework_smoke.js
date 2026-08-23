@@ -115,7 +115,7 @@ if (!stateCheck.tutorialMode || !stateCheck.tutorialChallengeMode || stateCheck.
   throw new Error(`Challenge state contract invalid: ${JSON.stringify(stateCheck)}`);
 }
 
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3b-APK-M4c") throw new Error("BUILD_INFO version not updated");
+if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("BUILD_INFO version not updated");
 
 console.log(JSON.stringify({
   ok:true,

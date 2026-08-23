@@ -1,0 +1,122 @@
+ARENA RUBRA — F9V3c TEST REPORT
+===============================
+
+Build candidata:
+  C2-STABLE-1-F9V3c-APK-M4c
+  Result Flow & Tutorial UX Polish
+
+Base locale:
+  C2-STABLE-1-F9V3b-APK-M4c VALIDATA
+  Validazione manuale utente: 2026-08-23
+  - 5/5 lezioni complete
+  - click/azioni errate correttamente bloccati
+  - checkpoint/ripresa verificati su tutte le lezioni
+
+Riferimento remoto verificato:
+  GitHub main commit a785b2460f440fe6ee5da9216950374667c1962a
+  F9V3a PATCH OVERWRITE
+  Nota: F9V3b validata localmente non era ancora pubblicata su main durante la preparazione della candidata.
+
+CONTROLLI SINTATTICI
+--------------------
+PASS — node --check src/tutorial_runtime.js
+PASS — node --check src/build_info.js
+PASS — node --check su tutti i test JavaScript inclusi nella patch
+PASS — python3 -m py_compile su tutti i browser test Python inclusi nella patch
+
+TEST F9V3c SELF-CONTAINED
+-------------------------
+PASS — tests/f9v3c_result_flow_tutorial_ux_deck_recovery_smoke.js
+
+Verificato:
+- Terminal Result Lock armato alla fine del match;
+- Log sospende il Result Modal e la chiusura del Log ripristina lo stesso risultato;
+- Statistiche: stesso contratto;
+- Telemetria: stesso contratto;
+- Menu principale risolve il lock;
+- contratto sorgente per i due pulsanti della title bar Menu/Nuova partita;
+- risultati Tutorial senza Log/Telemetria/Statistiche;
+- Lezione 1 -> Lezione 2;
+- Lezione 5 -> Challenge I;
+- Challenge completata -> Challenge successiva;
+- Challenge fallita -> Riprova;
+- marker grafici di completamento Accademia;
+- label tecnica narratore nascosta;
+- deck vuoto + Mano ordinaria vuota + 3 Starter + scarti + 5 ENE -> recovery disponibile;
+- carta ordinaria residua in Mano -> recovery visibile ma disabilitato con motivo esplicito;
+- deck non vuoto -> recovery non mostrato;
+- Starter non conteggiate come carte della Mano.
+
+REGRESSIONI TUTORIAL / CHALLENGE
+--------------------------------
+PASS — tests/f9v3b_tutorial_action_contract_smoke.js
+  - Action Contract F9V3b-1 preservato
+  - 0 mutazioni core su azione rifiutata
+  - 1 sola mutazione su azione accettata
+
+PASS — tests/f9v3b_tutorial_contract_coverage_smoke.js
+  - 5 scenari Tutorial
+  - 116 step
+  - 64 step interattivi
+  - 0 contratti sconosciuti
+  - 0 selector drift sconosciuti
+
+PASS — tests/f9v3a_unified_result_modal_smoke.js
+  - victory / defeat / draw normali preservati
+  - identità vincitore preservata
+  - Challenge non riceve il generic match result
+  - risultati didattici persistenti
+  - analisi consentita solo nel match normale
+  - routing didattico e terminale aggiornato a F9V3c
+
+PASS — tests/f9v2a_tutorial_challenge_framework_smoke.js
+PASS — tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js
+PASS — tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js
+PASS — tests/f9v2e_tutorial_challenge4_pressure_smoke.js
+PASS — tests/f9v2f_tutorial_challenge5_final_exam_smoke.js
+
+Le regressioni Challenge confermano fra l'altro che l'Esame finale mantiene:
+- mano normale 5;
+- deck residuo normale 25 dopo opening hand;
+- 30 carte conteggiate;
+- Starter reserve normale;
+- economia normale;
+- deck recovery normale;
+- nessuna unità Challenge pre-schierata;
+- matchRecorded=false per il flusso didattico.
+
+BROWSER / E2E
+-------------
+I browser test esistenti sono stati aggiornati al contratto F9V3c:
+- Lezione 1: next-lesson presente, analisi assente;
+- Challenge I: next-challenge presente, analisi assente;
+- Unified Result Modal normale: analisi ancora presente e Nuova partita -> Setup;
+- tutte le aspettative di BUILD_INFO della suite corrente puntano a F9V3c.
+
+La suite Playwright completa non è stata eseguita nel container perché la consegna è una patch overwrite e non contiene il checkout completo (index.html, CSS, runtime/assets completi). La validazione browser reale resta quindi il gate manuale della candidata.
+
+CHECKLIST MANUALE RACCOMANDATA
+------------------------------
+1. Concludi un match normale.
+   Atteso: Result Modal persistente.
+2. Apri Log dal Result Modal e chiudilo.
+   Atteso: ritorno al Result Modal, non alla mappa libera.
+3. Ripeti con Statistiche e Telemetria.
+4. Con Result Modal attivo usa Menu della barra titolo.
+   Atteso: lock risolto e Menu principale.
+5. Ripeti con Nuova partita della barra titolo.
+   Atteso: lock risolto e Setup.
+6. Completa Lezione 1.
+   Atteso: niente Log/Telemetria/Statistiche; Lezione successiva disponibile.
+7. Completa Lezione 5.
+   Atteso: Vai alla Prova sul campo I.
+8. Completa/fallisci una Challenge.
+   Atteso: Prova successiva / Riprova secondo il caso.
+9. Apri Accademia.
+   Atteso: progresso X/5 + check sulle lezioni/Challenge completate.
+10. Verifica i cinque narratori.
+    Atteso: nessuna fascia `neutral`/nome espressione sotto il ritratto.
+11. Durante un match porta il deck a 0 lasciando una carta ordinaria in Mano.
+    Atteso: controllo recovery visibile ma disabilitato con motivazione.
+12. Svuota la Mano ordinaria lasciando le tre Starter disponibili, scarti > 0 ed ENE >= 5.
+    Atteso: recovery disponibile e rimescolamento eseguibile.
