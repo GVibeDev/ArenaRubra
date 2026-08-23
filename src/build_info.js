@@ -68,6 +68,7 @@
 // F9W1a Match Data 2.0 Foundation metadata.
 // F9W2a Player / DEV Runtime Profile Foundation metadata.
 // F9W2a1 Snow Battlefield Standard / Classic Official Map metadata.
+// F9W2b Menu Theme System metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -90,16 +91,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2a1-APK-M4c",
-  buildName: "Snow Battlefield · Standard / Classic Official Map",
+  version: "C2-STABLE-1-F9W2b-APK-M4c",
+  buildName: "Menu Theme System",
   buildDate: "2026-08-24",
-  buildChannel: "starter2-official-map-snowbf-w2a1",
+  buildChannel: "starter2-menu-theme-w2b",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2a1 costruita sulla F9W2a validata. Promuove la mappa utente Snow BF - 4PL - 3x a mappa ufficiale Standard / Classic: 4 giocatori, geometria triple_hex da 349 celle, movimento ×3, 13 Punti Strategici, 4 QG, 4 trap iniziali e sfondo WebP statico incluso. La geometria e tutti i campi di gameplay del JSON sorgente sono preservati; cambiano soltanto id canonico, flag official/editable, metadata di catalogo e riferimento allo sfondo statico. La mappa resta disponibile anche nel profilo Demo / Distribution perché è built-in ufficiale. Player / DEV Runtime Profile F9W2a e Match Data 2.0 F9W1a restano invariati. Nessuna modifica a regole, carte, costi, deck, ENE, Missioni, AI, QG, Pressione, Tutorial Action Contract o bilanciamento. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata F9W2b costruita sulla F9W2a1 validata. Introduce un Menu Theme System persistente, indipendente dal tema di fazione della partita, con sei preset: Rubra Classico, Nexus Basalto notturno, Exordium Imperium, Liberti Sine Vinculis, Agathoi Kleos e Fabeot Vesper. Il selettore è integrato nel pannello Impostazioni del Control Center, disponibile sia in DEV sia in Demo / Distribution, con anteprima live e salvataggio automatico nel settings vault esistente. Il tema agisce soltanto su menu principale e Control Center: non modifica mappa, HUD, carte, regole o gameplay. La struttura usa token CSS centralizzati per preparare il successivo UI Art Direction Gate senza introdurre ancora texture, ornamentazioni o moduli mobili. Snow Battlefield F9W2a1, Player / DEV Runtime Profile F9W2a e Match Data 2.0 F9W1a restano invariati. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

@@ -1,0 +1,52 @@
+Arena Rubra — F9W2b · Menu Theme System
+TEST REPORT
+============================================================
+
+BASELINE
+- F9W2a1 · Snow Battlefield Standard / Classic Official Map — VALIDATA
+- C2-STABLE-1-F9W2a1-APK-M4c
+
+CANDIDATA
+- C2-STABLE-1-F9W2b-APK-M4c
+- Build name: Menu Theme System
+- Channel: starter2-menu-theme-w2b
+- Logic baseline: C2-STABLE-1-F9T2c4-APK-M4c
+
+MODIFICHE RUNTIME
+- src/ui.js
+- src/build_info.js
+- asset Snow BF copiato invariato nel pacchetto solo per rendere autonomo il regression smoke F9W2a1
+
+TEST ESEGUITI
+1. node --check src/ui.js ................................ PASS
+2. node --check src/build_info.js ......................... PASS
+3. tests/f9w2b_menu_theme_smoke.js ....................... PASS
+   - 6 preset registrati
+   - default Rubra Classico
+   - injection nel pannello Impostazioni
+   - applicazione live dataset/token CSS
+   - persistenza settings vault
+   - fallback chiave invalida
+   - scope menu-control-center
+   - marker regressione F9W2a e F9W2a1
+4. tests/f9w2a_profile_static_smoke.js .................... PASS
+   - regressione Player / DEV Runtime Profile
+5. tests/f9w2a1_snow_bf_regression_f9w2b.js .............. PASS
+   - 349 celle, 4P, 13 PS, 4 trap, ×3
+   - gameplay hash invariato:
+     119055f3cc7cfcbd7b36a0fd5ce0f856b4369e8164f71ca4b162432a0da90a8f
+   - background hash invariato:
+     6cb3ea1fa2f67c7b509a6e57dca0d787fcf5deac3c7e8059796d605be779e8dd
+6. python -m py_compile tests/f9w2b_browser_menu_theme_smoke.py .. PASS
+
+BROWSER E2E
+- Preparato ma NON eseguito nell'ambiente assistente.
+- Richiede checkout completo con index.html, CSS, asset e Playwright/Chromium.
+- Verifica: selettore Impostazioni, 6 temi, live preview, reload/persistenza,
+  disponibilità in Distribution e assenza di scope GameScreen/board.
+
+DIFF SULLA BASELINE F9W2a1
+- nessun file core gameplay modificato
+- nessuna regola, carta, deck, mappa, AI, ENE, PS, Pressione o Tutorial Action Contract modificato
+- build_info aggiornato a F9W2b
+- ui.js aggiunge soltanto il Menu Theme System e la sua inizializzazione

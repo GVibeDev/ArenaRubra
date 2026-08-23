@@ -29,9 +29,9 @@ for (const token of [
 ]) assert(ui.includes(token), `missing F9W2a contract token: ${token}`);
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2a1-APK-M4c"',
-  'buildName: "Snow Battlefield · Standard / Classic Official Map"',
-  'buildChannel: "starter2-official-map-snowbf-w2a1"',
+  'version: "C2-STABLE-1-F9W2b-APK-M4c"',
+  'buildName: "Menu Theme System"',
+  'buildChannel: "starter2-menu-theme-w2b"',
   'productProfileDefault: "dev"',
   'productProfileSwitchable: true',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'

@@ -1554,6 +1554,296 @@ arenaProductProfileInstallFunctionGuardsF9W2a();
 
 
 
+// =====================================================
+// F9W2b — Menu Theme System
+// Sistema di temi persistenti per il menu/Control Center. È volutamente separato
+// dal tema di fazione della partita: non modifica mappe, HUD, carte o gameplay.
+// =====================================================
+
+const ARENA_MENU_THEME_SCHEMA_F9W2B = "F9W2b-1";
+const ARENA_MENU_THEME_SETTINGS_KEY_F9W2B = "menuTheme";
+const ARENA_MENU_THEME_DEFAULT_F9W2B = "rubra_classic";
+
+const ARENA_MENU_THEMES_F9W2B = Object.freeze({
+  rubra_classic:Object.freeze({
+    key:"rubra_classic", label:"Rubra · Classico", description:"Grafite, bronzo e rosso cupo: il tema neutro ufficiale di Arena Rubra.",
+    bg:"#0d1015", bg2:"#171b23", surface:"#191e27", surface2:"#232a35", line:"#4c3c36",
+    accent:"#c58a4d", accent2:"#7b342d", text:"#edf0f4", muted:"#abb2bd", glow:"rgba(197,138,77,.22)"
+  }),
+  nexus_basalt:Object.freeze({
+    key:"nexus_basalt", label:"Nexus · Basalto notturno", description:"Acciaio freddo, blu calcolato e superfici basaltiche.",
+    bg:"#090f16", bg2:"#101c28", surface:"#111c28", surface2:"#1b2a3a", line:"#34526e",
+    accent:"#4b93cf", accent2:"#204f78", text:"#edf6ff", muted:"#9fb3c6", glow:"rgba(75,147,207,.22)"
+  }),
+  exordium_imperium:Object.freeze({
+    key:"exordium_imperium", label:"Exordium · Imperium", description:"Cremisi, ferro e oro militare.",
+    bg:"#120b0b", bg2:"#241112", surface:"#211314", surface2:"#321a1a", line:"#6a3734",
+    accent:"#d0675d", accent2:"#7d2e2a", text:"#fff1ed", muted:"#c1aaa5", glow:"rgba(208,103,93,.24)"
+  }),
+  liberti_sine_vinculis:Object.freeze({
+    key:"liberti_sine_vinculis", label:"Liberti · Sine Vinculis", description:"Terra bruciata, ottone e ambra irregolare.",
+    bg:"#11100b", bg2:"#242012", surface:"#211e13", surface2:"#322d19", line:"#695a2d",
+    accent:"#d1a63f", accent2:"#7b5d19", text:"#fff7df", muted:"#c2b99c", glow:"rgba(209,166,63,.23)"
+  }),
+  agathoi_kleos:Object.freeze({
+    key:"agathoi_kleos", label:"Agathoi · Kleos", description:"Verde antico, bronzo spento e pietra protetta.",
+    bg:"#0b120e", bg2:"#13231a", surface:"#142219", surface2:"#203127", line:"#385b44",
+    accent:"#6fae76", accent2:"#315d3a", text:"#eff9f0", muted:"#a8bca9", glow:"rgba(111,174,118,.22)"
+  }),
+  fabeot_vesper:Object.freeze({
+    key:"fabeot_vesper", label:"Fabeot · Vesper", description:"Porpora, velluto scuro e accenti aristocratici.",
+    bg:"#100c14", bg2:"#21152a", surface:"#1f1726", surface2:"#2d2038", line:"#5d3d70",
+    accent:"#ad70cf", accent2:"#623f79", text:"#faf1ff", muted:"#baa9c3", glow:"rgba(173,112,207,.23)"
+  })
+});
+
+const arenaMenuThemeStateF9W2b = {
+  initialized:false,
+  key:null,
+  styleInstalled:false,
+  controlCenterPatched:false
+};
+
+function arenaMenuThemeNormalizeF9W2b(value) {
+  const key = String(value || "").trim();
+  return ARENA_MENU_THEMES_F9W2B[key] ? key : ARENA_MENU_THEME_DEFAULT_F9W2B;
+}
+
+function arenaMenuThemeReadSettingsF9W2b() {
+  try {
+    const settings = typeof arenaStorageReadSettings === "function" ? arenaStorageReadSettings() : {};
+    const cfg = settings && typeof settings === "object" && !Array.isArray(settings) ? settings[ARENA_MENU_THEME_SETTINGS_KEY_F9W2B] : null;
+    if (typeof cfg === "string") return arenaMenuThemeNormalizeF9W2b(cfg);
+    if (cfg && typeof cfg === "object" && cfg.key) return arenaMenuThemeNormalizeF9W2b(cfg.key);
+  } catch (_) {}
+  return ARENA_MENU_THEME_DEFAULT_F9W2B;
+}
+
+function arenaMenuThemePersistF9W2b(key) {
+  if (typeof arenaStorageReadSettings !== "function" || typeof arenaStorageWriteSettings !== "function") return false;
+  try {
+    const current = arenaStorageReadSettings();
+    const next = current && typeof current === "object" && !Array.isArray(current) ? { ...current } : {};
+    next[ARENA_MENU_THEME_SETTINGS_KEY_F9W2B] = {
+      schemaVersion:ARENA_MENU_THEME_SCHEMA_F9W2B,
+      key:arenaMenuThemeNormalizeF9W2b(key),
+      updatedAt:new Date().toISOString()
+    };
+    return arenaStorageWriteSettings(next);
+  } catch (_) { return false; }
+}
+
+function arenaMenuThemeEnsureStylesF9W2b() {
+  if (typeof document === "undefined" || !document.head) return false;
+  if (document.getElementById("arenaMenuThemeStylesF9W2b")) {
+    arenaMenuThemeStateF9W2b.styleInstalled = true;
+    return true;
+  }
+  const style = document.createElement("style");
+  style.id = "arenaMenuThemeStylesF9W2b";
+  style.textContent = `
+    html[data-arena-menu-theme] .mainMenuScreen{color:var(--arena-menu-text)}
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuBackdrop{
+      background:
+        radial-gradient(circle at 18% 10%,var(--arena-menu-glow),transparent 34%),
+        radial-gradient(circle at 82% 22%,color-mix(in srgb,var(--arena-menu-accent2) 24%,transparent),transparent 38%),
+        linear-gradient(145deg,var(--arena-menu-bg2),var(--arena-menu-bg) 62%)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuCard,
+    html[data-arena-menu-theme] .controlCenterPanelSheet{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--arena-menu-surface2) 76%,transparent),var(--arena-menu-surface))!important;
+      border-color:color-mix(in srgb,var(--arena-menu-line) 88%,white 8%)!important;
+      box-shadow:0 26px 72px rgba(0,0,0,.48),0 0 34px var(--arena-menu-glow)!important;
+      color:var(--arena-menu-text)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .controlCenterArea,
+    html[data-arena-menu-theme] .mainMenuScreen .controlCenterStatusCard,
+    html[data-arena-menu-theme] .controlCenterPanelSheet .controlCenterSettingsCard,
+    html[data-arena-menu-theme] .controlCenterPanelSheet .controlCenterTransferCard,
+    html[data-arena-menu-theme] .controlCenterPanelSheet .controlCenterMiniMetric,
+    html[data-arena-menu-theme] .controlCenterPanelSheet .controlCenterNotesBox{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--arena-menu-surface2) 72%,transparent),color-mix(in srgb,var(--arena-menu-surface) 92%,transparent))!important;
+      border-color:color-mix(in srgb,var(--arena-menu-line) 76%,transparent)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuStudioTile,
+    html[data-arena-menu-theme] .controlCenterPanelSheet button.ghost,
+    html[data-arena-menu-theme] .controlCenterPanelSheet select{
+      border-color:color-mix(in srgb,var(--arena-menu-line) 76%,transparent)!important;
+      color:var(--arena-menu-text)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuStudioTile:hover:not(:disabled),
+    html[data-arena-menu-theme] .controlCenterPanelSheet button.ghost:hover:not(:disabled){
+      background:color-mix(in srgb,var(--arena-menu-accent) 13%,var(--arena-menu-surface2))!important;
+      border-color:color-mix(in srgb,var(--arena-menu-accent) 58%,var(--arena-menu-line))!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuPrimaryAction,
+    html[data-arena-menu-theme] .controlCenterPanelSheet .primary{
+      background:linear-gradient(180deg,var(--arena-menu-accent),color-mix(in srgb,var(--arena-menu-accent2) 82%,black 18%))!important;
+      border-color:color-mix(in srgb,var(--arena-menu-accent) 72%,white 12%)!important;
+      color:#fff!important;
+      box-shadow:0 8px 24px color-mix(in srgb,var(--arena-menu-accent) 18%,transparent)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuSectionEyebrow,
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuKicker,
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuStage,
+    html[data-arena-menu-theme] .controlCenterPanelSheet .mainMenuSectionEyebrow{
+      color:var(--arena-menu-accent)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuTagline,
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuSectionHeading p,
+    html[data-arena-menu-theme] .mainMenuScreen small,
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuNotes,
+    html[data-arena-menu-theme] .controlCenterPanelSheet p,
+    html[data-arena-menu-theme] .controlCenterPanelSheet small,
+    html[data-arena-menu-theme] .controlCenterPanelSheet label{
+      color:var(--arena-menu-muted)!important;
+    }
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuBuildChip,
+    html[data-arena-menu-theme] .mainMenuScreen .mainMenuStorageChip,
+    html[data-arena-menu-theme] .mainMenuScreen #arenaProductProfileChipF9W2a{
+      border-color:color-mix(in srgb,var(--arena-menu-accent) 38%,var(--arena-menu-line))!important;
+      background:color-mix(in srgb,var(--arena-menu-accent) 9%,var(--arena-menu-surface))!important;
+    }
+    .arenaMenuThemeSettingF9W2b label{display:grid;gap:7px}
+    .arenaMenuThemeSettingF9W2b select{width:100%}
+    .arenaMenuThemePreviewF9W2b{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:.78rem;color:var(--arena-menu-muted)}
+    .arenaMenuThemePreviewSwatchF9W2b{width:36px;height:16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--arena-menu-line) 82%,white 10%);background:linear-gradient(90deg,var(--arena-menu-accent2),var(--arena-menu-accent));box-shadow:0 0 12px var(--arena-menu-glow)}
+  `;
+  document.head.appendChild(style);
+  arenaMenuThemeStateF9W2b.styleInstalled = true;
+  return true;
+}
+
+function arenaMenuThemeApplyF9W2b(value, options={}) {
+  const key = arenaMenuThemeNormalizeF9W2b(value);
+  const theme = ARENA_MENU_THEMES_F9W2B[key];
+  arenaMenuThemeEnsureStylesF9W2b();
+  if (typeof document !== "undefined" && document.documentElement) {
+    const root = document.documentElement;
+    root.dataset.arenaMenuTheme = key;
+    root.style.setProperty("--arena-menu-bg", theme.bg);
+    root.style.setProperty("--arena-menu-bg2", theme.bg2);
+    root.style.setProperty("--arena-menu-surface", theme.surface);
+    root.style.setProperty("--arena-menu-surface2", theme.surface2);
+    root.style.setProperty("--arena-menu-line", theme.line);
+    root.style.setProperty("--arena-menu-accent", theme.accent);
+    root.style.setProperty("--arena-menu-accent2", theme.accent2);
+    root.style.setProperty("--arena-menu-text", theme.text);
+    root.style.setProperty("--arena-menu-muted", theme.muted);
+    root.style.setProperty("--arena-menu-glow", theme.glow);
+  }
+  if (typeof document !== "undefined" && document.body) document.body.dataset.arenaMenuTheme = key;
+  arenaMenuThemeStateF9W2b.key = key;
+  if (options.persist !== false) arenaMenuThemePersistF9W2b(key);
+  arenaMenuThemeSyncSettingsF9W2b();
+  return theme;
+}
+
+function arenaMenuThemeCurrentF9W2b() {
+  return arenaMenuThemeStateF9W2b.key || arenaMenuThemeReadSettingsF9W2b();
+}
+
+function arenaMenuThemeOptionsHtmlF9W2b() {
+  const current = arenaMenuThemeCurrentF9W2b();
+  return Object.values(ARENA_MENU_THEMES_F9W2B).map(theme =>
+    `<option value="${theme.key}"${theme.key === current ? " selected" : ""}>${theme.label}</option>`
+  ).join("");
+}
+
+function arenaMenuThemeSettingsCardF9W2b() {
+  const theme = ARENA_MENU_THEMES_F9W2B[arenaMenuThemeCurrentF9W2b()] || ARENA_MENU_THEMES_F9W2B[ARENA_MENU_THEME_DEFAULT_F9W2B];
+  return `<section class="controlCenterSettingsCard arenaMenuThemeSettingF9W2b">
+    <h3>Tema menu</h3>
+    <label><span>Stile dell'interfaccia menu</span><select id="arenaMenuThemeSelectF9W2b">${arenaMenuThemeOptionsHtmlF9W2b()}</select></label>
+    <p id="arenaMenuThemeDescriptionF9W2b">${theme.description}</p>
+    <div class="arenaMenuThemePreviewF9W2b"><span class="arenaMenuThemePreviewSwatchF9W2b" aria-hidden="true"></span><span>Anteprima live · salvata automaticamente</span></div>
+  </section>`;
+}
+
+function arenaMenuThemeSyncSettingsF9W2b() {
+  if (typeof document === "undefined") return false;
+  const key = arenaMenuThemeCurrentF9W2b();
+  const theme = ARENA_MENU_THEMES_F9W2B[key] || ARENA_MENU_THEMES_F9W2B[ARENA_MENU_THEME_DEFAULT_F9W2B];
+  const select = document.getElementById("arenaMenuThemeSelectF9W2b");
+  if (select && select.value !== key) select.value = key;
+  const description = document.getElementById("arenaMenuThemeDescriptionF9W2b");
+  if (description) description.textContent = theme.description;
+  return true;
+}
+
+function arenaMenuThemeBindSettingsF9W2b() {
+  if (typeof document === "undefined") return false;
+  const select = document.getElementById("arenaMenuThemeSelectF9W2b");
+  if (!select || select.dataset.arenaMenuThemeBoundF9W2b === "1") return Boolean(select);
+  select.dataset.arenaMenuThemeBoundF9W2b = "1";
+  select.addEventListener("change", () => arenaMenuThemeApplyF9W2b(select.value, { persist:true }));
+  arenaMenuThemeSyncSettingsF9W2b();
+  return true;
+}
+
+function arenaMenuThemeInstallControlCenterF9W2b() {
+  if (arenaMenuThemeStateF9W2b.controlCenterPatched) return true;
+  arenaMenuThemeStateF9W2b.controlCenterPatched = true;
+  if (typeof controlCenterSettingsHtml === "function" && !controlCenterSettingsHtml.__arenaMenuThemeF9W2b) {
+    const originalSettingsHtml = controlCenterSettingsHtml;
+    const wrappedSettingsHtml = function() {
+      let html = originalSettingsHtml.apply(this, arguments);
+      if (!html.includes('id="arenaMenuThemeSelectF9W2b"')) {
+        const archiveMarker = '<section class="controlCenterSettingsCard">\n        <h3>Archivio</h3>';
+        if (html.includes(archiveMarker)) html = html.replace(archiveMarker, `${arenaMenuThemeSettingsCardF9W2b()}\n      ${archiveMarker}`);
+        else html = html.replace('</div>', `${arenaMenuThemeSettingsCardF9W2b()}</div>`);
+      }
+      return html;
+    };
+    wrappedSettingsHtml.__arenaMenuThemeF9W2b = true;
+    wrappedSettingsHtml.__arenaMenuThemeOriginal = originalSettingsHtml;
+    controlCenterSettingsHtml = wrappedSettingsHtml;
+  }
+  if (typeof controlCenterBindDynamicPanelControls === "function" && !controlCenterBindDynamicPanelControls.__arenaMenuThemeF9W2b) {
+    const originalBind = controlCenterBindDynamicPanelControls;
+    const wrappedBind = function() {
+      const result = originalBind.apply(this, arguments);
+      arenaMenuThemeBindSettingsF9W2b();
+      return result;
+    };
+    wrappedBind.__arenaMenuThemeF9W2b = true;
+    wrappedBind.__arenaMenuThemeOriginal = originalBind;
+    controlCenterBindDynamicPanelControls = wrappedBind;
+  }
+  return true;
+}
+
+function arenaMenuThemeSnapshotF9W2b() {
+  const key = arenaMenuThemeCurrentF9W2b();
+  const theme = ARENA_MENU_THEMES_F9W2B[key] || ARENA_MENU_THEMES_F9W2B[ARENA_MENU_THEME_DEFAULT_F9W2B];
+  return {
+    schemaVersion:ARENA_MENU_THEME_SCHEMA_F9W2B,
+    key,
+    label:theme.label,
+    available:Object.keys(ARENA_MENU_THEMES_F9W2B),
+    persistent:typeof arenaStorageReadSettings === "function" && typeof arenaStorageWriteSettings === "function",
+    scope:"menu-control-center"
+  };
+}
+
+function arenaMenuThemeInitializeF9W2b() {
+  arenaMenuThemeInstallControlCenterF9W2b();
+  const key = arenaMenuThemeReadSettingsF9W2b();
+  arenaMenuThemeApplyF9W2b(key, { persist:false });
+  arenaMenuThemeStateF9W2b.initialized = true;
+  return arenaMenuThemeSnapshotF9W2b();
+}
+
+try {
+  globalThis.arenaMenuThemeApplyF9W2b = arenaMenuThemeApplyF9W2b;
+  globalThis.arenaMenuThemeCurrentF9W2b = arenaMenuThemeCurrentF9W2b;
+  globalThis.arenaMenuThemeSnapshotF9W2b = arenaMenuThemeSnapshotF9W2b;
+} catch (_) {}
+
+arenaMenuThemeInstallControlCenterF9W2b();
+// F9W2b END
+
+
 async function bootArenaRubra() {
   if (typeof document !== "undefined" && document.body) document.body.classList.add("arena-storage-loading");
   try {
@@ -1570,6 +1860,7 @@ async function bootArenaRubra() {
   } catch (error) {
     console.warn("F9W1a: migrazione Match Data non bloccante fallita", error);
   }
+  if (typeof arenaMenuThemeInitializeF9W2b === "function") arenaMenuThemeInitializeF9W2b();
   refreshCommanderSelects();
   bindUiEvents();
   if (typeof initializeArenaAppShell === "function") initializeArenaAppShell();
