@@ -64,6 +64,7 @@
 // F9V3a Unified Result Modal metadata.
 // F9V3b Tutorial Runtime Hardening & Action Contract Closure metadata.
 // F9V3c Result Flow, Tutorial UX & Deck Recovery Visibility metadata.
+// F9V4a Strategic Tutorial Content & Faction Voice Pass metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -86,13 +87,13 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9V3c-APK-M4c",
-  buildName: "Result Flow & Tutorial UX Polish",
+  version: "C2-STABLE-1-F9V4a-APK-M4c",
+  buildName: "Strategic Tutorial Content & Faction Voice Pass",
   buildDate: "2026-08-23",
-  buildChannel: "starter2-result-flow-v3c",
+  buildChannel: "starter2-tutorial-content-v4a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola",
-  notes: "Candidata Starter 2.0 F9V3c costruita sulla F9V3b validata. Mantiene integralmente il Tutorial Runtime 2.0 robusto e il contratto semantico F9V3b-1. Introduce Terminal Result Lock: Log, Telemetria e Statistiche sospendono soltanto il Result Modal e, alla chiusura del pannello, il risultato terminale ricompare; il lock si risolve solo con Menu principale/Nuova partita o con transizioni didattiche esplicite. I risultati Tutorial/Challenge non mostrano Log, Telemetria o Statistiche e propongono Lezione successiva, Prova successiva o Riprova quando pertinente. L’Accademia mostra progressione grafica 5/5 e badge di completamento sulle singole lezioni/Prove. Rimuove la label tecnica delle espressioni narrative (neutral/explain/etc.) lasciando il ritratto pulito. Il recupero deck resta regolisticamente invariato ma, a deck vuoto, il controllo è sempre visibile e spiega il motivo del blocco; le tre Starter restano fuori dalla mano e non vengono conteggiate come carte ordinarie. Nessuna modifica a carte, deck rules, mappe, ENE, Missioni, AI, QG, Pressione, statistiche o schema telemetrico. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata Starter 2.0 F9V4a costruita sulla F9V3c validata. Avvia S2-C2 Tutorial Content Pass senza modificare i 116 step, i checkpoint, il contratto semantico F9V3b-1 o le regole di scenario: un copy overlay indicizzato per scenario/step arricchisce i dialoghi con strategia sui PS, Strutture come presidi/nodi di sbarco, schieramento avanzato nello stesso turno, efficienza ATT–DEF–HP, concentrazione del fuoco, timing tra Depot ENE/ricariche/tattiche, conservazione e ribaltamento del vantaggio territoriale. Introduce cinque voci distinte: Exordium militaresco e audace, Nexus neutro/robotico, Agathoi cauto e sospettoso, Liberti selvaggio/aggressivo, Fabeot aristocratico e subdolo; rivalità e disprezzo restano indiretti e integrati nelle istruzioni, mai esposti come spiegoni di lore. Mantiene integralmente Terminal Result Lock F9V3c, UX Accademia, deck recovery visibility, Challenge I–V e core congelato. Nessuna modifica a carte, costi, deck rules, ENE, mappe, Missioni, AI, QG, Pressione, statistiche o schema telemetrico. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

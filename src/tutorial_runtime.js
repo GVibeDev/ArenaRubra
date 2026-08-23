@@ -2345,6 +2345,164 @@ function tutorialRuntimeFocusTarget(spec, options={}) {
   return false;
 }
 
+
+
+// =====================================================
+// F9V4a — Strategic Tutorial Content & Faction Voice Pass
+// Copy-only overlay: non modifica step, checkpoint, action contract, setup o regole.
+// Le sostituzioni sono indicizzate da scenario/step semantici per mantenere intatto
+// il flusso F9V3b/F9V3c e arricchire soltanto la voce dei cinque narratori.
+// =====================================================
+
+const TUTORIAL_FACTION_VOICE_F9V4A = Object.freeze({
+  Exordium:Object.freeze({ tone:"militaresco_audace", rivals:Object.freeze(["Nexus","Fabeot"]) }),
+  Nexus:Object.freeze({ tone:"neutro_robotico", rivals:Object.freeze([]) }),
+  Agathoi:Object.freeze({ tone:"cauto_sospettoso", rivals:Object.freeze(["Liberti"]) }),
+  Liberti:Object.freeze({ tone:"selvaggio_aggressivo", rivals:Object.freeze(["Nexus","Fabeot"]) }),
+  Fabeot:Object.freeze({ tone:"aristocratico_subdolo", rivals:Object.freeze(["tutti"]) })
+});
+
+const TUTORIAL_DIALOGUE_PASS_F9V4A = Object.freeze({
+  "lesson-1-exordium":Object.freeze({
+    "lesson-welcome":Object.freeze({
+      text:"Benvenuto nelle schiere di Aurex. Il Nexus preferisce misurare il campo finché il momento è già passato; noi impariamo a leggerlo e a colpire quando conta. Carte, schieramento, DEF, abilità e tattiche sono parti dello stesso assalto."
+    }),
+    "explain-defense":Object.freeze({
+      text:"Un attacco normale consuma prima la DEF. L’ATT eccedente non passa agli HP: usare 4 ATT per togliere l’ultimo punto DEF spreca forza che potevi riservare al colpo successivo. Apri la protezione con il colpo giusto, poi colpisci gli HP."
+    }),
+    "mech-arrival":Object.freeze({
+      text:"Il Nexus risponde con un Mech Pesante: 4 HP, 3 DEF e 3 ATT. Non disperdere il fuoco: un nemico lasciato vivo continua ad agire. Concentra tattica e più unità sullo stesso bersaglio finché è eliminato."
+    }),
+    "tribune-breaks-mech-defense":Object.freeze({
+      text:"Usa Il Tribuno per consumare l’ultima DEF. È il colpo meno costoso che apre gli HP: conserva l’ATT del Legionario per il bersaglio ormai scoperto."
+    }),
+    "destroy-mech":Object.freeze({
+      text:"Adesso il Legionario chiude l’assalto. Con DEF zero, i 4 ATT vanno sui 4 HP: è qui che la potenza pesante rende, non un colpo prima."
+    }),
+    "lesson-complete":Object.freeze({
+      text:"Lezione completata. Un assalto serio parte quando Depot ENE, tattica disponibile e ricarica delle abilità sono allineati. Contro i calcoli Nexus o i contratti Fabeot, attaccare a metà significa offrire loro il turno che aspettavano."
+    })
+  }),
+  "lesson-2-nexus":Object.freeze({
+    "nexus-welcome":Object.freeze({
+      text:"Protocollo di addestramento attivo. Obiettivo: trasformare QG, Fanteria, Strutture e Avanguardia in una rete di presenza e schieramento. Valuta ogni posizione per costo, copertura e continuità operativa."
+    }),
+    "read-starter-structure":Object.freeze({
+      text:"La Barriera Armata è la Struttura Starter. Una Struttura può occupare un PS come ogni altra unità da campo; se costruita su un PS legalmente accessibile, ne mantiene il controllo e contemporaneamente crea un nodo di sbarco."
+    }),
+    "build-forward-structure":Object.freeze({
+      text:"Costruisci la Barriera sulla cella indicata. La Fanteria converte il proprio movimento in infrastruttura: la nuova posizione non serve solo a difendere, ma riduce la distanza dei futuri schieramenti."
+    }),
+    "deployment-network-online":Object.freeze({
+      text:"Il nodo avanzato è operativo immediatamente. Se possiedi ancora ENE, una carta unità e spazio legale, puoi usare la Struttura appena costruita per schierare nello stesso turno un reparto avanzato più vicino al fronte."
+    }),
+    "vanguard-captures-center":Object.freeze({
+      text:"Muovi il Mech sul Punto Strategico. Il controllo vale solo se la rete può sostenerlo: occupare un PS che non puoi rinforzare trasforma un vantaggio temporaneo in perdita di ENE e tempo."
+    }),
+    "nexus-lesson-complete":Object.freeze({
+      text:"Lezione completata. Regola operativa: costruisci dove la rete accorcia i rinforzi e prendi un PS quando il costo previsto per mantenerlo è inferiore al valore che produce."
+    })
+  }),
+  "lesson-3-agathoi":Object.freeze({
+    "agathoi-welcome":Object.freeze({
+      text:"La linea Agathoi non vince inseguendo ogni bersaglio. I Liberti chiamano slancio ciò che spesso lascia scoperto il terreno importante. Qui imparerai a scegliere cosa deve restare in piedi e a far pagare ogni tentativo di sottrarlo."
+    }),
+    "defensive-line-overview":Object.freeze({
+      text:"L’Oplita di Confine presidia il Punto centrale con 3 HP, 3 DEF e Spine 1 permanenti. Un PS difeso bene non è necessariamente quello con più unità: è quello la cui caduta spezzerebbe davvero la tua posizione."
+    }),
+    "wave-two-resolved":Object.freeze({
+      text:"Il Legionario ha spezzato l’ultima DEF dell’Oplita, ma Spine e Contrattacco lo hanno abbattuto. Conservare il vantaggio significa arrivare al turno successivo con il PS, gli HP e una risposta ancora disponibili."
+    }),
+    "choose-fortification":Object.freeze({
+      text:"La terza ondata mira alla Radura. Bastione Ligneo porta la DEF attuale della Struttura ai suoi HP. Non fortificare tutto: investi dove la perdita aprirebbe il PS o la rete che sostiene il resto della linea."
+    }),
+    "agathoi-lesson-complete":Object.freeze({
+      text:"Lezione completata. Non puoi difendere ogni PS con la stessa forza. Scegli quelli che puoi sostenere, proteggi quelli che tengono insieme la posizione e lascia all’avversario il costo di attaccare dove sei pronto."
+    })
+  }),
+  "lesson-4-liberti":Object.freeze({
+    "liberti-welcome":Object.freeze({
+      text:"Gli Agathoi hanno murato il centro con un Anthropos di Pietra. I Nexus costruiscono gabbie e i Fabeot contratti; nessuno dei due ama quando il fronte cambia direzione. Imparerai a trasformare numero e movimento in un varco, non a battere la testa sul punto più duro."
+    }),
+    "liberti-formation-overview":Object.freeze({
+      text:"L’Anthropos possiede 6 HP e 4 DEF. Tre fanterie Liberti lo circondano: Superiorità Numerica aggiunge +1 ATT quando un alleato condivide il bersaglio. La forza Liberti è far arrivare più attacchi sullo stesso nemico prima che possa recuperare."
+    }),
+    "coordinated-pressure-resolved":Object.freeze({
+      text:"Esca d’Attacco ha attivato le fanterie in sequenza: la prima ha eliminato l’ultima DEF, le successive hanno abbattuto gli HP. Questo è il valore dell’attacco concentrato: una sequenza completa il lavoro invece di lasciare più nemici mezzi danneggiati."
+    }),
+    "capture-center-ps":Object.freeze({
+      text:"Muovi il Predone sul Punto Strategico. Eliminare il presidio non basta: l’assalto produce vantaggio solo quando rioccupi il Punto e costringi l’altro a reagire alla tua posizione."
+    }),
+    "liberti-lesson-complete":Object.freeze({
+      text:"Lezione completata. Se sei in svantaggio, non inseguire il PS più difeso: colpisci quello sguarnito, costringi il nemico a spostarsi e riapri il fronte. I PS sono leve; usa quella che cede."
+    })
+  }),
+  "lesson-5-fabeot":Object.freeze({
+    "fabeot-welcome":Object.freeze({
+      text:"Il Nexus ha lasciato un Fante Robot isolato. Prevedibile. Gli altri chiamano proprietà ciò che non hanno ancora perso: prima rendi il bersaglio vulnerabile, poi trasferiscine il controllo alla Cittadella."
+    }),
+    "fabeot-contract-overview":Object.freeze({
+      text:"Sentenza Porpora costa 2 ENE. Il Marchio aumenta di 1 i danni offensivi e soddisfa una clausola di acquisizione. Un effetto è interessante solo quando apre il successivo: Marchio, danno e acquisizione valgono più della somma se sono ordinati correttamente."
+    }),
+    "fabeot-embargo-resolved":Object.freeze({
+      text:"Embargo ha bloccato l’unica carta Nexus per un turno. Ogni PS controllato aumenta il numero di carte che puoi bloccare. Il territorio non è sfondo: è capitale convertibile in pressione sulla Mano avversaria."
+    }),
+    "fabeot-usury-resolved":Object.freeze({
+      text:"Il Depot Nexus è sceso da 5 a 4 ENE e subirà -1 alle prossime due entrate. Chi attacca senza considerare Depot ENE, ricariche e tattiche disponibili tratta le proprie risorse con la stessa leggerezza degli altri. Noi preferiamo farlo fare all’avversario."
+    }),
+    "fabeot-lesson-complete":Object.freeze({
+      text:"Lezione completata. Il motore della partita ruota sui PS: ENE, Pressione e posizioni di schieramento obbligano tutti a scegliere. Se un PS è troppo protetto, minacciane un altro; quando la difesa si sposta, il valore cambia proprietario."
+    })
+  })
+});
+
+const TUTORIAL_DIALOGUE_TOPICS_F9V4A = Object.freeze({
+  building_ps:Object.freeze(["lesson-2-nexus","read-starter-structure"]),
+  same_turn_forward_deploy:Object.freeze(["lesson-2-nexus","deployment-network-online"]),
+  att_def_hp_efficiency:Object.freeze(["lesson-1-exordium","explain-defense"]),
+  concentrated_attacks:Object.freeze(["lesson-1-exordium","mech-arrival"]),
+  attack_timing_resources:Object.freeze(["lesson-1-exordium","lesson-complete"]),
+  preserve_ps_advantage:Object.freeze(["lesson-3-agathoi","agathoi-lesson-complete"]),
+  reverse_disadvantage_ps:Object.freeze(["lesson-4-liberti","liberti-lesson-complete"]),
+  occupy_after_attack:Object.freeze(["lesson-4-liberti","capture-center-ps"]),
+  ps_as_game_engine:Object.freeze(["lesson-5-fabeot","fabeot-lesson-complete"]),
+  attack_weaker_ps:Object.freeze(["lesson-5-fabeot","fabeot-lesson-complete"])
+});
+
+function tutorialRuntimeDialoguePatchF9V4a(scenarioId, stepId) {
+  const scenario = TUTORIAL_DIALOGUE_PASS_F9V4A[String(scenarioId || "")];
+  return scenario && scenario[String(stepId || "")] || null;
+}
+
+function tutorialRuntimeMessageForStepF9V4a(step) {
+  if (!step || !step.message) return step && step.message || null;
+  const scenarioId = String(tutorialRuntimeState.scenarioId || (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.id) || "");
+  const patch = tutorialRuntimeDialoguePatchF9V4a(scenarioId, step.id);
+  return patch ? { ...step.message, ...patch } : step.message;
+}
+
+function tutorialRuntimeDialogueAuditF9V4a() {
+  const errors = [];
+  const scenarios = Object.keys(TUTORIAL_DIALOGUE_PASS_F9V4A);
+  const expectedScenarios = ["lesson-1-exordium","lesson-2-nexus","lesson-3-agathoi","lesson-4-liberti","lesson-5-fabeot"];
+  for (const id of expectedScenarios) if (!TUTORIAL_DIALOGUE_PASS_F9V4A[id]) errors.push(`Voce tutorial assente: ${id}`);
+  for (const [topic, pair] of Object.entries(TUTORIAL_DIALOGUE_TOPICS_F9V4A)) {
+    const patch = tutorialRuntimeDialoguePatchF9V4a(pair[0], pair[1]);
+    if (!patch || !String(patch.text || "").trim()) errors.push(`Tema strategico non coperto: ${topic}`);
+  }
+  const texts = scenarios.flatMap(id => Object.values(TUTORIAL_DIALOGUE_PASS_F9V4A[id]).map(item => String(item && item.text || "")));
+  if (texts.some(text => /\b(odio|odiano|odia|disprezza|disprezzano)\b/i.test(text))) errors.push("La lore deve restare indiretta: trovato linguaggio esplicito di odio/disprezzo.");
+  if (Object.keys(TUTORIAL_FACTION_VOICE_F9V4A).length !== 5) errors.push("Profili voce fazione incompleti.");
+  return {
+    ok:errors.length === 0,
+    errors,
+    scenarios:scenarios.length,
+    overrides:texts.length,
+    topics:Object.keys(TUTORIAL_DIALOGUE_TOPICS_F9V4A).length,
+    voices:Object.keys(TUTORIAL_FACTION_VOICE_F9V4A).length
+  };
+}
+
 function tutorialRuntimeNarrativePositionForStep(step) {
   if (!step || !step.message) return "bottom";
   if (step.message.position === "top" || step.message.position === "bottom") return step.message.position;
@@ -2358,7 +2516,7 @@ function tutorialRuntimeNarrativePositionForStep(step) {
 function tutorialRuntimeNarrativeForStep(step) {
   if (!step || !step.message || typeof narrativeOpen !== "function") return false;
   const informative = step.mode === TUTORIAL_STEP_MODES.INFORMATIVE;
-  return narrativeOpen([step.message], {
+  return narrativeOpen([tutorialRuntimeMessageForStepF9V4a(step)], {
     nonModal:true,
     position:tutorialRuntimeNarrativePositionForStep(step),
     showPrev:false,

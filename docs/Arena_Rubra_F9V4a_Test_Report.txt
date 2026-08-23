@@ -1,0 +1,53 @@
+ARENA RUBRA — F9V4a TEST REPORT
+===============================
+
+Build candidata:
+  C2-STABLE-1-F9V4a-APK-M4c
+
+Base:
+  C2-STABLE-1-F9V3c-APK-M4c VALIDATA
+
+Riferimento remoto:
+  main commit 69ed46e854215c9624cff0e585a33cd11466d557
+  src/tutorial_runtime.js blob 978e42245f4875dc21316889183593a94adab288
+  identico alla base locale F9V3c usata per la candidata.
+
+CONTROLLI ESEGUITI
+------------------
+[OK] node --check src/tutorial_runtime.js
+[OK] node --check src/build_info.js
+[OK] smoke F9V4a Strategic Tutorial Content & Faction Voice Pass
+     - 5 scenari coperti
+     - 27 override di dialogo
+     - 10 temi strategici indicizzati
+     - 5 profili voce fazione
+     - lore indiretta: nessun uso esplicito di odio/disprezzo
+     - metadati speaker/portrait/expression/side preservati
+     - regressione Terminal Result Lock F9V3c verde
+     - regressione deck recovery F9V3c verde
+[OK] py_compile browser smoke copiati nella candidata
+[OK] unzip integrity finale sul pacchetto consegnato
+
+VINCOLI NON TOCCATI
+-------------------
+- step count / step ID / ordine
+- checkpoint
+- action contract e gate pre-mutation
+- Challenge I–V
+- core gameplay
+- carte / deck / ENE / Missioni
+- AI / mappe / QG / Pressione
+- stats / telemetry
+
+TEST MANUALE CONSIGLIATO
+------------------------
+1. Eseguire almeno una volta ciascuna delle cinque lezioni, concentrandosi sui nuovi testi.
+2. Verificare che nessun dialogo copra il bersaglio o renda ambigua l'azione richiesta.
+3. Controllare coerenza delle voci:
+   Exordium militaresco, Nexus analitico, Agathoi cauto, Liberti aggressivo, Fabeot aristocratico/subdolo.
+4. Verificare in Lezione 2 i due concetti nuovi: Struttura su PS e schieramento dalla Struttura appena costruita nello stesso turno.
+5. Verificare che il passaggio tra step, checkpoint e Result Modal sia identico a F9V3c.
+
+STATO
+-----
+CANDIDATA — richiede validazione manuale.
