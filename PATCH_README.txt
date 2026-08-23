@@ -1,41 +1,31 @@
-ARENA RUBRA — F9W2b MENU THEME SYSTEM
-=====================================
+ARENA RUBRA — F9W2c GLOBAL THEME SCOPE & SKIN ARCHITECTURE
+=========================================================
 
 BASELINE RICHIESTA
-F9W2a1 VALIDATA — C2-STABLE-1-F9W2a1-APK-M4c
+F9W2b VALIDATA — C2-STABLE-1-F9W2b-APK-M4c
 
 CANDIDATA
-C2-STABLE-1-F9W2b-APK-M4c
+C2-STABLE-1-F9W2c-APK-M4c
 
 APPLICAZIONE
-Copia il contenuto di questo ZIP sopra la cartella della baseline F9W2a1 validata,
+Copia il contenuto di questo ZIP sopra la cartella della baseline F9W2b validata,
 mantenendo la struttura delle directory e consentendo la sovrascrittura dei file.
 
-COSA AGGIUNGE
-- selettore Tema menu in Control Center → Impostazioni;
-- 6 preset: Rubra, Nexus, Exordium, Liberti, Agathoi, Fabeot;
-- preview live;
-- persistenza nel settings vault esistente;
-- disponibilità sia in DEV sia in Demo / Distribution;
-- token CSS centralizzati come fondazione del futuro UI Art Direction Gate.
-
-COSA NON CAMBIA
-- gameplay;
-- mappe e Snow BF F9W2a1;
-- Match Data 2.0;
-- Player / DEV profile;
-- tema di fazione durante la partita;
-- HUD, board, carte, AI, ENE, PS, Pressione, Tutorial.
+COSA CAMBIA
+- il tema globale non è più circoscritto alla Home;
+- Setup, Tutorial, Deck Builder, Card Pool, Card Editor e Map Editor usano il tema scelto;
+- in partita la UI usa la fazione del G1;
+- se ci sono 2+ umani, segue l'umano attivo e mantiene l'ultima skin umana nei turni Bot;
+- la mappa non cambia comportamento: presentation_theme resta autorità del campo;
+- introdotti token di contrasto testo/tabelle;
+- introdotti slot modulari per texture, overlay, corner, bordi, divisori e crest;
+- nessun asset grafico definitivo è ancora incluso: gli asset forniti sono riservati a F9W2d.
 
 TEST MANUALE CONSIGLIATO
-1. Avvia in DEV e apri Impostazioni.
-2. Cambia tutti e 6 i temi: il menu deve aggiornarsi immediatamente.
-3. Lascia un tema diverso da Rubra, ricarica/riavvia: deve restare selezionato.
-4. Passa a Demo / Distribution: il selettore Tema menu deve restare disponibile.
-5. Avvia un match: GameScreen/HUD/board non devono ricevere il tema del menu.
-6. Torna al menu: il tema scelto deve essere ancora applicato.
-
-NOTA
-F9W2b è una fondazione. Texture, corner ornaments, moduli mobili/ridimensionabili e
-polish delle preview restano intenzionalmente fuori da questa patch e verranno valutati
-nel Visual/UI Art Direction Gate della roadmap.
+1. Scegli un tema diverso da Rubra e verifica Home -> Nuova partita -> Deck Builder -> Pool -> editor.
+2. Riavvia e controlla la persistenza.
+3. Avvia Human vs Bot con G1 di una fazione diversa dal tema globale: la UI del match deve seguire G1.
+4. Avvia Human vs Human: la UI deve seguire il giocatore umano attivo al cambio turno.
+5. In un match con 2+ umani e almeno un Bot, il turno Bot non deve cambiare skin.
+6. Torna al menu: deve riapparire il tema globale scelto.
+7. Verifica che sfondo/skin della mappa non vengano alterati dal nuovo layer UI.

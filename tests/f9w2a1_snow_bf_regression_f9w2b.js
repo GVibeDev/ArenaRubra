@@ -112,8 +112,8 @@ for (const token of [
   "root.getBuiltinMapDefinitions = wrappedBuiltin",
   "root.getMapDefinitionById = wrappedGetById",
   "arenaInstallOfficialSnowMapF9W2a1();",
-  'version: "C2-STABLE-1-F9W2b-APK-M4c"',
-  'buildChannel: "starter2-menu-theme-w2b"'
+  'version: "C2-STABLE-1-F9W2c-APK-M4c"',
+  'buildChannel: "starter2-global-ui-theme-w2c"'
 ]) assert(ui.includes(token) || build.includes(token), `missing F9W2a1 contract token: ${token}`);
 
 console.log(JSON.stringify({

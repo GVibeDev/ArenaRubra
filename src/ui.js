@@ -1844,6 +1844,511 @@ arenaMenuThemeInstallControlCenterF9W2b();
 // F9W2b END
 
 
+// =====================================================
+// F9W2c — Global Theme Scope & Skin Architecture
+// Estende F9W2b a tutta la shell applicativa e introduce il contesto UI di
+// partita. Le mappe/skin di campo restano governate da presentation_theme.js:
+// F9W2c modifica esclusivamente materiali, contrasti e decorazioni della UI.
+// =====================================================
+
+const ARENA_UI_THEME_SCHEMA_F9W2C = "F9W2c-1";
+const ARENA_UI_FACTION_THEME_F9W2C = Object.freeze({
+  Nexus:"nexus_basalt",
+  Exordium:"exordium_imperium",
+  Liberti:"liberti_sine_vinculis",
+  Agathoi:"agathoi_kleos",
+  Fabeot:"fabeot_vesper"
+});
+
+const arenaUiThemeStateF9W2c = {
+  initialized:false,
+  styleInstalled:false,
+  hooksInstalled:false,
+  lastSignature:"",
+  lastHumanSide:null,
+  resolved:null
+};
+
+function arenaUiThemeAssetSlotsF9W2c(themeKey) {
+  // F9W2d potrà sostituire questi slot con texture e moduli ornamentali
+  // derivati dagli asset di fazione senza cambiare la geometria della UI.
+  return {
+    materialImage:"none",
+    materialOverlay:"none",
+    materialSize:"cover",
+    materialPosition:"center",
+    materialBlendMode:"soft-light",
+    textPrimary:null,
+    textSecondary:null,
+    textHeading:null,
+    textOnAccent:null,
+    tableText:null,
+    tableMuted:null,
+    cornerTl:"none",
+    cornerTr:"none",
+    cornerBl:"none",
+    cornerBr:"none",
+    edgeTop:"none",
+    edgeRight:"none",
+    edgeBottom:"none",
+    edgeLeft:"none",
+    dividerImage:"none",
+    crestImage:"none",
+    ornamentOpacity:"0"
+  };
+}
+
+function arenaUiThemeKeyForFactionF9W2c(faction) {
+  return ARENA_UI_FACTION_THEME_F9W2C[String(faction || "")] || null;
+}
+
+function arenaUiThemePlayerModeF9W2c(side) {
+  if (typeof state === "undefined" || !state) return null;
+  const id = Number(side);
+  const player = Array.isArray(state.players) ? state.players.find(item => Number(item && item.id) === id) : null;
+  return String((player && player.mode) || (state.modes && state.modes[id]) || "").toLowerCase() || null;
+}
+
+function arenaUiThemePlayerFactionF9W2c(side) {
+  if (typeof state === "undefined" || !state) return null;
+  const id = Number(side);
+  const player = Array.isArray(state.players) ? state.players.find(item => Number(item && item.id) === id) : null;
+  return (player && player.faction) || (state.factions && state.factions[id]) || null;
+}
+
+function arenaUiThemePlayerIdsF9W2c() {
+  if (typeof state === "undefined" || !state) return [];
+  if (Array.isArray(state.playerIds) && state.playerIds.length) return state.playerIds.map(Number).filter(Number.isInteger);
+  if (Array.isArray(state.players) && state.players.length) return state.players.map(item => Number(item && item.id)).filter(Number.isInteger);
+  const factions = state.factions && typeof state.factions === "object" ? Object.keys(state.factions).map(Number).filter(Number.isInteger) : [];
+  return factions.length ? factions : [1,2];
+}
+
+function arenaUiThemeIsGameContextF9W2c() {
+  try {
+    if (typeof currentAppScreen === "function" && currentAppScreen() === "game") return true;
+  } catch (_) {}
+  try {
+    return Boolean(typeof document !== "undefined" && document.body && document.body.classList && document.body.classList.contains("app-screen-game"));
+  } catch (_) { return false; }
+}
+
+function arenaUiThemeResolveF9W2c() {
+  const globalKey = typeof arenaMenuThemeCurrentF9W2b === "function"
+    ? arenaMenuThemeCurrentF9W2b()
+    : ARENA_MENU_THEME_DEFAULT_F9W2B;
+  const fallback = {
+    key:arenaMenuThemeNormalizeF9W2b(globalKey),
+    scope:"global",
+    source:"global-selection",
+    side:null,
+    faction:null,
+    humanPlayers:0
+  };
+  if (!arenaUiThemeIsGameContextF9W2c() || typeof state === "undefined" || !state) return fallback;
+
+  const ids = arenaUiThemePlayerIdsF9W2c();
+  const humanIds = ids.filter(side => arenaUiThemePlayerModeF9W2c(side) === "human");
+  let side = 1;
+  let source = "player1";
+
+  if (humanIds.length > 1) {
+    const current = Number(state.currentPlayer);
+    if (humanIds.includes(current)) {
+      side = current;
+      arenaUiThemeStateF9W2c.lastHumanSide = current;
+      source = "active-human";
+    } else if (humanIds.includes(Number(arenaUiThemeStateF9W2c.lastHumanSide))) {
+      side = Number(arenaUiThemeStateF9W2c.lastHumanSide);
+      source = "last-human-during-bot-turn";
+    }
+  } else {
+    // Con zero o un solo umano il tavolo mantiene l'identità del Giocatore 1.
+    arenaUiThemeStateF9W2c.lastHumanSide = humanIds.length === 1 ? humanIds[0] : null;
+  }
+
+  const faction = arenaUiThemePlayerFactionF9W2c(side) || arenaUiThemePlayerFactionF9W2c(1);
+  const key = arenaUiThemeKeyForFactionF9W2c(faction) || fallback.key;
+  return {
+    key,
+    scope:"game",
+    source,
+    side,
+    faction:faction || null,
+    humanPlayers:humanIds.length
+  };
+}
+
+function arenaUiThemeHexLuminanceF9W2c(value) {
+  const match = String(value || "").trim().match(/^#([0-9a-f]{6})$/i);
+  if (!match) return 0;
+  const n = parseInt(match[1], 16);
+  const channels = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(channel => {
+    const c = channel / 255;
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+function arenaUiThemeContrastTextF9W2c(background) {
+  return arenaUiThemeHexLuminanceF9W2c(background) > 0.42 ? "#101318" : "#ffffff";
+}
+
+function arenaUiThemeEnsureStylesF9W2c() {
+  if (typeof document === "undefined" || !document.head) return false;
+  if (document.getElementById("arenaUiThemeStylesF9W2c")) {
+    arenaUiThemeStateF9W2c.styleInstalled = true;
+    return true;
+  }
+  const style = document.createElement("style");
+  style.id = "arenaUiThemeStylesF9W2c";
+  style.textContent = `
+    html[data-arena-ui-theme] body{color:var(--arena-ui-text-primary)}
+    html[data-arena-ui-theme] body:not(.app-screen-game){
+      background:
+        radial-gradient(circle at 14% 8%,var(--arena-ui-glow),transparent 34%),
+        radial-gradient(circle at 88% 18%,color-mix(in srgb,var(--arena-ui-accent2) 18%,transparent),transparent 38%),
+        linear-gradient(145deg,var(--arena-ui-bg2),var(--arena-ui-bg) 64%)!important;
+    }
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mainMenuBackdrop{
+      background:
+        radial-gradient(circle at 18% 10%,var(--arena-ui-glow),transparent 34%),
+        radial-gradient(circle at 82% 22%,color-mix(in srgb,var(--arena-ui-accent2) 22%,transparent),transparent 38%),
+        linear-gradient(145deg,var(--arena-ui-bg2),var(--arena-ui-bg) 62%)!important;
+    }
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mainMenuCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .tutorialScreenCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .setupScreenCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mapEditorCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .deckBuilderCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .cardEditorCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .cardPoolCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .placeholderCard,
+    html[data-arena-ui-theme] .controlCenterPanelSheet{
+      color:var(--arena-ui-text-primary)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 86%,white 8%)!important;
+      background-color:var(--arena-ui-surface)!important;
+      background-image:var(--arena-ui-material-overlay),var(--arena-ui-material-image),linear-gradient(180deg,color-mix(in srgb,var(--arena-ui-surface2) 78%,transparent),var(--arena-ui-surface))!important;
+      background-size:auto,var(--arena-ui-material-size),auto!important;
+      background-position:center,var(--arena-ui-material-position),center!important;
+      background-blend-mode:normal,var(--arena-ui-material-blend),normal!important;
+      box-shadow:0 24px 68px rgba(0,0,0,.48),0 0 30px var(--arena-ui-glow)!important;
+    }
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) .controlCenterArea,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .controlCenterStatusCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .setupSideBox,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .setupMatchBox,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .setupPlayerSubsection,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .deckBuilderControls,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .deckBuilderBox,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .deckBuilderSummary,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .cardEditorAbilityBox,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .cardEditorArtBox,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .cardEditorImportBox,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mapEditorSidebar,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mapEditorCanvasPanel,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mapEditorLiveBar,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mapEditorSideSection,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .mapEditorValidationPanel,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .tutorialLessonCard,
+    html[data-arena-ui-theme] body:not(.app-screen-game) .tutorialRuntimeStatus,
+    html[data-arena-ui-theme] .controlCenterSettingsCard,
+    html[data-arena-ui-theme] .controlCenterTransferCard,
+    html[data-arena-ui-theme] .controlCenterMiniMetric,
+    html[data-arena-ui-theme] .controlCenterNotesBox{
+      color:var(--arena-ui-text-primary)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 74%,transparent)!important;
+      background-color:var(--arena-ui-surface)!important;
+      background-image:var(--arena-ui-material-overlay),var(--arena-ui-material-image),linear-gradient(180deg,color-mix(in srgb,var(--arena-ui-surface2) 70%,transparent),color-mix(in srgb,var(--arena-ui-surface) 94%,transparent))!important;
+      background-size:auto,var(--arena-ui-material-size),auto!important;
+      background-position:center,var(--arena-ui-material-position),center!important;
+      background-blend-mode:normal,var(--arena-ui-material-blend),normal!important;
+    }
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] h1,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] h2,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] h3,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] h4,
+    html[data-arena-ui-theme] .controlCenterPanelSheet h1,
+    html[data-arena-ui-theme] .controlCenterPanelSheet h2,
+    html[data-arena-ui-theme] .controlCenterPanelSheet h3{color:var(--arena-ui-text-heading)!important}
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] p,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] small,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] .help,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] label,
+    html[data-arena-ui-theme] .controlCenterPanelSheet p,
+    html[data-arena-ui-theme] .controlCenterPanelSheet small,
+    html[data-arena-ui-theme] .controlCenterPanelSheet label{color:var(--arena-ui-text-secondary)!important}
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] .mainMenuKicker,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] .mainMenuSectionEyebrow{color:var(--arena-ui-accent)!important}
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] input,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] select,
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] textarea,
+    html[data-arena-ui-theme] .controlCenterPanelSheet input,
+    html[data-arena-ui-theme] .controlCenterPanelSheet select,
+    html[data-arena-ui-theme] .controlCenterPanelSheet textarea{
+      color:var(--arena-ui-text-primary)!important;
+      background:color-mix(in srgb,var(--arena-ui-surface2) 92%,black 8%)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 82%,transparent)!important;
+    }
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] button.ghost,
+    html[data-arena-ui-theme] .controlCenterPanelSheet button.ghost{
+      color:var(--arena-ui-text-primary)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 80%,transparent)!important;
+      background:color-mix(in srgb,var(--arena-ui-surface2) 44%,transparent)!important;
+    }
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] button.ghost:hover:not(:disabled),
+    html[data-arena-ui-theme] .controlCenterPanelSheet button.ghost:hover:not(:disabled){
+      background:color-mix(in srgb,var(--arena-ui-accent) 13%,var(--arena-ui-surface2))!important;
+      border-color:color-mix(in srgb,var(--arena-ui-accent) 58%,var(--arena-ui-line))!important;
+    }
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] button.primary,
+    html[data-arena-ui-theme] .controlCenterPanelSheet button.primary{
+      color:var(--arena-ui-text-on-accent)!important;
+      background:linear-gradient(180deg,var(--arena-ui-accent),color-mix(in srgb,var(--arena-ui-accent2) 84%,black 16%))!important;
+      border-color:color-mix(in srgb,var(--arena-ui-accent) 70%,white 12%)!important;
+    }
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] table,
+    html[data-arena-ui-theme] .controlCenterPanelSheet table{color:var(--arena-ui-table-text)!important}
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] thead th,
+    html[data-arena-ui-theme] .controlCenterPanelSheet thead th{
+      color:var(--arena-ui-text-heading)!important;
+      background:color-mix(in srgb,var(--arena-ui-accent2) 28%,var(--arena-ui-surface2))!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 82%,transparent)!important;
+    }
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] tbody td,
+    html[data-arena-ui-theme] .controlCenterPanelSheet tbody td{
+      color:var(--arena-ui-table-text)!important;
+      background:color-mix(in srgb,var(--arena-ui-surface) 91%,transparent)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 58%,transparent)!important;
+    }
+
+    /* In partita cambiano soltanto shell/pannelli. Board, esagoni e asset mappa restano esclusi. */
+    html[data-arena-ui-theme] body.app-screen-game .topTitleBar,
+    html[data-arena-ui-theme] body.app-screen-game .gameHudStrip,
+    html[data-arena-ui-theme] body.app-screen-game .gameActionBar,
+    html[data-arena-ui-theme] body.app-screen-game .gameDebugMenu,
+    html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloat,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap),
+    html[data-arena-ui-theme] body.app-screen-game .managedGamePanel.panelOverlayActive{
+      color:var(--arena-ui-text-primary)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 76%,transparent)!important;
+      background-color:var(--arena-ui-surface)!important;
+      background-image:var(--arena-ui-material-overlay),var(--arena-ui-material-image),linear-gradient(180deg,color-mix(in srgb,var(--arena-ui-surface2) 74%,transparent),color-mix(in srgb,var(--arena-ui-surface) 96%,black 4%))!important;
+      background-size:auto,var(--arena-ui-material-size),auto!important;
+      background-position:center,var(--arena-ui-material-position),center!important;
+      background-blend-mode:normal,var(--arena-ui-material-blend),normal!important;
+    }
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) h2,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) h3,
+    html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloatHeader strong{color:var(--arena-ui-text-heading)!important}
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) .help,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) small,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) label{color:var(--arena-ui-text-secondary)!important}
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) input,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) select,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) textarea{
+      color:var(--arena-ui-text-primary)!important;
+      background:color-mix(in srgb,var(--arena-ui-surface2) 90%,black 10%)!important;
+      border-color:color-mix(in srgb,var(--arena-ui-line) 82%,transparent)!important;
+    }
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) table{color:var(--arena-ui-table-text)!important}
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) thead th{
+      color:var(--arena-ui-text-heading)!important;
+      background:color-mix(in srgb,var(--arena-ui-accent2) 30%,var(--arena-ui-surface2))!important;
+    }
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) tbody td{
+      color:var(--arena-ui-table-text)!important;
+      background:color-mix(in srgb,var(--arena-ui-surface) 92%,transparent)!important;
+    }
+
+    /* Slot preparati per F9W2d: nessun asset ornamentale è applicato in F9W2c. */
+    html[data-arena-ui-theme]{
+      --arena-ui-material-image:none;
+      --arena-ui-material-overlay:none;
+      --arena-ui-material-blend:soft-light;
+      --arena-ui-corner-tl:none;
+      --arena-ui-corner-tr:none;
+      --arena-ui-corner-bl:none;
+      --arena-ui-corner-br:none;
+      --arena-ui-edge-top:none;
+      --arena-ui-edge-right:none;
+      --arena-ui-edge-bottom:none;
+      --arena-ui-edge-left:none;
+      --arena-ui-divider-image:none;
+      --arena-ui-crest-image:none;
+      --arena-ui-ornament-opacity:0;
+    }
+  `;
+  document.head.appendChild(style);
+  arenaUiThemeStateF9W2c.styleInstalled = true;
+  return true;
+}
+
+function arenaUiThemeAnnotateDomF9W2c() {
+  if (typeof document === "undefined" || typeof document.querySelectorAll !== "function") return;
+  const groups = [
+    ["shell", ".mainMenuCard,.tutorialScreenCard,.setupScreenCard,.mapEditorCard,.deckBuilderCard,.cardEditorCard,.cardPoolCard,.placeholderCard,.controlCenterPanelSheet"],
+    ["panel", ".controlCenterArea,.controlCenterStatusCard,.setupSideBox,.setupMatchBox,.deckBuilderBox,.deckBuilderControls,.cardEditorAbilityBox,.mapEditorSidebar,.mapEditorCanvasPanel,.mapEditorSideSection,.panel:not(#boardWrap)"],
+    ["table", "table"],
+    ["header", ".mainMenuHero,.deckBuilderHeader,.mapEditorHeader,.setupSideHeader,.selectedUnitFloatHeader"]
+  ];
+  groups.forEach(([slot, selector]) => {
+    try {
+      document.querySelectorAll(selector).forEach(element => { if (element && element.dataset) element.dataset.arenaSkinSlot = slot; });
+    } catch (_) {}
+  });
+}
+
+function arenaUiThemeApplyResolvedF9W2c(resolved, options={}) {
+  const key = arenaMenuThemeNormalizeF9W2b(resolved && resolved.key);
+  const theme = ARENA_MENU_THEMES_F9W2B[key] || ARENA_MENU_THEMES_F9W2B[ARENA_MENU_THEME_DEFAULT_F9W2B];
+  const slots = arenaUiThemeAssetSlotsF9W2c(key) || {};
+  arenaUiThemeEnsureStylesF9W2c();
+  const root = typeof document !== "undefined" ? document.documentElement : null;
+  const signature = [key,resolved && resolved.scope,resolved && resolved.source,resolved && resolved.side,resolved && resolved.faction].join("|");
+  if (root && root.dataset) {
+    root.dataset.arenaUiTheme = key;
+    root.dataset.arenaUiScope = resolved && resolved.scope || "global";
+    root.dataset.arenaUiThemeSource = resolved && resolved.source || "global-selection";
+    if (resolved && resolved.side != null) root.dataset.arenaUiPlayer = String(resolved.side); else delete root.dataset.arenaUiPlayer;
+    if (resolved && resolved.faction) root.dataset.arenaUiFaction = String(resolved.faction); else delete root.dataset.arenaUiFaction;
+  }
+  if (root && root.style && typeof root.style.setProperty === "function") {
+    const props = {
+      "--arena-ui-bg":theme.bg,
+      "--arena-ui-bg2":theme.bg2,
+      "--arena-ui-surface":theme.surface,
+      "--arena-ui-surface2":theme.surface2,
+      "--arena-ui-line":theme.line,
+      "--arena-ui-accent":theme.accent,
+      "--arena-ui-accent2":theme.accent2,
+      "--arena-ui-text-primary":slots.textPrimary || theme.text,
+      "--arena-ui-text-secondary":slots.textSecondary || theme.muted,
+      "--arena-ui-text-heading":slots.textHeading || slots.textPrimary || theme.text,
+      "--arena-ui-text-on-accent":slots.textOnAccent || arenaUiThemeContrastTextF9W2c(theme.accent),
+      "--arena-ui-table-text":slots.tableText || slots.textPrimary || theme.text,
+      "--arena-ui-table-muted":slots.tableMuted || slots.textSecondary || theme.muted,
+      "--arena-ui-good":"#8bd17c",
+      "--arena-ui-warning":"#e3bd67",
+      "--arena-ui-danger":"#ef7777",
+      "--arena-ui-glow":theme.glow,
+      "--arena-ui-material-image":slots.materialImage || "none",
+      "--arena-ui-material-overlay":slots.materialOverlay || "none",
+      "--arena-ui-material-size":slots.materialSize || "cover",
+      "--arena-ui-material-position":slots.materialPosition || "center",
+      "--arena-ui-material-blend":slots.materialBlendMode || "soft-light",
+      "--arena-ui-corner-tl":slots.cornerTl || "none",
+      "--arena-ui-corner-tr":slots.cornerTr || "none",
+      "--arena-ui-corner-bl":slots.cornerBl || "none",
+      "--arena-ui-corner-br":slots.cornerBr || "none",
+      "--arena-ui-edge-top":slots.edgeTop || "none",
+      "--arena-ui-edge-right":slots.edgeRight || "none",
+      "--arena-ui-edge-bottom":slots.edgeBottom || "none",
+      "--arena-ui-edge-left":slots.edgeLeft || "none",
+      "--arena-ui-divider-image":slots.dividerImage || "none",
+      "--arena-ui-crest-image":slots.crestImage || "none",
+      "--arena-ui-ornament-opacity":String(slots.ornamentOpacity == null ? 0 : slots.ornamentOpacity)
+    };
+    Object.entries(props).forEach(([name,value]) => root.style.setProperty(name, value));
+  }
+  if (typeof document !== "undefined" && document.body && document.body.dataset) {
+    document.body.dataset.arenaUiTheme = key;
+    document.body.dataset.arenaUiScope = resolved && resolved.scope || "global";
+  }
+  arenaUiThemeStateF9W2c.lastSignature = signature;
+  arenaUiThemeStateF9W2c.resolved = { ...resolved, key, label:theme.label };
+  if (options.annotate !== false) arenaUiThemeAnnotateDomF9W2c();
+  return arenaUiThemeStateF9W2c.resolved;
+}
+
+function arenaUiThemeSyncF9W2c(options={}) {
+  const resolved = arenaUiThemeResolveF9W2c();
+  const signature = [resolved.key,resolved.scope,resolved.source,resolved.side,resolved.faction].join("|");
+  if (options.force !== true && signature === arenaUiThemeStateF9W2c.lastSignature) return arenaUiThemeStateF9W2c.resolved;
+  return arenaUiThemeApplyResolvedF9W2c(resolved, options);
+}
+
+function arenaUiThemeWrapGlobalFunctionF9W2c(name) {
+  const root = typeof globalThis !== "undefined" ? globalThis : (typeof window !== "undefined" ? window : null);
+  if (!root || typeof root[name] !== "function" || root[name].__arenaUiThemeF9W2c) return false;
+  const original = root[name];
+  const wrapped = function() {
+    const result = original.apply(this, arguments);
+    const sync = () => { try { arenaUiThemeSyncF9W2c({ reason:name }); } catch (_) {} };
+    if (result && typeof result.then === "function") {
+      try { result.finally(sync); } catch (_) { sync(); }
+    } else sync();
+    return result;
+  };
+  wrapped.__arenaUiThemeF9W2c = true;
+  wrapped.__arenaUiThemeOriginal = original;
+  root[name] = wrapped;
+  return true;
+}
+
+function arenaUiThemeInstallHooksF9W2c() {
+  if (!arenaUiThemeStateF9W2c.hooksInstalled) {
+    arenaUiThemeStateF9W2c.hooksInstalled = true;
+    if (typeof arenaMenuThemeApplyF9W2b === "function" && !arenaMenuThemeApplyF9W2b.__arenaUiThemeF9W2c) {
+      const originalMenuApply = arenaMenuThemeApplyF9W2b;
+      arenaMenuThemeApplyF9W2b = function(value, options={}) {
+        const result = originalMenuApply.call(this, value, options);
+        if (arenaUiThemeStateF9W2c.initialized) arenaUiThemeSyncF9W2c({ force:true, reason:"global-theme-change" });
+        return result;
+      };
+      arenaMenuThemeApplyF9W2b.__arenaUiThemeF9W2c = true;
+      arenaMenuThemeApplyF9W2b.__arenaUiThemeOriginal = originalMenuApply;
+      try { globalThis.arenaMenuThemeApplyF9W2b = arenaMenuThemeApplyF9W2b; } catch (_) {}
+    }
+  }
+  // Ritenta i hook runtime anche se una funzione non era ancora disponibile
+  // alla prima valutazione dello script. Ogni wrapper è idempotente.
+  ["setAppScreen","renderAll","newGame"].forEach(arenaUiThemeWrapGlobalFunctionF9W2c);
+  return true;
+}
+
+function arenaUiThemeSnapshotF9W2c() {
+  const resolved = arenaUiThemeStateF9W2c.resolved || arenaUiThemeResolveF9W2c();
+  return {
+    schemaVersion:ARENA_UI_THEME_SCHEMA_F9W2C,
+    scope:"global-shell+game-context",
+    selectedGlobalTheme:typeof arenaMenuThemeCurrentF9W2b === "function" ? arenaMenuThemeCurrentF9W2b() : ARENA_MENU_THEME_DEFAULT_F9W2B,
+    activeTheme:resolved && resolved.key || ARENA_MENU_THEME_DEFAULT_F9W2B,
+    source:resolved && resolved.source || "global-selection",
+    activeSide:resolved && resolved.side != null ? Number(resolved.side) : null,
+    activeFaction:resolved && resolved.faction || null,
+    humanPlayers:Number(resolved && resolved.humanPlayers || 0),
+    boardPresentationUntouched:true,
+    contrastTokens:true,
+    modularSkinSlots:true,
+    slots:Object.keys(arenaUiThemeAssetSlotsF9W2c(resolved && resolved.key || ARENA_MENU_THEME_DEFAULT_F9W2B))
+  };
+}
+
+function arenaUiThemeInitializeF9W2c() {
+  arenaUiThemeEnsureStylesF9W2c();
+  arenaUiThemeInstallHooksF9W2c();
+  arenaUiThemeStateF9W2c.initialized = true;
+  return arenaUiThemeSyncF9W2c({ force:true, reason:"boot" });
+}
+
+try {
+  globalThis.arenaUiThemeKeyForFactionF9W2c = arenaUiThemeKeyForFactionF9W2c;
+  globalThis.arenaUiThemeResolveF9W2c = arenaUiThemeResolveF9W2c;
+  globalThis.arenaUiThemeSyncF9W2c = arenaUiThemeSyncF9W2c;
+  globalThis.arenaUiThemeSnapshotF9W2c = arenaUiThemeSnapshotF9W2c;
+  globalThis.arenaUiThemeAssetSlotsF9W2c = arenaUiThemeAssetSlotsF9W2c;
+} catch (_) {}
+
+arenaUiThemeInstallHooksF9W2c();
+// F9W2c END
+
+
 async function bootArenaRubra() {
   if (typeof document !== "undefined" && document.body) document.body.classList.add("arena-storage-loading");
   try {
@@ -1861,6 +2366,7 @@ async function bootArenaRubra() {
     console.warn("F9W1a: migrazione Match Data non bloccante fallita", error);
   }
   if (typeof arenaMenuThemeInitializeF9W2b === "function") arenaMenuThemeInitializeF9W2b();
+  if (typeof arenaUiThemeInitializeF9W2c === "function") arenaUiThemeInitializeF9W2c();
   refreshCommanderSelects();
   bindUiEvents();
   if (typeof initializeArenaAppShell === "function") initializeArenaAppShell();

@@ -1,11 +1,12 @@
 src/ui.js
 src/build_info.js
+assets/maps/backgrounds/snow_bf_4pl_3x.webp
+tests/f9w2c_global_theme_scope_smoke.js
+tests/f9w2c_browser_global_theme_smoke.py
 tests/f9w2b_menu_theme_smoke.js
-tests/f9w2b_browser_menu_theme_smoke.py
-tests/f9w2a_profile_static_smoke.js
 tests/f9w2a1_snow_bf_regression_f9w2b.js
-docs/Arena_Rubra_F9W2b_Menu_Theme_System.md
-docs/Arena_Rubra_F9W2b_Test_Report.txt
-assets/maps/backgrounds/snow_bf_4pl_3x.webp  (baseline asset invariato; incluso per regression smoke)
+tests/f9w2a_profile_static_smoke.js
+docs/Arena_Rubra_F9W2c_Global_Theme_Scope_Skin_Architecture.md
+docs/Arena_Rubra_F9W2c_Test_Report.txt
 PATCH_README.txt
 PATCH_FILES.txt

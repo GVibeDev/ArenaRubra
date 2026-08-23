@@ -69,6 +69,7 @@
 // F9W2a Player / DEV Runtime Profile Foundation metadata.
 // F9W2a1 Snow Battlefield Standard / Classic Official Map metadata.
 // F9W2b Menu Theme System metadata.
+// F9W2c Global Theme Scope & Skin Architecture metadata.
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -91,16 +92,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2b-APK-M4c",
-  buildName: "Menu Theme System",
+  version: "C2-STABLE-1-F9W2c-APK-M4c",
+  buildName: "Global Theme Scope & Skin Architecture",
   buildDate: "2026-08-24",
-  buildChannel: "starter2-menu-theme-w2b",
+  buildChannel: "starter2-global-ui-theme-w2c",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2b costruita sulla F9W2a1 validata. Introduce un Menu Theme System persistente, indipendente dal tema di fazione della partita, con sei preset: Rubra Classico, Nexus Basalto notturno, Exordium Imperium, Liberti Sine Vinculis, Agathoi Kleos e Fabeot Vesper. Il selettore è integrato nel pannello Impostazioni del Control Center, disponibile sia in DEV sia in Demo / Distribution, con anteprima live e salvataggio automatico nel settings vault esistente. Il tema agisce soltanto su menu principale e Control Center: non modifica mappa, HUD, carte, regole o gameplay. La struttura usa token CSS centralizzati per preparare il successivo UI Art Direction Gate senza introdurre ancora texture, ornamentazioni o moduli mobili. Snow Battlefield F9W2a1, Player / DEV Runtime Profile F9W2a e Match Data 2.0 F9W1a restano invariati. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata F9W2c costruita sulla F9W2b validata. Estende il tema globale a tutta la shell applicativa: Home, Tutorial/Challenge, Nuova partita, Deck Builder, Card Pool, Card Editor, Map Editor e Control Center. In partita la skin UI usa la fazione del Giocatore 1; con più giocatori umani segue il giocatore umano attivo e durante i turni Bot mantiene l’ultima skin umana, evitando cambi visivi inutili. La presentazione della mappa resta invariata e continua a essere governata dal runtime presentation_theme esistente. Introduce token di contrasto cromatico per testo/tabelle e slot modulari per texture, angoli, bordi, divisori e crest che F9W2d potrà popolare dagli asset forniti senza cambiare geometria o layout. Nessuna texture o cornice grafica viene ancora incorporata in questa patch. F9W2b Menu Theme, F9W2a1 Snow Battlefield, F9W2a Player/DEV e F9W1a Match Data restano invariati. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {
