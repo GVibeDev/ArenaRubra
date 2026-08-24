@@ -1,8 +1,13 @@
+PATCH_FILES.txt
 PATCH_README.txt
-assets/ui/faction_skins/agathoi_kleos/material.webp
-docs/Arena_Rubra_F9W2d1_Test_Report.txt
-docs/Arena_Rubra_F9W2d1_UI_Scroll_Agathoi_Hotfix.md
+docs/Arena_Rubra_F9W2d2_Test_Report.txt
+docs/Arena_Rubra_F9W2d2_Thin_Border_Modules.md
 src/build_info.js
 src/ui.js
-tests/f9w2d1_agathoi_tone_smoke.py
+tests/f9w2a1_snow_bf_regression_f9w2b.js
+tests/f9w2a_profile_static_smoke.js
+tests/f9w2b_menu_theme_smoke.js
+tests/f9w2c_global_theme_scope_smoke.js
 tests/f9w2d1_scroll_agathoi_hotfix_smoke.js
+tests/f9w2d2_thin_border_modules_smoke.js
+tests/f9w2d_material_skin_smoke.js

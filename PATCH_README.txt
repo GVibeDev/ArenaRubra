@@ -1,21 +1,30 @@
-ARENA RUBRA — F9W2d1 UI SCROLL & AGATHOI MATERIAL HOTFIX
-========================================================
+ARENA RUBRA — F9W2d2 THIN BORDER MODULES & ORNAMENT SIMPLIFICATION
+================================================================
 
-BASE
-C2-STABLE-1-F9W2d-APK-M4c
+BASELINE
+F9W2d1 VALIDATA — C2-STABLE-1-F9W2d1-APK-M4c
 
 CANDIDATA
-C2-STABLE-1-F9W2d1-APK-M4c
+C2-STABLE-1-F9W2d2-APK-M4c
 
-APPLICAZIONE
-Sovrascrivi questi file sulla F9W2d in test.
-
-FIX
-- rimosso l'overflow:hidden imposto globalmente dal layer ornamentale;
-- Setup/Nuova partita e gli altri menu tornano a usare la propria policy di scrolling;
-- decorazioni ritagliate sui pseudo-elementi senza bloccare lo scroll;
-- materiale Agathoi attenuato e overlay meno luminoso.
+COSA CAMBIA
+- ornamentazione ridotta a 4 corner + 4 side;
+- crest disattivato;
+- divider disattivato;
+- corner ridotti a 48 px;
+- side orizzontali a 16 px;
+- side verticali a 14 px;
+- i valori sono ora token di scala modificabili;
+- scroll F9W2d1 preservato;
+- materiale Agathoi F9W2d1 preservato.
 
 IMPORTANTE
-Questa patch NON contiene corner/edge/divider/crest.
-Non sovrascrive quindi eventuali correzioni manuali che stai facendo sugli asset delle cornici.
+La patch NON contiene asset ornamentali. Le modifiche manuali già presenti nel repository
+(Agathoi ASSET 0.2) e le future revisioni delle altre fazioni non vengono sovrascritte.
+
+TEST MANUALE
+1. Controllare Agathoi su Home, Setup, Deck Builder e un pannello in partita.
+2. Verificare che il bordo esterno appaia sottile e non zoomato.
+3. Verificare che non compaiano crest o divider.
+4. Verificare corner/side su pannelli piccoli e grandi.
+5. Verificare ancora lo scroll di Setup e Deck Builder.

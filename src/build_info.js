@@ -92,10 +92,10 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2d1-APK-M4c",
-  buildName: "UI Scroll & Agathoi Material Hotfix",
+  version: "C2-STABLE-1-F9W2d2-APK-M4c",
+  buildName: "Thin Border Modules & Ornament Simplification",
   buildDate: "2026-08-24",
-  buildChannel: "starter2-ui-material-hotfix-w2d1",
+  buildChannel: "starter2-ui-border-modules-w2d2",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,

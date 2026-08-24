@@ -32,9 +32,9 @@ for (const token of [
 ]) assert(ui.includes(token), `missing F9W2c contract token: ${token}`);
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d-APK-M4c"',
-  'buildName: "Faction Material & Modular Ornament Pass"',
-  'buildChannel: "starter2-ui-material-pass-w2d"',
+  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
+  'buildName: "Thin Border Modules & Ornament Simplification"',
+  'buildChannel: "starter2-ui-border-modules-w2d2"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
 ]) assert(build.includes(token), `missing F9W2c build metadata: ${token}`);
 
@@ -170,5 +170,5 @@ console.log(JSON.stringify({
   modularSkinSlots:true,
     materialPass:true,
   predecessorRegression:true,
-  build:'C2-STABLE-1-F9W2d-APK-M4c'
+  build:'C2-STABLE-1-F9W2d2-APK-M4c'
 }, null, 2));

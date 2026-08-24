@@ -1756,39 +1756,9 @@ function arenaMenuThemeEnsureStylesF9W2b() {
         var(--arena-ui-edge-bottom),var(--arena-ui-edge-left);
       background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,repeat-x,repeat-y,repeat-x,repeat-y;
       background-position:left top,right top,left bottom,right bottom,center top,right center,center bottom,left center;
-      background-size:76px auto,76px auto,76px auto,76px auto,auto 44px,44px auto,auto 44px,44px auto;
+      background-size:var(--arena-ui-corner-size) auto,var(--arena-ui-corner-size) auto,var(--arena-ui-corner-size) auto,var(--arena-ui-corner-size) auto,auto var(--arena-ui-edge-horizontal-thickness),var(--arena-ui-edge-vertical-thickness) auto,auto var(--arena-ui-edge-horizontal-thickness),var(--arena-ui-edge-vertical-thickness) auto;
       mix-blend-mode:normal;
       border-radius:inherit;
-    }
-
-    html[data-arena-ui-theme] [data-arena-skin-slot="shell"]::before,
-    html[data-arena-ui-theme] .controlCenterPanelSheet::before{
-      content:"";
-      position:absolute;
-      top:2px;left:50%;transform:translateX(-50%);
-      width:min(42%, 184px);
-      height:92px;
-      pointer-events:none;
-      z-index:0;
-      opacity:calc(var(--arena-ui-ornament-opacity) + .08);
-      background-image:var(--arena-ui-crest-image);
-      background-repeat:no-repeat;
-      background-position:center top;
-      background-size:contain;
-      border-radius:inherit;
-    }
-
-    html[data-arena-ui-theme] [data-arena-skin-slot="header"]::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      z-index:0;
-      opacity:calc(var(--arena-ui-ornament-opacity) + .10);
-      background-image:var(--arena-ui-divider-image),var(--arena-ui-crest-image);
-      background-repeat:repeat-x,no-repeat;
-      background-position:center calc(100% - 2px),center top;
-      background-size:auto 18px,136px auto;
     }
 
     html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] thead th,
@@ -1964,6 +1934,7 @@ const arenaUiThemeStateF9W2c = {
 };
 
 const ARENA_UI_THEME_SKIN_SCHEMA_F9W2D = "F9W2d-1";
+const ARENA_UI_FRAME_SCHEMA_F9W2D2 = "F9W2d2-1";
 const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
   rubra_classic:Object.freeze({
     materialImage:"none",
@@ -1985,8 +1956,9 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
     edgeRight:"none",
     edgeBottom:"none",
     edgeLeft:"none",
-    dividerImage:"none",
-    crestImage:"none",
+    cornerSize:"48px",
+    edgeHorizontalThickness:"16px",
+    edgeVerticalThickness:"14px",
     ornamentOpacity:"0"
   }),
   nexus_basalt:Object.freeze({
@@ -2009,8 +1981,9 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
     edgeRight:'url("assets/ui/faction_skins/nexus_basalt/edge_right.webp")',
     edgeBottom:'url("assets/ui/faction_skins/nexus_basalt/edge_bottom.webp")',
     edgeLeft:'url("assets/ui/faction_skins/nexus_basalt/edge_left.webp")',
-    dividerImage:'url("assets/ui/faction_skins/nexus_basalt/divider.webp")',
-    crestImage:'url("assets/ui/faction_skins/nexus_basalt/crest.webp")',
+    cornerSize:"48px",
+    edgeHorizontalThickness:"16px",
+    edgeVerticalThickness:"14px",
     ornamentOpacity:".34"
   }),
   exordium_imperium:Object.freeze({
@@ -2033,8 +2006,9 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
     edgeRight:'url("assets/ui/faction_skins/exordium_imperium/edge_right.webp")',
     edgeBottom:'url("assets/ui/faction_skins/exordium_imperium/edge_bottom.webp")',
     edgeLeft:'url("assets/ui/faction_skins/exordium_imperium/edge_left.webp")',
-    dividerImage:'url("assets/ui/faction_skins/exordium_imperium/divider.webp")',
-    crestImage:'url("assets/ui/faction_skins/exordium_imperium/crest.webp")',
+    cornerSize:"48px",
+    edgeHorizontalThickness:"16px",
+    edgeVerticalThickness:"14px",
     ornamentOpacity:".36"
   }),
   liberti_sine_vinculis:Object.freeze({
@@ -2057,8 +2031,9 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
     edgeRight:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_right.webp")',
     edgeBottom:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_bottom.webp")',
     edgeLeft:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_left.webp")',
-    dividerImage:'url("assets/ui/faction_skins/liberti_sine_vinculis/divider.webp")',
-    crestImage:'url("assets/ui/faction_skins/liberti_sine_vinculis/crest.webp")',
+    cornerSize:"48px",
+    edgeHorizontalThickness:"16px",
+    edgeVerticalThickness:"14px",
     ornamentOpacity:".32"
   }),
   agathoi_kleos:Object.freeze({
@@ -2081,8 +2056,9 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
     edgeRight:'url("assets/ui/faction_skins/agathoi_kleos/edge_right.webp")',
     edgeBottom:'url("assets/ui/faction_skins/agathoi_kleos/edge_bottom.webp")',
     edgeLeft:'url("assets/ui/faction_skins/agathoi_kleos/edge_left.webp")',
-    dividerImage:'url("assets/ui/faction_skins/agathoi_kleos/divider.webp")',
-    crestImage:'url("assets/ui/faction_skins/agathoi_kleos/crest.webp")',
+    cornerSize:"48px",
+    edgeHorizontalThickness:"16px",
+    edgeVerticalThickness:"14px",
     ornamentOpacity:".30"
   }),
   fabeot_vesper:Object.freeze({
@@ -2105,8 +2081,9 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
     edgeRight:'url("assets/ui/faction_skins/fabeot_vesper/edge_right.webp")',
     edgeBottom:'url("assets/ui/faction_skins/fabeot_vesper/edge_bottom.webp")',
     edgeLeft:'url("assets/ui/faction_skins/fabeot_vesper/edge_left.webp")',
-    dividerImage:'url("assets/ui/faction_skins/fabeot_vesper/divider.webp")',
-    crestImage:'url("assets/ui/faction_skins/fabeot_vesper/crest.webp")',
+    cornerSize:"48px",
+    edgeHorizontalThickness:"16px",
+    edgeVerticalThickness:"14px",
     ornamentOpacity:".35"
   })
 });
@@ -2396,8 +2373,9 @@ function arenaUiThemeEnsureStylesF9W2c() {
       --arena-ui-edge-right:none;
       --arena-ui-edge-bottom:none;
       --arena-ui-edge-left:none;
-      --arena-ui-divider-image:none;
-      --arena-ui-crest-image:none;
+      --arena-ui-corner-size:48px;
+      --arena-ui-edge-horizontal-thickness:16px;
+      --arena-ui-edge-vertical-thickness:14px;
       --arena-ui-ornament-opacity:0;
     }
   `;
@@ -2467,8 +2445,9 @@ function arenaUiThemeApplyResolvedF9W2c(resolved, options={}) {
       "--arena-ui-edge-right":slots.edgeRight || "none",
       "--arena-ui-edge-bottom":slots.edgeBottom || "none",
       "--arena-ui-edge-left":slots.edgeLeft || "none",
-      "--arena-ui-divider-image":slots.dividerImage || "none",
-      "--arena-ui-crest-image":slots.crestImage || "none",
+      "--arena-ui-corner-size":slots.cornerSize || "48px",
+      "--arena-ui-edge-horizontal-thickness":slots.edgeHorizontalThickness || "16px",
+      "--arena-ui-edge-vertical-thickness":slots.edgeVerticalThickness || "14px",
       "--arena-ui-ornament-opacity":String(slots.ornamentOpacity == null ? 0 : slots.ornamentOpacity)
     };
     Object.entries(props).forEach(([name,value]) => root.style.setProperty(name, value));
@@ -2547,6 +2526,10 @@ function arenaUiThemeSnapshotF9W2c() {
     ornamentalModularity:true,
     scrollPolicyPreserved:true,
     agathoiMaterialToned:true,
+    eightSliceFrameOnly:true,
+    crestRemoved:true,
+    dividerRemoved:true,
+    moduleScaleTokens:true,
     slots:Object.keys(arenaUiThemeAssetSlotsF9W2c(resolved && resolved.key || ARENA_MENU_THEME_DEFAULT_F9W2B))
   };
 }

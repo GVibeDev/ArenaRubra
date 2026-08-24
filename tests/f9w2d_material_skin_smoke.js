@@ -16,21 +16,19 @@ for (const token of [
   'assets/ui/faction_skins/liberti_sine_vinculis/material.webp',
   'assets/ui/faction_skins/agathoi_kleos/material.webp',
   'assets/ui/faction_skins/fabeot_vesper/material.webp',
-  'dividerImage',
-  'crestImage',
   'materialPass:true',
   'ornamentalModularity:true'
 ]) assert(ui.includes(token), `missing F9W2d token: ${token}`);
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d-APK-M4c"',
-  'buildName: "Faction Material & Modular Ornament Pass"',
-  'buildChannel: "starter2-ui-material-pass-w2d"',
+  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
+  'buildName: "Thin Border Modules & Ornament Simplification"',
+  'buildChannel: "starter2-ui-border-modules-w2d2"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
 ]) assert(build.includes(token), `missing F9W2d build metadata: ${token}`);
 
 const themes = ['nexus_basalt','exordium_imperium','liberti_sine_vinculis','agathoi_kleos','fabeot_vesper'];
-const assets = ['material.webp','corner_tl.webp','corner_tr.webp','corner_bl.webp','corner_br.webp','edge_top.webp','edge_right.webp','edge_bottom.webp','edge_left.webp','divider.webp','crest.webp'];
+const assets = ['material.webp','corner_tl.webp','corner_tr.webp','corner_bl.webp','corner_br.webp','edge_top.webp','edge_right.webp','edge_bottom.webp','edge_left.webp'];
 for (const theme of themes) for (const asset of assets) {
   const file = path.join(root, 'assets', 'ui', 'faction_skins', theme, asset);
   assert(fs.existsSync(file), `missing asset: ${file}`);
@@ -91,13 +89,12 @@ context.renderAll();
 snap = context.arenaUiThemeSnapshotF9W2c();
 assert.strictEqual(snap.activeTheme, 'nexus_basalt');
 assert.ok(String(styleProps['--arena-ui-material-image']).includes('nexus_basalt/material.webp'));
-assert.ok(String(styleProps['--arena-ui-divider-image']).includes('nexus_basalt/divider.webp'));
 
 console.log(JSON.stringify({
   ok:true,
-  feature:'F9W2d Faction Material & Modular Ornament Pass',
+  feature:'F9W2d Thin Border Modules & Ornament Simplification',
   themes,
   assetsPerTheme:assets.length,
   activeGameTheme:snap.activeTheme,
-  build:'C2-STABLE-1-F9W2d-APK-M4c'
+  build:'C2-STABLE-1-F9W2d2-APK-M4c'
 }, null, 2));

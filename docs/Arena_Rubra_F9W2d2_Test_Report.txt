@@ -1,0 +1,25 @@
+Arena Rubra — F9W2d2 Test Report
+================================
+
+Build: C2-STABLE-1-F9W2d2-APK-M4c
+
+PASS node --check src/ui.js
+PASS node --check src/build_info.js
+PASS tests/f9w2d2_thin_border_modules_smoke.js
+PASS tests/f9w2d1_scroll_agathoi_hotfix_smoke.js
+PASS tests/f9w2d_material_skin_smoke.js
+PASS tests/f9w2c_global_theme_scope_smoke.js
+PASS tests/f9w2b_menu_theme_smoke.js
+PASS tests/f9w2a1_snow_bf_regression_f9w2b.js
+PASS tests/f9w2a_profile_static_smoke.js
+PASS Agathoi material tone regression (mean luma ~0.55) sulla base completa di test.
+
+Verifiche specifiche F9W2d2:
+- 4 corner + 4 side soltanto;
+- crest non referenziato;
+- divider non referenziato;
+- token scala 48 / 16 / 14 px attivi;
+- overflow:hidden non reintrodotto;
+- Snow Battlefield hash gameplay/background invariati.
+
+Browser Playwright completo non dichiarato eseguito nel container.

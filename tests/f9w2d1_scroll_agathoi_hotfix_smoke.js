@@ -8,9 +8,9 @@ const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
 const build = fs.readFileSync(path.join(root, "src", "build_info.js"), "utf8");
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d1-APK-M4c"',
-  'buildName: "UI Scroll & Agathoi Material Hotfix"',
-  'buildChannel: "starter2-ui-material-hotfix-w2d1"',
+  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
+  'buildName: "Thin Border Modules & Ornament Simplification"',
+  'buildChannel: "starter2-ui-border-modules-w2d2"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
 ]) assert(build.includes(token), `missing F9W2d1 build token: ${token}`);
 
@@ -31,9 +31,9 @@ assert(ui.includes("agathoiMaterialToned:true"), "Agathoi tone marker missing");
 
 console.log(JSON.stringify({
   ok:true,
-  feature:"F9W2d1 UI Scroll & Agathoi Material Hotfix",
+  feature:"F9W2d1 Thin Border Modules & Ornament Simplification",
   nativeOverflowPreserved:true,
   ornamentSelfClip:true,
   agathoiOverlayToned:true,
-  build:"C2-STABLE-1-F9W2d1-APK-M4c"
+  build:"C2-STABLE-1-F9W2d2-APK-M4c"
 }, null, 2));
