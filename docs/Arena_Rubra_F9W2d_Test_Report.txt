@@ -1,0 +1,29 @@
+Arena Rubra — F9W2d Test Report
+================================
+
+Build candidata: C2-STABLE-1-F9W2d-APK-M4c
+Build name: Faction Material & Modular Ornament Pass
+Data: 2026-08-24
+
+TEST ESEGUITI
+-------------
+1. node tests/f9w2d_material_skin_smoke.js                 PASS
+2. node tests/f9w2c_global_theme_scope_smoke.js           PASS
+3. node tests/f9w2b_menu_theme_smoke.js                   PASS
+4. node tests/f9w2a1_snow_bf_regression_f9w2b.js         PASS
+5. node tests/f9w2a_profile_static_smoke.js               PASS
+
+COPERTURA VALIDATA
+------------------
+- presenza del layer asset-backed F9W2d;
+- mapping dei 5 temi fazione verso i nuovi asset materiali/modulari;
+- presenza a disco di tutti gli asset richiesti (11 per ciascuna delle 5 fazioni);
+- permanenza del contratto F9W2c su scope globale e contesto di partita;
+- regressione F9W2b menu theme system;
+- regressione F9W2a1 Snow Battlefield (gameplay hash invariato, background hash invariato);
+- regressione F9W2a Player/DEV profile static smoke.
+
+NOTE
+----
+Il browser smoke Python/Playwright ereditato da F9W2c non viene dichiarato eseguito in questo pacchetto standalone,
+perché richiede il checkout completo dell'applicazione e un bootstrap runtime non inclusi nella patch overwrite.

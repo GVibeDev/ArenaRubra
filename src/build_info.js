@@ -92,16 +92,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2c-APK-M4c",
-  buildName: "Global Theme Scope & Skin Architecture",
+  version: "C2-STABLE-1-F9W2d-APK-M4c",
+  buildName: "Faction Material & Modular Ornament Pass",
   buildDate: "2026-08-24",
-  buildChannel: "starter2-global-ui-theme-w2c",
+  buildChannel: "starter2-ui-material-pass-w2d",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2c costruita sulla F9W2b validata. Estende il tema globale a tutta la shell applicativa: Home, Tutorial/Challenge, Nuova partita, Deck Builder, Card Pool, Card Editor, Map Editor e Control Center. In partita la skin UI usa la fazione del Giocatore 1; con più giocatori umani segue il giocatore umano attivo e durante i turni Bot mantiene l’ultima skin umana, evitando cambi visivi inutili. La presentazione della mappa resta invariata e continua a essere governata dal runtime presentation_theme esistente. Introduce token di contrasto cromatico per testo/tabelle e slot modulari per texture, angoli, bordi, divisori e crest che F9W2d potrà popolare dagli asset forniti senza cambiare geometria o layout. Nessuna texture o cornice grafica viene ancora incorporata in questa patch. F9W2b Menu Theme, F9W2a1 Snow Battlefield, F9W2a Player/DEV e F9W1a Match Data restano invariati. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata F9W2d costruita sulla F9W2c validata. Integra i 5 sfondi fazione e le 5 cornici tattica fornite dall’utente nel sistema skin globale F9W2c. Le texture sono applicate come materiali di superficie e le cornici vengono scomposte in moduli ornamentali (4 corner, 4 edge, divider e crest) ricomposti proceduralmente su Home, Tutorial, Nuova partita, Deck Builder, Card Pool, Card Editor, Map Editor, Control Center e shell di gioco. Il tema della partita continua a seguire la regola F9W2c: Giocatore 1 con zero/un umano, giocatore umano attivo con 2+ umani, mantenendo l’ultima skin umana nei turni Bot. Contrast tokens e override testo sono stati calibrati per la leggibilità, in particolare sui materiali chiari di Agathoi e Liberti. La mappa/presentation_theme restano invariati. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
 });
 
 function buildInfoLabel() {

@@ -1,0 +1,11 @@
+material: material.webp
+corner_tl: corner_tl.webp
+corner_tr: corner_tr.webp
+corner_bl: corner_bl.webp
+corner_br: corner_br.webp
+edge_top: edge_top.webp
+edge_right: edge_right.webp
+edge_bottom: edge_bottom.webp
+edge_left: edge_left.webp
+divider: divider.webp
+crest: crest.webp

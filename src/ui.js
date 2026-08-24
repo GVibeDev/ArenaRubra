@@ -1709,6 +1709,99 @@ function arenaMenuThemeEnsureStylesF9W2b() {
     .arenaMenuThemePreviewF9W2b{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:.78rem;color:var(--arena-menu-muted)}
     .arenaMenuThemePreviewSwatchF9W2b{width:36px;height:16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--arena-menu-line) 82%,white 10%);background:linear-gradient(90deg,var(--arena-menu-accent2),var(--arena-menu-accent));box-shadow:0 0 12px var(--arena-menu-glow)}
   `;
+  style.textContent += `
+    html[data-arena-ui-theme] [data-arena-skin-slot="shell"],
+    html[data-arena-ui-theme] [data-arena-skin-slot="panel"],
+    html[data-arena-ui-theme] [data-arena-skin-slot="header"],
+    html[data-arena-ui-theme] .controlCenterPanelSheet,
+    html[data-arena-ui-theme] body.app-screen-game .topTitleBar,
+    html[data-arena-ui-theme] body.app-screen-game .gameHudStrip,
+    html[data-arena-ui-theme] body.app-screen-game .gameActionBar,
+    html[data-arena-ui-theme] body.app-screen-game .gameDebugMenu,
+    html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloat,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap){
+      position:relative;
+      overflow:hidden;
+      isolation:isolate;
+    }
+    html[data-arena-ui-theme] [data-arena-skin-slot="shell"] > *,
+    html[data-arena-ui-theme] [data-arena-skin-slot="panel"] > *,
+    html[data-arena-ui-theme] [data-arena-skin-slot="header"] > *,
+    html[data-arena-ui-theme] .controlCenterPanelSheet > *,
+    html[data-arena-ui-theme] body.app-screen-game .topTitleBar > *,
+    html[data-arena-ui-theme] body.app-screen-game .gameHudStrip > *,
+    html[data-arena-ui-theme] body.app-screen-game .gameActionBar > *,
+    html[data-arena-ui-theme] body.app-screen-game .gameDebugMenu > *,
+    html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloat > *,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) > *{position:relative;z-index:1}
+
+    html[data-arena-ui-theme] [data-arena-skin-slot="shell"]::after,
+    html[data-arena-ui-theme] [data-arena-skin-slot="panel"]::after,
+    html[data-arena-ui-theme] .controlCenterPanelSheet::after,
+    html[data-arena-ui-theme] body.app-screen-game .topTitleBar::after,
+    html[data-arena-ui-theme] body.app-screen-game .gameHudStrip::after,
+    html[data-arena-ui-theme] body.app-screen-game .gameActionBar::after,
+    html[data-arena-ui-theme] body.app-screen-game .gameDebugMenu::after,
+    html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloat::after,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap)::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:var(--arena-ui-ornament-opacity);
+      background-image:
+        var(--arena-ui-corner-tl),var(--arena-ui-corner-tr),
+        var(--arena-ui-corner-bl),var(--arena-ui-corner-br),
+        var(--arena-ui-edge-top),var(--arena-ui-edge-right),
+        var(--arena-ui-edge-bottom),var(--arena-ui-edge-left);
+      background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,repeat-x,repeat-y,repeat-x,repeat-y;
+      background-position:left top,right top,left bottom,right bottom,center top,right center,center bottom,left center;
+      background-size:76px auto,76px auto,76px auto,76px auto,auto 44px,44px auto,auto 44px,44px auto;
+      mix-blend-mode:normal;
+    }
+
+    html[data-arena-ui-theme] [data-arena-skin-slot="shell"]::before,
+    html[data-arena-ui-theme] .controlCenterPanelSheet::before{
+      content:"";
+      position:absolute;
+      top:2px;left:50%;transform:translateX(-50%);
+      width:min(42%, 184px);
+      height:92px;
+      pointer-events:none;
+      z-index:0;
+      opacity:calc(var(--arena-ui-ornament-opacity) + .08);
+      background-image:var(--arena-ui-crest-image);
+      background-repeat:no-repeat;
+      background-position:center top;
+      background-size:contain;
+    }
+
+    html[data-arena-ui-theme] [data-arena-skin-slot="header"]::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:calc(var(--arena-ui-ornament-opacity) + .10);
+      background-image:var(--arena-ui-divider-image),var(--arena-ui-crest-image);
+      background-repeat:repeat-x,no-repeat;
+      background-position:center calc(100% - 2px),center top;
+      background-size:auto 18px,136px auto;
+    }
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] thead th,
+    html[data-arena-ui-theme] .controlCenterPanelSheet thead th,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) thead th{
+      box-shadow:inset 0 -1px 0 color-mix(in srgb,var(--arena-ui-line) 68%,transparent);
+    }
+
+    html[data-arena-ui-theme] body:not(.app-screen-game) [data-app-screen-panel] tbody tr:nth-child(even) td,
+    html[data-arena-ui-theme] .controlCenterPanelSheet tbody tr:nth-child(even) td,
+    html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap) tbody tr:nth-child(even) td{
+      background:color-mix(in srgb,var(--arena-ui-surface2) 52%,transparent)!important;
+    }
+  `;
   document.head.appendChild(style);
   arenaMenuThemeStateF9W2b.styleInstalled = true;
   return true;
@@ -1869,12 +1962,11 @@ const arenaUiThemeStateF9W2c = {
   resolved:null
 };
 
-function arenaUiThemeAssetSlotsF9W2c(themeKey) {
-  // F9W2d potrà sostituire questi slot con texture e moduli ornamentali
-  // derivati dagli asset di fazione senza cambiare la geometria della UI.
-  return {
+const ARENA_UI_THEME_SKIN_SCHEMA_F9W2D = "F9W2d-1";
+const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
+  rubra_classic:Object.freeze({
     materialImage:"none",
-    materialOverlay:"none",
+    materialOverlay:"linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.08))",
     materialSize:"cover",
     materialPosition:"center",
     materialBlendMode:"soft-light",
@@ -1895,7 +1987,131 @@ function arenaUiThemeAssetSlotsF9W2c(themeKey) {
     dividerImage:"none",
     crestImage:"none",
     ornamentOpacity:"0"
-  };
+  }),
+  nexus_basalt:Object.freeze({
+    materialImage:'url("assets/ui/faction_skins/nexus_basalt/material.webp")',
+    materialOverlay:"linear-gradient(180deg, rgba(6,12,20,.40), rgba(5,12,18,.58))",
+    materialSize:"cover",
+    materialPosition:"center",
+    materialBlendMode:"soft-light",
+    textPrimary:"#eef6ff",
+    textSecondary:"#a9bdd0",
+    textHeading:"#ffffff",
+    textOnAccent:"#08111a",
+    tableText:"#eef5ff",
+    tableMuted:"#b0bfd0",
+    cornerTl:'url("assets/ui/faction_skins/nexus_basalt/corner_tl.webp")',
+    cornerTr:'url("assets/ui/faction_skins/nexus_basalt/corner_tr.webp")',
+    cornerBl:'url("assets/ui/faction_skins/nexus_basalt/corner_bl.webp")',
+    cornerBr:'url("assets/ui/faction_skins/nexus_basalt/corner_br.webp")',
+    edgeTop:'url("assets/ui/faction_skins/nexus_basalt/edge_top.webp")',
+    edgeRight:'url("assets/ui/faction_skins/nexus_basalt/edge_right.webp")',
+    edgeBottom:'url("assets/ui/faction_skins/nexus_basalt/edge_bottom.webp")',
+    edgeLeft:'url("assets/ui/faction_skins/nexus_basalt/edge_left.webp")',
+    dividerImage:'url("assets/ui/faction_skins/nexus_basalt/divider.webp")',
+    crestImage:'url("assets/ui/faction_skins/nexus_basalt/crest.webp")',
+    ornamentOpacity:".34"
+  }),
+  exordium_imperium:Object.freeze({
+    materialImage:'url("assets/ui/faction_skins/exordium_imperium/material.webp")',
+    materialOverlay:"linear-gradient(180deg, rgba(18,5,5,.34), rgba(32,8,8,.52))",
+    materialSize:"cover",
+    materialPosition:"center",
+    materialBlendMode:"soft-light",
+    textPrimary:"#fff3ee",
+    textSecondary:"#ccb2a9",
+    textHeading:"#fffaf7",
+    textOnAccent:"#220906",
+    tableText:"#fff4ee",
+    tableMuted:"#cfb9b0",
+    cornerTl:'url("assets/ui/faction_skins/exordium_imperium/corner_tl.webp")',
+    cornerTr:'url("assets/ui/faction_skins/exordium_imperium/corner_tr.webp")',
+    cornerBl:'url("assets/ui/faction_skins/exordium_imperium/corner_bl.webp")',
+    cornerBr:'url("assets/ui/faction_skins/exordium_imperium/corner_br.webp")',
+    edgeTop:'url("assets/ui/faction_skins/exordium_imperium/edge_top.webp")',
+    edgeRight:'url("assets/ui/faction_skins/exordium_imperium/edge_right.webp")',
+    edgeBottom:'url("assets/ui/faction_skins/exordium_imperium/edge_bottom.webp")',
+    edgeLeft:'url("assets/ui/faction_skins/exordium_imperium/edge_left.webp")',
+    dividerImage:'url("assets/ui/faction_skins/exordium_imperium/divider.webp")',
+    crestImage:'url("assets/ui/faction_skins/exordium_imperium/crest.webp")',
+    ornamentOpacity:".36"
+  }),
+  liberti_sine_vinculis:Object.freeze({
+    materialImage:'url("assets/ui/faction_skins/liberti_sine_vinculis/material.webp")',
+    materialOverlay:"linear-gradient(180deg, rgba(31,17,6,.18), rgba(51,28,8,.36))",
+    materialSize:"cover",
+    materialPosition:"center",
+    materialBlendMode:"multiply",
+    textPrimary:"#25160a",
+    textSecondary:"#5f4320",
+    textHeading:"#331c08",
+    textOnAccent:"#1b1208",
+    tableText:"#2d1809",
+    tableMuted:"#6e522d",
+    cornerTl:'url("assets/ui/faction_skins/liberti_sine_vinculis/corner_tl.webp")',
+    cornerTr:'url("assets/ui/faction_skins/liberti_sine_vinculis/corner_tr.webp")',
+    cornerBl:'url("assets/ui/faction_skins/liberti_sine_vinculis/corner_bl.webp")',
+    cornerBr:'url("assets/ui/faction_skins/liberti_sine_vinculis/corner_br.webp")',
+    edgeTop:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_top.webp")',
+    edgeRight:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_right.webp")',
+    edgeBottom:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_bottom.webp")',
+    edgeLeft:'url("assets/ui/faction_skins/liberti_sine_vinculis/edge_left.webp")',
+    dividerImage:'url("assets/ui/faction_skins/liberti_sine_vinculis/divider.webp")',
+    crestImage:'url("assets/ui/faction_skins/liberti_sine_vinculis/crest.webp")',
+    ornamentOpacity:".32"
+  }),
+  agathoi_kleos:Object.freeze({
+    materialImage:'url("assets/ui/faction_skins/agathoi_kleos/material.webp")',
+    materialOverlay:"linear-gradient(180deg, rgba(255,252,230,.16), rgba(76,94,42,.18))",
+    materialSize:"cover",
+    materialPosition:"center",
+    materialBlendMode:"soft-light",
+    textPrimary:"#172111",
+    textSecondary:"#475437",
+    textHeading:"#20301a",
+    textOnAccent:"#11170f",
+    tableText:"#1b2615",
+    tableMuted:"#5a684a",
+    cornerTl:'url("assets/ui/faction_skins/agathoi_kleos/corner_tl.webp")',
+    cornerTr:'url("assets/ui/faction_skins/agathoi_kleos/corner_tr.webp")',
+    cornerBl:'url("assets/ui/faction_skins/agathoi_kleos/corner_bl.webp")',
+    cornerBr:'url("assets/ui/faction_skins/agathoi_kleos/corner_br.webp")',
+    edgeTop:'url("assets/ui/faction_skins/agathoi_kleos/edge_top.webp")',
+    edgeRight:'url("assets/ui/faction_skins/agathoi_kleos/edge_right.webp")',
+    edgeBottom:'url("assets/ui/faction_skins/agathoi_kleos/edge_bottom.webp")',
+    edgeLeft:'url("assets/ui/faction_skins/agathoi_kleos/edge_left.webp")',
+    dividerImage:'url("assets/ui/faction_skins/agathoi_kleos/divider.webp")',
+    crestImage:'url("assets/ui/faction_skins/agathoi_kleos/crest.webp")',
+    ornamentOpacity:".30"
+  }),
+  fabeot_vesper:Object.freeze({
+    materialImage:'url("assets/ui/faction_skins/fabeot_vesper/material.webp")',
+    materialOverlay:"linear-gradient(180deg, rgba(17,9,22,.36), rgba(24,10,29,.56))",
+    materialSize:"cover",
+    materialPosition:"center",
+    materialBlendMode:"soft-light",
+    textPrimary:"#faf1ff",
+    textSecondary:"#cab5d2",
+    textHeading:"#fff9ff",
+    textOnAccent:"#120b16",
+    tableText:"#fbf3ff",
+    tableMuted:"#cdb9d8",
+    cornerTl:'url("assets/ui/faction_skins/fabeot_vesper/corner_tl.webp")',
+    cornerTr:'url("assets/ui/faction_skins/fabeot_vesper/corner_tr.webp")',
+    cornerBl:'url("assets/ui/faction_skins/fabeot_vesper/corner_bl.webp")',
+    cornerBr:'url("assets/ui/faction_skins/fabeot_vesper/corner_br.webp")',
+    edgeTop:'url("assets/ui/faction_skins/fabeot_vesper/edge_top.webp")',
+    edgeRight:'url("assets/ui/faction_skins/fabeot_vesper/edge_right.webp")',
+    edgeBottom:'url("assets/ui/faction_skins/fabeot_vesper/edge_bottom.webp")',
+    edgeLeft:'url("assets/ui/faction_skins/fabeot_vesper/edge_left.webp")',
+    dividerImage:'url("assets/ui/faction_skins/fabeot_vesper/divider.webp")',
+    crestImage:'url("assets/ui/faction_skins/fabeot_vesper/crest.webp")',
+    ornamentOpacity:".35"
+  })
+});
+
+function arenaUiThemeAssetSlotsF9W2c(themeKey) {
+  return ARENA_UI_THEME_SKIN_ASSETS_F9W2D[String(themeKey || "")] || ARENA_UI_THEME_SKIN_ASSETS_F9W2D.rubra_classic;
 }
 
 function arenaUiThemeKeyForFactionF9W2c(faction) {
@@ -2326,6 +2542,8 @@ function arenaUiThemeSnapshotF9W2c() {
     boardPresentationUntouched:true,
     contrastTokens:true,
     modularSkinSlots:true,
+    materialPass:true,
+    ornamentalModularity:true,
     slots:Object.keys(arenaUiThemeAssetSlotsF9W2c(resolved && resolved.key || ARENA_MENU_THEME_DEFAULT_F9W2B))
   };
 }
