@@ -92,16 +92,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2d-APK-M4c",
-  buildName: "Faction Material & Modular Ornament Pass",
+  version: "C2-STABLE-1-F9W2d1-APK-M4c",
+  buildName: "UI Scroll & Agathoi Material Hotfix",
   buildDate: "2026-08-24",
-  buildChannel: "starter2-ui-material-pass-w2d",
+  buildChannel: "starter2-ui-material-hotfix-w2d1",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2d costruita sulla F9W2c validata. Integra i 5 sfondi fazione e le 5 cornici tattica fornite dall’utente nel sistema skin globale F9W2c. Le texture sono applicate come materiali di superficie e le cornici vengono scomposte in moduli ornamentali (4 corner, 4 edge, divider e crest) ricomposti proceduralmente su Home, Tutorial, Nuova partita, Deck Builder, Card Pool, Card Editor, Map Editor, Control Center e shell di gioco. Il tema della partita continua a seguire la regola F9W2c: Giocatore 1 con zero/un umano, giocatore umano attivo con 2+ umani, mantenendo l’ultima skin umana nei turni Bot. Contrast tokens e override testo sono stati calibrati per la leggibilità, in particolare sui materiali chiari di Agathoi e Liberti. La mappa/presentation_theme restano invariati. Baseline logica F9T2c4 invariata. Android resta fuori scope Starter."
+  notes: "Candidata F9W2d1 costruita sulla F9W2d in test. Ripristina la policy di overflow originale dei componenti UI: il layer ornamentale non forza più overflow:hidden sui contenitori shell/panel/header, quindi Setup/Nuova partita e gli altri menu mantengono lo scrolling definito dal CSS statico. I pseudo-elementi ornamentali vengono invece ritagliati tramite border-radius ereditato, senza interferire con lo scroll del contenuto. Il materiale Agathoi viene attenuato: asset material.webp ridotto di luminanza e overlay chiaro sostituito con un velo verde scuro più neutro, mantenendo invariati gli slot modulari e il contrasto testuale. Nessuna regola di gioco, mappa, AI, Match Data, profilo Player/DEV o presentation_theme viene modificata. Baseline logica F9T2c4 invariata.",
 });
 
 function buildInfoLabel() {

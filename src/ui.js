@@ -1721,7 +1721,6 @@ function arenaMenuThemeEnsureStylesF9W2b() {
     html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloat,
     html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap){
       position:relative;
-      overflow:hidden;
       isolation:isolate;
     }
     html[data-arena-ui-theme] [data-arena-skin-slot="shell"] > *,
@@ -1759,6 +1758,7 @@ function arenaMenuThemeEnsureStylesF9W2b() {
       background-position:left top,right top,left bottom,right bottom,center top,right center,center bottom,left center;
       background-size:76px auto,76px auto,76px auto,76px auto,auto 44px,44px auto,auto 44px,44px auto;
       mix-blend-mode:normal;
+      border-radius:inherit;
     }
 
     html[data-arena-ui-theme] [data-arena-skin-slot="shell"]::before,
@@ -1775,6 +1775,7 @@ function arenaMenuThemeEnsureStylesF9W2b() {
       background-repeat:no-repeat;
       background-position:center top;
       background-size:contain;
+      border-radius:inherit;
     }
 
     html[data-arena-ui-theme] [data-arena-skin-slot="header"]::after{
@@ -2062,7 +2063,7 @@ const ARENA_UI_THEME_SKIN_ASSETS_F9W2D = Object.freeze({
   }),
   agathoi_kleos:Object.freeze({
     materialImage:'url("assets/ui/faction_skins/agathoi_kleos/material.webp")',
-    materialOverlay:"linear-gradient(180deg, rgba(255,252,230,.16), rgba(76,94,42,.18))",
+    materialOverlay:"linear-gradient(180deg, rgba(24,37,20,.18), rgba(51,64,31,.26))",
     materialSize:"cover",
     materialPosition:"center",
     materialBlendMode:"soft-light",
@@ -2544,6 +2545,8 @@ function arenaUiThemeSnapshotF9W2c() {
     modularSkinSlots:true,
     materialPass:true,
     ornamentalModularity:true,
+    scrollPolicyPreserved:true,
+    agathoiMaterialToned:true,
     slots:Object.keys(arenaUiThemeAssetSlotsF9W2c(resolved && resolved.key || ARENA_MENU_THEME_DEFAULT_F9W2B))
   };
 }
