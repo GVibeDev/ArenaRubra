@@ -1,30 +1,22 @@
-ARENA RUBRA — F9W2d2 THIN BORDER MODULES & ORNAMENT SIMPLIFICATION
-================================================================
+ARENA RUBRA — F9W2d3 AGATHOI PALETTE READABILITY HOTFIX
+=======================================================
 
-BASELINE
-F9W2d1 VALIDATA — C2-STABLE-1-F9W2d1-APK-M4c
-
-CANDIDATA
+BASE
 C2-STABLE-1-F9W2d2-APK-M4c
 
-COSA CAMBIA
-- ornamentazione ridotta a 4 corner + 4 side;
-- crest disattivato;
-- divider disattivato;
-- corner ridotti a 48 px;
-- side orizzontali a 16 px;
-- side verticali a 14 px;
-- i valori sono ora token di scala modificabili;
-- scroll F9W2d1 preservato;
-- materiale Agathoi F9W2d1 preservato.
+CANDIDATA
+C2-STABLE-1-F9W2d3-APK-M4c
 
-IMPORTANTE
-La patch NON contiene asset ornamentali. Le modifiche manuali già presenti nel repository
-(Agathoi ASSET 0.2) e le future revisioni delle altre fazioni non vengono sovrascritte.
+APPLICAZIONE
+Sovrascrivi questi file sulla F9W2d2 validata.
 
-TEST MANUALE
-1. Controllare Agathoi su Home, Setup, Deck Builder e un pannello in partita.
-2. Verificare che il bordo esterno appaia sottile e non zoomato.
-3. Verificare che non compaiano crest o divider.
-4. Verificare corner/side su pannelli piccoli e grandi.
-5. Verificare ancora lo scroll di Setup e Deck Builder.
+FIX
+- riequilibrata la palette Agathoi per aumentare il contrasto percepito;
+- testo principale, heading e testo tabellare Agathoi spostati su una gamma chiara ad alto contrasto;
+- testo secondario e muted resi più leggibili senza perdere identità cromatica;
+- superfici/linee/accenti Agathoi ritarati;
+- overlay del materiale Agathoi scurito e blend mode portato a multiply.
+
+INVARIANTI
+- nessuna modifica a gameplay, AI, tutorial, mappe, Match Data, Player/DEV profile;
+- invariati il fix scroll F9W2d1 e il contratto ornamentale F9W2d2 (4 corner + 4 side, senza crest/divider).

@@ -25,9 +25,9 @@ for (const token of [
 ]) assert(ui.includes(token), `missing F9W2b contract token: ${token}`);
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
-  'buildName: "Thin Border Modules & Ornament Simplification"',
-  'buildChannel: "starter2-ui-border-modules-w2d2"',
+  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
+  'buildName: "Agathoi Palette Readability Hotfix"',
+  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"',
   'productProfileDefault: "dev"',
   'productProfileSwitchable: true'
@@ -111,5 +111,5 @@ console.log(JSON.stringify({
   scope:'menu-control-center',
   productProfileRegression:true,
   snowMapRegression:true,
-  build:'C2-STABLE-1-F9W2d2-APK-M4c'
+  build:'C2-STABLE-1-F9W2d3-APK-M4c'
 }, null, 2));

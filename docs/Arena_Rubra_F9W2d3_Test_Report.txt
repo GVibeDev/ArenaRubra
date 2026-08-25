@@ -1,0 +1,34 @@
+Arena Rubra — F9W2d3 Test Report
+=================================
+
+Baseline:
+- C2-STABLE-1-F9W2d2-APK-M4c
+
+Candidate:
+- C2-STABLE-1-F9W2d3-APK-M4c
+- Build name: Agathoi Palette Readability Hotfix
+- Channel: starter2-ui-agathoi-palette-w2d3
+- Logic baseline: C2-STABLE-1-F9T2c4-APK-M4c
+
+Executed smoke / regression tests:
+- PASS tests/f9w2d3_agathoi_palette_readability_smoke.js
+- PASS tests/f9w2d2_thin_border_modules_smoke.js
+- PASS tests/f9w2d1_scroll_agathoi_hotfix_smoke.js
+- PASS tests/f9w2d_material_skin_smoke.js
+- PASS tests/f9w2c_global_theme_scope_smoke.js
+- PASS tests/f9w2b_menu_theme_smoke.js
+- PASS tests/f9w2a1_snow_bf_regression_f9w2b.js
+- PASS tests/f9w2a_profile_static_smoke.js
+
+Coverage summary:
+- Agathoi palette readability and contrast boost verified.
+- Thin-border 8-module ornament contract preserved (4 corner + 4 side).
+- Crest/divider remain removed from runtime rendering.
+- Scroll behavior remains preserved after ornament pass.
+- Global theme scope remains intact.
+- Menu theme system remains intact.
+- Snow BF official map contract unchanged.
+- Player / DEV runtime profile contract unchanged.
+
+Note:
+- Patch is source-only and does not alter gameplay logic, map content, or AI behavior.

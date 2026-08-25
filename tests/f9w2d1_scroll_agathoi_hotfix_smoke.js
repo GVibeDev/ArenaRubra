@@ -8,9 +8,9 @@ const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
 const build = fs.readFileSync(path.join(root, "src", "build_info.js"), "utf8");
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
-  'buildName: "Thin Border Modules & Ornament Simplification"',
-  'buildChannel: "starter2-ui-border-modules-w2d2"',
+  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
+  'buildName: "Agathoi Palette Readability Hotfix"',
+  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
 ]) assert(build.includes(token), `missing F9W2d1 build token: ${token}`);
 
@@ -24,16 +24,16 @@ assert(!/data-arena-skin-slot="shell"[\s\S]{0,900}overflow\s*:\s*hidden/.test(or
 assert(ornamentBlock.includes("border-radius:inherit"),
   "ornament pseudo-elements must clip themselves instead of clipping scroll containers");
 
-assert(ui.includes('materialOverlay:"linear-gradient(180deg, rgba(24,37,20,.18), rgba(51,64,31,.26))"'),
+assert(ui.includes('materialOverlay:"linear-gradient(180deg, rgba(10,18,12,.28), rgba(24,40,25,.38))"'),
   "Agathoi toned overlay missing");
 assert(ui.includes("scrollPolicyPreserved:true"), "scroll policy marker missing");
 assert(ui.includes("agathoiMaterialToned:true"), "Agathoi tone marker missing");
 
 console.log(JSON.stringify({
   ok:true,
-  feature:"F9W2d1 Thin Border Modules & Ornament Simplification",
+  feature:"F9W2d1 scroll invariant + Agathoi tone chain",
   nativeOverflowPreserved:true,
   ornamentSelfClip:true,
   agathoiOverlayToned:true,
-  build:"C2-STABLE-1-F9W2d2-APK-M4c"
+  build:"C2-STABLE-1-F9W2d3-APK-M4c"
 }, null, 2));

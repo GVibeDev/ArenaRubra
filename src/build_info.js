@@ -92,16 +92,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2d2-APK-M4c",
-  buildName: "Thin Border Modules & Ornament Simplification",
+  version: "C2-STABLE-1-F9W2d3-APK-M4c",
+  buildName: "Agathoi Palette Readability Hotfix",
   buildDate: "2026-08-24",
-  buildChannel: "starter2-ui-border-modules-w2d2",
+  buildChannel: "starter2-ui-agathoi-palette-w2d3",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2d1 costruita sulla F9W2d in test. Ripristina la policy di overflow originale dei componenti UI: il layer ornamentale non forza più overflow:hidden sui contenitori shell/panel/header, quindi Setup/Nuova partita e gli altri menu mantengono lo scrolling definito dal CSS statico. I pseudo-elementi ornamentali vengono invece ritagliati tramite border-radius ereditato, senza interferire con lo scroll del contenuto. Il materiale Agathoi viene attenuato: asset material.webp ridotto di luminanza e overlay chiaro sostituito con un velo verde scuro più neutro, mantenendo invariati gli slot modulari e il contrasto testuale. Nessuna regola di gioco, mappa, AI, Match Data, profilo Player/DEV o presentation_theme viene modificata. Baseline logica F9T2c4 invariata.",
+  notes: "Candidata F9W2d3 costruita sulla F9W2d2 validata. Interviene soltanto sulla palette Agathoi per migliorare la leggibilità dei menu e dei pannelli in partita: superfici leggermente riequilibrate, accenti/linee ritarati, testo principale e tabellare portati su una gamma chiara ad alto contrasto, secondari alleggeriti e overlay del materiale Agathoi reso più scuro con blend multiply. Restano invariati il contratto ornamentale F9W2d2 a 8 moduli (4 corner + 4 side), la rimozione di crest/divider, il fix scroll F9W2d1, gameplay, AI, mappe, Match Data, profili Player/DEV e presentation_theme. Baseline logica F9T2c4 invariata.",
 });
 
 function buildInfoLabel() {

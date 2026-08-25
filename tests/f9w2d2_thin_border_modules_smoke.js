@@ -32,11 +32,11 @@ for (const forbidden of [
 ]) assert(!ui.includes(forbidden), `obsolete ornament contract still active: ${forbidden}`);
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
-  'buildName: "Thin Border Modules & Ornament Simplification"',
-  'buildChannel: "starter2-ui-border-modules-w2d2"',
+  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
+  'buildName: "Agathoi Palette Readability Hotfix"',
+  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
-]) assert(build.includes(token), `missing F9W2d2 build metadata: ${token}`);
+]) assert(build.includes(token), `missing current build metadata: ${token}`);
 
 // The ornament layer must use exactly the 4 corners + 4 sides.
 const layerStart = ui.indexOf('background-image:\n        var(--arena-ui-corner-tl)');
@@ -60,7 +60,7 @@ assert(!/data-arena-skin-slot="shell"[\s\S]{0,900}overflow\s*:\s*hidden/.test(or
 
 console.log(JSON.stringify({
   ok:true,
-  feature:'F9W2d2 Thin Border Modules & Ornament Simplification',
+  feature:'Eight-slice thin border modules invariant',
   frameModules:8,
   corners:4,
   sides:4,
@@ -70,5 +70,5 @@ console.log(JSON.stringify({
   horizontalSideThickness:'16px',
   verticalSideThickness:'14px',
   scrollPolicyPreserved:true,
-  build:'C2-STABLE-1-F9W2d2-APK-M4c'
+  build:'C2-STABLE-1-F9W2d3-APK-M4c'
 }, null, 2));

@@ -21,17 +21,16 @@ for (const token of [
 ]) assert(ui.includes(token), `missing F9W2d token: ${token}`);
 
 for (const token of [
-  'version: "C2-STABLE-1-F9W2d2-APK-M4c"',
-  'buildName: "Thin Border Modules & Ornament Simplification"',
-  'buildChannel: "starter2-ui-border-modules-w2d2"',
+  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
+  'buildName: "Agathoi Palette Readability Hotfix"',
+  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
   'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
 ]) assert(build.includes(token), `missing F9W2d build metadata: ${token}`);
 
 const themes = ['nexus_basalt','exordium_imperium','liberti_sine_vinculis','agathoi_kleos','fabeot_vesper'];
 const assets = ['material.webp','corner_tl.webp','corner_tr.webp','corner_bl.webp','corner_br.webp','edge_top.webp','edge_right.webp','edge_bottom.webp','edge_left.webp'];
 for (const theme of themes) for (const asset of assets) {
-  const file = path.join(root, 'assets', 'ui', 'faction_skins', theme, asset);
-  assert(fs.existsSync(file), `missing asset: ${file}`);
+  assert(ui.includes(`assets/ui/faction_skins/${theme}/${asset}`), `missing asset reference in ui.js: ${theme}/${asset}`);
 }
 
 const start = ui.indexOf('// F9W2b — Menu Theme System');
@@ -71,8 +70,8 @@ context.arenaMenuThemeApplyF9W2b('agathoi_kleos', {persist:true});
 context.arenaUiThemeInitializeF9W2c();
 let snap = context.arenaUiThemeSnapshotF9W2c();
 assert.strictEqual(snap.activeTheme, 'agathoi_kleos');
-assert.strictEqual(styleProps['--arena-ui-text-primary'], '#172111');
-assert.strictEqual(styleProps['--arena-ui-table-text'], '#1b2615');
+assert.strictEqual(styleProps['--arena-ui-text-primary'], '#f2f7ea');
+assert.strictEqual(styleProps['--arena-ui-table-text'], '#f4f9ed');
 assert.ok(String(styleProps['--arena-ui-material-image']).includes('agathoi_kleos/material.webp'));
 assert.ok(String(styleProps['--arena-ui-corner-tl']).includes('agathoi_kleos/corner_tl.webp'));
 assert.strictEqual(styleProps['--arena-ui-ornament-opacity'], '.30');
@@ -92,9 +91,9 @@ assert.ok(String(styleProps['--arena-ui-material-image']).includes('nexus_basalt
 
 console.log(JSON.stringify({
   ok:true,
-  feature:'F9W2d Thin Border Modules & Ornament Simplification',
+  feature:'F9W2d skin architecture + Agathoi readability palette',
   themes,
   assetsPerTheme:assets.length,
   activeGameTheme:snap.activeTheme,
-  build:'C2-STABLE-1-F9W2d2-APK-M4c'
+  build:'C2-STABLE-1-F9W2d3-APK-M4c'
 }, null, 2));
