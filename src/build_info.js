@@ -92,16 +92,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2d3-APK-M4c",
-  buildName: "Agathoi Palette Readability Hotfix",
-  buildDate: "2026-08-24",
-  buildChannel: "starter2-ui-agathoi-palette-w2d3",
+  version: "C2-STABLE-1-F9W2d4-APK-M4c",
+  buildName: "Repository Repair & Right Inspector Hotfix",
+  buildDate: "2026-08-27",
+  buildChannel: "starter2-repo-repair-right-inspector-w2d4",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2d3 costruita sulla F9W2d2 validata. Interviene soltanto sulla palette Agathoi per migliorare la leggibilità dei menu e dei pannelli in partita: superfici leggermente riequilibrate, accenti/linee ritarati, testo principale e tabellare portati su una gamma chiara ad alto contrasto, secondari alleggeriti e overlay del materiale Agathoi reso più scuro con blend multiply. Restano invariati il contratto ornamentale F9W2d2 a 8 moduli (4 corner + 4 side), la rimozione di crest/divider, il fix scroll F9W2d1, gameplay, AI, mappe, Match Data, profili Player/DEV e presentation_theme. Baseline logica F9T2c4 invariata.",
+  notes: "Candidata F9W2d4 costruita sulla baseline tecnica F9W2d3 precedente al commit estraneo GVibeDev.cc. Il commit 3c8cad461921b7c4b2ded7a970b019c2a6a24c9e viene annullato mediante revert non committato, senza riscrivere la storia Git. L Inspector dell unita selezionata viene ancorato al lato destro del viewport Desktop/Web; la preview della carta unita viene portata a circa 370 px, allineandosi alla preview della carta selezionata dalla mano. Mobile M4, gameplay, AI, tutorial, mappe, Match Data, Player/DEV, temi e presentation_theme restano invariati. Baseline logica F9T2c4 invariata.",
 });
 
 function buildInfoLabel() {
