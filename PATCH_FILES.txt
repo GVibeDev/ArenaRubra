@@ -1,6 +1,6 @@
 PATCH_README.txt
 PATCH_FILES.txt
-css/style.css
+src/ui.js
 src/build_info.js
-docs/Arena_Rubra_F9W2d4_Repo_Repair_Right_Inspector.md
-tests/f9w2d4_repo_repair_right_inspector_smoke.js
+docs/Arena_Rubra_F9W2d4a_Inspector_Position_Ownership_Hotfix.md
+tests/f9w2d4a_inspector_position_ownership_smoke.js

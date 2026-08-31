@@ -1718,7 +1718,6 @@ function arenaMenuThemeEnsureStylesF9W2b() {
     html[data-arena-ui-theme] body.app-screen-game .gameHudStrip,
     html[data-arena-ui-theme] body.app-screen-game .gameActionBar,
     html[data-arena-ui-theme] body.app-screen-game .gameDebugMenu,
-    html[data-arena-ui-theme] body.app-screen-game .selectedUnitFloat,
     html[data-arena-ui-theme] body.app-screen-game .panel:not(#boardWrap){
       position:relative;
       isolation:isolate;
@@ -2528,6 +2527,7 @@ function arenaUiThemeSnapshotF9W2c() {
     agathoiMaterialToned:true,
     agathoiPaletteReadable:true,
     agathoiTextContrastBoosted:true,
+    inspectorPositionOwnedByLayout:true,
     eightSliceFrameOnly:true,
     crestRemoved:true,
     dividerRemoved:true,

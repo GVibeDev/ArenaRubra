@@ -92,16 +92,16 @@
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
   stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2d4-APK-M4c",
-  buildName: "Repository Repair & Right Inspector Hotfix",
+  version: "C2-STABLE-1-F9W2d4a-APK-M4c",
+  buildName: "Inspector Position Ownership Hotfix",
   buildDate: "2026-08-27",
-  buildChannel: "starter2-repo-repair-right-inspector-w2d4",
+  buildChannel: "starter2-ui-inspector-position-w2d4a",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2d4 costruita sulla baseline tecnica F9W2d3 precedente al commit estraneo GVibeDev.cc. Il commit 3c8cad461921b7c4b2ded7a970b019c2a6a24c9e viene annullato mediante revert non committato, senza riscrivere la storia Git. L Inspector dell unita selezionata viene ancorato al lato destro del viewport Desktop/Web; la preview della carta unita viene portata a circa 370 px, allineandosi alla preview della carta selezionata dalla mano. Mobile M4, gameplay, AI, tutorial, mappe, Match Data, Player/DEV, temi e presentation_theme restano invariati. Baseline logica F9T2c4 invariata.",
+  notes: "Candidata F9W2d4a costruita sulla F9W2d4 pubblicata su main (commit 311a05ca988c4c5343f7b00356c247d3a6fea328), ancora da validare. Corregge il conflitto fra layout statico e theme layer: selectedUnitFloat viene rimosso esclusivamente dal gruppo dinamico che forza position:relative, mentre resta nei selettori visuali del tema per colori, materiale, bordi, contenuti e pseudo-elementi. In questo modo il layout F9W2d4 mantiene la proprieta della posizione Desktop/Web con position:fixed a destra e preview da circa 370 px. Mobile M4, gameplay, AI, tutorial, mappe, Match Data, Player/DEV, skin, ornamentazione e presentation_theme restano invariati. Baseline logica F9T2c4 invariata.",
 });
 
 function buildInfoLabel() {
