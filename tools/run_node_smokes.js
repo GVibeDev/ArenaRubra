@@ -9,7 +9,13 @@ const testsDir = path.join(root, "tests");
 // This smoke requires a built Distribution artifact and is run explicitly by
 // the post-staging CI gate. Keeping it out of the source-tree batch prevents a
 // false failure before the artifact exists.
-const postStagingOnly = new Set(["s2_c7_artifact_final_smoke.js"]);
+const postStagingOnly = new Set([
+  "s2_c7_artifact_final_smoke.js",
+  // Supplemental ZIP-only Android candidate tests are intentionally outside
+  // the Starter 1.0 Desktop/Web baseline (see AR_P0_BASELINE_RECONCILIATION).
+  "f9t2a_android_touch_render_baseline_smoke.js",
+  "f9t2a_browser_android_touch_render_smoke.js"
+]);
 const files = fs.readdirSync(testsDir)
   .filter((name) => name.endsWith("_smoke.js") && !postStagingOnly.has(name))
   .sort();

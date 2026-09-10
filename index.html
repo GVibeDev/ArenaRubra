@@ -1304,16 +1304,18 @@
   </header>
 
   <section class="gameHudStrip" id="gameHudStrip" aria-label="HUD compatta partita" data-i18n-aria-label="game.hudLabel">
-    <span class="hudChip hudPrimary" id="gameHudRound">R—</span>
-    <span class="hudChip" id="gameHudTurn">Turno: —</span>
-    <span class="hudChip" id="gameHudEnergy">ENE —</span>
-    <span class="hudChip" id="gameHudPs">PS —</span>
-    <span class="hudChip" id="gameHudPressure">Pressione —</span>
-    <span class="hudChip" id="gameHudCards">Deck/Mano/Scarti —</span>
-    <span class="hudChip hudMode" id="gameHudMode">Pronto</span>
-    <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
-    <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9O2d-APK-M4c</span>
-    <button class="ghost hudDebugBtn" id="gameDebugBtn" type="button" aria-haspopup="menu" aria-controls="gameDebugMenu" aria-expanded="false">Debug</button>
+    <div class="gameHudStatusRow">
+      <span class="hudChip hudPrimary" id="gameHudRound">R—</span>
+      <span class="hudChip" id="gameHudTurn">Turno: —</span>
+      <span class="hudChip" id="gameHudEnergy">ENE —</span>
+      <span class="hudChip" id="gameHudPs">PS —</span>
+      <span class="hudChip" id="gameHudPressure">Pressione —</span>
+      <span class="hudChip" id="gameHudCards">Deck/Mano/Scarti —</span>
+      <span class="hudChip hudMode" id="gameHudMode">Pronto</span>
+      <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
+      <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9O2d-APK-M4c</span>
+      <button class="ghost hudDebugBtn" id="gameDebugBtn" type="button" aria-haspopup="menu" aria-controls="gameDebugMenu" aria-expanded="false">Debug</button>
+    </div>
     <div class="gameComparisonBars" id="gameComparisonBars" aria-label="Confronto controllo PS e presenza unità" data-i18n-aria-label="game.comparisonLabel" aria-live="polite">
       <div class="gameComparisonRow" data-comparison-kind="ps">
         <span class="gameComparisonLabel">PS</span>

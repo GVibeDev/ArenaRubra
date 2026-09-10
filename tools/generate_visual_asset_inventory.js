@@ -19,6 +19,10 @@ const frozenRequired = new Set([
   "assets/cards/placeholders/missing_art_tactic.png",
   "assets/cards/placeholders/missing_art_unit.png"
 ]);
+const supplementalArchivePaths = new Set([
+  // Preserved ZIP-only source, explicitly outside the repository inventory.
+  "assets/maps/backgrounds/battlefield.webp"
+]);
 
 const skinIds = ["nexus_basalt", "exordium_imperium", "liberti_sine_vinculis", "agathoi_kleos", "fabeot_vesper"];
 const skinRequiredSlots = ["material.webp", "corner_tl.webp", "corner_tr.webp", "corner_bl.webp", "corner_br.webp", "edge_top.webp", "edge_right.webp", "edge_bottom.webp", "edge_left.webp"];
@@ -87,7 +91,10 @@ function record(absolute) {
 }
 
 function generate() {
-  const records = walk(assetRoot).map(record).sort((a, b) => a.path.localeCompare(b.path));
+  const records = walk(assetRoot)
+    .filter(absolute => !supplementalArchivePaths.has(relative(absolute)))
+    .map(record)
+    .sort((a, b) => a.path.localeCompare(b.path));
   const groups = { required:[], optional:[], devOnly:[], legacy:[], unused:[] };
   for (const item of records) groups[classification(item.path)].push(item);
   const manifest = {

@@ -70,6 +70,7 @@ def main():
         assert page.locator("#mainMenuResumeBtn small").text_content().strip() == "No active session"
         page.wait_for_function("() => document.querySelector('#mainMenuLocalSummary').textContent.includes('local decks')")
         assert page.locator("#controlCenterLastMatch").text_content().strip() == "No matches"
+        page.wait_for_function("() => document.querySelector('#controlCenterDiagnosticErrors').textContent.trim() !== 'Checking…'")
         diagnostic_label = page.locator("#controlCenterDiagnosticErrors").text_content().strip()
         assert diagnostic_label == "No errors" or diagnostic_label.endswith(" errors"), diagnostic_label
         no_horizontal_overflow(page, "#mainMenuScreen")

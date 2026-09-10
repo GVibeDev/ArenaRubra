@@ -95,7 +95,13 @@ function controlCenterSafeFilename(value) {
 function controlCenterSetText(id, value) {
   if (typeof document === "undefined") return;
   const element = document.getElementById(id);
-  if (element) element.textContent = value == null ? "" : String(value);
+  if (element) {
+    // Dynamic metrics own their rendered value. Leaving a bootstrap data-i18n
+    // binding in place lets the deferred locale pass overwrite fresh state.
+    element.removeAttribute("data-i18n");
+    element.removeAttribute("data-i18n-params");
+    element.textContent = value == null ? "" : String(value);
+  }
 }
 
 function controlCenterSetTone(id, tone) {

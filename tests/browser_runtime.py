@@ -5,7 +5,7 @@ import shutil
 
 
 CURRENT_LOGIC_BASELINE = "C2-STABLE-1-F9T2c4-APK-M4c"
-BUILD_VERSION_PATTERN = re.compile(r"^C2-STABLE-1-F9[A-Za-z0-9]+-APK-M4c$")
+BUILD_VERSION_PATTERN = re.compile(r"^(?:C2-STABLE-1-F9[A-Za-z0-9]+-APK-M4c|1\.0\.0-rc\.\d+)$")
 
 
 def is_valid_build_version(value):

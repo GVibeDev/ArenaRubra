@@ -9339,9 +9339,21 @@ body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
    F9U1b — Unit Inspector & PS/Unit Comparison Bars
    Indicatori UI alimentati dallo stato runtime autorevole.
    ===================================================== */
+.gameHudStatusRow,
 .gameComparisonBars {
-  flex: 0 0 100%;
+  flex: 0 1 1180px;
   width: min(1180px, 100%);
+  max-width: 1180px;
+  margin-inline: auto;
+}
+.gameHudStatusRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.gameComparisonBars {
   display: grid;
   gap: 4px;
   padding: 1px 2px 0;
