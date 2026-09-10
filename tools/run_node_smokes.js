@@ -14,11 +14,22 @@ const files = fs.readdirSync(testsDir)
   .filter((name) => name.endsWith("_smoke.js") && !postStagingOnly.has(name))
   .sort();
 const failures = [];
+const annotationEscape = value => String(value || "")
+  .replace(/%/g, "%25")
+  .replace(/\r/g, "%0D")
+  .replace(/\n/g, "%0A");
 for (const file of files) {
+  process.stdout.write(`[RUN] ${file}\n`);
   const result = spawnSync(process.execPath, [path.join(testsDir, file)], { cwd: root, encoding: "utf8" });
   if (result.status !== 0) {
     failures.push(file);
-    process.stderr.write(`\n[FAIL] ${file}\n${result.stdout || ""}${result.stderr || ""}`);
+    const details = `${result.stdout || ""}${result.stderr || ""}${result.error ? result.error.stack || result.error.message : ""}`;
+    process.stderr.write(`\n[FAIL] ${file}\n${details}`);
+    if (process.env.GITHUB_ACTIONS === "true") {
+      process.stderr.write(`\n::error file=tests/${file},title=Node smoke failed::${annotationEscape(details || `exit ${result.status}`)}\n`);
+    }
+  } else {
+    process.stdout.write(`[PASS] ${file}\n`);
   }
 }
 console.log(`AR-AC1 Node smoke gate: ${files.length - failures.length}/${files.length} PASS`);
