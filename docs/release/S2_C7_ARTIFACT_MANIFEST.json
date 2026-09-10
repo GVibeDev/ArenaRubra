@@ -3,14 +3,14 @@
   "artifact": "ArenaRubra-Starter-1.0-Web",
   "target": "Desktop / Web",
   "profile": "distribution",
-  "sourceCommit": "fef34ddf34fa20e111fbfe0d6721448b7e5bc6c5",
-  "sourceState": "working-tree",
-  "cleanCheckout": false,
+  "sourceCommit": "10e3f463dfee3ec0d74abbb7178a9ea9e7c51378",
+  "sourceState": "clean-checkout",
+  "cleanCheckout": true,
   "build": {
-    "version": "C2-STABLE-1-F9W2d4a-APK-M4c",
-    "buildName": "Inspector Position Ownership Hotfix",
-    "buildDate": "2026-08-27",
-    "buildChannel": "starter2-ui-inspector-position-w2d4a",
+    "version": "1.0.0-rc.1",
+    "buildName": "Starter 1.0 Release Candidate 1",
+    "buildDate": "2026-09-10",
+    "buildChannel": "starter-1-0-rc-1",
     "logicBaseline": "C2-STABLE-1-F9T2c4-APK-M4c"
   },
   "contentCatalogHash": "eab4dadff4d9f6d4bc8e99bd38d7331e4d1559e69d40547b0039a75c1f140709",
@@ -2132,8 +2132,8 @@
     },
     {
       "path": "data/official_maps_f9w2a1.js",
-      "bytes": 55944,
-      "sha256": "cbe581635e2fdcb519365741210e276025e821e2766c2d50e22efe312aae87c1"
+      "bytes": 55934,
+      "sha256": "1300cb7ac268d4bd86fb99981376a5030fc142799095143cb36e0b34dff61df3"
     },
     {
       "path": "data/required_assets.json",
@@ -2397,8 +2397,8 @@
     },
     {
       "path": "src/build_info.js",
-      "bytes": 9688,
-      "sha256": "f429faed8140ced345ef87f8fe9a752530215c3d4e02b0a8b7de4774f49092eb"
+      "bytes": 9622,
+      "sha256": "9034289a01ac2ef96a609879cdf086081027aac449a9ef89af93da15266b047b"
     },
     {
       "path": "src/camera_interaction.js",
@@ -2793,6 +2793,6 @@
   ],
   "summary": {
     "files": 555,
-    "bytes": 151146440
+    "bytes": 151146364
   }
 }

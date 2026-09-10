@@ -1,8 +1,8 @@
 # S2-C7 — Release regression and artifact gate
 
-Status: **BLOCKED** — 2026-09-10.
+Status: **PASS** — 2026-09-10.
 
-The complete technical regression is green. Milestone closure remains blocked because the final Distribution artifact was generated from the current working tree rather than from a clean checkout. This is a provenance failure, not a gameplay or packaging failure.
+The complete technical regression is green. The final Distribution artifact was generated from clean commit `10e3f463dfee3ec0d74abbb7178a9ea9e7c51378`, and its embedded inventory, checksums, runtime profile and browser behavior all pass.
 
 ## Coverage and changes
 
@@ -20,21 +20,22 @@ The complete technical regression is green. Milestone closure remains blocked be
 - Complete source-tree JavaScript smoke suite — PASS: 181/181 checks, including the Node/Playwright Golden Match and release-matrix tests. The post-staging artifact-final smoke also passes independently.
 - Golden Matches — PASS: five deterministic fixtures, each repeated with the expected hash; 2P/3P/4P paths cover 40/60/80 action turns.
 - Browser release matrix, source tree — PASS: all 10 official maps and five player/bot configurations; startup about 16.0 s, initialization 36–64 ms, rendering 4–11 ms, bot turns about 515–531 ms, bounded heap growth and no non-fallback runtime errors.
-- Browser release matrix, staged artifact — PASS: equivalent Distribution coverage; startup about 16.2 s and heap growth about 2.0 MB.
+- Browser release matrix, staged artifact — PASS: equivalent Distribution coverage; startup 15.7 s, map initialization 71–124 ms, rendering 8–24 ms, bot turns 545–584 ms, heap growth about 15.4 MB, no overflow or non-fallback runtime errors.
 - Required-assets gate — PASS: 69 required assets present and integrity-checked; all 472 repository assets classified.
 - Distribution staging gate — PASS: 99/99 checks.
-- Final artifact smoke — PASS: 555 payload files, 151,146,440 bytes, exact checksums, licenses, Distribution boot, English flow, new game and precheck; no DEV requests or page errors.
+- Final artifact smoke — PASS: 555 payload files, 151,146,364 bytes, exact checksums, licenses, Distribution boot, `1.0.0-rc.1` metadata, English flow, new game and precheck; no DEV requests or page errors.
 - DOC-FREEZE and frozen content/localization gates — PASS; catalog hash remains `eab4dadff4d9f6d4bc8e99bd38d7331e4d1559e69d40547b0039a75c1f140709`.
 
-## Required closure condition not met
+## Clean-checkout provenance
 
 The artifact evidence records:
 
-- source commit `fef34ddf34fa20e111fbfe0d6721448b7e5bc6c5`;
-- `sourceState: working-tree`;
-- `cleanCheckout: false`.
+- source commit `10e3f463dfee3ec0d74abbb7178a9ea9e7c51378`;
+- `sourceState: clean-checkout`;
+- `cleanCheckout: true`;
+- build version `1.0.0-rc.1`.
 
-The current tree contains a large set of modified and untracked roadmap files. Creating a commit, choosing which changes belong to it, or rewriting user-owned changes requires explicit authorization. Until the intended state is committed and the artifact is regenerated from that exact clean checkout, S2-C7 cannot be marked PASS.
+The packaging provenance requirement is satisfied. The evidence manifest and SHA-256 file enumerate the exact artifact produced from that immutable commit.
 
 ## Not run
 
@@ -45,5 +46,4 @@ The current tree contains a large set of modified and untracked roadmap files. C
 ## Residual risks
 
 - Optional artwork/audio candidate URLs can return fallback-domain 404 responses. Required assets are checksum-gated and the declared fallbacks work; future asset additions must be reclassified.
-- The canonical build metadata still identifies `C2-STABLE-1-F9W2d4a-APK-M4c` / `Inspector Position Ownership Hotfix`. The final S2-RC version label must be selected before publication.
 - CI success on the artifact’s exact source commit is an S2-RC prerequisite and has not been evidenced locally.

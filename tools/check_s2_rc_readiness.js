@@ -78,7 +78,7 @@ if (fs.existsSync(ciEvidencePath)) {
 }
 
 const artifact = fs.existsSync(artifactPath) ? JSON.parse(fs.readFileSync(artifactPath, "utf8")) : null;
-if (artifact && !/^Starter\s*1\.0|^S2[-_. ]?RC/i.test(artifact.build?.version || "")) {
+if (artifact && !/^(?:Starter\s*1\.0|S2[-_. ]?RC|1\.0\.0-rc\.\d+)/i.test(artifact.build?.version || "")) {
   warnings.push(`release identity still uses version ${artifact.build?.version || "unknown"}; confirm the S2-RC version label before publication`);
 }
 

@@ -2,7 +2,7 @@
 
 Status: **BLOCKED** — 2026-09-10.
 
-S2 has reached the release-candidate boundary, but it is not complete. All implementation, freeze, localization, presentation and technical regression gates through S2-C7 are green; two release-provenance prerequisites remain unsatisfied.
+S2 has reached the release-candidate boundary, but it is not complete. All implementation, freeze, localization, presentation, technical regression and clean-checkout artifact gates through S2-C7 are green; CI evidence for the frozen RC commit remains unsatisfied.
 
 ## Milestone state
 
@@ -15,14 +15,14 @@ S2 has reached the release-candidate boundary, but it is not complete. All imple
 | S2-C6 | PASS | `docs/presentation/S2_C6_VISUAL_ASSET_PRESENTATION_GATE.md` |
 | DOC-FREEZE | PASS | `docs/release/S2_DOC_FREEZE.md` |
 | S2-C7 technical regression | PASS | `docs/release/S2_C7_RELEASE_REGRESSION.md` |
-| S2-C7 clean-checkout provenance | BLOCKED | Artifact manifest records `cleanCheckout: false`. |
-| S2-RC CI alignment | BLOCKED | No `docs/release/S2_CI_EVIDENCE.json` for the artifact commit. |
+| S2-C7 clean-checkout provenance | PASS | Artifact manifest records `10e3f463…`, `cleanCheckout: true`, and `1.0.0-rc.1`. |
+| S2-RC CI alignment | BLOCKED | No `docs/release/S2_CI_EVIDENCE.json` for commit `10e3f463…`. |
 
 ## Readiness blockers
 
-1. Consolidate the intended repository changes into an authorized commit, produce a clean checkout at that exact SHA, regenerate the Distribution artifact, and rerun the artifact-final/browser gates.
-2. Obtain green CI evidence for the same SHA and record it as `docs/release/S2_CI_EVIDENCE.json` with schema `AR-S2-CI-EVIDENCE-1`, `status: success`, and the matching `sourceCommit`.
-3. Confirm the public S2-RC version/build label; the current canonical metadata still carries the earlier `C2-STABLE-1-F9W2d4a-APK-M4c` identity.
+1. Obtain green CI evidence for commit `10e3f463dfee3ec0d74abbb7178a9ea9e7c51378` and record it as `docs/release/S2_CI_EVIDENCE.json` with schema `AR-S2-CI-EVIDENCE-1`, `status: success`, and the matching `sourceCommit`.
+
+The RC identity is assigned as `1.0.0-rc.1` / `Starter 1.0 Release Candidate 1`.
 
 ## Verification command
 
