@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const store = new Map();
@@ -149,8 +150,7 @@ for (const expected of ['["screen","tutorial"]','["screen","mainMenu"]','["newGa
   if (!navText.includes(expected)) throw new Error(`Navigation routing missing ${expected}: ${navText}`);
 }
 
-if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("BUILD_INFO version invalid");
-if (ev("BUILD_INFO.buildChannel") !== "starter2-result-flow-v3c") throw new Error("BUILD_INFO channel invalid");
+assertCurrentBuildInfo(ev("BUILD_INFO"));
 
 console.log(JSON.stringify({
   ok:true,

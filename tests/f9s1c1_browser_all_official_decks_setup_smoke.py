@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     page = browser.new_page(viewport={"width": 1365, "height": 900})
     page.on("pageerror", lambda exc: errors.append(str(exc)))
     page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
@@ -85,7 +82,7 @@ with sync_playwright() as p:
     }""")
     browser.close()
 
-assert result["build"] == "C2-STABLE-1-F9U2b-APK-M4c", result
+assert_valid_build_version(result["build"])
 assert result["builtInCount"] == 50, result
 assert len(result["rows"]) == 50, result
 assert result["factionCounts"] == {"Nexus": 10, "Exordium": 10, "Liberti": 10, "Agathoi": 10, "Fabeot": 10}, result

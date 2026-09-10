@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const storeMap = new Map();
@@ -115,7 +116,7 @@ if (!stateCheck.tutorialMode || !stateCheck.tutorialChallengeMode || stateCheck.
   throw new Error(`Challenge state contract invalid: ${JSON.stringify(stateCheck)}`);
 }
 
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("BUILD_INFO version not updated");
+assertCurrentBuildInfo(evaluate("BUILD_INFO"));
 
 console.log(JSON.stringify({
   ok:true,

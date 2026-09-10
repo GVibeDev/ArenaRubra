@@ -1,0 +1,621 @@
+{
+  "content": {
+    "units": {
+      "NX2B01": {
+        "psBonus": {
+          "description": "+1 ATT mentre presidia un PS controllato da Nexus."
+        }
+      },
+      "NX2B04": {
+        "ability": {
+          "name": "Scarica Antiveicolo",
+          "description": "Rimuove 1 DEF a un veicolo nemico entro raggio 2."
+        }
+      },
+      "NX2B05": {
+        "ability": {
+          "name": "Impulso Vincolante",
+          "description": "Applica Inibizione Movimento a una unità nemica entro raggio 2 per il suo prossimo turno."
+        }
+      },
+      "NX3B01": {
+        "psBonus": {
+          "description": "+1 ATT se Nexus controlla almeno 1 PS."
+        }
+      },
+      "NX3B03": {
+        "ability": {
+          "name": "Cannone Antiveicolo",
+          "description": "2 danni a un veicolo nemico entro raggio 2."
+        }
+      },
+      "NX4B03": {
+        "ability": {
+          "name": "Ottimizzazione Logistica",
+          "description": "Le unità non struttura Nexus costano -1 ENE fino alla fine del prossimo turno proprio (minimo 1). Compatibile anche con carte unità giocate dalla mano."
+        }
+      },
+      "NXPIV01": {
+        "ability": {
+          "name": "Campo Difensivo",
+          "description": "Passiva: le unità alleate adiacenti subiscono 1 danno in meno dagli attacchi e dalle abilità."
+        }
+      },
+      "NXCMD01": {
+        "description": "Comandante Nexus orientato a presidio PS e controllo territoriale.",
+        "ability": {
+          "name": "Protocollo di Presidio",
+          "description": "Bersaglia una unità Nexus alleata su PS o adiacente a PS: recupera +1 DEF. Se Nexus controlla quel PS, ottiene anche +1 ATT fino al prossimo attacco. Costo 1 ENE, CD2."
+        },
+        "commanderArchetype": "Presidio PS"
+      },
+      "NXCMD02": {
+        "description": "Comandante/sistema operativo tattico: migliora lo schieramento delle unità Nexus dalla mano.",
+        "ability": {
+          "name": "Logistica Avanzata",
+          "description": "La prossima unità Nexus sbarcata dalla mano costa -1 ENE, minimo 1. Non si applica al mercato/debug roster. Costo 0 ENE, CD2."
+        },
+        "commanderArchetype": "Logistica avanzata"
+      },
+      "NX0B00": {
+        "ability": {
+          "name": "Protocollo Ripristino",
+          "description": "Cura 2 HP a un alleato entro raggio 2."
+        }
+      },
+      "NXC1F01": {
+        "ability": {
+          "name": "Visione",
+          "description": "Passiva permanente: Visione R2. Le unità nemiche Furtive entro R2 possono essere bersagliate/aggirate dai sistemi anti-Furtivo."
+        }
+      },
+      "NXC1F02": {
+        "description": "Passiva: +1 ATT quando attacca strutture."
+      },
+      "NXC1F03": {
+        "description": "Avanguardia: può agire nel turno in cui entra in gioco."
+      },
+      "NXC1F04": {
+        "ability": {
+          "name": "Assetto Impermeabile",
+          "description": "Immune agli effetti di abilità e tattiche nemiche fino al prossimo turno. Non blocca effetti alleati."
+        }
+      },
+      "NXC1F05": {
+        "ability": {
+          "name": "Rilascio Mina",
+          "description": "Piazza una mina su una cella libera entro R1. La prossima fanteria subisce 1 danno; il prossimo veicolo subisce 3 danni. Colpisce alleati e nemici."
+        }
+      },
+      "NXC1F06": {
+        "ability": {
+          "name": "Campo Barriera",
+          "description": "Dà +1 DEF temporaneo a una unità alleata entro R1."
+        }
+      },
+      "NXC1F07": {
+        "ability": {
+          "name": "Fuoco di Barriera",
+          "description": "Infligge 1 danno a una fanteria nemica entro R1."
+        }
+      },
+      "NXC1F08": {
+        "ability": {
+          "name": "Produzione Quad",
+          "description": "Crea 1 Quad Ricognitore su cella libera adiacente, dentro cap. Se non può, lo spawn salta."
+        }
+      },
+      "NXC1F09": {
+        "ability": {
+          "name": "Tiro Difensivo",
+          "description": "Infligge 2 danni a una unità nemica entro R2."
+        }
+      },
+      "EX1B04": {
+        "ability": {
+          "name": "Colpo Pesante",
+          "description": "2 danni a una unità nemica entro raggio 2. Costo 1 ENE."
+        }
+      },
+      "EX2B03": {
+        "ability": {
+          "name": "Sfondamento",
+          "description": "Rimuove 1 DEF a una unità nemica entro raggio 2. Costo 1 ENE."
+        }
+      },
+      "EX2B04": {
+        "ability": {
+          "name": "Bombardamento",
+          "description": "2 danni a una unità nemica entro raggio 3; 3 danni se il bersaglio è una struttura. Costo 2 ENE."
+        }
+      },
+      "EX4B02": {
+        "ability": {
+          "name": "Dardo del Bastione",
+          "description": "Infligge 1 danno a una unità nemica entro raggio 1. Prima Linea: intercetta attacchi base diretti alle unità alleate adiacenti."
+        }
+      },
+      "EXPIV01": {
+        "ability": {
+          "name": "Doppio Assalto",
+          "description": "Passiva: può effettuare due attacchi base nello stesso turno."
+        }
+      },
+      "EX0B00": {
+        "description": "Comandante Exordium da assalto frontale: ordina, potenzia e continua la pressione.",
+        "ability": {
+          "name": "Ordine di Varran",
+          "description": "Una unità Exordium alleata entro R1, Varran compreso, ottiene +1 ATT per questo turno. Dopo l’abilità Varran torna pronto e può agire. Costo 1 ENE, CD2."
+        },
+        "commanderArchetype": "Assalto frontale"
+      },
+      "EXCMD02": {
+        "description": "Comandante Exordium da supporto d’assalto: sostiene la linea e mantiene la pressione.",
+        "ability": {
+          "name": "Comando di Nemira",
+          "description": "Una unità Exordium alleata entro R1, Nemira compresa, recupera 1 HP e ottiene +1 ATT per questo turno. Costo 2 ENE, CD3."
+        },
+        "commanderArchetype": "Sustain offensivo"
+      },
+      "EXC1F01": {
+        "ability": {
+          "name": "Ordine al Mezzo",
+          "description": "Dà +1 ATT temporaneo a un veicolo alleato adiacente."
+        }
+      },
+      "EXC1F02": {
+        "ability": {
+          "name": "Colpo d'Assedio",
+          "description": "Infligge 2 danni a una unità nemica entro R2. Costo 1 ENE."
+        }
+      },
+      "EXC1F03": {
+        "description": "Passiva: +1 DEF quando è adiacente a un veicolo alleato."
+      },
+      "EXC1F04": {
+        "description": "Passiva: se non attacca, ottiene +1 movimento nel prossimo turno."
+      },
+      "EXC1F05": {
+        "description": "Passiva: +1 ATT quando attacca fanteria; +1 DEF quando viene attaccato da fanteria."
+      },
+      "EXC1F06": {
+        "ability": {
+          "name": "Frattura della Linea",
+          "description": "Rimuove 1 DEF a una unità nemica entro R2. Costo 1 ENE."
+        }
+      },
+      "EXC1F07": {
+        "ability": {
+          "name": "Fulmine di Iupiter",
+          "description": "Infligge 3 danni a una unità entro R3. Passiva: +1 DEF contro unità leggere."
+        }
+      },
+      "EXC1F08": {
+        "description": "Passiva: unità alleate che sbarcano adiacenti ottengono +1 ATT permanente."
+      },
+      "EXC1F09": {
+        "ability": {
+          "name": "Addestra Guardia",
+          "description": "Crea 1 Guardia di Aurex su cella libera adiacente, dentro cap."
+        }
+      },
+      "EXC1F10": {
+        "ability": {
+          "name": "Getto Lanciafiamme",
+          "description": "Getto ad area semplice: 2 danni al bersaglio e fino a 2 unità nemiche adiacenti valide."
+        }
+      },
+      "LX2B01": {
+        "description": "Massa Liberti: pressione di spazio con Superiorità Numerica, senza Sanguinamento automatico."
+      },
+      "LX2B02": {
+        "description": "Massa Liberti: pressione di spazio con Superiorità Numerica, senza Sanguinamento automatico."
+      },
+      "LX3B02": {
+        "description": "Unità di logoramento mobile: applica Sanguinamento, ma non usa Superiorità Numerica."
+      },
+      "LX3B01": {
+        "description": "Veicolo da pressione: usa Superiorità Numerica, senza Sanguinamento automatico."
+      },
+      "LX3B03": {
+        "description": "Elite Liberti: mantiene Superiorità Numerica e Sanguinamento, con ATT riequilibrato.",
+        "ability": {
+          "name": "Speronata Brutale",
+          "description": "2 danni a una unità nemica adiacente. Costo 1 ENE."
+        }
+      },
+      "LX4B01": {
+        "description": "Permette lo sbarco di fanteria leggera e veicoli leggeri alleati entro raggio 2. Vale anche per starter/fuori deck."
+      },
+      "LXPIV01": {
+        "description": "Pivot Liberti: mantiene Superiorità Numerica e Sanguinamento, ma con ATT riequilibrato.",
+        "ability": {
+          "name": "Ruggito dell’Orda",
+          "description": "Passiva: le unità alleate adiacenti ottengono +1 ATT."
+        }
+      },
+      "LX0B00": {
+        "description": "Comandante Liberti dell’orda: amplifica la pressione di branco e mantiene il sanguinamento da comandante.",
+        "ability": {
+          "name": "Richiamo del Ripudio",
+          "description": "Una unità Liberti alleata ottiene Superiorità Numerica Potenziata fino al prossimo attacco: +2 ATT invece di +1 se la condizione di Superiorità Numerica è rispettata. Costo 1 ENE, CD2."
+        },
+        "commanderArchetype": "Orda / Superiorità"
+      },
+      "LXCMD02": {
+        "description": "Comandante Sanguis senza abilità attiva: applica Sanguinamento 2 con attacco base e recupera 1 HP quando distrugge una fanteria nemica.",
+        "commanderArchetype": "Sanguinamento / predazione"
+      },
+      "LXC1F01": {
+        "description": "Avanguardia. Costa -1 ENE se sbarca adiacente a veicolo alleato, minimo 1. Massa Liberti: Superiorità Numerica senza Sanguinamento automatico."
+      },
+      "LXC1F02": {
+        "description": "Unità Sanguis: applica Sanguinamento con attacco base, ma non usa Superiorità Numerica."
+      },
+      "LXC1F03": {
+        "description": "Passiva: +1 ATT contro strutture. Veicolo da demolizione: usa Superiorità Numerica, non Sanguinamento."
+      },
+      "LXC1HA01": {
+        "description": "Predone leggero anti-veicolo. Usa Superiorità Numerica, senza Sanguinamento automatico.",
+        "ability": {
+          "name": "Colpo Cacciacarri",
+          "description": "Infligge 1 danno a una unità nemica entro R2; infligge 2 danni se il bersaglio è un Veicolo. Costo 1 ENE, CD2."
+        }
+      },
+      "LXC1HA02": {
+        "description": "Fanteria pesante Liberti da pressione: Superiorità Numerica senza Sanguinamento automatico."
+      },
+      "LXC1HA03": {
+        "description": "Avanguardia: può agire nel turno in cui entra in gioco. Veicolo da pressione: Superiorità Numerica senza Sanguinamento automatico."
+      },
+      "LXC1HA04": {
+        "description": "Veicolo pesante specializzato contro edifici e strutture. Usa Superiorità Numerica, senza Sanguinamento automatico.",
+        "ability": {
+          "name": "Impatto Demolitore",
+          "description": "Infligge 3 danni a una struttura nemica adiacente. Costo 1 ENE, CD1."
+        }
+      },
+      "LXC1HA05": {
+        "description": "Struttura pesante difensiva dei Liberti.",
+        "ability": {
+          "name": "Tiro di Rottami",
+          "description": "Infligge 1 danno a una unità nemica entro R2. Costo 1 ENE, CD2."
+        }
+      },
+      "AG1B01": {
+        "description": "Passiva: se termina il turno senza attaccare, usare abilità o costruire, ottiene Spine 1 fino al prossimo turno."
+      },
+      "AG1B02": {
+        "description": "Passiva: Spine 1. Chi lo attacca subisce 1 danno diretto."
+      },
+      "AG1B03": {
+        "ability": {
+          "name": "Colpo di Lancia Verde",
+          "description": "Infligge 1 danno e rimuove 1 DEF a un nemico adiacente. Costo 2 ENE. Passiva: Spine 1."
+        }
+      },
+      "AG2B01": {
+        "description": "Veicolo leggero costruttore: può costruire strutture Agathoi consumando l'azione. Più economico, utile come builder e non come combattente."
+      },
+      "AG2B02": {
+        "ability": {
+          "name": "Solco Frenante",
+          "description": "Applica Inibizione Movimento per 1 turno a un nemico entro raggio 2. Costo 2 ENE."
+        }
+      },
+      "AG4B01": {
+        "description": "Struttura Agathoi immune a Sanguinamento.",
+        "ability": {
+          "name": "Respiro della Radura",
+          "description": "Cura 1 HP a tutte le fanterie alleate entro raggio 1. Costo 3 ENE."
+        }
+      },
+      "AG4B02": {
+        "description": "Passiva: le fanterie Agathoi sbarcate adiacenti entrano con +1 DEF corrente. Immune a Sanguinamento."
+      },
+      "AGPIV01": {
+        "description": "Pivot Agathoi immune a Sanguinamento.",
+        "ability": {
+          "name": "Manto della Selva",
+          "description": "Scegli una unità alleata adiacente a una struttura Agathoi: non può essere bersagliata da attacchi o abilità nemiche fino al tuo prossimo turno. Costo 3 ENE."
+        }
+      },
+      "AG0B00": {
+        "description": "Comandante Agathoi da formazione: fragile negli HP, durissimo in DEF, potenzia la linea adiacente.",
+        "ability": {
+          "name": "Mandato del Primarca",
+          "description": "Alexandros e tutte le unità Agathoi alleate adiacenti ricevono +1 DEF senza cap. Costo 3 ENE, CD3."
+        },
+        "commanderArchetype": "Formazione difensiva"
+      },
+      "AGCMD02": {
+        "description": "Comandante Agathoi da difesa attiva: rende pericoloso attaccare la linea delle fanterie.",
+        "ability": {
+          "name": "Ordini dell’Agorà",
+          "description": "Una fanteria Agathoi alleata entro R1, oppure Dycaios stesso, ottiene Contrattacco fino al prossimo turno. Costo 2 ENE, CD3."
+        },
+        "commanderArchetype": "Contrattacco / Agorà"
+      },
+      "AGC1F01": {
+        "description": "Passiva: se adiacente a struttura alleata ottiene +1 DEF e Spine 1."
+      },
+      "AGC1F02": {
+        "description": "Passiva: +1 ATT contro unità adiacenti a struttura alleata."
+      },
+      "AGC1F03": {
+        "description": "Passiva: +1 DEF cumulativo se non si muove, max +4; perde il bonus quando si muove."
+      },
+      "AGC1F04": {
+        "description": "Se adiacente a struttura alleata non può essere bersagliato da abilità/tattiche nemiche."
+      },
+      "AGC1F05": {
+        "description": "Passiva alba: +1 movimento se inizia il turno adiacente a struttura alleata."
+      },
+      "AGC1F06": {
+        "ability": {
+          "name": "Traslazione Karyon",
+          "description": "Sposta una fanteria alleata entro R1 verso una cella libera adiacente al Karyon. Destinazione automatica valida; rispetta celle invalicabili e trigger di cella. Costo 1 ENE."
+        }
+      },
+      "AGC1F07": {
+        "description": "Passiva alba: se vicino a struttura alleata cura di 1 HP l'unità alleata adiacente più ferita."
+      },
+      "AGC1F08": {
+        "description": "Passiva: +1 DEF, max +4, per ogni unità non-QG adiacente, alleata o nemica."
+      },
+      "AGC1F09": {
+        "description": "Passiva: +1 DEF, max +3, per ogni struttura alleata adiacente. QG escluso."
+      },
+      "AGC1F10": {
+        "description": "Passiva alba: cura fino a 3 strutture adiacenti di 1 HP. Ogni 2 turni del proprietario genera +1 ENE."
+      },
+      "AGC1F11": {
+        "description": "Passiva alba: dà +1 HP massimo a una unità alleata adiacente, limite +3 per unità."
+      },
+      "AGC1F12": {
+        "ability": {
+          "name": "Velo del Domos",
+          "description": "Rende una struttura alleata non bersagliabile da abilità/tattiche nemiche fino al prossimo turno."
+        }
+      },
+      "FB1B01": {
+        "ability": {
+          "name": "Corruzione",
+          "description": "Converte una fanteria leggera nemica adiacente. Il bersaglio entra esausto e con Inibizione Azione. Costo 3 ENE, CD 5."
+        }
+      },
+      "FB1B02": {
+        "ability": {
+          "name": "Sigillo di Concessione",
+          "description": "Blocca un Punto Strategico entro raggio 2 fino all'inizio del prossimo turno Fabeot: non genera ENE, controllo o Pressione. Costo 2 ENE."
+        }
+      },
+      "FB1B03": {
+        "ability": {
+          "name": "Pignoramento Maggiore",
+          "description": "Rimuove 2 DEF a una unità nemica entro raggio 2. Costo 1 ENE."
+        }
+      },
+      "FB2B01": {
+        "ability": {
+          "name": "Contratto di Riscossione",
+          "description": "Marchia un nemico entro raggio 2. Se muore entro il turno Fabeot, +2 ENE al prossimo income. Costo 1 ENE. L'Inseguitore può muovere e attaccare nello stesso turno."
+        }
+      },
+      "FB2B02": {
+        "ability": {
+          "name": "Posizionamento Ingannevole",
+          "description": "Scambia posizione con un alleato adiacente non struttura. Dopo lo scambio ruba 1 DEF a un nemico adiacente: -1 DEF al nemico, +1 DEF temporaneo al Persecutore. Costo 2 ENE."
+        }
+      },
+      "FB4B01": {
+        "ability": {
+          "name": "Sportello di Reclutamento",
+          "description": "La prossima unità non struttura Fabeot acquistata questo turno costa -1 ENE, minimo 1. Non stacka. Costo 0 ENE."
+        }
+      },
+      "FBPIV01": {
+        "ability": {
+          "name": "Clausola di Acquisizione",
+          "description": "Converte un nemico non comandante, non pivot, non struttura, costo ≤3 e HP ≤2, già marchiato da Fabeot. Rispetta i cap. Costo 4 ENE."
+        }
+      },
+      "FB0B00": {
+        "description": "Comandante Fabeot da marchio e vulnerabilità: identifica il bersaglio da sfruttare.",
+        "ability": {
+          "name": "Sentenza Porpora",
+          "description": "Marchia un nemico entro raggio 2: subisce +1 danno da attacchi e abilità offensive fino a fine turno. Costo 2 ENE."
+        },
+        "commanderArchetype": "Contratti / vulnerabilità"
+      },
+      "FBCMD02": {
+        "description": "Comandante Fabeot da disturbo mano/mazzo: trasforma il rifornimento nemico in rischio contrattuale.",
+        "ability": {
+          "name": "Logistica Compromessa",
+          "description": "L’avversario pesca 1 carta. Se è fanteria o veicolo non comandante e non pivot, la carta viene rubata dal Fabeot. Tattiche, comandanti, pivot e strutture restano all’avversario. Costo 2 ENE, CD3."
+        },
+        "commanderArchetype": "Mano / logistica compromessa"
+      },
+      "FBC1F01": {
+        "description": "Entra in campo con Furtivo. Passiva: se almeno una Spia Silente resta furtiva, il giocatore Fabeot pesca +1 carta totale a inizio turno."
+      },
+      "FBC1F02": {
+        "ability": {
+          "name": "Agguato Preparato",
+          "description": "Ottiene Agguato per 1 turno. C1f: status placeholder per futura meccanica attacco d'opportunità."
+        }
+      },
+      "FBC1F03": {
+        "ability": {
+          "name": "Esproprio di Mano",
+          "description": "Copia una carta casuale dalla mano nemica nella propria mano."
+        }
+      },
+      "FBC1F04": {
+        "ability": {
+          "name": "Clausola di Stasi",
+          "description": "Blocca la spesa ENE avversaria per 1 turno; se l'avversario ha 0 ENE, blocca anche la mano per 1 turno."
+        }
+      },
+      "FBC1F05": {
+        "ability": {
+          "name": "Rimozione Buff",
+          "description": "Rimuove tutti i buff positivi da una unità entro R2. Costo 1 ENE."
+        }
+      },
+      "FBC1F06": {
+        "ability": {
+          "name": "Genera Spia",
+          "description": "Evoca Spia Silente su cella libera adiacente, dentro cap."
+        }
+      },
+      "FBC1F07": {
+        "ability": {
+          "name": "Dislocazione Locale",
+          "description": "Sposta una tua unità entro R1 in una cella libera entro R3 dalla Cabina. Destinazione automatica valida; rispetta celle invalicabili e trigger di cella."
+        }
+      },
+      "FBC1F08": {
+        "ability": {
+          "name": "Eco Strutturale",
+          "description": "Duplica in forma semplificata l'abilità attiva di una struttura alleata. Costo 1 ENE. La duplicazione tattica 1/turno resta predisposta per C2."
+        }
+      },
+      "FBC1HA01": {
+        "description": "Passiva: +1 Movimento permanente."
+      },
+      "FBC1HA02": {
+        "description": "Passiva: +1 DEF se adiacente ad almeno una unità alleata. Nota: non usa la keyword tecnica Prima Linea/intercettazione."
+      },
+      "NXS1A01": {
+        "description": "Fanteria leggera da collegamento rapido.",
+        "ability": {
+          "name": "Sprint",
+          "description": "Prima di muovere, raddoppia il MOV per questo movimento. Non concede un secondo movimento e non si cumula."
+        }
+      },
+      "NXS1A02": {
+        "description": "Supporto tecnico pesante per le formazioni Nexus.",
+        "ability": {
+          "name": "Riparazione",
+          "description": "Un'altra unità Nexus alleata recupera fino a 1 HP e 1 DEF, senza superare i massimi."
+        }
+      },
+      "NXS1A03": {
+        "description": "Piattaforma d'artiglieria pesante ad area.",
+        "ability": {
+          "name": "Sbarramento",
+          "description": "Scegli 2 celle adiacenti tra loro, entrambe entro R3. Ogni unità sulle celle subisce 2 danni normali, alleati inclusi."
+        }
+      },
+      "EXS1A01": {
+        "description": "Fanteria medica specializzata.",
+        "ability": {
+          "name": "Soccorso",
+          "description": "Un'altra fanteria Exordium alleata recupera fino a 2 HP."
+        }
+      },
+      "EXS1A02": {
+        "description": "Fanteria pesante da bombardamento ravvicinato.",
+        "ability": {
+          "name": "Mortaio",
+          "description": "Scegli una cella entro R2 e 2 celle adiacenti alla prima, anch'esse entro R2. Ogni unità sulle 3 celle subisce 1 danno normale."
+        }
+      },
+      "EXS1A03": {
+        "description": "Passiva — Logistica Veicolare: una volta per turno, il primo Veicolo schierato tramite questa struttura costa -1 ENE, minimo 1. Gli sconti non si cumulano.",
+        "deploymentRule": {
+          "label": "Logistica Veicolare"
+        }
+      },
+      "LBS1A01": {
+        "description": "Assaltatore suicida specializzato nell'eliminazione di bersagli vulnerabili.",
+        "ability": {
+          "name": "Attentato",
+          "description": "Distrugge una fanteria o un veicolo nemico con DEF corrente ≤2, esclusi Comandanti e Pivot. Dopo la risoluzione, anche il Predone Attentatore viene distrutto."
+        }
+      },
+      "LBS1A02": {
+        "description": "Passiva — Disimpegno: dopo un attacco base può effettuare un movimento completo, una sola volta per turno. Non si attiva dopo contrattacchi o abilità e non consente un secondo attacco."
+      },
+      "LBS1A03": {
+        "description": "Passiva — Reclutamento dell'Orda: una volta per turno, la prima Fanteria schierata tramite questa struttura costa -1 ENE, minimo 1. Gli sconti non si cumulano.",
+        "deploymentRule": {
+          "label": "Reclutamento dell'Orda"
+        }
+      },
+      "LBS1A04": {
+        "description": "Fortificazione leggera armata con sistemi improvvisati.",
+        "ability": {
+          "name": "Tiro di Disturbo",
+          "description": "Infligge 1 danno a una unità nemica entro R2."
+        }
+      },
+      "LBS1A05": {
+        "description": "Passiva — Centro del Clan: una volta per turno, fanterie e veicoli Liberti non Pivot possono essere schierati entro R2 dalla Tenda.",
+        "ability": {
+          "name": "Medicina del Clan",
+          "description": "Una unità Liberti alleata recupera fino a 1 HP."
+        },
+        "deploymentRule": {
+          "label": "Centro del Clan"
+        }
+      },
+      "FBS1A01": {
+        "description": "Veicolo leggero da trasferimento rapido.",
+        "ability": {
+          "name": "Corsa del Corriere",
+          "description": "Prima di muovere, raddoppia il MOV per questo movimento. Non concede un secondo movimento e non si cumula."
+        }
+      },
+      "FBS1A02": {
+        "description": "Veicolo pesante specializzato nel perforare la protezione avversaria.",
+        "ability": {
+          "name": "Munizione Elusiva",
+          "description": "Il prossimo attacco base entro la fine del turno ignora la DEF e infligge il danno direttamente agli HP. Non impedisce il contrattacco."
+        }
+      },
+      "FBS1A03": {
+        "description": "Passiva — Rete di Rifugi: una volta per turno, la prima unità Leggera schierata tramite questa struttura costa -1 ENE, minimo 1. Gli sconti non si cumulano.",
+        "deploymentRule": {
+          "label": "Rete di Rifugi"
+        }
+      },
+      "NXPIV02": {
+        "description": "Pivot Nexus da logoramento ravvicinato. Passiva — Tramonto: alla fine del turno, ogni nemico non-QG adiacente perde 1 DEF corrente, minimo 0.",
+        "ability": {
+          "name": "Trappola",
+          "description": "Tutte le unità nemiche adiacenti ricevono Inibizione Movimento per il loro prossimo turno."
+        }
+      },
+      "EXPIV02": {
+        "description": "Pivot Exordium da assalto e soppressione. Passiva — Corazza Reattiva: riduce di 1, minimo 0, il danno immediato da abilità attive e tattiche nemiche.",
+        "ability": {
+          "name": "Soppressione",
+          "description": "Scegli una cella centrale entro R2 e una cella adiacente per orientare una linea di 3 celle, tutte entro R2. Ogni unità sulla linea subisce 2 danni normali, alleati inclusi."
+        }
+      },
+      "LXPIV02": {
+        "description": "Pivot Liberti economica da impatto. Passiva: gli attacchi base applicano Sanguinamento 2 per 2 turni ai bersagli validi che sopravvivono.",
+        "ability": {
+          "name": "Schianto",
+          "description": "Un nemico non-QG adiacente subisce danni normali pari agli HP correnti del Camion. Se il bersaglio è Pesante, perde prima 1 DEF corrente."
+        }
+      },
+      "AGPIV02": {
+        "description": "Pivot Agathoi mobile da combattimento ravvicinato. Passiva: Spine 2.",
+        "ability": {
+          "name": "Erkos",
+          "description": "Infligge 2 danni normali a un nemico non-QG entro R1 e applica Inibizione Movimento per il suo prossimo turno."
+        }
+      },
+      "FBPIV02": {
+        "description": "Pivot Fabeot territoriale. Passiva: le unità nemiche non-QG adiacenti subiscono +1 danno da qualsiasi fonte finché restano adiacenti alla Torre.",
+        "ability": {
+          "name": "Bonifica",
+          "description": "Scegli 2 celle adiacenti tra loro, entrambe entro R2. Ogni unità sulle celle subisce 2 danni normali, alleati inclusi."
+        }
+      }
+    }
+  }
+}

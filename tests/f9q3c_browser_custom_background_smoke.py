@@ -1,3 +1,4 @@
+from browser_runtime import chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,7 +9,7 @@ console_errors = []
 PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZJ9sAAAAASUVORK5CYII="
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path="/usr/bin/chromium", args=["--no-sandbox"])
+    browser = p.chromium.launch(**chromium_launch_options())
     page = browser.new_page(viewport={"width": 1280, "height": 800})
     page.on("pageerror", lambda exc: errors.append(str(exc)))
     page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)

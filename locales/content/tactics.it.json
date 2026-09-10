@@ -1,0 +1,352 @@
+{
+  "content": {
+    "tactics": {
+      "NX_TAC_RECALC": {
+        "name": "Ricalcolo Strategico",
+        "description": "Una tua unità su PS recupera 1 HP e 1 DEF fino ai massimi.",
+        "effectText": "Una tua unità su PS recupera 1 HP e 1 DEF fino ai massimi."
+      },
+      "NX_TAC_BLOCK": {
+        "name": "Protocollo di Blocco",
+        "description": "1 danno a un nemico su PS o adiacente a un PS.",
+        "effectText": "1 danno a un nemico su PS o adiacente a un PS."
+      },
+      "EX_TAC_ORDER": {
+        "name": "Ordine d’Assalto",
+        "description": "Una tua fanteria e un tuo veicolo adiacenti ottengono +1 ATT fino a fine turno.",
+        "effectText": "Una tua fanteria e un tuo veicolo adiacenti ottengono +1 ATT fino a fine turno."
+      },
+      "EX_TAC_PUSH": {
+        "name": "Spinta di Guerra",
+        "description": "Un tuo veicolo non ancora attivato muove di +1 e può ancora agire.",
+        "effectText": "Un tuo veicolo non ancora attivato muove di +1 e può ancora agire."
+      },
+      "LX_TAC_HORDE": {
+        "name": "Carica dell’Orda",
+        "description": "Una tua unità e gli alleati adiacenti ottengono +1 ATT fino a fine turno.",
+        "effectText": "Una tua unità e gli alleati adiacenti ottengono +1 ATT fino a fine turno."
+      },
+      "LX_TAC_RAID": {
+        "name": "Razzie Rapide",
+        "description": "Marchia un nemico; se muore entro il turno, guadagni +1 ENE.",
+        "effectText": "Marchia un nemico; se muore entro il turno, guadagni +1 ENE."
+      },
+      "AG_TAC_ROOTS": {
+        "name": "Radici Difensive",
+        "description": "Una tua unità su PS o struttura ottiene Spine 2 per un turno.",
+        "effectText": "Una tua unità su PS o struttura ottiene Spine 2 per un turno."
+      },
+      "AG_TAC_WALL": {
+        "name": "Muro Verde",
+        "description": "Le tue unità adiacenti a una tua struttura recuperano +1 DEF fino al massimo.",
+        "effectText": "Le tue unità adiacenti a una tua struttura recuperano +1 DEF fino al massimo."
+      },
+      "FB_TAC_CHOKE": {
+        "name": "Strozzatura Logistica",
+        "description": "Marchia un nemico; se attacca, Fabeot guadagna +2 ENE.",
+        "effectText": "Marchia un nemico; se attacca, Fabeot guadagna +2 ENE."
+      },
+      "FB_TAC_CONTRACT": {
+        "name": "Contratto Capestro",
+        "description": "Il nemico paga +1 ENE per acquistare unità fino alla fine del suo prossimo turno.",
+        "effectText": "Il nemico paga +1 ENE per acquistare unità fino alla fine del suo prossimo turno."
+      },
+      "NXTAC01": {
+        "name": "Colpo di mortaio",
+        "effectText": "Infligge 2 danni a una unità nemica."
+      },
+      "NXTAC02": {
+        "name": "Artiglieria di precisione",
+        "effectText": "Infligge 4 danni a una unità nemica."
+      },
+      "NXTAC03": {
+        "name": "Missile Jam",
+        "effectText": "Infligge 2 danni e rimuove i buff positivi dal bersaglio."
+      },
+      "NXTAC04": {
+        "name": "Bombardamento aereo",
+        "effectText": "Infligge 1 danno alle unità presenti nella cella selezionata e nelle celle adiacenti, alleate e nemiche.",
+        "notes": "R3 da unità/struttura alleata viva."
+      },
+      "NXTAC05": {
+        "name": "Passaggio tattico",
+        "effectText": "Marchia una cella: per il turno corrente le unità che passano su quella cella ottengono +1 movimento / possono muovere ancora."
+      },
+      "NXTAC06": {
+        "name": "Fossato",
+        "effectText": "Marchia una cella: la prossima unità che transita subisce blocco movimento fino al prossimo turno."
+      },
+      "NXTAC07": {
+        "name": "Ricalcolo ENE",
+        "effectText": "Guadagni +1 ENE per ogni PS occupato e +1 ENE aggiuntivo se il comandante è in gioco."
+      },
+      "NXTAC08": {
+        "name": "Richiesta rifornimenti",
+        "effectText": "Pesca 1 carta; se è una tattica pesca 1 carta aggiuntiva. Le carte pescate da questo effetto costano -1 ENE permanente, minimo 1 ENE.",
+        "notes": "C2-FINAL-B1: riduzione permanente, minimo 1 ENE."
+      },
+      "NXTAC09": {
+        "name": "Difesa impenetrabile",
+        "effectText": "Applica Scudo Fasico: l’unità non può essere bersagliata da attacchi, abilità e tattiche.",
+        "notes": "Stato previsto originariamente come Scudo Fasico."
+      },
+      "NXTAC10": {
+        "name": "Disabilita sistemi",
+        "effectText": "L’unità bersaglio non può muovere, attaccare o usare abilità."
+      },
+      "NXTAC11": {
+        "name": "Puntatori avanzati",
+        "effectText": "L’unità attacca ignorando la DEF del bersaglio.",
+        "notes": "Implementabile come tag/stato ignoreDefenseOnAttack."
+      },
+      "NXTAC12": {
+        "name": "Riparazione sul campo",
+        "effectText": "Ripristina gli HP della unità bersaglio fino al massimo."
+      },
+      "EXTAC01": {
+        "name": "Artiglieria anticarro",
+        "effectText": "Infligge 2 danni; infligge 3 danni se il bersaglio è un Veicolo."
+      },
+      "EXTAC02": {
+        "name": "Artiglieria pesante",
+        "effectText": "Infligge 4 danni a una struttura nemica."
+      },
+      "EXTAC03": {
+        "name": "Missile EMP",
+        "effectText": "Infligge 2 danni e riduce permanentemente di 1 l’ATT del bersaglio."
+      },
+      "EXTAC04": {
+        "name": "Obliteratore",
+        "effectText": "Distrugge il bersaglio selezionato.",
+        "notes": "High impact, da monitorare."
+      },
+      "EXTAC05": {
+        "name": "Manovra d’attacco",
+        "effectText": "L’unità può muovere ancora dopo aver attaccato."
+      },
+      "EXTAC06": {
+        "name": "Neutralizza Armamenti",
+        "effectText": "Riduce la DEF del bersaglio a 1."
+      },
+      "EXTAC07": {
+        "name": "Ricalcolo ENE",
+        "effectText": "Guadagni +1 ENE per ogni unità nemica distrutta in questo turno, massimo +3."
+      },
+      "EXTAC08": {
+        "name": "Rifornimenti in arrivo",
+        "effectText": "Pesca 2 carte. Le carte Veicolo pescate da questo effetto ricevono +1 ATT permanente."
+      },
+      "EXTAC09": {
+        "name": "Inibitore d’attacco",
+        "effectText": "Il bersaglio non può attaccare."
+      },
+      "EXTAC10": {
+        "name": "Campo statico",
+        "effectText": "Tutte le unità nemiche in gioco hanno costo abilità +1 ENE fino al prossimo turno; le abilità gratuite restano gratuite."
+      },
+      "EXTAC11": {
+        "name": "Dispositivo di Puntamento",
+        "effectText": "Se l’unità uccide con un attacco base, può attaccare di nuovo. Massimo 1 attacco extra."
+      },
+      "EXTAC12": {
+        "name": "Ordine di Varran",
+        "effectText": "L’unità bersaglio raddoppia l’ATT per il prossimo attacco."
+      },
+      "LBTAC01": {
+        "name": "Chiamata dei Miliziani",
+        "effectText": "Schiera 2 Miliziani Liberti, uno per ciascuna delle due celle selezionate."
+      },
+      "LBTAC02": {
+        "name": "Chiamata alle Armi",
+        "effectText": "Schiera 1 Predone Liberto su una cella sbarcabile libera. Il Predone ottiene Avanguardia solo per il turno di ingresso."
+      },
+      "LBTAC03": {
+        "name": "Chiamata dei Clan",
+        "effectText": "Spawn prioritario: prima 1 Predone Liberto, poi Miliziani fino a massimo 3 unità totali, rispettando celle valide e cap.",
+        "notes": "Versione tollerante confermata."
+      },
+      "LBTAC04": {
+        "name": "Il Clan Risponde",
+        "effectText": "Riempie le celle libere adiacenti al comandante con Miliziani Liberti, fino a massimo 6 e rispettando cap."
+      },
+      "LBTAC05": {
+        "name": "Granata Sporca",
+        "effectText": "Infligge 1 danno diretto e applica Sanguinamento 1."
+      },
+      "LBTAC06": {
+        "name": "Carica da Demolizione",
+        "effectText": "Infligge 5 danni diretti alla struttura nemica."
+      },
+      "LBTAC07": {
+        "name": "Ultima Corsa",
+        "effectText": "Il prossimo attacco base ottiene +1 danno. Dopo l’attacco, infligge 2 danni alle unità adiacenti all’attaccante e al bersaglio, alleate e nemiche, una sola volta ciascuna. Poi la fanteria viene distrutta."
+      },
+      "LBTAC08": {
+        "name": "Marchio dei Sanguis",
+        "effectText": "Il prossimo attacco base della fanteria applica Sanguinamento 2 al bersaglio colpito."
+      },
+      "LBTAC09": {
+        "name": "Predoni in Agguato",
+        "effectText": "La fanteria ottiene Agguato: la prima volta che una unità nemica entra adiacente, effettua un attacco di opportunità. Massimo 1."
+      },
+      "LBTAC10": {
+        "name": "Campione della Fossa",
+        "effectText": "La fanteria ottiene permanentemente +1 ATT per ogni unità adiacente al momento della giocata, massimo +4.",
+        "notes": "Non riapplicabile sulla stessa unità."
+      },
+      "LBTAC11": {
+        "name": "Tributo dei Clan",
+        "effectText": "Pesca 1 carta. Se la prima carta pescata è una fanteria, pesca 1 carta aggiuntiva. Massimo 2 carte pescate."
+      },
+      "LBTAC12": {
+        "name": "L’Orda si Muove",
+        "effectText": "Le unità selezionate muovono con MOV raddoppiato. Dopo il movimento sono considerate agite e non possono attaccare o usare abilità."
+      },
+      "LBTAC13": {
+        "name": "Cacciatore Sanguis",
+        "effectText": "La fanteria ottiene una passiva permanente: ogni kill di fanteria nemica con attacco base aumenta di +1 il valore di Sanguinamento applicato dai suoi attacchi futuri.",
+        "notes": "Nessun cap iniziale, da monitorare."
+      },
+      "LBTAC14": {
+        "name": "Esca d’Attacco",
+        "effectText": "Tutte le fanterie alleate adiacenti valide effettuano immediatamente un attacco di opportunità contro il bersaglio, anche se hanno già agito. No catene."
+      },
+      "AGTAC01": {
+        "name": "Barricata Verde",
+        "effectText": "La cella selezionata diventa invalicabile per 2 round."
+      },
+      "AGTAC02": {
+        "name": "Anatema Vegetale",
+        "effectText": "La cella riceve Anatema Vegetale per 2 round. Se occupata da nemico: -2 ATT temporaneo. Se occupata da alleato: +2 DEF permanente. Si consuma alla prima attivazione."
+      },
+      "AGTAC03": {
+        "name": "Sentiero dei Rovi",
+        "effectText": "La prima unità nemica che occupa la cella subisce -1 DEF minimo 0 e blocco movimento fino al prossimo turno. Alleati ignorano l’effetto. Si consuma al trigger."
+      },
+      "AGTAC04": {
+        "name": "Bastione Ligneo",
+        "effectText": "Imposta la DEF attuale della struttura pari ai suoi HP attuali. Può superare la DEF base/maxDef. Non modifica HP, maxHP o ATT."
+      },
+      "AGTAC05": {
+        "name": "Natura Vigile",
+        "effectText": "La fanteria ottiene Contrattacco: se subisce un attacco base nemico e sopravvive, attacca immediatamente l’aggressore. Massimo 1."
+      },
+      "AGTAC06": {
+        "name": "Fortezza Verde",
+        "effectText": "Bonus calcolato alla giocata: +2 DEF attuale per ogni struttura adiacente; +1 HP massimo per ogni fanteria alleata adiacente. Il +HP massimo non cura."
+      },
+      "AGTAC07": {
+        "name": "Manto di Rovi",
+        "effectText": "L’unità ottiene Spine 2 fino al prossimo turno. Spine non stacka: se ha già Spine si usa il valore più alto."
+      },
+      "AGTAC08": {
+        "name": "Carovane di Mercanti",
+        "effectText": "Pesca 1 carta per ogni struttura alleata viva in gioco, fino a massimo 4 carte."
+      },
+      "AGTAC09": {
+        "name": "Seme della Ricchezza",
+        "effectText": "La struttura ottiene una passiva permanente: all’inizio del tuo turno guadagni +1 ENE finché questa struttura resta in gioco.",
+        "notes": "Nessun cap extra: limite naturale max 2 copie deck."
+      },
+      "FABTAC01": {
+        "name": "Ipnosi",
+        "effectText": "Applica Stordimento: il bersaglio non può muovere, attaccare né usare abilità attive.",
+        "notes": "Comandanti/pivot consentiti nella prima versione, da monitorare."
+      },
+      "FABTAC02": {
+        "name": "Diploma da Mentalista",
+        "effectText": "L’unità ottiene permanentemente: quando colpisce con attacco base, il bersaglio viene stordito fino al prossimo turno."
+      },
+      "FABTAC03": {
+        "name": "Congedo Forzato",
+        "effectText": "L’unità torna nella mano del proprietario come carta base pulita, senza stati, danni, buff o modificatori."
+      },
+      "FABTAC04": {
+        "name": "Dottrina del Tradimento",
+        "effectText": "Converti permanentemente la fanteria bersaglio. L’unità convertita risulta inattiva e non può agire in questo turno."
+      },
+      "FABTAC05": {
+        "name": "Taglia sulla Testa",
+        "effectText": "Se il bersaglio viene distrutto entro questo turno, Fabeot aggiunge alla propria mano una copia base pulita di quell’unità."
+      },
+      "FABTAC06": {
+        "name": "Contratto Capestro",
+        "effectText": "Entrambi pescano 1 carta. Se la carta pescata da Fabeot è una tattica, Fabeot ruba anche la carta appena pescata dall’avversario."
+      },
+      "FABTAC07": {
+        "name": "Embargo",
+        "effectText": "Blocca 1 carta casuale nella mano avversaria per ogni PS controllato da Fabeot. Le carte bloccate non possono essere giocate per 1 turno."
+      },
+      "FABTAC08": {
+        "name": "Contratto da Sicario",
+        "effectText": "Il bersaglio acquisisce passiva negativa permanente: ogni kill con attacco base del bersaglio dà subito +1 ENE a Fabeot."
+      },
+      "FABTAC09": {
+        "name": "Contratto di Usura",
+        "effectText": "L’avversario perde 1 ENE dal deposito e subisce -1 ENE income per 2 turni. Se aveva ENE 0 prima del lancio, scarta 1 carta casuale."
+      },
+      "FABTAC10": {
+        "name": "Dispositivo Stealth",
+        "effectText": "Il veicolo ottiene Furtivo finché non attacca, usa abilità o viene rilevato. Il movimento non rompe Furtivo."
+      },
+      "FABTAC11": {
+        "name": "Pacco Bomba",
+        "effectText": "Scegli una cella bersaglio entro R1 e fino a 2 celle adiacenti valide; ogni unità presente nelle celle scelte subisce 1 danno, alleate e nemiche."
+      },
+      "FABTAC12": {
+        "name": "Attacco Ingannevole",
+        "effectText": "Il prossimo attacco base della fanteria ignora la DEF del bersaglio e infligge danno direttamente agli HP."
+      },
+      "NXTAC13": {
+        "name": "Kit di Riparazione",
+        "effectText": "Scegli: recupera fino a 2 HP oppure fino a 2 DEF, senza superare i rispettivi massimi.",
+        "notes": "La scelta umana usa un dialogo esplicito; il bot sceglie il recupero maggiore."
+      },
+      "NXTAC14": {
+        "name": "Visore Multispettrale",
+        "effectText": "Tutte le unità nemiche Furtive entro R2 lineare dalla cella scelta perdono Furtivo. Lo stato può essere ottenuto nuovamente in seguito.",
+        "notes": "Ignora ostacoli."
+      },
+      "EXTAC13": {
+        "name": "Puntatore Imperiale",
+        "effectText": "Il bersaglio ottiene permanentemente Visione R2 e +1 ATT. Non cumulabile sulla stessa unità.",
+        "notes": "Visione usa il tag runtime vision."
+      },
+      "EXTAC14": {
+        "name": "Meccanico",
+        "effectText": "Il Veicolo recupera fino a 3 HP, senza superare gli HP massimi."
+      },
+      "AGTAC10": {
+        "name": "Furia Verde",
+        "effectText": "Scambia ATT corrente e DEF corrente fino alla fine del round. Il ripristino conserva danni e variazioni avvenuti durante l'effetto.",
+        "notes": "Non cumulabile."
+      },
+      "AGTAC11": {
+        "name": "Ballista Agathoi",
+        "effectText": "Infligge 2 danni normali a una unità nemica."
+      },
+      "AGTAC12": {
+        "name": "Campo Minato",
+        "effectText": "Piazza una mina su ciascuna cella. Ogni mina si consuma al primo passaggio e infligge 1 danno diretto agli HP, ad alleati o nemici."
+      },
+      "AGTAC13": {
+        "name": "Dispiegamento",
+        "effectText": "Schiera due Custodi Agathoi su due celle valide adiacenti. Entrano esausti e senza Avanguardia."
+      },
+      "AGTAC14": {
+        "name": "Vedetta Agathoi",
+        "effectText": "La Fanteria ottiene permanentemente Visione R2 e +1 DEF massima/base e corrente. Non cumulabile."
+      },
+      "FABTAC13": {
+        "name": "Doppio Colpo",
+        "effectText": "Infligge 1 danno normale, poi risolve un secondo colpo da 1 danno sullo stesso bersaglio se ancora vivo.",
+        "notes": "I colpi sono risolti separatamente."
+      },
+      "FABTAC14": {
+        "name": "Doppio Colpo Pesante",
+        "effectText": "Infligge 2 danni normali, poi risolve un secondo colpo da 2 danni sullo stesso bersaglio se ancora vivo.",
+        "notes": "I colpi sono risolti separatamente."
+      }
+    }
+  }
+}

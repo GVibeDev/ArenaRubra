@@ -1,1 +1,8 @@
 assets/maps/backgrounds/battlefield.webp
+.tmp_ar_ac1_pydeps/
+.tmp_ar_ac1_python/
+_site_dev/
+_site_distribution/
+ArenaRubra.zip
+.tmp_tutorial_inventory.json
+tests/__pycache__/

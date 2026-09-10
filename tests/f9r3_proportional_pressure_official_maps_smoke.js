@@ -25,6 +25,11 @@ for (const rel of [
   "data/terrain_registry.js",
   "data/official_maps_f9r3.js",
   "data/map_definitions.js",
+  "src/map_normalization.js",
+  "src/map_pathfinding.js",
+  "src/map_validation.js",
+  "src/map_persistence.js",
+  "src/map_state_queries.js",
   "src/map_runtime.js"
 ]) vm.runInContext(read(rel), context, { filename: rel });
 
@@ -94,6 +99,8 @@ function hexDistance(a,b){return Math.max(...a.map((v,i)=>Math.abs(v-b[i])));}
 ${read("data/maps.js")}
 ${read("src/constants.js")}
 ${read("src/board.js")}
+${read("src/rules/victory_lifecycle.js")}
+${read("src/rules/pressure_victory.js")}
 ${read("src/rules.js")}
 updateControlFromOccupants=function(){};
 function makeState(players,totalPs,pace,controls){
@@ -135,7 +142,7 @@ ok(runtime.logs.some(line=>line.includes("PS centrale")), "pressure log explains
 
 const editorSource = read("src/map_editor.js");
 ok(editorSource.includes('["central_ps", "PS centrale"]'), "Map Editor exposes central PS designation");
-ok(editorSource.includes("E_MAP_CENTRAL_PS_NOT_EQUIDISTANT") || read("src/map_runtime.js").includes("E_MAP_CENTRAL_PS_NOT_EQUIDISTANT"), "validator enforces linear equidistance");
+ok(editorSource.includes("E_MAP_CENTRAL_PS_NOT_EQUIDISTANT") || read("src/map_validation.js").includes("E_MAP_CENTRAL_PS_NOT_EQUIDISTANT"), "validator enforces linear equidistance");
 ok(editorSource.includes('editor-${mapEditorState.toolValue}-${mapRuntimeCellKey(target)'), "new editor hazards receive coordinate-unique source ids");
 const build = read("src/build_info.js");
 ok(build.includes('version: "C2-STABLE-1-F9R3-APK-M4c"'), "F9R3 build metadata is current");

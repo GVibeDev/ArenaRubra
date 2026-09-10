@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -13,6 +14,7 @@ def load_app(page):
     html = re.sub(r'<link\s+rel="stylesheet"\s+href="[^"]+"\s*/?>', '', html)
     page.set_content(html, wait_until="load")
     page.add_style_tag(path=str(ROOT / "css/style.css"))
+    page.add_style_tag(path=str(ROOT / "css/layout/game_inspector.css"))
     renderer_css = ROOT / "css/renderer_calibration_lab.css"
     if renderer_css.exists():
         page.add_style_tag(path=str(renderer_css))
@@ -90,7 +92,7 @@ page_errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path="/usr/bin/chromium", args=["--no-sandbox", "--allow-file-access-from-files"])
+    browser = p.chromium.launch(**chromium_launch_options())
 
     desktop_context = browser.new_context(viewport={"width":1440,"height":960})
     desktop = desktop_context.new_page()
@@ -110,11 +112,11 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert desktop_result["build"] == "C2-STABLE-1-F9U2b-APK-M4c", desktop_result
+assert_valid_build_version(desktop_result["build"])
 assert desktop_result["schema"] == "F9Q3e1-2", desktop_result
 assert desktop_result["inspector"] and desktop_result["inspector"]["width"] >= 380, desktop_result
 assert desktop_result["inspector"]["bottom"] <= desktop_result["viewport"]["height"] + 1, desktop_result
-assert desktop_result["canvas"] and 225 <= desktop_result["canvas"]["width"] <= 235, desktop_result
+assert desktop_result["canvas"] and 365 <= desktop_result["canvas"]["width"] <= 375, desktop_result
 assert desktop_result["ability"]["top"] >= desktop_result["canvas"]["bottom"], desktop_result
 assert desktop_result["stats"]["top"] >= desktop_result["ability"]["bottom"], desktop_result
 assert desktop_result["actionPanel"]["top"] >= desktop_result["stats"]["bottom"], desktop_result

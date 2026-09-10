@@ -1,0 +1,156 @@
+{
+  "content": {
+    "decks": {
+      "Nexus::NXCMD01::nexus-avatex-civilta-algoritmica": {
+        "name": "Nexus · Avatex · Civiltà Algoritmica"
+      },
+      "Nexus::NXCMD01::bastione-mobile": {
+        "name": "Bastione Mobile"
+      },
+      "Nexus::NXCMD01::presidio-reticolare": {
+        "name": "Presidio Reticolare"
+      },
+      "Nexus::NXCMD01::tramonto-sul-ps": {
+        "name": "Tramonto sul PS"
+      },
+      "Nexus::NXCMD01::cuneo-di-precisione": {
+        "name": "Cuneo di Precisione"
+      },
+      "Nexus::NXCMD02::nexus-uc-mainframe": {
+        "name": "Nexus · UC · Mainframe"
+      },
+      "Nexus::NXCMD02::logistica-di-massa": {
+        "name": "Logistica di Massa"
+      },
+      "Nexus::NXCMD02::convoglio-corazzato": {
+        "name": "Convoglio Corazzato"
+      },
+      "Nexus::NXCMD02::sbarco-a-tenaglia": {
+        "name": "Sbarco a Tenaglia"
+      },
+      "Nexus::NXCMD02::batteria-di-soppressione": {
+        "name": "Batteria di Soppressione"
+      },
+      "Exordium::EX0B00::exordium-varran-triumphale-iter": {
+        "name": "Exordium · Varran · Triumphale Iter"
+      },
+      "Exordium::EX0B00::doppio-assalto-imperiale": {
+        "name": "Doppio Assalto Imperiale"
+      },
+      "Exordium::EX0B00::decapitazione-cremisi": {
+        "name": "Decapitazione Cremisi"
+      },
+      "Exordium::EX0B00::breccia-cremisi": {
+        "name": "Breccia Cremisi"
+      },
+      "Exordium::EX0B00::linea-di-soppressione": {
+        "name": "Linea di Soppressione"
+      },
+      "Exordium::EXCMD02::exordium-nemira-ordo-legio": {
+        "name": "Exordium · Nemira · Ordo Legio"
+      },
+      "Exordium::EXCMD02::orgoglio-immortale": {
+        "name": "Orgoglio Immortale"
+      },
+      "Exordium::EXCMD02::trionfo-progressivo": {
+        "name": "Trionfo Progressivo"
+      },
+      "Exordium::EXCMD02::ferro-e-soccorso": {
+        "name": "Ferro e Soccorso"
+      },
+      "Exordium::EXCMD02::falange-d-assedio": {
+        "name": "Falange d’Assedio"
+      },
+      "Liberti::LX0B00::liberti-rauk-arena-selvaggia": {
+        "name": "Liberti · Rauk · Arena Selvaggia"
+      },
+      "Liberti::LX0B00::orda-della-fossa": {
+        "name": "Orda della Fossa"
+      },
+      "Liberti::LX0B00::campioni-del-branco": {
+        "name": "Campioni del Branco"
+      },
+      "Liberti::LX0B00::convoglio-del-ripudio": {
+        "name": "Convoglio del Ripudio"
+      },
+      "Liberti::LX0B00::schianto-di-massa": {
+        "name": "Schianto di Massa"
+      },
+      "Liberti::LXCMD02::liberti-pravus-sangue-e-sabbia": {
+        "name": "Liberti · Pravus · Sangue e Sabbia"
+      },
+      "Liberti::LXCMD02::sanguis-dell-orda": {
+        "name": "Sanguis dell’Orda"
+      },
+      "Liberti::LXCMD02::arena-d-agguato": {
+        "name": "Arena d’Agguato"
+      },
+      "Liberti::LXCMD02::emorragia-mobile": {
+        "name": "Emorragia Mobile"
+      },
+      "Liberti::LXCMD02::carovana-del-macello": {
+        "name": "Carovana del Macello"
+      },
+      "Agathoi::AG0B00::agathoi-alexandros-tafos-lithos": {
+        "name": "Agathoi · Alexandros · Tafos Lithos"
+      },
+      "Agathoi::AG0B00::citta-vivente": {
+        "name": "Città Vivente"
+      },
+      "Agathoi::AG0B00::santuario-inespugnabile": {
+        "name": "Santuario Inespugnabile"
+      },
+      "Agathoi::AG0B00::muro-in-marcia": {
+        "name": "Muro in Marcia"
+      },
+      "Agathoi::AG0B00::furia-del-colosso": {
+        "name": "Furia del Colosso"
+      },
+      "Agathoi::AGCMD02::agathoi-dikayos-erkos": {
+        "name": "Agathoi · Dikayos · Erkos"
+      },
+      "Agathoi::AGCMD02::agora-dei-rovi": {
+        "name": "Agorà dei Rovi"
+      },
+      "Agathoi::AGCMD02::reticolo-di-reazione": {
+        "name": "Reticolo di Reazione"
+      },
+      "Agathoi::AGCMD02::spine-di-erkos": {
+        "name": "Spine di Erkos"
+      },
+      "Agathoi::AGCMD02::caccia-nella-falange": {
+        "name": "Caccia nella Falange"
+      },
+      "Fabeot::FB0B00::fabeot-gerarca-ex-lucis-tenebrae": {
+        "name": "Fabeot · Gerarca · Ex Lucis Tenebrae"
+      },
+      "Fabeot::FB0B00::sentenza-di-stasi": {
+        "name": "Sentenza di Stasi"
+      },
+      "Fabeot::FB0B00::esecuzione-porpora": {
+        "name": "Esecuzione Porpora"
+      },
+      "Fabeot::FB0B00::camera-di-condanna": {
+        "name": "Camera di Condanna"
+      },
+      "Fabeot::FB0B00::acquisizione-territoriale": {
+        "name": "Acquisizione Territoriale"
+      },
+      "Fabeot::FBCMD02::fabeot-emissario-cospirazione": {
+        "name": "Fabeot · Emissario · Cospirazione"
+      },
+      "Fabeot::FBCMD02::logistica-compromessa": {
+        "name": "Logistica Compromessa"
+      },
+      "Fabeot::FBCMD02::falsa-abbondanza": {
+        "name": "Falsa Abbondanza"
+      },
+      "Fabeot::FBCMD02::torre-dell-embargo": {
+        "name": "Torre dell’Embargo"
+      },
+      "Fabeot::FBCMD02::rete-di-dislocazione": {
+        "name": "Rete di Dislocazione"
+      }
+    }
+  }
+}

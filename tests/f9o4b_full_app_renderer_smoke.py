@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json,re
@@ -9,7 +10,7 @@ html=re.sub(r'<script\s+src="[^"]+"\s*></script>','',index)
 html=re.sub(r'<link\s+rel="stylesheet"\s+href="[^"]+"\s*/?>','',html)
 errors=[]; console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={'width':1280,'height':820},has_touch=True)
     page.on('pageerror',lambda exc: errors.append(str(exc)))
     page.on('console',lambda msg: console_errors.append(msg.text) if msg.type=='error' else None)
@@ -51,7 +52,7 @@ with sync_playwright() as p:
 unexpected_console_errors=[msg for msg in console_errors if not msg.startswith('Arena AppShell: inizializzazione GameScreen non bloccante fallita')]
 result={'ok':True,'base':{'build':base['build'],'preOk':base['pre']['ok'],'problems':base['pre']['problems']},'started':started,'injected':injected,'updated':updated,'moved':moved,'delegatedMove':delegated_move,'post':{'ok':post['ok'],'problems':post['problems']},'pageErrors':errors,'consoleErrors':unexpected_console_errors,'ignoredBaselineConsoleErrors':len(console_errors)-len(unexpected_console_errors)}
 print(json.dumps(result,ensure_ascii=False,indent=2))
-assert base['build'] in {'C2-STABLE-1-F9O4b-APK-M4c','C2-STABLE-1-F9O4c-APK-M4c','C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c','C2-STABLE-1-F9S1b1-APK-M4c'},base
+assert_valid_build_version(base['build'])
 assert base['pre']['ok'],base['pre']['problems']
 assert started['cells']==127 and started['marker'] in {'incremental-f9o4b','incremental-f9o4c'},started
 assert injected['token'] and updated['same'] and moved['same'] and moved['parent']=='1,-1,0',(injected,updated,moved)

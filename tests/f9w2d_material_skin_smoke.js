@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const root = path.resolve(__dirname, "..");
 const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
@@ -20,12 +21,7 @@ for (const token of [
   'ornamentalModularity:true'
 ]) assert(ui.includes(token), `missing F9W2d token: ${token}`);
 
-for (const token of [
-  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
-  'buildName: "Agathoi Palette Readability Hotfix"',
-  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
-  'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
-]) assert(build.includes(token), `missing F9W2d build metadata: ${token}`);
+const buildInfo = assertCurrentBuildInfo(build);
 
 const themes = ['nexus_basalt','exordium_imperium','liberti_sine_vinculis','agathoi_kleos','fabeot_vesper'];
 const assets = ['material.webp','corner_tl.webp','corner_tr.webp','corner_bl.webp','corner_br.webp','edge_top.webp','edge_right.webp','edge_bottom.webp','edge_left.webp'];
@@ -95,5 +91,5 @@ console.log(JSON.stringify({
   themes,
   assetsPerTheme:assets.length,
   activeGameTheme:snap.activeTheme,
-  build:'C2-STABLE-1-F9W2d3-APK-M4c'
+  build:buildInfo.version
 }, null, 2));

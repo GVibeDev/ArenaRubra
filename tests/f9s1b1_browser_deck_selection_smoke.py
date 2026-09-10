@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -7,11 +8,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1365, "height": 900})
     page = context.new_page()
     page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -100,7 +97,7 @@ with sync_playwright() as p:
     }""")
     browser.close()
 
-assert result["build"].startswith("C2-STABLE-1-F9"), result
+assert_valid_build_version(result["build"])
 assert result["optionCount"] >= 2, result
 assert "Nexus::NXCMD01::bastione-mobile" in result["optionKeys"], result
 assert "Nexus::NXCMD02::unita-comando-test-pivot" in result["optionKeys"], result

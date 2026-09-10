@@ -110,7 +110,8 @@ ok(eventsCode.includes("eventOverlayEnqueueGameEvent(normalized)"),"hook central
 const turnsCode = fs.readFileSync(path.join(root,"src/turns.js"),"utf8");
 ok(turnsCode.includes("firstTurn:true"),"evento anche al primo turno");
 const rulesCode = fs.readFileSync(path.join(root,"src/rules.js"),"utf8");
-ok(rulesCode.includes("EventTypes.PRESSURE_CHANGED"),"pressione tipizzata");
+const pressureCode = fs.readFileSync(path.join(root,"src/rules/pressure_victory.js"),"utf8");
+ok(pressureCode.includes("eventTypes.PRESSURE_CHANGED") && rulesCode.includes("createPressureVictoryService"),"pressione tipizzata dietro facade regole");
 const deckCode = fs.readFileSync(path.join(root,"src/deck.js"),"utf8");
 ok(deckCode.includes("maybeEmitDeckExhausted"),"deck terminato tipizzato");
 const css = fs.readFileSync(path.join(root,"css/style.css"),"utf8");

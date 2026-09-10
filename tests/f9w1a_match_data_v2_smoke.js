@@ -4,13 +4,15 @@ const fs = require("fs");
 const vm = require("vm");
 const assert = require("assert");
 
-const uiSource = fs.readFileSync(require("path").join(__dirname, "../src/ui.js"), "utf8");
-const startMarker = "// F9W1a — Match Data 2.0 Foundation";
+const path = require("path");
+const coreSource = fs.readFileSync(path.join(__dirname, "../src/data/match_data.js"), "utf8");
+const uiSource = fs.readFileSync(path.join(__dirname, "../src/ui.js"), "utf8");
+const startMarker = "// F9W1a — Match Data 2.0 UI projections";
 const endMarker = "// F9W1a END";
 const start = uiSource.indexOf(startMarker);
 const end = uiSource.indexOf(endMarker);
-assert(start >= 0 && end > start, "F9W1a block not found in src/ui.js");
-const patchSource = uiSource.slice(start, end + endMarker.length);
+assert(start >= 0 && end > start, "F9W1a UI projections not found in src/ui.js");
+const patchSource = `${coreSource}\n${uiSource.slice(start, end + endMarker.length)}`;
 
 function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
 
@@ -96,7 +98,7 @@ function makeContext() {
     __getMatchStats:() => clone(matchStatsStore)
   };
   vm.createContext(sandbox);
-  vm.runInContext(patchSource, sandbox, {filename:"f9w1a-ui-block.js"});
+  vm.runInContext(patchSource, sandbox, {filename:"match-data-and-f9w1a-ui-projections.js"});
   assert.strictEqual(sandbox.ArenaDataStore.pathForKey("arenaRubra.matchTelemetry.v2"), "stats/match-telemetry.json", "telemetry store must have a stable vault path");
   return sandbox;
 }

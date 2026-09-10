@@ -158,7 +158,9 @@ function arenaAudioSyncControls() {
   const enabled = Boolean(arenaAudioState.enabled);
   const percent = Math.round(arenaAudioClampVolume(arenaAudioState.volume) * 100);
   document.querySelectorAll("[data-arena-music-toggle]").forEach(button => {
-    button.textContent = enabled ? "Musica ON" : "Musica OFF";
+    button.textContent = enabled
+      ? (typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.musicOn", {}, "Musica ON") : "Musica ON")
+      : (typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.musicOff", {}, "Musica OFF") : "Musica OFF");
     button.setAttribute("aria-pressed", enabled ? "true" : "false");
     button.classList.toggle("isOff", !enabled);
   });

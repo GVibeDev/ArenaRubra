@@ -2,17 +2,13 @@
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const root = path.resolve(__dirname, "..");
 const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
 const build = fs.readFileSync(path.join(root, "src", "build_info.js"), "utf8");
 
-for (const token of [
-  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
-  'buildName: "Agathoi Palette Readability Hotfix"',
-  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
-  'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
-]) assert(build.includes(token), `missing F9W2d1 build token: ${token}`);
+const buildInfo = assertCurrentBuildInfo(build);
 
 const ornamentStart = ui.indexOf('style.textContent += `\n    html[data-arena-ui-theme] [data-arena-skin-slot="shell"]');
 const ornamentEnd = ui.indexOf('document.head.appendChild(style);', ornamentStart);
@@ -35,5 +31,5 @@ console.log(JSON.stringify({
   nativeOverflowPreserved:true,
   ornamentSelfClip:true,
   agathoiOverlayToned:true,
-  build:"C2-STABLE-1-F9W2d3-APK-M4c"
+  build:buildInfo.version
 }, null, 2));

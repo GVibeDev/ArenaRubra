@@ -17,6 +17,11 @@ const CARD_POOL_STATE = {
 
 const CARD_POOL_GALLERY_THUMB_SCALE = 0.19;
 
+function cardPoolI18n(key, fallback, params = {}) {
+  if (typeof arenaI18nText === "function") return arenaI18nText(`tools.cardPool.${key}`, fallback, params);
+  return Object.entries(params).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), String(fallback || ""));
+}
+
 function cardPoolEscapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -28,7 +33,8 @@ function cardPoolEscapeHtml(value) {
 
 function cardPoolCatalog() {
   const official = typeof buildCardCatalog === "function" ? buildCardCatalog() : [];
-  return typeof cardEditorCatalogWithCustom === "function" ? cardEditorCatalogWithCustom(official) : official;
+  const catalog = typeof cardEditorCatalogWithCustom === "function" ? cardEditorCatalogWithCustom(official) : official;
+  return catalog.map(card => typeof arenaContentCard === "function" ? arenaContentCard(card) : card);
 }
 
 function cardPoolFactionList(catalog = null) {
@@ -51,18 +57,18 @@ function cardPoolRole(card) {
 function cardPoolRoleLabel(cardOrRole) {
   const raw = typeof cardOrRole === "string" ? cardOrRole : cardPoolRole(cardOrRole);
   const labels = {
-    all: "Tutti",
-    commander: "Comandanti",
+    all: cardPoolI18n("roles.all", "Tutti"),
+    commander: cardPoolI18n("roles.commanders", "Comandanti"),
     pivot: "Pivot",
     elite: "Elite",
-    heavy: "Pesanti",
+    heavy: cardPoolI18n("roles.heavy", "Pesanti"),
     base: "Base",
-    tactic: "Tattiche",
-    mission: "Missioni",
-    unit_structure: "Strutture",
-    unit_infantry: "Fanterie",
-    unit_vehicle: "Veicoli",
-    unit: "Unità"
+    tactic: cardPoolI18n("roles.tactics", "Tattiche"),
+    mission: cardPoolI18n("roles.missions", "Missioni"),
+    unit_structure: cardPoolI18n("roles.structures", "Strutture"),
+    unit_infantry: cardPoolI18n("roles.infantry", "Fanterie"),
+    unit_vehicle: cardPoolI18n("roles.vehicles", "Veicoli"),
+    unit: cardPoolI18n("roles.units", "Unità")
   };
   return labels[raw] || raw || "—";
 }
@@ -164,7 +170,7 @@ function cardPoolPopulateFactionSelect() {
   if (!select) return;
   const factions = cardPoolFactionList();
   const current = CARD_POOL_STATE.faction;
-  select.innerHTML = `<option value="all">Tutte le fazioni</option>` + factions.map(faction => `<option value="${cardPoolEscapeHtml(faction)}">${cardPoolEscapeHtml(faction)}</option>`).join("");
+  select.innerHTML = `<option value="all">${cardPoolEscapeHtml(cardPoolI18n("allFactions", "Tutte le fazioni"))}</option>` + factions.map(faction => `<option value="${cardPoolEscapeHtml(faction)}">${cardPoolEscapeHtml(faction)}</option>`).join("");
   select.value = factions.includes(current) ? current : "all";
   CARD_POOL_STATE.faction = select.value;
 }
@@ -201,7 +207,7 @@ function cardPoolSummaryHtml(counts) {
   return `
     <div class="deckBuilderStatus good">
       <strong>Card Pool Gallery</strong>
-      <span>${counts.filtered}/${counts.total} carte visibili · ${counts.unit} unità · ${counts.tactic} tattiche · ${counts.mission} Missioni · ${counts.custom} custom · ${counts.factions} fazioni</span>
+      <span>${cardPoolEscapeHtml(cardPoolI18n("summary", "{filtered}/{total} carte visibili · {units} unità · {tactics} tattiche · {missions} Missioni · {custom} custom · {factions} fazioni", { filtered:counts.filtered, total:counts.total, units:counts.unit, tactics:counts.tactic, missions:counts.mission, custom:counts.custom, factions:counts.factions }))}</span>
     </div>
     <div class="deckBuilderRuleBox">
       <strong>F9K2:</strong> browser read-only del catalogo con filtro origine, badge CUSTOM, duplicazione sicura in editor e custom library separata.
@@ -210,16 +216,16 @@ function cardPoolSummaryHtml(counts) {
 }
 
 function cardPoolRowsHtml(cards) {
-  if (!cards.length) return `<tr><td colspan="8">Nessuna carta corrisponde ai filtri impostati.</td></tr>`;
+  if (!cards.length) return `<tr><td colspan="8">${cardPoolEscapeHtml(cardPoolI18n("noMatches", "Nessuna carta corrisponde ai filtri impostati."))}</td></tr>`;
   return cards.map(card => {
     const selected = CARD_POOL_STATE.selectedCardId === card.id ? "cardPoolSelectedRow" : "";
     const entry = typeof cardAssetEntryFor === "function" ? cardAssetEntryFor(card) : null;
     const artHint = entry && entry.fileId ? entry.fileId : (card.sourceId || card.id || "");
     return `<tr class="${selected}" data-card-pool-select="${cardPoolEscapeHtml(card.id)}">
-      <td><button class="miniBtn" type="button" data-card-pool-select-btn="${cardPoolEscapeHtml(card.id)}">Vedi</button></td>
+      <td><button class="miniBtn" type="button" data-card-pool-select-btn="${cardPoolEscapeHtml(card.id)}">${cardPoolEscapeHtml(cardPoolI18n("view", "Vedi"))}</button></td>
       <td>${cardPoolEscapeHtml(card.faction || "—")}</td>
-      <td><strong>${cardPoolEscapeHtml(card.name || "Carta")}</strong><span>${cardPoolEscapeHtml(card.id || "")}</span></td>
-      <td>${cardPoolEscapeHtml(cardPoolKind(card) === "mission" ? "Missione" : (cardPoolKind(card) === "tactic" ? "Tattica" : "Unità"))}${card.custom ? ` <span class="cardPoolCustomBadge">CUSTOM</span>` : ""}</td>
+      <td><strong>${cardPoolEscapeHtml(card.name || cardPoolI18n("card", "Carta"))}</strong><span>${cardPoolEscapeHtml(card.id || "")}</span></td>
+      <td>${cardPoolEscapeHtml(cardPoolKind(card) === "mission" ? cardPoolI18n("mission", "Missione") : (cardPoolKind(card) === "tactic" ? cardPoolI18n("tactic", "Tattica") : cardPoolI18n("unit", "Unità")))}${card.custom ? ` <span class="cardPoolCustomBadge">CUSTOM</span>` : ""}</td>
       <td>${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</td>
       <td>${cardPoolEscapeHtml(cardPoolTypeLabel(card))}</td>
       <td>${Number.isFinite(card.cost) ? card.cost : "—"}</td>
@@ -229,13 +235,13 @@ function cardPoolRowsHtml(cards) {
 }
 
 function cardPoolGalleryHtml(cards) {
-  if (!cards.length) return `<div class="deckBuilderRuleBox">Nessuna carta corrisponde ai filtri impostati.</div>`;
+  if (!cards.length) return `<div class="deckBuilderRuleBox">${cardPoolEscapeHtml(cardPoolI18n("noMatches", "Nessuna carta corrisponde ai filtri impostati."))}</div>`;
   return cards.map(card => {
     const selected = CARD_POOL_STATE.selectedCardId === card.id ? " cardPoolGalleryItemSelected" : "";
-    return `<button class="cardPoolGalleryItem${selected}${card.custom ? " cardPoolGalleryItemCustom" : ""}" type="button" data-card-pool-gallery-select="${cardPoolEscapeHtml(card.id)}" aria-label="Seleziona ${cardPoolEscapeHtml(card.name || card.id || 'carta')}">
+    return `<button class="cardPoolGalleryItem${selected}${card.custom ? " cardPoolGalleryItemCustom" : ""}" type="button" data-card-pool-gallery-select="${cardPoolEscapeHtml(card.id)}" aria-label="${cardPoolEscapeHtml(cardPoolI18n("selectCard", "Seleziona {card}", { card:card.name || card.id || cardPoolI18n("cardLower", "carta") }))}">
       ${card.custom ? `<span class="cardPoolGalleryCustomCorner">CUSTOM</span>` : ""}
       <canvas class="cardPoolGalleryCanvas" data-card-pool-gallery-canvas="${cardPoolEscapeHtml(card.id)}"></canvas>
-      <span class="cardPoolGalleryName">${cardPoolEscapeHtml(card.name || "Carta")}</span>
+      <span class="cardPoolGalleryName">${cardPoolEscapeHtml(card.name || cardPoolI18n("card", "Carta"))}</span>
       <span class="cardPoolGalleryMeta">${cardPoolEscapeHtml(card.id || "")} · ${cardPoolEscapeHtml(cardPoolRoleLabel(card))}</span>
     </button>`;
   }).join("");
@@ -262,7 +268,7 @@ function cardPoolPreviewStatsHtml(card) {
   if (card.sourceType !== "tactic" && card.sourceType !== "mission") {
     values.push({ key:"HP", value:stat("hp") }, { key:"DEF", value:stat("def") }, { key:"ATT", value:stat("att") });
   }
-  return `<div class="cardPoolLargeStats" aria-label="Statistiche carta">${values.map(item => `<div class="cardPoolLargeStat"><span>${item.key}</span><strong>${Number.isFinite(item.value) ? item.value : "—"}</strong></div>`).join("")}</div>`;
+  return `<div class="cardPoolLargeStats" aria-label="${cardPoolEscapeHtml(cardPoolI18n("cardStats", "Statistiche carta"))}">${values.map(item => `<div class="cardPoolLargeStat"><span>${item.key}</span><strong>${Number.isFinite(item.value) ? item.value : "—"}</strong></div>`).join("")}</div>`;
 }
 
 function cardPoolSourceBlueprint(card) {
@@ -271,7 +277,8 @@ function cardPoolSourceBlueprint(card) {
 
 function cardPoolActiveAbility(card) {
   if (!card || card.sourceType === "tactic" || card.sourceType === "mission") return null;
-  const blueprint = cardPoolSourceBlueprint(card);
+  const sourceBlueprint = cardPoolSourceBlueprint(card);
+  const blueprint = sourceBlueprint && typeof ArenaContentI18n !== "undefined" ? ArenaContentI18n.project("units", sourceBlueprint, ["ability.name", "ability.description"]) : sourceBlueprint;
   const ability = blueprint && blueprint.ability ? blueprint.ability : (card.ability || null);
   return ability && !ability.passive ? ability : null;
 }
@@ -279,10 +286,13 @@ function cardPoolActiveAbility(card) {
 function cardPoolAbilityMetaHtml(ability) {
   if (!ability) return "";
   const items = [];
-  if (Number.isFinite(ability.cost)) items.push(`Costo ${ability.cost} ENE`);
+  if (Number.isFinite(ability.cost)) items.push(cardPoolI18n("abilityCost", "Costo {cost} ENE", { cost:ability.cost }));
   if (Number.isFinite(ability.cooldown)) items.push(`CD ${ability.cooldown}`);
   if (Number.isFinite(ability.range)) items.push(`R${ability.range}`);
-  if (ability.target) items.push(`Bersaglio: ${ability.target}`);
+  if (ability.target) {
+    const target = typeof ArenaContentI18n !== "undefined" ? ArenaContentI18n.taxonomy("targets", ability.target, ability.target) : ability.target;
+    items.push(cardPoolI18n("abilityTarget", "Bersaglio: {target}", { target }));
+  }
   return items.length ? `<div class="cardPoolAbilityMeta">${items.map(item => `<span>${cardPoolEscapeHtml(item)}</span>`).join("")}</div>` : "";
 }
 
@@ -293,29 +303,29 @@ function cardPoolAbilitiesHtml(card) {
     : String(card.effectText || card.description || "").trim();
   if (card.sourceType === "tactic" || card.sourceType === "mission") {
     return `<section class="cardPoolAbilitySection">
-      <h5>${card.sourceType === "mission" ? "Obiettivo ed effetto" : "Effetto tattica"}</h5>
-      <p>${cardPoolEscapeHtml(desc || "Nessun testo disponibile nel catalogo.")}</p>
+      <h5>${card.sourceType === "mission" ? cardPoolI18n("missionEffect", "Obiettivo ed effetto") : cardPoolI18n("tacticEffect", "Effetto tattica")}</h5>
+      <p>${cardPoolEscapeHtml(desc || cardPoolI18n("noCatalogText", "Nessun testo disponibile nel catalogo."))}</p>
     </section>`;
   }
   const active = cardPoolActiveAbility(card);
   const passiveEntries = typeof cardRendererPassiveEntries === "function" ? cardRendererPassiveEntries(card) : [];
   const activeHtml = active ? `<section class="cardPoolAbilitySection cardPoolActiveAbility">
-    <h5>Abilità attiva · ${cardPoolEscapeHtml(active.name || "Abilità")}</h5>
+    <h5>${cardPoolEscapeHtml(cardPoolI18n("activeAbility", "Abilità attiva"))} · ${cardPoolEscapeHtml(active.name || cardPoolI18n("ability", "Abilità"))}</h5>
     ${cardPoolAbilityMetaHtml(active)}
-    <p>${cardPoolEscapeHtml(active.description || "Descrizione non disponibile.")}</p>
+    <p>${cardPoolEscapeHtml(active.description || cardPoolI18n("noDescription", "Descrizione non disponibile."))}</p>
   </section>` : "";
   const passiveHtml = passiveEntries.length ? `<section class="cardPoolAbilitySection">
-    <h5>Passive e tratti</h5>
-    <div class="cardPoolPassiveList">${passiveEntries.map(entry => `<article><strong>${cardPoolEscapeHtml(entry.name || "Passiva")}</strong><p>${cardPoolEscapeHtml(entry.description || "")}</p></article>`).join("")}</div>
+    <h5>${cardPoolEscapeHtml(cardPoolI18n("passives", "Passive e tratti"))}</h5>
+    <div class="cardPoolPassiveList">${passiveEntries.map(entry => `<article><strong>${cardPoolEscapeHtml(entry.name || cardPoolI18n("passive", "Passiva"))}</strong><p>${cardPoolEscapeHtml(entry.description || "")}</p></article>`).join("")}</div>
   </section>` : "";
   const fallbackHtml = (!active && !passiveEntries.length) || desc
-    ? `<section class="cardPoolAbilitySection cardPoolFullText"><h5>Testo carta</h5><p>${cardPoolEscapeHtml(desc || "Nessuna abilità.")}</p></section>`
+    ? `<section class="cardPoolAbilitySection cardPoolFullText"><h5>${cardPoolEscapeHtml(cardPoolI18n("cardText", "Testo carta"))}</h5><p>${cardPoolEscapeHtml(desc || cardPoolI18n("noAbility", "Nessuna abilità."))}</p></section>`
     : "";
   return `${activeHtml}${passiveHtml}${fallbackHtml}`;
 }
 
 function cardPoolTechnicalHtml(card, entry = null) {
-  if (!card) return "Nessuna informazione tecnica disponibile.";
+  if (!card) return cardPoolI18n("noTechnicalInfo", "Nessuna informazione tecnica disponibile.");
   return `
     <div><strong>Card ID:</strong> <code>${cardPoolEscapeHtml(card.id || "")}</code></div>
     <div><strong>Source ID:</strong> <code>${cardPoolEscapeHtml(card.sourceId || card.blueprintId || card.tacticId || "")}</code></div>
@@ -381,9 +391,9 @@ function renderCardPoolPreview(card = null) {
 
   if (typeof renderArenaCardPreviewCanvas === "function") renderArenaCardPreviewCanvas(canvas, selected || null);
   if (!selected) {
-    meta.textContent = "Nessuna carta selezionata.";
-    body.innerHTML = `<div class="deckBuilderPreviewHelp">Seleziona una carta dal pool.</div>`;
-    if (debugBody) debugBody.textContent = "Nessuna informazione tecnica disponibile.";
+    meta.textContent = cardPoolI18n("noSelection", "Nessuna carta selezionata.");
+    body.innerHTML = `<div class="deckBuilderPreviewHelp">${cardPoolEscapeHtml(cardPoolI18n("selectFromPool", "Seleziona una carta dal pool."))}</div>`;
+    if (debugBody) debugBody.textContent = cardPoolI18n("noTechnicalInfo", "Nessuna informazione tecnica disponibile.");
     cardPoolRenderFocusMode(null);
     return null;
   }
@@ -392,12 +402,12 @@ function renderCardPoolPreview(card = null) {
   const duplicateButton = document.getElementById("cardPoolDuplicateSelectedBtn");
   if (duplicateButton) {
     duplicateButton.disabled = selected.sourceType === "mission";
-    duplicateButton.title = selected.sourceType === "mission" ? "Le Missioni ufficiali non sono duplicabili nel Card Editor in F9N4." : "";
+    duplicateButton.title = selected.sourceType === "mission" ? cardPoolI18n("missionCannotDuplicate", "Le Missioni ufficiali non sono duplicabili nel Card Editor in F9N4.") : "";
   }
-  meta.textContent = `${selected.faction || "—"} · ${selected.sourceType === "mission" ? "Missione" : (selected.sourceType === "tactic" ? "Tattica" : "Unità")} · ${cardPoolRoleLabel(selected)}`;
+  meta.textContent = `${selected.faction || "—"} · ${selected.sourceType === "mission" ? cardPoolI18n("mission", "Missione") : (selected.sourceType === "tactic" ? cardPoolI18n("tactic", "Tattica") : cardPoolI18n("unit", "Unità"))} · ${cardPoolRoleLabel(selected)}`;
   body.innerHTML = `
     <header class="cardPoolSelectedHeading">
-      <h4>${cardPoolEscapeHtml(selected.name || "Carta")}</h4>
+      <h4>${cardPoolEscapeHtml(selected.name || cardPoolI18n("card", "Carta"))}</h4>
       <span>${cardPoolEscapeHtml(cardPoolTypeLabel(selected))}</span>
     </header>
     ${cardPoolPreviewStatsHtml(selected)}
@@ -433,7 +443,7 @@ function renderCardPoolScreen() {
   if (summary) summary.innerHTML = cardPoolSummaryHtml(counts);
   if (body) body.innerHTML = cardPoolRowsHtml(cards);
   if (gallery) gallery.innerHTML = cardPoolGalleryHtml(cards);
-  if (meta) meta.textContent = `${typeof buildInfoLabel === "function" ? buildInfoLabel() : "build"} · Card Pool · ${counts.filtered}/${counts.total} carte · selezionata: ${selected ? selected.name : "nessuna"}`;
+  if (meta) meta.textContent = cardPoolI18n("meta", "{build} · Card Pool · {filtered}/{total} carte · selezionata: {selected}", { build:typeof buildInfoLabel === "function" ? buildInfoLabel() : "build", filtered:counts.filtered, total:counts.total, selected:selected ? selected.name : cardPoolI18n("none", "nessuna") });
   cardPoolSetViewMode(CARD_POOL_STATE.viewMode);
   renderCardPoolPreview(selected);
   syncCardPoolSelection();
@@ -454,15 +464,15 @@ function copyCardPoolSelectedJson() {
     asset: typeof cardAssetEntryFor === "function" && card ? cardAssetEntryFor(card) : null
   };
   const text = JSON.stringify(payload, null, 2);
-  if (typeof arenaStorageCopyText === "function") return arenaStorageCopyText(text, "Carta pool copiata in JSON.");
+  if (typeof arenaStorageCopyText === "function") return arenaStorageCopyText(text, cardPoolI18n("cardCopied", "Carta pool copiata in JSON."));
   if (typeof navigator !== "undefined" && navigator.clipboard) return navigator.clipboard.writeText(text);
   return text;
 }
 
 function copyCardPoolManifestJson() {
   if (typeof copyCardAssetManifestJson === "function") return copyCardAssetManifestJson();
-  const text = typeof cardAssetManifestJson === "function" ? cardAssetManifestJson() : JSON.stringify({ error:"manifest non disponibile" }, null, 2);
-  if (typeof arenaStorageCopyText === "function") return arenaStorageCopyText(text, "Manifest asset carte copiato.");
+  const text = typeof cardAssetManifestJson === "function" ? cardAssetManifestJson() : JSON.stringify({ error:cardPoolI18n("manifestUnavailable", "manifest non disponibile") }, null, 2);
+  if (typeof arenaStorageCopyText === "function") return arenaStorageCopyText(text, cardPoolI18n("manifestCopied", "Manifest asset carte copiato."));
   return text;
 }
 

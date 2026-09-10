@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, assert_valid_logic_baseline, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1440, "height": 1000})
     page = context.new_page()
     page.set_default_timeout(10000)
@@ -123,9 +120,9 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert setup['build'] == 'C2-STABLE-1-F9T2d3-APK-M4c', setup
-assert setup['baseline'] == 'C2-STABLE-1-F9T2c3a-APK-M4c', setup
-assert setup['expertOption'] and 'Expert F9T2c' in setup['expertLabel'], setup
+assert_valid_build_version(setup['build'])
+assert_valid_logic_baseline(setup['baseline'])
+assert setup['expertOption'] and setup['expertLabel'].startswith('Expert F9T2') and 'Varran' in setup['expertLabel'], setup
 assert setup['aiMode'] == 'expert', setup
 assert setup['telemetrySchema'] == 'F9Q3e1-2', setup
 assert setup['expertSchema'] == 'F9T1-1', setup

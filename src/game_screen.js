@@ -18,6 +18,16 @@ function safeText(id, value) {
   if (el) el.textContent = value;
 }
 
+function gameScreenI18n(key, fallback, params = {}) {
+  return typeof arenaI18nText === "function" ? arenaI18nText(key, fallback, params) : fallback;
+}
+
+function gameScreenContentName(kind, item, fallback) {
+  return typeof arenaContentText === "function" && item
+    ? arenaContentText(kind, item.blueprintId || item.sourceId || item.id || "", "name", fallback)
+    : fallback;
+}
+
 function gameScreenInspectedUnit() {
   if (!gameScreenUiState.inspectedUnitId || typeof state === "undefined" || !state || !Array.isArray(state.units)) return null;
   return state.units.find(unit => unit && unit.uid === gameScreenUiState.inspectedUnitId && unit.alive && Array.isArray(unit.pos)) || null;
@@ -114,12 +124,12 @@ function toggleLogDock() {
 
 function hudPendingBlueprintName() {
   try {
-    if (typeof pendingBlueprintForHandOrMarket !== "function" || typeof state === "undefined" || !state) return "unità";
+    if (typeof pendingBlueprintForHandOrMarket !== "function" || typeof state === "undefined" || !state) return gameScreenI18n("game.unitFallback", "unità");
     const bpId = pendingPurchaseBlueprintId || pendingBuildBlueprintId;
     const bp = bpId ? pendingBlueprintForHandOrMarket(state.currentPlayer, bpId) : null;
-    return bp && bp.name ? bp.name : "unità";
+    return bp && bp.name ? gameScreenContentName("units", bp, bp.name) : gameScreenI18n("game.unitFallback", "unità");
   } catch (err) {
-    return "unità";
+    return gameScreenI18n("game.unitFallback", "unità");
   }
 }
 
@@ -127,38 +137,41 @@ function hudPendingTacticName() {
   try {
     if (pendingHandCardUid && typeof handCardByUid === "function" && typeof state !== "undefined" && state) {
       const card = handCardByUid(state.currentPlayer, pendingHandCardUid);
-      if (card && card.name) return card.name;
+      if (card && card.name) return gameScreenContentName(card.cardType === "tactic" ? "tactics" : "units", card, card.name);
     }
     if (pendingTacticId && typeof tacticById === "function") {
       const tactic = tacticById(pendingTacticId);
-      if (tactic && tactic.name) return tactic.name;
+      if (tactic && tactic.name) return gameScreenContentName("tactics", tactic, tactic.name);
     }
   } catch (err) {}
-  return "tattica";
+  return gameScreenI18n("game.tacticFallback", "tattica");
 }
 
 function gameHudModeInfo() {
-  const info = { text: "Pronto", active: false, tone: "idle" };
-  if (typeof state === "undefined" || !state) return { text: "Pronto", active: false, tone: "empty" };
+  const ready = gameScreenI18n("game.ready", "Pronto");
+  const info = { text: ready, active: false, tone: "idle" };
+  if (typeof state === "undefined" || !state) return { text: ready, active: false, tone: "empty" };
   if (state.winner) {
     const winnerName = typeof playerName === "function" ? playerName(state.winner) : `G${state.winner}`;
-    return { text: `Vittoria: ${winnerName}`, active: true, tone: "victory" };
+    return { text: gameScreenI18n("game.victory", `Vittoria: ${winnerName}`, { winner: winnerName }), active: true, tone: "victory" };
   }
 
   const selected = (typeof getSelectedUnit === "function") ? getSelectedUnit() : null;
-  const selectedName = selected && selected.name ? selected.name : "unità";
+  const selectedName = selected && selected.name
+    ? gameScreenContentName("units", selected, selected.name)
+    : gameScreenI18n("game.unitFallback", "unità");
   const currentName = typeof playerName === "function" ? playerName(state.currentPlayer || 1) : `G${state.currentPlayer || 1}`;
 
-  if (mode === "spawn") return { text: `Sbarco: scegli cella blu per ${hudPendingBlueprintName()}`, active: true, tone: "target" };
-  if (mode === "build") return { text: `Costruzione: scegli cella blu per ${hudPendingBlueprintName()}`, active: true, tone: "target" };
-  if (mode === "tactic") return { text: `Tattica: scegli bersaglio per ${hudPendingTacticName()}`, active: true, tone: "target" };
+  if (mode === "spawn") return { text: gameScreenI18n("game.deployTarget", `Sbarco: scegli cella blu per ${hudPendingBlueprintName()}`, { unit: hudPendingBlueprintName() }), active: true, tone: "target" };
+  if (mode === "build") return { text: gameScreenI18n("game.buildTarget", `Costruzione: scegli cella blu per ${hudPendingBlueprintName()}`, { unit: hudPendingBlueprintName() }), active: true, tone: "target" };
+  if (mode === "tactic") return { text: gameScreenI18n("game.tacticTarget", `Tattica: scegli bersaglio per ${hudPendingTacticName()}`, { tactic: hudPendingTacticName() }), active: true, tone: "target" };
   if (mode === "ability") {
-    const abName = pendingAbility && pendingAbility.name ? pendingAbility.name : "abilità";
-    return { text: `Abilità: scegli bersaglio per ${abName}`, active: true, tone: "target" };
+    const abName = pendingAbility && pendingAbility.name ? pendingAbility.name : gameScreenI18n("game.abilityFallback", "abilità");
+    return { text: gameScreenI18n("game.abilityTarget", `Abilità: scegli bersaglio per ${abName}`, { ability: abName }), active: true, tone: "target" };
   }
-  if (mode === "move") return { text: `Movimento: scegli cella per ${selectedName}`, active: true, tone: "move" };
-  if (selected && selected.side === state.currentPlayer) return { text: `Unità: ${selectedName}`, active: true, tone: "unit" };
-  return { text: `Pronto · ${currentName}`, active: false, tone: "idle" };
+  if (mode === "move") return { text: gameScreenI18n("game.moveTarget", `Movimento: scegli cella per ${selectedName}`, { unit: selectedName }), active: true, tone: "move" };
+  if (selected && selected.side === state.currentPlayer) return { text: gameScreenI18n("game.selectedMode", `Unità: ${selectedName}`, { unit: selectedName }), active: true, tone: "unit" };
+  return { text: gameScreenI18n("game.readyPlayer", `Pronto · ${currentName}`, { player: currentName }), active: false, tone: "idle" };
 }
 
 function updateGameHudModeChip() {
@@ -237,11 +250,11 @@ function renderGameHud() {
 
   if (typeof state === "undefined" || !state) {
     safeText("gameHudRound", "R—");
-    safeText("gameHudTurn", "Turno: —");
+    safeText("gameHudTurn", gameScreenI18n("game.turnEmpty", "Turno: —"));
     safeText("gameHudEnergy", "ENE —");
     safeText("gameHudPs", "PS —");
-    safeText("gameHudPressure", "Pressione —");
-    safeText("gameHudCards", "Deck/Mano/Scarti —");
+    safeText("gameHudPressure", gameScreenI18n("game.pressureEmpty", "Pressione —"));
+    safeText("gameHudCards", gameScreenI18n("game.cardsEmpty", "Deck/Mano/Scarti —"));
     updateGameHudModeChip();
     if (typeof renderF9U1bComparisonBars === "function") renderF9U1bComparisonBars();
     return;
@@ -249,7 +262,9 @@ function renderGameHud() {
 
   const current = state.currentPlayer || 1;
   const currentName = typeof playerName === "function" ? playerName(current) : `G${current}`;
-  const currentMode = state.modes && state.modes[current] === "bot" ? "Bot" : "Umano";
+  const currentMode = state.modes && state.modes[current] === "bot"
+    ? gameScreenI18n("game.bot", "Bot")
+    : gameScreenI18n("game.human", "Umano");
   const ps1 = typeof countControlledPS === "function" ? countControlledPS(1) : 0;
   const ps2 = typeof countControlledPS === "function" ? countControlledPS(2) : 0;
   const p1Cards = gameScreenCardCounts(1);
@@ -260,19 +275,23 @@ function renderGameHud() {
   const hudJoinValues = getter => playerIds.map(side => `G${side}:${getter(side)}`).join(" · ");
 
   safeText("gameHudRound", `R${state.turn || 0}`);
-  safeText("gameHudTurn", `Turno: ${currentName} · ${currentMode}`);
+  safeText("gameHudTurn", gameScreenI18n("game.turn", `Turno: ${currentName} · ${currentMode}`, { player: currentName, mode: currentMode }));
   safeText("gameHudEnergy", `ENE ${state.energy ? state.energy[1] : 0}-${state.energy ? state.energy[2] : 0}`);
   safeText("gameHudPs", `PS ${ps1}-${ps2}`);
-  safeText("gameHudPressure", `Pressione ${state.pressure ? state.pressure[1] || 0 : 0}-${state.pressure ? state.pressure[2] || 0 : 0}`);
-  safeText("gameHudCards", `Carte ${p1}: ${p1Cards.deck}/${p1Cards.hand}/${p1Cards.discard} · ${p2}: ${p2Cards.deck}/${p2Cards.hand}/${p2Cards.discard}`);
+  const pressureValue = `${state.pressure ? state.pressure[1] || 0 : 0}-${state.pressure ? state.pressure[2] || 0 : 0}`;
+  const cardsValue = `${p1}: ${p1Cards.deck}/${p1Cards.hand}/${p1Cards.discard} · ${p2}: ${p2Cards.deck}/${p2Cards.hand}/${p2Cards.discard}`;
+  safeText("gameHudPressure", gameScreenI18n("game.pressure", `Pressione ${pressureValue}`, { value: pressureValue }));
+  safeText("gameHudCards", gameScreenI18n("game.cards", `Carte ${cardsValue}`, { value: cardsValue }));
   if (playerIds.length > 2) {
     safeText("gameHudEnergy", `ENE ${hudJoinValues(side => state.energy ? state.energy[side] : 0)}`);
     safeText("gameHudPs", `PS ${hudJoinValues(side => typeof countControlledPS === "function" ? countControlledPS(side) : 0)}`);
-    safeText("gameHudPressure", `Pressione ${hudJoinValues(side => state.pressure ? state.pressure[side] || 0 : 0)}`);
-    safeText("gameHudCards", `Carte ${playerIds.map(side => {
+    const multiplayerPressure = hudJoinValues(side => state.pressure ? state.pressure[side] || 0 : 0);
+    const multiplayerCards = playerIds.map(side => {
       const counts = gameScreenCardCounts(side);
       return `G${side} ${state.factions[side]}:${counts.deck}/${counts.hand}/${counts.discard}`;
-    }).join(" · ")}`);
+    }).join(" · ");
+    safeText("gameHudPressure", gameScreenI18n("game.pressure", `Pressione ${multiplayerPressure}`, { value: multiplayerPressure }));
+    safeText("gameHudCards", gameScreenI18n("game.cards", `Carte ${multiplayerCards}`, { value: multiplayerCards }));
   }
   updateGameHudModeChip();
   if (typeof renderF9U1bComparisonBars === "function") renderF9U1bComparisonBars();

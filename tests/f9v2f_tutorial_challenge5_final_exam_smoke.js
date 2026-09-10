@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const storeMap = new Map();
@@ -157,8 +158,7 @@ tutorialChallengeRuntimeState.meta.finalWinType=null;`);
 evaluate("tutorialRuntimeHandleChallengeGameEvent({type:EventTypes.VICTORY,data:{winner:2,winType:'pressione'}})");
 if (!context.__completion || context.__completion.success !== false || context.__completion.reason !== "enemy_victory") throw new Error(`Enemy victory did not fail exam: ${JSON.stringify(context.__completion)}`);
 
-if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("BUILD_INFO version invalid");
-if (evaluate("BUILD_INFO.buildChannel") !== "starter2-result-flow-v3c") throw new Error("BUILD_INFO channel invalid");
+assertCurrentBuildInfo(evaluate("BUILD_INFO"));
 
 console.log(JSON.stringify({
   ok:true,

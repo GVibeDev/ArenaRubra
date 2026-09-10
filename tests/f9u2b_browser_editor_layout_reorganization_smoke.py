@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -72,7 +73,7 @@ def map_snapshot(page):
 page_errors=[]
 console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
 
     # Card Editor desktop
     ctx=browser.new_context(viewport={'width':1440,'height':1000})
@@ -134,7 +135,7 @@ with sync_playwright() as p:
     mobile_right=rect_snapshot(mobile,'.mapEditorToolsPanel')
     browser.close()
 
-assert card['build']=='C2-STABLE-1-F9T2d3-APK-M4c',card
+assert_valid_build_version(card['build'])
 assert card['headerButtons']==['Nuova','Salva','Duplica','Elimina','Calibra renderer','Copia JSON carta','Copia libreria','Deck Builder','Pool carte','Menu'],card
 assert card['previewText'],card
 assert card['validation'],card
@@ -144,7 +145,7 @@ assert card_left and card_right and card_left['right']<=card_right['left']+2,(ca
 assert card_header and card_policy and card_header['bottom']<=card_policy['top']+2,(card_header,card_policy)
 assert card['overflow']<=1,card
 
-assert map_before['build']=='C2-STABLE-1-F9T2d3-APK-M4c',map_before
+assert_valid_build_version(map_before['build'])
 assert map_before['headerButtons']==['Nuova','Salva','Importa','JSON leggero','JSON portatile','Annulla','Ripeti','Adatta','Menu'],map_before
 assert map_before['cellsRendered']>0,map_before
 assert map_before['live']['status'],map_before

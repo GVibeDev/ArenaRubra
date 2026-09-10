@@ -1,0 +1,1212 @@
+{
+  "tutorialNarrative": {
+    "lesson-1-exordium": {
+      "title": "Lesson 1 · Aurex’s Discipline",
+      "steps": {
+        "lesson-welcome": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Welcome to Aurex’s ranks. You will learn to read cards, deploy units, overcome DEF, use an active ability, and play a tactic."
+          }
+        },
+        "read-tribune-card": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Each card shows its ENE cost, name, type, and statistics. HP is the damage a unit can endure; DEF is protection that must be removed; ATK is base-attack strength. The Tribune costs 2 ENE and also has an ability."
+          },
+          "spotlight": {
+            "label": "The Tribune"
+          }
+        },
+        "collapse-hand": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Collapse the Hand for a clearer view of the map."
+          },
+          "spotlight": {
+            "label": "Collapse Hand"
+          },
+          "wrongActionText": "Press Collapse Hand."
+        },
+        "show-hand": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Reopen the Hand. You can collapse and show it whenever needed."
+          },
+          "spotlight": {
+            "label": "Show Hand"
+          },
+          "wrongActionText": "Press Show Hand."
+        },
+        "select-tribune-card": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select The Tribune. After choosing a unit card, the map highlights legal deployment cells."
+          },
+          "spotlight": {
+            "label": "The Tribune"
+          },
+          "wrongActionText": "Select The Tribune card."
+        },
+        "deploy-tribune": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Deploy The Tribune on the indicated cell. Units without Vanguard enter exhausted and can act on a later turn."
+          },
+          "spotlight": {
+            "label": "Deployment cell"
+          },
+          "wrongActionText": "Deploy The Tribune on the highlighted cell."
+        },
+        "fante-robot-arrives": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "A Nexus Robot Trooper enters the training area. It has 2 HP, 1 DEF, and 2 ATK."
+          },
+          "spotlight": {
+            "label": "Nexus Robot Trooper"
+          }
+        },
+        "explain-defense": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "A normal attack hits DEF first. While the target has DEF, excess strength does not pass to HP. After DEF reaches zero, a later attack can damage HP."
+          },
+          "spotlight": {
+            "label": "HP and DEF"
+          }
+        },
+        "end-first-turn": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "The Tribune is exhausted. End the turn so it will be ready on the next one."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "nexus-yields-initiative": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "The Nexus holds position. It is your turn again: deploy the Heavy Legionary before committing the Tribune."
+          },
+          "spotlight": {
+            "label": "Heavy Legionary"
+          }
+        },
+        "select-legionary-card": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select the Heavy Legionary. It costs 3 ENE and has 3 HP, 2 DEF, and 4 ATK."
+          },
+          "spotlight": {
+            "label": "Heavy Legionary"
+          },
+          "wrongActionText": "Select the Heavy Legionary."
+        },
+        "deploy-legionary": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Deploy the Legionary on the indicated cell. It enters exhausted but will be ready after the Nexus turn."
+          },
+          "spotlight": {
+            "label": "Deployment cell"
+          },
+          "wrongActionText": "Deploy the Legionary on the highlighted cell."
+        },
+        "select-tribune-for-attack": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select The Tribune. It is ready and adjacent to the Robot Trooper."
+          },
+          "spotlight": {
+            "label": "The Tribune"
+          },
+          "wrongActionText": "Select The Tribune."
+        },
+        "tribune-attacks-fante": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Attack the Robot Trooper. The Tribune’s 2 ATK will remove its only DEF; excess damage will not reach HP yet."
+          },
+          "spotlight": {
+            "label": "Robot Trooper"
+          },
+          "wrongActionText": "Attack the highlighted Robot Trooper."
+        },
+        "legionary-ready": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "The Robot Trooper’s DEF is now zero. After the Nexus turn, the Legionary is ready to use Heavy Blow."
+          },
+          "spotlight": {
+            "label": "Heavy Legionary"
+          }
+        },
+        "select-legionary-unit": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select the Heavy Legionary."
+          },
+          "spotlight": {
+            "label": "Heavy Legionary"
+          },
+          "wrongActionText": "Select the Heavy Legionary."
+        },
+        "activate-heavy-blow": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Press the ability button. Heavy Blow costs 1 ENE, deals 2 damage within range 2, and then enters cooldown."
+          },
+          "spotlight": {
+            "label": "Heavy Blow"
+          },
+          "wrongActionText": "Activate Heavy Blow."
+        },
+        "heavy-blow-target": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Strike the Robot Trooper. With no DEF, 2 damage will directly remove its 2 HP."
+          },
+          "spotlight": {
+            "label": "Target"
+          },
+          "wrongActionText": "Use Heavy Blow on the Robot Trooper."
+        },
+        "mech-arrival": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "The Nexus responds with a Heavy Mech: 4 HP, 3 DEF, and 3 ATK. One action will not be enough; coordinate tactic and units."
+          },
+          "spotlight": {
+            "label": "Heavy Mech"
+          }
+        },
+        "read-emp-card": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "EMP Missile is a tactic. It costs 3 ENE, deals 2 damage, and permanently reduces the target’s ATK by 1. Tactics do not become miniatures: they resolve from the Hand."
+          },
+          "spotlight": {
+            "label": "EMP Missile"
+          }
+        },
+        "select-emp-card": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select EMP Missile."
+          },
+          "spotlight": {
+            "label": "EMP Missile"
+          },
+          "wrongActionText": "Select EMP Missile."
+        },
+        "emp-target-mech": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Launch EMP Missile at the Heavy Mech."
+          },
+          "spotlight": {
+            "label": "Heavy Mech"
+          },
+          "wrongActionText": "Target the Heavy Mech with EMP Missile."
+        },
+        "emp-result": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "The Missile removed 2 DEF, leaving the Mech with 1. Its ATK also fell from 3 to 2. The Tribune can now break the last protection."
+          },
+          "spotlight": {
+            "label": "Weakened Mech"
+          }
+        },
+        "select-tribune-again": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select The Tribune."
+          },
+          "spotlight": {
+            "label": "The Tribune"
+          },
+          "wrongActionText": "Select The Tribune."
+        },
+        "tribune-breaks-mech-defense": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Attack the Heavy Mech. The Tribune will remove its last DEF, setting up the decisive blow."
+          },
+          "spotlight": {
+            "label": "Heavy Mech"
+          },
+          "wrongActionText": "Attack the Heavy Mech."
+        },
+        "mech-counterattack": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "The Mech retaliates against the Legionary. EMP reduces its attack to 2: it removes DEF but does not reach HP. The Mech now has no protection."
+          },
+          "spotlight": {
+            "label": "Heavy Legionary"
+          }
+        },
+        "select-legionary-final": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Select the Heavy Legionary for the final blow."
+          },
+          "spotlight": {
+            "label": "Heavy Legionary"
+          },
+          "wrongActionText": "Select the Heavy Legionary."
+        },
+        "destroy-mech": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Attack. With DEF at zero, the Legionary’s 4 ATK will hit the Mech’s 4 HP and destroy it."
+          },
+          "spotlight": {
+            "label": "Heavy Mech"
+          },
+          "wrongActionText": "Attack the Heavy Mech with the Legionary."
+        },
+        "lesson-complete": {
+          "message": {
+            "speaker": "Exordium Narrator",
+            "text": "Lesson complete. You read and played unit cards, removed DEF before HP, used an active ability, and coordinated EMP Missile with two attacks."
+          }
+        }
+      }
+    },
+    "lesson-2-nexus": {
+      "title": "Lesson 2 · Nexus Operational Network",
+      "steps": {
+        "nexus-welcome": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Welcome to the Nexus network. This lesson covers the Starter reserve, the differences between Infantry, Vehicles, and Structures, and the advantage of Vanguard."
+          }
+        },
+        "starter-reserve-overview": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The three Starter cards always remain in reserve: one Infantry, one Vehicle, and one Structure. They are neither drawn nor consumed when used; you still pay their ENE cost and obey battlefield limits."
+          },
+          "spotlight": {
+            "label": "Nexus Starters"
+          }
+        },
+        "read-security-droid": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Security Droid is the Starter Infantry. Infantry moves one cell and can still attack, use an ability, or build a Structure after moving."
+          },
+          "spotlight": {
+            "label": "Security Droid"
+          }
+        },
+        "select-security-droid-starter": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Select the Security Droid from the Starter reserve."
+          },
+          "spotlight": {
+            "label": "Security Droid"
+          },
+          "wrongActionText": "Select the Starter Security Droid."
+        },
+        "deploy-security-droid": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Deploy the Droid on the indicated cell near the HQ. Like almost every newly deployed unit, it enters exhausted."
+          },
+          "spotlight": {
+            "label": "Initial deployment"
+          },
+          "wrongActionText": "Deploy the Droid on the highlighted cell."
+        },
+        "starter-remains-available": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Starter card remains in reserve. You may deploy more copies while ENE, space, and mode limits allow it."
+          },
+          "spotlight": {
+            "label": "Starter still available"
+          }
+        },
+        "end-turn-for-infantry": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "End the turn. The Droid will be ready when the network returns to your control."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "exordium-passes-for-infantry": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The turn returns to the Nexus. The Droid can now move and then build during the same turn."
+          },
+          "spotlight": {
+            "label": "Infantry ready"
+          }
+        },
+        "select-security-droid-unit": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Select the Security Droid. Reachable cells will be highlighted immediately."
+          },
+          "spotlight": {
+            "label": "Security Droid"
+          },
+          "wrongActionText": "Select the Security Droid."
+        },
+        "move-security-droid": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Move the Droid to the indicated cell. It will remain ready to build after moving."
+          },
+          "spotlight": {
+            "label": "Infantry advance"
+          },
+          "wrongActionText": "Move the Droid to the highlighted cell."
+        },
+        "read-starter-structure": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Armed Barrier is the Starter Structure. Structures cannot move but become new network nodes: units may deploy on the HQ or open cells adjacent to an allied building."
+          },
+          "spotlight": {
+            "label": "Armed Barrier"
+          }
+        },
+        "select-starter-structure": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Select the Armed Barrier from the Starter reserve. The Droid that just moved will act as builder."
+          },
+          "spotlight": {
+            "label": "Armed Barrier"
+          },
+          "wrongActionText": "Select the Starter Armed Barrier."
+        },
+        "build-forward-structure": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Build the Barrier on the indicated cell. The Infantry moved and now uses its action to extend the deployment network."
+          },
+          "spotlight": {
+            "label": "Forward node"
+          },
+          "wrongActionText": "Build the Barrier on the highlighted cell."
+        },
+        "deployment-network-online": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The forward node is operational. This Structure lets you deploy new units closer to the central Strategic Point."
+          },
+          "spotlight": {
+            "label": "Deployment network"
+          }
+        },
+        "read-starter-vehicle": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The turn returns to the Nexus. The Scout Quad is the Starter Vehicle: at Fast pace it can move up to two cells, but normally must choose between movement and an action."
+          },
+          "spotlight": {
+            "label": "Scout Quad"
+          }
+        },
+        "select-starter-vehicle": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Select the Scout Quad from the Starter reserve."
+          },
+          "spotlight": {
+            "label": "Scout Quad"
+          },
+          "wrongActionText": "Select the Starter Scout Quad."
+        },
+        "deploy-quad-from-network": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Deploy the Quad on the indicated cell made available by the forward Barrier."
+          },
+          "spotlight": {
+            "label": "Network deployment"
+          },
+          "wrongActionText": "Deploy the Quad on the highlighted cell."
+        },
+        "ordinary-vehicle-exhausted": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Quad reached the center but enters exhausted. An ordinary Vehicle must wait until the next turn before moving."
+          },
+          "spotlight": {
+            "label": "Exhausted Vehicle"
+          }
+        },
+        "end-turn-for-quad": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "End the turn to ready the Quad."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "exordium-passes-for-quad": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Quad is ready. It will now complete the ordinary route to the Strategic Point."
+          },
+          "spotlight": {
+            "label": "Quad ready"
+          }
+        },
+        "select-quad-unit": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Select the Scout Quad. Reachable cells will be highlighted immediately."
+          },
+          "spotlight": {
+            "label": "Scout Quad"
+          },
+          "wrongActionText": "Select the Scout Quad."
+        },
+        "quad-captures-center": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Move the Quad onto the central Strategic Point."
+          },
+          "spotlight": {
+            "label": "Central Strategic Point"
+          },
+          "wrongActionText": "Move the Quad onto the central Strategic Point."
+        },
+        "ordinary-route-complete": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "First procedure complete: forward network, Vehicle deployment, one waiting turn, and movement onto the Strategic Point."
+          },
+          "spotlight": {
+            "label": "SP controlled"
+          }
+        },
+        "prepare-vanguard-comparison": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Quad clears the center for comparison. The Light Mech is a Hand card with Vanguard, so it can act on the turn it enters play."
+          },
+          "spotlight": {
+            "label": "Light Mech"
+          }
+        },
+        "select-vanguard-card": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Select the Light Mech from the Hand."
+          },
+          "spotlight": {
+            "label": "Light Mech"
+          },
+          "wrongActionText": "Select the Light Mech."
+        },
+        "deploy-vanguard-from-network": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Deploy the Mech on the same cell of the forward network. Vanguard will keep it ready."
+          },
+          "spotlight": {
+            "label": "Vanguard deployment"
+          },
+          "wrongActionText": "Deploy the Mech on the highlighted cell."
+        },
+        "select-vanguard-unit": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "The Mech is not exhausted. Select it: reachable cells will be highlighted and it can move immediately."
+          },
+          "spotlight": {
+            "label": "Light Mech ready"
+          },
+          "wrongActionText": "Select the Light Mech."
+        },
+        "vanguard-captures-center": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Move the Mech onto the Strategic Point. Vanguard removed the waiting turn."
+          },
+          "spotlight": {
+            "label": "Central Strategic Point"
+          },
+          "wrongActionText": "Move the Mech onto the central Strategic Point."
+        },
+        "nexus-lesson-complete": {
+          "message": {
+            "speaker": "Nexus Narrator",
+            "text": "Lesson complete. You used the Starter reserve, moved and built with Infantry, extended the network with a Structure, reached the center with a Vehicle, and compared ordinary deployment with Vanguard."
+          }
+        }
+      }
+    },
+    "lesson-3-agathoi": {
+      "title": "Lesson 3 · The Point Holds",
+      "steps": {
+        "agathoi-welcome": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Agathoi line does not win by chasing every target. You will learn to choose the right defense, hold a Strategic Point, and withstand three Exordium waves."
+          }
+        },
+        "defensive-line-overview": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Border Hoplite guards the central Point with 3 HP, 3 DEF, and permanent Thorns 1. The adjacent Healing Grove keeps the allied network open for defensive tactics."
+          },
+          "spotlight": {
+            "label": "Border Hoplite"
+          }
+        },
+        "choose-first-defense": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Your Hand offers several answers, but the first wave is fragile. Thorn Cloak raises Thorns to 2 until the next turn, the most efficient choice against a light assault."
+          },
+          "spotlight": {
+            "label": "Thorn Cloak"
+          }
+        },
+        "select-thorns-tactic": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Select Thorn Cloak."
+          },
+          "spotlight": {
+            "label": "Thorn Cloak"
+          },
+          "wrongActionText": "Select Thorn Cloak."
+        },
+        "apply-thorns-to-oplite": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Apply Thorn Cloak to the Hoplite."
+          },
+          "spotlight": {
+            "label": "Border Hoplite"
+          },
+          "wrongActionText": "Target the Border Hoplite with Thorn Cloak."
+        },
+        "thorns-defense-ready": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Hoplite now deals 2 direct damage to attackers. Thorns do not prevent an enemy strike, but make every assault costly."
+          },
+          "spotlight": {
+            "label": "Thorns 2"
+          }
+        },
+        "end-turn-wave-one": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "End the turn and let the Exordium strike the line."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "wave-one-resolved": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Guard removed part of the Hoplite’s DEF, but Thorns 2 destroyed it. The first wave was repelled without spending an attack."
+          },
+          "spotlight": {
+            "label": "First wave repelled"
+          }
+        },
+        "choose-counterattack": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The second wave is tougher. Vigilant Nature grants Counterattack: if the Hoplite survives a base attack, it immediately retaliates once."
+          },
+          "spotlight": {
+            "label": "Vigilant Nature"
+          }
+        },
+        "select-counterattack-tactic": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Select Vigilant Nature."
+          },
+          "spotlight": {
+            "label": "Vigilant Nature"
+          },
+          "wrongActionText": "Select Vigilant Nature."
+        },
+        "apply-counterattack-to-oplite": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Grant Counterattack to the Hoplite."
+          },
+          "spotlight": {
+            "label": "Border Hoplite"
+          },
+          "wrongActionText": "Target the Border Hoplite with Vigilant Nature."
+        },
+        "counterattack-ready": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Thorns and Counterattack are different reactions. Thorns deal direct damage; Counterattack uses the Hoplite’s ATK and hits enemy DEF first."
+          },
+          "spotlight": {
+            "label": "Counterattack ready"
+          }
+        },
+        "end-turn-wave-two": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "End the turn and prepare the Hoplite’s response."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "wave-two-resolved": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Legionary broke the Hoplite’s last DEF. Thorns wounded it and Counterattack destroyed it. The Hoplite retains all its HP."
+          },
+          "spotlight": {
+            "label": "Second wave repelled"
+          }
+        },
+        "choose-fortification": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The third wave targets the Grove. Wooden Bastion sets the Structure’s current DEF equal to its HP, the right choice against one powerful strike."
+          },
+          "spotlight": {
+            "label": "Wooden Bastion"
+          }
+        },
+        "select-fortification-tactic": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Select Wooden Bastion."
+          },
+          "spotlight": {
+            "label": "Wooden Bastion"
+          },
+          "wrongActionText": "Select Wooden Bastion."
+        },
+        "fortify-healing-grove": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Fortify the Healing Grove."
+          },
+          "spotlight": {
+            "label": "Healing Grove"
+          },
+          "wrongActionText": "Target the Healing Grove with Wooden Bastion."
+        },
+        "fortification-ready": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Grove now has 4 DEF, equal to its 4 HP. As long as a strike meets at least one DEF, excess damage does not pass through the protection."
+          },
+          "spotlight": {
+            "label": "DEF equal to HP"
+          }
+        },
+        "end-turn-wave-three": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "End the turn. The last wave will try to demolish the Structure."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "wave-three-survived": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "The Artillery removed all DEF but dealt no HP damage to the Grove. The fortification absorbed the blow and the line can respond."
+          },
+          "spotlight": {
+            "label": "Grove still intact"
+          }
+        },
+        "select-oplite-final": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Select the Hoplite. It survived the waves and is still ready to act."
+          },
+          "spotlight": {
+            "label": "Border Hoplite"
+          },
+          "wrongActionText": "Select the Border Hoplite."
+        },
+        "destroy-third-wave": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Attack the Artillery. With no DEF and 2 HP remaining, the Hoplite’s 2 ATK will destroy it."
+          },
+          "spotlight": {
+            "label": "Exordium Artillery"
+          },
+          "wrongActionText": "Attack the Exordium Artillery with the Hoplite."
+        },
+        "agathoi-lesson-complete": {
+          "message": {
+            "speaker": "Agathoi Narrator",
+            "text": "Lesson complete. You chose three different defenses, turned enemy attacks into damage with Thorns and Counterattack, fortified a Structure, and held the Point."
+          },
+          "spotlight": {
+            "label": "Point defended"
+          }
+        }
+      }
+    },
+    "lesson-4-liberti": {
+      "title": "Lesson 4 · Pressure Opens the Breach",
+      "steps": {
+        "liberti-welcome": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "The Agathoi hold the central Point with a Stone Anthropos. One blow will not defeat it: read your Hand, choose the right cards, and turn numbers into pressure."
+          }
+        },
+        "liberti-formation-overview": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "The Anthropos has 6 HP and 4 DEF. Three Liberti Infantry surround it: when at least one ally is adjacent to the same target, Numerical Superiority adds +1 ATK to the attack."
+          },
+          "spotlight": {
+            "label": "Stone Anthropos"
+          }
+        },
+        "inspect-liberti-hand": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Hover over the cards and read their previews. During the tutorial, previews remain fully visible even while the rest of the screen is dimmed. Find a card that applies Bleeding 2 to an Infantry unit’s next attack."
+          },
+          "spotlight": {
+            "label": "Compare the cards"
+          }
+        },
+        "choose-sanguis-card": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Choose the Hand card that prepares Bleeding 2 on an Infantry unit’s next base attack."
+          },
+          "spotlight": {
+            "label": "Choose the correct card"
+          },
+          "wrongActionText": "Compare the effects: you need Mark of the Sanguis."
+        },
+        "apply-sanguis-mark": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Apply Mark of the Sanguis to the highlighted Militiaman."
+          },
+          "spotlight": {
+            "label": "Militiaman to mark"
+          },
+          "wrongActionText": "Target the highlighted Militiaman with Mark of the Sanguis."
+        },
+        "select-marked-militia": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Select the Marked Militiaman."
+          },
+          "spotlight": {
+            "label": "Marked Militiaman"
+          },
+          "wrongActionText": "Select the Marked Militiaman."
+        },
+        "superiority-attack": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Attack the Anthropos. Numerical Superiority raises the Militiaman from 2 to 3 ATK: it will remove 3 of 4 DEF and apply Bleeding 2."
+          },
+          "spotlight": {
+            "label": "Stone Anthropos"
+          },
+          "wrongActionText": "Attack the Stone Anthropos with the selected Militiaman."
+        },
+        "bleed-prepared": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "DEF fell from 4 to 1. The target still has 6 HP, but Bleeding 2 will strike directly at the start of its turn, ignoring remaining DEF."
+          },
+          "spotlight": {
+            "label": "1 DEF · Bleeding 2"
+          }
+        },
+        "end-turn-for-bleed": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "End the turn to trigger Bleeding."
+          },
+          "spotlight": {
+            "label": "End turn"
+          },
+          "wrongActionText": "End the turn with the highlighted button."
+        },
+        "bleed-resolved": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Bleeding directly removed 2 HP: the Anthropos fell to 4 HP while retaining 1 DEF. Now use a card that turns the encirclement into immediate attacks."
+          },
+          "spotlight": {
+            "label": "Bleeding resolved"
+          }
+        },
+        "choose-coordinated-card": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Choose the card that orders Infantry adjacent to the enemy to attack immediately, even if they have already acted."
+          },
+          "spotlight": {
+            "label": "Second choice"
+          },
+          "wrongActionText": "You need a coordinated-attack card: Attack Lure."
+        },
+        "play-coordinated-attack": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Play Attack Lure on the surrounded Anthropos."
+          },
+          "spotlight": {
+            "label": "Surrounded target"
+          },
+          "wrongActionText": "Target the Stone Anthropos with Attack Lure."
+        },
+        "coordinated-pressure-resolved": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Attack Lure activated the Infantry in sequence. The first removed the last DEF; the others depleted the HP. The central Point is now clear."
+          },
+          "spotlight": {
+            "label": "Breach opened"
+          }
+        },
+        "select-predone-to-capture": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Select the Liberti Raider. The coordinated reactions did not consume its normal action."
+          },
+          "spotlight": {
+            "label": "Liberti Raider"
+          },
+          "wrongActionText": "Select the Liberti Raider."
+        },
+        "capture-center-ps": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Move the Raider onto the Strategic Point and complete the assault."
+          },
+          "spotlight": {
+            "label": "Central Strategic Point"
+          },
+          "wrongActionText": "Move the Raider onto the central Strategic Point."
+        },
+        "liberti-lesson-complete": {
+          "message": {
+            "speaker": "Liberti Narrator",
+            "text": "Lesson complete. You compared cards through previews, chose the right answer, applied Bleeding, used Numerical Superiority, and turned encirclement into conquest."
+          },
+          "spotlight": {
+            "label": "Point captured"
+          }
+        }
+      }
+    },
+    "lesson-5-fabeot": {
+      "title": "Lesson 5 · The Contract Changes Hands",
+      "steps": {
+        "fabeot-welcome": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "The Nexus left a Robot Trooper isolated. Do not destroy it: first make it vulnerable, then use the Mark to transfer control to the Citadel."
+          },
+          "spotlight": {
+            "label": "Robot Trooper"
+          }
+        },
+        "fabeot-contract-overview": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Purple Sentence costs 2 ENE. The Marked target takes +1 damage from attacks and offensive abilities until end of turn; that Mark also satisfies a Fabeot acquisition clause."
+          },
+          "spotlight": {
+            "label": "Fabeot Hierarch"
+          }
+        },
+        "select-fabeot-hierarch": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Select the Fabeot Hierarch."
+          },
+          "spotlight": {
+            "label": "Fabeot Hierarch"
+          },
+          "wrongActionText": "Select the Fabeot Hierarch."
+        },
+        "activate-purple-sentence": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Activate Purple Sentence."
+          },
+          "spotlight": {
+            "label": "Purple Sentence"
+          },
+          "wrongActionText": "Activate Purple Sentence from the unit panel."
+        },
+        "mark-fante-with-vulnerability": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Apply the Mark to the Robot Trooper."
+          },
+          "spotlight": {
+            "label": "Robot Trooper"
+          },
+          "wrongActionText": "Target the Robot Trooper with Purple Sentence."
+        },
+        "vulnerability-contract-ready": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "The Robot Trooper is Marked and Vulnerable: the next attack gains +1 damage. Its DEF will be removed while its 2 HP remain within Acquisition Clause’s limit."
+          },
+          "spotlight": {
+            "label": "Marked · Vulnerable +1"
+          }
+        },
+        "select-fabeot-adept": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Select the Fabeot Adept."
+          },
+          "spotlight": {
+            "label": "Fabeot Adept"
+          },
+          "wrongActionText": "Select the Fabeot Adept."
+        },
+        "exploit-fabeot-vulnerability": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Attack the Robot Trooper. The Adept has 1 ATK, but Vulnerability adds 1 damage and removes its only DEF without damaging HP."
+          },
+          "spotlight": {
+            "label": "Vulnerable Robot Trooper"
+          },
+          "wrongActionText": "Attack the Robot Trooper with the selected Adept."
+        },
+        "target-ready-for-acquisition": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "The target is still alive, costs 2, has 2 HP, and retains the Mark. Every condition of Acquisition Clause is now visible on the map."
+          },
+          "spotlight": {
+            "label": "2 HP · 0 DEF · Marked"
+          }
+        },
+        "select-fabeot-citadel": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Select the Fabeot Citadel."
+          },
+          "spotlight": {
+            "label": "Fabeot Citadel"
+          },
+          "wrongActionText": "Select the Fabeot Citadel."
+        },
+        "activate-acquisition-clause": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Activate Acquisition Clause. It costs 4 ENE and converts an eligible target that is already Marked."
+          },
+          "spotlight": {
+            "label": "Acquisition Clause"
+          },
+          "wrongActionText": "Activate Acquisition Clause."
+        },
+        "convert-marked-fante": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Convert the Marked Robot Trooper."
+          },
+          "spotlight": {
+            "label": "Robot Trooper eligible for acquisition"
+          },
+          "wrongActionText": "Use the Clause on the Marked Robot Trooper."
+        },
+        "fabeot-conversion-resolved": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "The Robot Trooper is now under Fabeot control. It enters exhausted and Action-Inhibited: conversion is permanent but grants no immediate action."
+          },
+          "spotlight": {
+            "label": "Converted Robot Trooper"
+          }
+        },
+        "inspect-fabeot-contracts": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Now control the opponent’s resources. Embargo blocks one card per Fabeot Strategic Point; Usury Contract removes 1 ENE and reduces income by 1 for two turns."
+          },
+          "spotlight": {
+            "label": "Fabeot contracts"
+          }
+        },
+        "play-fabeot-embargo": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Play Embargo. The Outpost controls a Strategic Point and the Nexus Hand contains one card, so the outcome is deterministic."
+          },
+          "spotlight": {
+            "label": "Embargo"
+          },
+          "wrongActionText": "Play Embargo."
+        },
+        "fabeot-embargo-resolved": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Embargo blocked the Nexus’s only card for one turn. The number of affected cards comes from controlled Strategic Points, not a hidden choice."
+          },
+          "spotlight": {
+            "label": "1 SP controlled"
+          }
+        },
+        "play-fabeot-usury": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Play Usury Contract to disrupt the Nexus reservoir and its next ENE income."
+          },
+          "spotlight": {
+            "label": "Usury Contract"
+          },
+          "wrongActionText": "Play Usury Contract."
+        },
+        "fabeot-usury-resolved": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "The Nexus reservoir fell from 5 to 4 ENE and will suffer -1 ENE on its next two income steps. Hand, territory, and resources are three distinct levers of Fabeot control."
+          },
+          "spotlight": {
+            "label": "Nexus ENE disrupted"
+          }
+        },
+        "fabeot-lesson-complete": {
+          "message": {
+            "speaker": "Fabeot Narrator",
+            "text": "Lesson complete. You applied a Vulnerability Mark, prepared and converted the target, blocked the enemy Hand, and disrupted ENE flow without relying on chance."
+          },
+          "spotlight": {
+            "label": "Acquisition complete"
+          }
+        }
+      }
+    }
+  },
+  "tutorialVoice": {
+    "lesson-1-exordium": {
+      "lesson-welcome": {
+        "text": "Welcome to Aurex’s ranks. The Nexus prefers to measure the field until the moment has passed; we learn to read it and strike when it matters. Cards, deployment, DEF, abilities, and tactics are parts of the same assault."
+      },
+      "explain-defense": {
+        "text": "A normal attack removes DEF first. Excess ATK does not pass to HP: spending 4 ATK on the last DEF wastes strength you could save for the next strike. Open the protection with the right blow, then hit HP."
+      },
+      "mech-arrival": {
+        "text": "The Nexus responds with a Heavy Mech: 4 HP, 3 DEF, and 3 ATK. Do not spread your fire: an enemy left alive keeps acting. Focus your tactic and several units on one target until it is destroyed."
+      },
+      "tribune-breaks-mech-defense": {
+        "text": "Use The Tribune to remove the last DEF. It is the least expensive blow that opens the HP: save the Legionary’s ATK for the exposed target."
+      },
+      "destroy-mech": {
+        "text": "Now the Legionary ends the assault. With DEF at zero, its 4 ATK hits 4 HP: this is where heavy power pays off, not one strike earlier."
+      },
+      "lesson-complete": {
+        "text": "Lesson complete. A serious assault begins when the ENE reservoir, available tactics, and ability cooldowns align. Against Nexus calculations or Fabeot contracts, a half-attack gives them the turn they were waiting for."
+      }
+    },
+    "lesson-2-nexus": {
+      "nexus-welcome": {
+        "text": "Training protocol active. Objective: turn HQ, Infantry, Structures, and Vanguard into a network of presence and deployment. Evaluate every position by cost, coverage, and operational continuity."
+      },
+      "read-starter-structure": {
+        "text": "The Armed Barrier is the Starter Structure. A Structure can occupy an SP like any other field unit; if built on a legally accessible SP, it maintains control while creating a deployment node."
+      },
+      "build-forward-structure": {
+        "text": "Build the Barrier on the indicated cell. Infantry converts movement into infrastructure: the new position does more than defend—it shortens future deployments."
+      },
+      "deployment-network-online": {
+        "text": "The forward node is operational immediately. If you still have ENE, a unit card, and legal space, use the newly built Structure to deploy an advanced unit closer to the front during the same turn."
+      },
+      "vanguard-captures-center": {
+        "text": "Move the Mech onto the Strategic Point. Control matters only if the network can sustain it: occupying an SP you cannot reinforce turns a temporary advantage into lost ENE and time."
+      },
+      "nexus-lesson-complete": {
+        "text": "Lesson complete. Operating rule: build where the network shortens reinforcement routes, and take an SP when its expected holding cost is lower than the value it produces."
+      }
+    },
+    "lesson-3-agathoi": {
+      "agathoi-welcome": {
+        "text": "The Agathoi line does not win by chasing every target. The Liberti call it momentum when it often leaves important ground exposed. Here you will choose what must stand and make every attempt to take it costly."
+      },
+      "defensive-line-overview": {
+        "text": "The Border Hoplite guards the central Point with 3 HP, 3 DEF, and permanent Thorns 1. A well-defended SP is not necessarily the one with the most units; it is the one whose fall would truly break your position."
+      },
+      "wave-two-resolved": {
+        "text": "The Legionary broke the Hoplite’s last DEF, but Thorns and Counterattack destroyed it. Preserving advantage means reaching the next turn with the SP, HP, and another response still available."
+      },
+      "choose-fortification": {
+        "text": "The third wave targets the Grove. Wooden Bastion raises the Structure’s current DEF to its HP. Do not fortify everything: invest where a loss would open the SP or the network supporting the rest of the line."
+      },
+      "agathoi-lesson-complete": {
+        "text": "Lesson complete. You cannot defend every SP equally. Choose those you can sustain, protect those holding the position together, and make the opponent pay to attack where you are ready."
+      }
+    },
+    "lesson-4-liberti": {
+      "liberti-welcome": {
+        "text": "The Agathoi walled off the center with a Stone Anthropos. The Nexus build cages and the Fabeot contracts; neither likes it when the front changes direction. Turn numbers and movement into a breach instead of charging the hardest point."
+      },
+      "liberti-formation-overview": {
+        "text": "The Anthropos has 6 HP and 4 DEF. Three Liberti Infantry surround it: Numerical Superiority adds +1 ATK when an ally shares the target. Liberti strength is landing several attacks on one enemy before it can recover."
+      },
+      "coordinated-pressure-resolved": {
+        "text": "Attack Lure activated the Infantry in sequence: the first removed the last DEF and the others depleted HP. That is the value of focused attacks: one sequence finishes the job instead of leaving several enemies half damaged."
+      },
+      "capture-center-ps": {
+        "text": "Move the Raider onto the Strategic Point. Removing the guard is not enough: the assault creates advantage only when you reoccupy the Point and force the opponent to react to your position."
+      },
+      "liberti-lesson-complete": {
+        "text": "Lesson complete. When behind, do not chase the best-defended SP: strike an exposed one, force the enemy to move, and reopen the front. SPs are levers; use the one that yields."
+      }
+    },
+    "lesson-5-fabeot": {
+      "fabeot-welcome": {
+        "text": "The Nexus left a Robot Trooper isolated. Predictable. Others call property what they have not yet lost: first make the target vulnerable, then transfer control to the Citadel."
+      },
+      "fabeot-contract-overview": {
+        "text": "Purple Sentence costs 2 ENE. The Mark adds 1 offensive damage and satisfies an acquisition clause. An effect matters only when it opens the next: Mark, damage, and acquisition are worth more than their sum in the correct order."
+      },
+      "fabeot-embargo-resolved": {
+        "text": "Embargo blocked the Nexus’s only card for one turn. Each controlled SP increases how many cards you can block. Territory is not scenery; it is capital converted into pressure on the enemy Hand."
+      },
+      "fabeot-usury-resolved": {
+        "text": "The Nexus reservoir fell from 5 to 4 ENE and will suffer -1 on its next two income steps. Anyone who attacks without considering ENE, cooldowns, and available tactics treats resources as carelessly as everyone else. We prefer the opponent to do that."
+      },
+      "fabeot-lesson-complete": {
+        "text": "Lesson complete. The game engine turns on SPs: ENE, Pressure, and deployment positions force everyone to choose. If one SP is too protected, threaten another; when the defense moves, value changes hands."
+      }
+    }
+  }
+}

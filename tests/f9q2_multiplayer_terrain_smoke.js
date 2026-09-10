@@ -10,6 +10,11 @@ const files = [
   "src/hex.js",
   "data/terrain_registry.js",
   "data/map_definitions.js",
+  "src/map_normalization.js",
+  "src/map_pathfinding.js",
+  "src/map_validation.js",
+  "src/map_persistence.js",
+  "src/map_state_queries.js",
   "src/map_runtime.js",
   "src/state.js",
   "src/movement.js"

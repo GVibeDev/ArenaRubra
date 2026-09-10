@@ -1,0 +1,23 @@
+/* AR-AC1 ownership: Desktop/Web selected-unit Inspector geometry.
+   Theme layers may style the surface but must not set these properties. */
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloat {
+  position: fixed;
+  top: 72px;
+  right: 14px;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: min(420px, calc(100vw - 28px));
+  max-height: calc(100dvh - 86px);
+}
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
+  max-height: calc(100dvh - 130px);
+}
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitPreviewCanvasWrap {
+  width: 100%;
+}
+body.app-screen-game:not(.mobile-apk-m4) .selectedUnitPreviewCanvasWrap #selectedUnitCardPreviewCanvas,
+body.app-screen-game:not(.mobile-apk-m4) #selectedUnitCardPreviewCanvas {
+  width: min(100%, 370px);
+  max-width: 370px;
+}

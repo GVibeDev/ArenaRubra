@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const storeMap = new Map();
@@ -141,7 +142,7 @@ if (evaluate("tutorialChallengeRuntimeState.meta.hqOccupantUid") !== "p1") throw
 setTimeout(() => {
   const completion = context.__completion;
   if (!completion || completion.success !== true || completion.reason !== "enemy_hq_occupied") throw new Error(`Completion invalid: ${JSON.stringify(completion)}`);
-  if (evaluate("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("BUILD_INFO version invalid");
+  assertCurrentBuildInfo(evaluate("BUILD_INFO"));
   console.log(JSON.stringify({
     ok:true,
     challenge:"challenge-3-hq-breach",

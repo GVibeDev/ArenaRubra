@@ -57,6 +57,8 @@ const source = prefix
   + read("data/maps.js") + "\n"
   + read("src/constants.js") + "\n"
   + read("src/board.js") + "\n"
+  + read("src/rules/victory_lifecycle.js") + "\n"
+  + read("src/rules/pressure_victory.js") + "\n"
   + read("src/rules.js") + `
 function makeState(playerCount, pacePreset, psControls) {
   const strategicPoints = psControls.map((_control,index)=>({

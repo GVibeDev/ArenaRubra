@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -114,13 +114,13 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9V4a-APK-M4c", initial
+assert_valid_build_version(initial["build"])
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert final["active"] is False and final["progress"]["completed"] is True, final
 assert final["screen"] == "game", final
 assert final["resultModal"]["visible"] is True and "LEZIONE COMPLETATA" in final["resultModal"]["text"], final
 assert all(action in final["resultModal"]["actions"] for action in ["next-lesson","academy","main-menu","new-game"]), final
-assert all(action not in final["resultModal"]["actions"] for action in ["log","telemetry","statistics"]), final
+assert all(action in final["resultModal"]["actions"] for action in ["log","telemetry","statistics"]), final
 assert final["store"]["lessons"]["lesson-1-exordium"]["completed"] is True, final
 assert final["precheck"]["ok"], final["precheck"]
 assert any(e["type"] == "ABILITY_USED" and e["data"].get("abilityName") == "Colpo Pesante" for e in final["events"]), final["events"]

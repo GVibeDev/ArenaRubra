@@ -9317,11 +9317,11 @@ body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
 
 /* F9U1a1 hand centering refinement: il pannello resta tra dock sinistro e inspector destro. */
 body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
-  right: max(410px, calc(env(safe-area-inset-right) + 410px));
+  right: max(434px, calc(env(safe-area-inset-right) + 434px));
 }
 @media (max-width: 1120px) and (min-width: 981px) {
   body.app-screen-game:not(.mobile-apk-m4) .mapHandOverlay {
-    right: max(350px, calc(env(safe-area-inset-right) + 350px));
+    right: max(434px, calc(env(safe-area-inset-right) + 434px));
   }
 }
 
@@ -10444,6 +10444,7 @@ body.cardPoolFocusMode .cardPoolSelectedInfoBox {
 .controlCenterFeedback[data-tone="bad"] { color: #ffb3b3; border-color: rgba(237,92,92,.4); }
 [data-control-center-dev-only][hidden],
 html[data-arena-developer-mode="off"] [data-control-center-dev-only] { display: none !important; }
+[data-f9w2a-profile-hidden="1"][hidden] { display: none !important; }
 
 @media (max-width: 1120px) {
   .mainMenuDashboard.controlCenterDashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -10594,32 +10595,4 @@ html[data-arena-developer-mode="off"] [data-control-center-dev-only] { display: 
   .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaMaps,
   .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaAnalysis,
   .mainMenuDashboard.controlCenterDashboard > .controlCenterAreaSystem { grid-column: auto !important; }
-}
-/* =====================================================
-   F9W2d4 - Right-side Selected Unit Inspector Hotfix
-   Desktop/Web: inspector ancorato al viewport a destra.
-   Mobile M4 invariato.
-   Preview unità ~ stessa dimensione utile della preview
-   della carta selezionata dalla mano.
-   ===================================================== */
-body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloat {
-  position: fixed;
-  top: 72px;
-  right: 14px;
-  left: auto;
-  bottom: auto;
-  transform: none;
-  width: min(420px, calc(100vw - 28px));
-  max-height: calc(100dvh - 86px);
-}
-body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
-  max-height: calc(100dvh - 130px);
-}
-body.app-screen-game:not(.mobile-apk-m4) .selectedUnitPreviewCanvasWrap {
-  width: 100%;
-}
-body.app-screen-game:not(.mobile-apk-m4) .selectedUnitPreviewCanvasWrap #selectedUnitCardPreviewCanvas,
-body.app-screen-game:not(.mobile-apk-m4) #selectedUnitCardPreviewCanvas {
-  width: min(100%, 370px);
-  max-width: 370px;
 }

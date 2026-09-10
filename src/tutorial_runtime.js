@@ -146,6 +146,14 @@ const ARENA_RESULT_MODAL_REASON_LABELS_F9V3A = Object.freeze({
   wave_spawn_failed:"Errore nello scenario"
 });
 
+function tutorialRuntimeI18n(key, fallback, params={}) {
+  return typeof arenaI18nText === "function" ? arenaI18nText(key, fallback, params) : fallback;
+}
+
+function tutorialRuntimeLanguage() {
+  return typeof ArenaI18n !== "undefined" ? ArenaI18n.currentLanguage() : "it";
+}
+
 let arenaResultModalStateF9V3a = {
   open:false,
   locked:false,
@@ -166,8 +174,9 @@ function arenaResultModalEscapeF9V3a(value) {
 
 function arenaResultModalReasonLabelF9V3a(reason) {
   const key = String(reason || "").trim();
-  if (!key) return "Partita conclusa";
-  return ARENA_RESULT_MODAL_REASON_LABELS_F9V3A[key] || key.replace(/_/g, " ");
+  if (!key) return tutorialRuntimeI18n("result.reasonDefault", "Partita conclusa");
+  const fallback = ARENA_RESULT_MODAL_REASON_LABELS_F9V3A[key] || key.replace(/_/g, " ");
+  return tutorialRuntimeI18n(`result.reasons.${key}`, fallback);
 }
 
 function arenaResultModalHumanSidesF9V3a() {
@@ -265,9 +274,9 @@ function arenaResultModalEnsureDomF9V3a() {
         <div class="arenaResultModalMetaF9V3a"></div>
         <div class="arenaResultModalDividerF9V3a" aria-hidden="true"></div>
         <div class="arenaResultModalActionsF9V3a arenaResultModalAnalysisF9V3a">
-          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="log">Log</button>
-          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="telemetry">Telemetria</button>
-          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="statistics">Statistiche</button>
+          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="log">${arenaResultModalEscapeF9V3a(tutorialRuntimeI18n("result.log", "Log"))}</button>
+          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="telemetry">${arenaResultModalEscapeF9V3a(tutorialRuntimeI18n("result.telemetry", "Telemetria"))}</button>
+          <button class="arenaResultModalBtnF9V3a" type="button" data-result-action="statistics">${arenaResultModalEscapeF9V3a(tutorialRuntimeI18n("result.statistics", "Statistiche"))}</button>
         </div>
         <div class="arenaResultModalActionsF9V3a arenaResultModalNavigationF9V3a"></div>
       </section>`;
@@ -348,6 +357,17 @@ function arenaResultModalHideF9V3a(options={}) {
 function arenaResultModalRenderPayloadF9V3c(safe, options={}) {
   const dom = arenaResultModalEnsureDomF9V3a();
   if (!dom) return false;
+  if (dom.analysis) {
+    const analysisLabels = {
+      log:tutorialRuntimeI18n("result.log", "Log"),
+      telemetry:tutorialRuntimeI18n("result.telemetry", "Telemetria"),
+      statistics:tutorialRuntimeI18n("result.statistics", "Statistiche")
+    };
+    dom.analysis.querySelectorAll("[data-result-action]").forEach(button => {
+      const label = analysisLabels[button.dataset.resultAction];
+      if (label) button.textContent = label;
+    });
+  }
   dom.card.style.setProperty("--result-accent", arenaResultModalFactionColorF9V3a(safe.side, safe.faction));
   dom.eyebrow.textContent = safe.eyebrow;
   dom.title.textContent = safe.title;
@@ -357,7 +377,7 @@ function arenaResultModalRenderPayloadF9V3c(safe, options={}) {
   dom.faction.hidden = !safe.faction;
   dom.detail.textContent = safe.detail;
   const chips = [];
-  if (safe.round != null && safe.round > 0) chips.push(`Round ${safe.round}`);
+  if (safe.round != null && safe.round > 0) chips.push(tutorialRuntimeI18n("result.round", `Round ${safe.round}`, { round:safe.round }));
   if (safe.winType) chips.push(arenaResultModalReasonLabelF9V3a(safe.winType));
   dom.meta.innerHTML = chips.map(text => `<span>${arenaResultModalEscapeF9V3a(text)}</span>`).join("");
   dom.meta.hidden = chips.length === 0;
@@ -365,9 +385,9 @@ function arenaResultModalRenderPayloadF9V3c(safe, options={}) {
 
   const nav = [];
   if (safe.nextAction && safe.nextLabel) nav.push({ action:safe.nextAction, label:safe.nextLabel });
-  if (safe.showAcademy) nav.push({ action:"academy", label:"Torna all’Accademia" });
-  nav.push({ action:"main-menu", label:"Menu principale" });
-  nav.push({ action:"new-game", label:"Nuova partita" });
+  if (safe.showAcademy) nav.push({ action:"academy", label:tutorialRuntimeI18n("result.backAcademy", "Torna all’Accademia") });
+  nav.push({ action:"main-menu", label:tutorialRuntimeI18n("result.mainMenu", "Menu principale") });
+  nav.push({ action:"new-game", label:tutorialRuntimeI18n("result.newGame", "Nuova partita") });
   dom.navigation.innerHTML = nav.map(item => `<button class="arenaResultModalBtnF9V3a" type="button" data-result-action="${item.action}"${safe.primaryAction === item.action ? ' data-primary="true"' : ""}>${arenaResultModalEscapeF9V3a(item.label)}</button>`).join("");
   dom.root.hidden = false;
   arenaResultModalStateF9V3a.open = true;
@@ -384,7 +404,7 @@ function arenaResultModalShowF9V3a(payload={}) {
   tutorialRuntimeInstallDeckRecoveryVisibilityF9V3c();
   const safe = {
     kind:String(payload.kind || "match"),
-    title:String(payload.title || "PARTITA CONCLUSA"),
+    title:String(payload.title || tutorialRuntimeI18n("result.matchEnded", "PARTITA CONCLUSA")),
     eyebrow:String(payload.eyebrow || "ARENA RUBRA"),
     subject:String(payload.subject || ""),
     faction:String(payload.faction || ""),
@@ -518,19 +538,27 @@ function arenaResultModalShowMatchVictoryF9V3a(event) {
   const round = typeof state !== "undefined" && state ? Number(state.turn) || null : Number(data.round) || null;
   if (!winner) {
     return arenaResultModalShowF9V3a({
-      kind:"draw", eyebrow:"MATCH CONCLUSO", title:"PAREGGIO", subject:"Nessun vincitore", detail:data.message || "La partita si conclude senza un vincitore.", round, winType:data.winType || "pareggio", analysisAllowed:true, primaryAction:"new-game"
+      kind:"draw",
+      eyebrow:tutorialRuntimeI18n("result.matchEnded", "MATCH CONCLUSO"),
+      title:tutorialRuntimeI18n("result.draw", "PAREGGIO"),
+      subject:tutorialRuntimeI18n("result.noWinner", "Nessun vincitore"),
+      detail:tutorialRuntimeLanguage() === "it" && data.message ? data.message : tutorialRuntimeI18n("result.drawDetail", "La partita si conclude senza un vincitore."),
+      round, winType:data.winType || "pareggio", analysisAllowed:true, primaryAction:"new-game"
     });
   }
   const faction = data.winnerFaction || (typeof state !== "undefined" && state && state.factions ? state.factions[winner] : "") || "";
   const humanSides = arenaResultModalHumanSidesF9V3a();
   const localDefeat = humanSides.length === 1 && humanSides[0] !== winner;
-  const winnerName = `Giocatore ${winner}`;
-  const detail = data.message || `Vittoria di ${winnerName}${faction ? ` (${faction})` : ""}.`;
+  const winnerName = tutorialRuntimeI18n("result.player", `Giocatore ${winner}`, { number:winner });
+  const factionSuffix = faction ? ` (${faction})` : "";
+  const detail = tutorialRuntimeLanguage() === "it" && data.message
+    ? data.message
+    : tutorialRuntimeI18n("result.victoryDetail", `Vittoria di ${winnerName}${factionSuffix}.`, { player:winnerName, faction:factionSuffix });
   return arenaResultModalShowF9V3a({
     kind:localDefeat ? "defeat" : "victory",
-    eyebrow:"MATCH CONCLUSO",
-    title:localDefeat ? "SCONFITTA" : "VITTORIA",
-    subject:`Vincitore · ${winnerName}`,
+    eyebrow:tutorialRuntimeI18n("result.matchEnded", "MATCH CONCLUSO"),
+    title:localDefeat ? tutorialRuntimeI18n("result.defeat", "SCONFITTA") : tutorialRuntimeI18n("result.victory", "VITTORIA"),
+    subject:tutorialRuntimeI18n("result.winner", `Vincitore · ${winnerName}`, { player:winnerName }),
     faction,
     detail,
     round,
@@ -542,13 +570,13 @@ function arenaResultModalShowMatchVictoryF9V3a(event) {
 }
 
 function tutorialRuntimeLessonPlanItemF9V3c(lessonId) {
-  const list = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" && Array.isArray(TUTORIAL_LESSON_PLAN_F9O6) ? TUTORIAL_LESSON_PLAN_F9O6 : [];
+  const list = tutorialRuntimeLessonPlan();
   return list.find(item => item && item.id === lessonId) || null;
 }
 
 function tutorialRuntimeNextLessonPlanItemF9V3c(lessonId) {
   const current = tutorialRuntimeLessonPlanItemF9V3c(lessonId);
-  const list = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" && Array.isArray(TUTORIAL_LESSON_PLAN_F9O6) ? [...TUTORIAL_LESSON_PLAN_F9O6].sort((a,b)=>(a.order||0)-(b.order||0)) : [];
+  const list = tutorialRuntimeLessonPlan().slice().sort((a,b)=>(a.order||0)-(b.order||0));
   if (!current) return null;
   return list.find(item => Number(item && item.order) === Number(current.order) + 1) || null;
 }
@@ -564,13 +592,17 @@ function arenaResultModalShowLessonCompleteF9V3a(title, lessonId="") {
   const nextLesson = tutorialRuntimeNextLessonPlanItemF9V3c(lessonId);
   const isLastLesson = !nextLesson;
   const nextAction = nextLesson ? "next-lesson" : "next-challenge";
-  const nextLabel = nextLesson ? `Lezione successiva · ${nextLesson.order}` : "Vai alla Prova sul campo I";
+  const nextLabel = nextLesson
+    ? tutorialRuntimeI18n("tutorial.nextLesson", `Lezione successiva · ${nextLesson.order}`, { number:nextLesson.order })
+    : tutorialRuntimeI18n("tutorial.goChallenge1", "Vai alla Prova sul campo I");
   return arenaResultModalShowF9V3a({
     kind:"lesson_complete",
-    eyebrow:"ACCADEMIA",
-    title:"LEZIONE COMPLETATA",
-    subject:String(title || "Lezione guidata"),
-    detail:isLastLesson ? "Accademia completata. Puoi affrontare la prima Prova sul campo." : "Progressi salvati. Puoi continuare direttamente con la lezione successiva.",
+    eyebrow:tutorialRuntimeI18n("tutorial.academy", "ACCADEMIA"),
+    title:tutorialRuntimeI18n("tutorial.lessonCompleted", "LEZIONE COMPLETATA"),
+    subject:String(title || tutorialRuntimeI18n("tutorial.guidedLesson", "Lezione guidata")),
+    detail:isLastLesson
+      ? tutorialRuntimeI18n("tutorial.academyCompletedDetail", "Accademia completata. Puoi affrontare la prima Prova sul campo.")
+      : tutorialRuntimeI18n("tutorial.progressSavedDetail", "Progressi salvati. Puoi continuare direttamente con la lezione successiva."),
     showAcademy:true,
     analysisAllowed:false,
     lessonId,
@@ -583,17 +615,23 @@ function arenaResultModalShowLessonCompleteF9V3a(title, lessonId="") {
 }
 
 function arenaResultModalShowChallengeResultF9V3a(challenge, success, reason) {
-  const title = challenge && challenge.title ? challenge.title : "Prova sul campo";
+  const title = challenge && challenge.title ? challenge.title : tutorialRuntimeI18n("tutorial.fieldTestFallback", "Prova sul campo");
   const challengeId = challenge && challenge.id ? challenge.id : "";
   const nextChallenge = success ? tutorialRuntimeNextChallengePlanItemF9V3c(challengeId) : null;
   const nextAction = success && nextChallenge ? "next-challenge" : (!success && challengeId ? "retry-challenge" : "");
-  const nextLabel = success && nextChallenge ? `Prova successiva · ${nextChallenge.title}` : (!success ? "Riprova" : "");
+  const nextLabel = success && nextChallenge
+    ? tutorialRuntimeI18n("tutorial.nextChallenge", `Prova successiva · ${nextChallenge.title}`, { title:nextChallenge.title })
+    : (!success ? tutorialRuntimeI18n("tutorial.retry", "Riprova") : "");
   return arenaResultModalShowF9V3a({
     kind:success ? "challenge_complete" : "challenge_failed",
-    eyebrow:"PROVA SUL CAMPO",
-    title:success ? "PROVA COMPLETATA" : "PROVA FALLITA",
+    eyebrow:tutorialRuntimeI18n("tutorial.fieldTestUpper", "PROVA SUL CAMPO"),
+    title:success ? tutorialRuntimeI18n("tutorial.challengeComplete", "PROVA COMPLETATA") : tutorialRuntimeI18n("tutorial.challengeFailed", "PROVA FALLITA"),
     subject:title,
-    detail:success ? (nextChallenge ? "Obiettivo raggiunto. Puoi passare direttamente alla Prova successiva." : "Obiettivo raggiunto. Tutte le Prove sul campo sono concluse.") : `La prova è terminata: ${arenaResultModalReasonLabelF9V3a(reason)}.`,
+    detail:success
+      ? (nextChallenge
+        ? tutorialRuntimeI18n("tutorial.challengeNextDetail", "Obiettivo raggiunto. Puoi passare direttamente alla Prova successiva.")
+        : tutorialRuntimeI18n("tutorial.allChallengesCompleteDetail", "Obiettivo raggiunto. Tutte le Prove sul campo sono concluse."))
+      : tutorialRuntimeI18n("tutorial.challengeFailedDetail", `La prova è terminata: ${arenaResultModalReasonLabelF9V3a(reason)}.`, { reason:arenaResultModalReasonLabelF9V3a(reason) }),
     winType:reason || "",
     round:typeof state !== "undefined" && state ? Number(state.turn) || null : null,
     showAcademy:true,
@@ -621,9 +659,13 @@ function tutorialRuntimeEnsureProgressHeaderF9V3c(store, plan) {
   }
   const ordered = [...(plan || [])].sort((a,b)=>(a.order||0)-(b.order||0));
   const completed = ordered.filter(lesson => Boolean(store && store.lessons && store.lessons[lesson.id] && store.lessons[lesson.id].completed)).length;
-  box.innerHTML = `<strong>Accademia · ${completed}/${ordered.length} completate</strong><div class="tutorialProgressDotsF9V3c" aria-label="Progresso lezioni">${ordered.map(lesson => {
+  const progressLabel = tutorialRuntimeI18n("tutorial.lessonsProgressLabel", "Progresso lezioni");
+  box.innerHTML = `<strong>${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.academyProgress", `Accademia · ${completed}/${ordered.length} completate`, { completed, total:ordered.length }))}</strong><div class="tutorialProgressDotsF9V3c" aria-label="${tutorialRuntimeEscape(progressLabel)}">${ordered.map(lesson => {
     const done = Boolean(store && store.lessons && store.lessons[lesson.id] && store.lessons[lesson.id].completed);
-    return `<span class="tutorialProgressDotF9V3c${done ? " isCompleted" : ""}" title="Lezione ${lesson.order}: ${done ? "completata" : "da completare"}" aria-label="Lezione ${lesson.order} ${done ? "completata" : "da completare"}">${done ? "✓" : lesson.order}</span>`;
+    const stateLabel = done ? tutorialRuntimeI18n("tutorial.completedLower", "completata") : tutorialRuntimeI18n("tutorial.incompleteLower", "da completare");
+    const title = tutorialRuntimeI18n("tutorial.lessonState", `Lezione ${lesson.order}: ${stateLabel}`, { number:lesson.order, state:stateLabel });
+    const aria = tutorialRuntimeI18n("tutorial.lessonStateAria", `Lezione ${lesson.order} ${stateLabel}`, { number:lesson.order, state:stateLabel });
+    return `<span class="tutorialProgressDotF9V3c${done ? " isCompleted" : ""}" title="${tutorialRuntimeEscape(title)}" aria-label="${tutorialRuntimeEscape(aria)}">${done ? "✓" : lesson.order}</span>`;
   }).join("")}</div>`;
   return true;
 }
@@ -696,7 +738,8 @@ function tutorialRuntimeStorageWrite(payload) {
 
 function tutorialRuntimeScenarioById(id) {
   if (!id || typeof TUTORIAL_SCENARIOS_F9O6 === "undefined") return null;
-  return TUTORIAL_SCENARIOS_F9O6[String(id)] || null;
+  const source = TUTORIAL_SCENARIOS_F9O6[String(id)] || null;
+  return source && typeof arenaTutorialScenario === "function" ? arenaTutorialScenario(source) : source;
 }
 
 function tutorialRuntimeProgressForScenario(id) {
@@ -705,15 +748,30 @@ function tutorialRuntimeProgressForScenario(id) {
 }
 
 function tutorialRuntimeLessonPlan() {
-  return typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" && Array.isArray(TUTORIAL_LESSON_PLAN_F9O6)
+  const plan = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" && Array.isArray(TUTORIAL_LESSON_PLAN_F9O6)
     ? TUTORIAL_LESSON_PLAN_F9O6
     : [];
+  return tutorialRuntimeLocalizedPlanF9C5b5("lessons", plan, ["title", "summary"]);
 }
 
 function tutorialRuntimeChallengePlan() {
-  return typeof TUTORIAL_CHALLENGE_PLAN_F9V2A !== "undefined" && Array.isArray(TUTORIAL_CHALLENGE_PLAN_F9V2A)
+  const plan = typeof TUTORIAL_CHALLENGE_PLAN_F9V2A !== "undefined" && Array.isArray(TUTORIAL_CHALLENGE_PLAN_F9V2A)
     ? TUTORIAL_CHALLENGE_PLAN_F9V2A
     : [];
+  return tutorialRuntimeLocalizedPlanF9C5b5("challenges", plan, ["title", "subtitle", "summary", "progression", "objective"]);
+}
+
+// S2-C5b5: presentation-only projection. The frozen tutorial scenario catalog
+// remains authoritative; localized copies are created only outside Italian.
+function tutorialRuntimeLocalizedPlanF9C5b5(kind, plan, fields) {
+  if (tutorialRuntimeLanguage() === "it") return plan;
+  return plan.map(item => {
+    const translated = { ...item };
+    fields.forEach(field => {
+      translated[field] = tutorialRuntimeI18n(`tutorial.${kind}.${item.id}.${field}`, item[field]);
+    });
+    return translated;
+  });
 }
 
 function tutorialRuntimeChallengeById(id) {
@@ -722,7 +780,25 @@ function tutorialRuntimeChallengeById(id) {
 
 function tutorialRuntimeChallengeScenarioById(id) {
   if (!id || typeof TUTORIAL_CHALLENGE_SCENARIOS_F9V2 === "undefined" || !TUTORIAL_CHALLENGE_SCENARIOS_F9V2) return null;
-  return TUTORIAL_CHALLENGE_SCENARIOS_F9V2[String(id)] || null;
+  const source = TUTORIAL_CHALLENGE_SCENARIOS_F9V2[String(id)] || null;
+  if (!source || tutorialRuntimeLanguage() === "it") return source;
+  const prefix = `tutorial.challengeRuntime.${source.id}`;
+  const localized = {
+    ...source,
+    title:tutorialRuntimeI18n(`${prefix}.title`, source.title || "")
+  };
+  if (source.objective) localized.objective = { ...source.objective, label:tutorialRuntimeI18n(`${prefix}.objective`, source.objective.label || "") };
+  if (source.intro) localized.intro = {
+    ...source.intro,
+    title:tutorialRuntimeI18n(`${prefix}.introTitle`, source.intro.title || ""),
+    message:tutorialRuntimeI18n(`${prefix}.introMessage`, source.intro.message || "")
+  };
+  localized.waves = (source.waves || []).map(wave => ({
+    ...wave,
+    label:tutorialRuntimeI18n(`${prefix}.waves.${wave.id}.label`, wave.label || ""),
+    message:tutorialRuntimeI18n(`${prefix}.waves.${wave.id}.message`, wave.message || "")
+  }));
+  return localized;
 }
 
 function tutorialRuntimeCompletedLessonCount(store=tutorialRuntimeStorageRead()) {
@@ -843,7 +919,7 @@ function tutorialRuntimeResetProgress() {
   try { localStorage.removeItem(TUTORIAL_RUNTIME_STORAGE_KEY); }
   catch (_) { /* no-op */ }
   tutorialRuntimeRenderMenu();
-  tutorialRuntimeSetStatus("Progressi tutorial azzerati.");
+  tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.progressReset", "Progressi tutorial azzerati."));
   return true;
 }
 
@@ -865,14 +941,21 @@ function tutorialRuntimeEnsureChallengeSection() {
     section.setAttribute("aria-label", "Prove sul campo");
     section.innerHTML = `
       <div class="mainMenuSectionHeading tutorialChallengeHeading">
-        <span class="mainMenuSectionEyebrow">Dopo l'Accademia</span>
-        <h3>Prove sul campo</h3>
-        <p>Le cinque Challenge verificano in autonomia ciò che hai appreso. Sono visibili da subito e si sbloccano tutte insieme dopo aver completato le 5 lezioni guidate.</p>
+        <span class="mainMenuSectionEyebrow" data-tutorial-challenge-eyebrow></span>
+        <h3 data-tutorial-challenge-title></h3>
+        <p data-tutorial-challenge-intro></p>
       </div>
       <div id="tutorialChallengeGate" class="tutorialRuntimeStatus" aria-live="polite"></div>
       <div id="tutorialChallengeGrid" class="tutorialLessonGrid"></div>`;
     lessonGrid.insertAdjacentElement("afterend", section);
   }
+  section.setAttribute("aria-label", tutorialRuntimeI18n("tutorial.challengeSectionLabel", "Prove sul campo"));
+  const eyebrow = section.querySelector("[data-tutorial-challenge-eyebrow]");
+  const title = section.querySelector("[data-tutorial-challenge-title]");
+  const intro = section.querySelector("[data-tutorial-challenge-intro]");
+  if (eyebrow) eyebrow.textContent = tutorialRuntimeI18n("tutorial.afterAcademy", "Dopo l'Accademia");
+  if (title) title.textContent = tutorialRuntimeI18n("tutorial.fieldTests", "Prove sul campo");
+  if (intro) intro.textContent = tutorialRuntimeI18n("tutorial.fieldTestsIntro", "Le cinque Challenge verificano in autonomia ciò che hai appreso. Sono visibili da subito e si sbloccano tutte insieme dopo aver completato le 5 lezioni guidate.");
   return section;
 }
 
@@ -886,8 +969,8 @@ function tutorialRuntimeRenderChallenges(store=tutorialRuntimeStorageRead()) {
   const unlock = tutorialRuntimeChallengeUnlockStatus(store);
   const plan = tutorialRuntimeChallengePlan();
   gate.textContent = unlock.unlocked
-    ? `Accademia completata ${unlock.completedLessons}/${unlock.requiredLessons} · ${plan.length} Prove sul campo sbloccate.`
-    : `Accademia ${unlock.completedLessons}/${unlock.requiredLessons} · Prove bloccate: completa tutte le ${unlock.requiredLessons} lezioni guidate per sbloccarle.`;
+    ? tutorialRuntimeI18n("tutorial.gateUnlocked", `Accademia completata ${unlock.completedLessons}/${unlock.requiredLessons} · ${plan.length} Prove sul campo sbloccate.`, { completed:unlock.completedLessons, required:unlock.requiredLessons, count:plan.length })
+    : tutorialRuntimeI18n("tutorial.gateLocked", `Accademia ${unlock.completedLessons}/${unlock.requiredLessons} · Prove bloccate: completa tutte le ${unlock.requiredLessons} lezioni guidate per sbloccarle.`, { completed:unlock.completedLessons, required:unlock.requiredLessons });
 
   grid.innerHTML = plan.map(challenge => {
     const progress = store.challenges && store.challenges[challenge.id] || null;
@@ -895,20 +978,20 @@ function tutorialRuntimeRenderChallenges(store=tutorialRuntimeStorageRead()) {
     const scenarioReady = Boolean(challenge.scenarioId && tutorialRuntimeChallengeScenarioById(challenge.scenarioId));
     const unlocked = unlock.unlocked;
     const playable = unlocked && scenarioReady;
-    const status = completed ? "Completata" : (!unlocked ? "Bloccata" : (scenarioReady ? "Disponibile" : "Sbloccata · in preparazione"));
+    const status = completed ? tutorialRuntimeI18n("tutorial.completed", "Completata") : (!unlocked ? tutorialRuntimeI18n("tutorial.locked", "Bloccata") : (scenarioReady ? tutorialRuntimeI18n("tutorial.available", "Disponibile") : tutorialRuntimeI18n("tutorial.unlockedPreparing", "Sbloccata · in preparazione")));
     const cardClass = `${unlocked ? " isAvailable" : " isLocked"}${completed ? " isCompleted" : ""}`;
     const unlockText = unlocked
-      ? "Sbloccata: Accademia completata."
-      : `Sblocco: completa tutte le ${unlock.requiredLessons} lezioni dell'Accademia (${unlock.completedLessons}/${unlock.requiredLessons}).`;
-    const actionLabel = !unlocked ? "Bloccata" : (scenarioReady ? (completed ? "Ripeti" : "Avvia") : "In preparazione");
+      ? tutorialRuntimeI18n("tutorial.unlockedAcademy", "Sbloccata: Accademia completata.")
+      : tutorialRuntimeI18n("tutorial.unlockRequirement", `Sblocco: completa tutte le ${unlock.requiredLessons} lezioni dell'Accademia (${unlock.completedLessons}/${unlock.requiredLessons}).`, { completed:unlock.completedLessons, required:unlock.requiredLessons });
+    const actionLabel = !unlocked ? tutorialRuntimeI18n("tutorial.locked", "Bloccata") : (scenarioReady ? (completed ? tutorialRuntimeI18n("tutorial.repeat", "Ripeti") : tutorialRuntimeI18n("tutorial.start", "Avvia")) : tutorialRuntimeI18n("tutorial.inPreparation", "In preparazione"));
     const action = `<div class="tutorialLessonCardActions"><button class="${playable && !completed ? "primary" : "ghost"}" type="button" data-tutorial-challenge-start="${tutorialRuntimeEscape(challenge.id)}"${playable ? "" : " disabled"}>${tutorialRuntimeEscape(actionLabel)}</button></div>`;
     return `<article class="tutorialLessonCard tutorialChallengeCard${cardClass}" data-tutorial-challenge="${tutorialRuntimeEscape(challenge.id)}" data-challenge-unlocked="${unlocked ? "true" : "false"}" data-completed="${completed ? "true" : "false"}">
-      ${completed ? '<span class="tutorialCompletionBadgeF9V3c" aria-label="Prova completata" title="Completata">✓</span>' : ""}
-      <h3>${challenge.order}. ${tutorialRuntimeEscape(challenge.subtitle || "Prova sul campo")}</h3>
+      ${completed ? `<span class="tutorialCompletionBadgeF9V3c" aria-label="${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.challengeCompletedAria", "Prova completata"))}" title="${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.completed", "Completata"))}">✓</span>` : ""}
+      <h3>${challenge.order}. ${tutorialRuntimeEscape(challenge.subtitle || tutorialRuntimeI18n("tutorial.fieldTestFallback", "Prova sul campo"))}</h3>
       <strong>${tutorialRuntimeEscape(challenge.title)}</strong>
       <p>${tutorialRuntimeEscape(challenge.summary)}</p>
       <div class="tutorialLessonMeta"><span>${tutorialRuntimeEscape(status)}</span><span>${tutorialRuntimeEscape(challenge.progression)}</span></div>
-      <p class="help"><strong>Obiettivo:</strong> ${tutorialRuntimeEscape(challenge.objective)}<br>${tutorialRuntimeEscape(unlockText)}</p>
+      <p class="help"><strong>${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.objective", "Obiettivo:"))}</strong> ${tutorialRuntimeEscape(challenge.objective)}<br>${tutorialRuntimeEscape(unlockText)}</p>
       ${action}
     </article>`;
   }).join("");
@@ -938,16 +1021,16 @@ function tutorialRuntimeRenderMenu() {
     const available = Boolean(lesson.scenarioId && tutorialRuntimeScenarioById(lesson.scenarioId));
     const completed = Boolean(progress && progress.completed);
     const canResume = Boolean(available && scenarioProgress && !scenarioProgress.completed && scenarioProgress.snapshot && Number.isFinite(scenarioProgress.nextStepIndex) && scenarioProgress.nextStepIndex > 0);
-    const status = completed ? "Completata" : (available ? "Disponibile" : "Bloccata");
+    const status = completed ? tutorialRuntimeI18n("tutorial.completed", "Completata") : (available ? tutorialRuntimeI18n("tutorial.available", "Disponibile") : tutorialRuntimeI18n("tutorial.locked", "Bloccata"));
     const actions = available
-      ? `<div class="tutorialLessonCardActions"><button class="${completed ? "ghost" : "primary"}" type="button" data-tutorial-start="${tutorialRuntimeEscape(lesson.scenarioId)}">${completed ? "Ripeti" : "Avvia"}</button><button class="ghost" type="button" data-tutorial-resume="${tutorialRuntimeEscape(lesson.scenarioId)}"${canResume ? "" : " disabled"}>Riprendi</button></div>`
+      ? `<div class="tutorialLessonCardActions"><button class="${completed ? "ghost" : "primary"}" type="button" data-tutorial-start="${tutorialRuntimeEscape(lesson.scenarioId)}">${tutorialRuntimeEscape(completed ? tutorialRuntimeI18n("tutorial.repeat", "Ripeti") : tutorialRuntimeI18n("tutorial.start", "Avvia"))}</button><button class="ghost" type="button" data-tutorial-resume="${tutorialRuntimeEscape(lesson.scenarioId)}"${canResume ? "" : " disabled"}>${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.resume", "Riprendi"))}</button></div>`
       : "";
     return `<article class="tutorialLessonCard${available ? " isAvailable" : " isLocked"}${completed ? " isCompleted" : ""}" data-tutorial-lesson="${String(lesson.id)}" data-completed="${completed ? "true" : "false"}">
-      ${completed ? '<span class="tutorialCompletionBadgeF9V3c" aria-label="Lezione completata" title="Completata">✓</span>' : ""}
+      ${completed ? `<span class="tutorialCompletionBadgeF9V3c" aria-label="${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.lessonCompletedAria", "Lezione completata"))}" title="${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.completed", "Completata"))}">✓</span>` : ""}
       <h3>${lesson.order}. ${tutorialRuntimeEscape(lesson.narratorFaction)}</h3>
       <strong>${tutorialRuntimeEscape(lesson.title)}</strong>
       <p>${tutorialRuntimeEscape(lesson.summary)}</p>
-      <div class="tutorialLessonMeta"><span>${tutorialRuntimeEscape(status)}</span><span>Rapida</span><span>Tattica</span></div>${actions}
+      <div class="tutorialLessonMeta"><span>${tutorialRuntimeEscape(status)}</span><span>${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.fast", "Rapida"))}</span><span>${tutorialRuntimeEscape(tutorialRuntimeI18n("tutorial.tactical", "Tattica"))}</span></div>${actions}
     </article>`;
   }).join("");
 
@@ -971,7 +1054,7 @@ function tutorialRuntimeRenderMenu() {
   const resumeBtn = document.getElementById("tutorialResumeBtn");
   const resetBtn = document.getElementById("tutorialResetProgressBtn");
   if (startBtn) {
-    startBtn.textContent = progress && progress.completed ? "Ripeti Lezione 1" : "Avvia Lezione 1";
+    startBtn.textContent = progress && progress.completed ? tutorialRuntimeI18n("tutorial.repeatLesson1", "Ripeti Lezione 1") : tutorialRuntimeI18n("tutorial.startLesson1", "Avvia Lezione 1");
     if (startBtn.dataset.bound !== "1") {
       startBtn.dataset.bound = "1";
       startBtn.addEventListener("click", () => tutorialRuntimeStartScenario(lesson && lesson.id || scenarioId, { resume:false }));
@@ -980,7 +1063,7 @@ function tutorialRuntimeRenderMenu() {
   if (resumeBtn) {
     const canResume = Boolean(progress && !progress.completed && progress.snapshot && Number.isFinite(progress.nextStepIndex) && progress.nextStepIndex > 0);
     resumeBtn.disabled = !canResume;
-    resumeBtn.textContent = progress && progress.completed ? "Lezione 1 completata" : "Riprendi Lezione 1";
+    resumeBtn.textContent = progress && progress.completed ? tutorialRuntimeI18n("tutorial.lesson1Completed", "Lezione 1 completata") : tutorialRuntimeI18n("tutorial.resumeLesson1", "Riprendi Lezione 1");
     if (resumeBtn.dataset.bound !== "1") {
       resumeBtn.dataset.bound = "1";
       resumeBtn.addEventListener("click", () => tutorialRuntimeStartScenario(scenarioId, { resume:true }));
@@ -994,7 +1077,8 @@ function tutorialRuntimeRenderMenu() {
   const completedCount = tutorialRuntimeCompletedLessonCount(store);
   tutorialRuntimeRenderChallenges(store);
   const unlock = tutorialRuntimeChallengeUnlockStatus(store);
-  tutorialRuntimeSetStatus(`${availableCount} lezioni disponibili · ${completedCount} completate · Prove sul campo ${unlock.unlocked ? "sbloccate" : "bloccate"}.`);
+  const unlockState = unlock.unlocked ? tutorialRuntimeI18n("tutorial.unlockedLower", "sbloccate") : tutorialRuntimeI18n("tutorial.lockedLower", "bloccate");
+  tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.menuStatus", `${availableCount} lezioni disponibili · ${completedCount} completate · Prove sul campo ${unlockState}.`, { available:availableCount, completed:completedCount, state:unlockState }));
   return true;
 }
 
@@ -1048,17 +1132,17 @@ function tutorialRuntimeChallengeRenderHud() {
     const held = Math.max(0, Number(meta.holdCount) || 0);
     const spawned = Math.max(0, Number(meta.enemiesSpawned) || 0);
     const totalThreat = Math.max(spawned, Array.isArray(scenario && scenario.waves) ? scenario.waves.reduce((sum,w)=>sum + ((w && w.units && w.units.length) || 0), 0) : 6);
-    hud.textContent = `PROVA II · Tenuta ${held}/${target} · Minaccia ${spawned}/${totalThreat}`;
-    hud.title = objective.label || "Mantieni il PS centrale.";
+    hud.textContent = tutorialRuntimeI18n("tutorial.challengeHud.hold", "PROVA II · Tenuta {held}/{target} · Minaccia {spawned}/{threat}", { held, target, spawned, threat:totalThreat });
+    hud.title = objective.label || tutorialRuntimeI18n("tutorial.challengeHud.holdTitle", "Mantieni il PS centrale.");
     return true;
   }
   if (objective.kind === "occupy_enemy_hq") {
     const playerSide = Number(scenario && scenario.playerSide || 1);
     const handSize = state && state.hand && Array.isArray(state.hand[playerSide]) ? state.hand[playerSide].length : 0;
     const deckSize = state && state.deck && Array.isArray(state.deck[playerSide]) ? state.deck[playerSide].length : 0;
-    const status = meta.hqOccupied ? "QG OCCUPATO" : "QG da occupare";
-    hud.textContent = `PROVA III · Breccia · Mano ${handSize} · Deck ${deckSize} · ${status}`;
-    hud.title = objective.label || "Occupa il QG nemico.";
+    const status = meta.hqOccupied ? tutorialRuntimeI18n("tutorial.challengeHud.hqOccupied", "QG OCCUPATO") : tutorialRuntimeI18n("tutorial.challengeHud.hqPending", "QG da occupare");
+    hud.textContent = tutorialRuntimeI18n("tutorial.challengeHud.breach", "PROVA III · Breccia · Mano {hand} · Deck {deck} · {status}", { hand:handSize, deck:deckSize, status });
+    hud.title = objective.label || tutorialRuntimeI18n("tutorial.challengeHud.breachTitle", "Occupa il QG nemico.");
     return true;
   }
   if (objective.kind === "win_by_pressure") {
@@ -1069,9 +1153,9 @@ function tutorialRuntimeChallengeRenderHud() {
     const current = Math.max(0, Number(state && state.pressure && state.pressure[playerSide] != null ? state.pressure[playerSide] : meta.pressureValue) || 0);
     const controlledPs = typeof countControlledPS === "function" ? countControlledPS(playerSide) : null;
     const centralControl = typeof tutorialRuntimeChallengeCentralPsControl === "function" ? tutorialRuntimeChallengeCentralPsControl({ objective:{ coord:objective.centralCoord || [0,0,0] } }) : 0;
-    const qualification = controlledPs == null ? "" : ` · PS ${controlledPs}/${Math.max(1, Number(objective.totalPs) || 3)}${centralControl === playerSide ? "★" : ""}`;
-    hud.textContent = `PROVA IV · Pressione ${current}/${target}${qualification} · Mano ${handSize} · Deck ${deckSize}`;
-    hud.title = objective.label || "Vinci per Pressione.";
+    const qualification = controlledPs == null ? "" : tutorialRuntimeI18n("tutorial.challengeHud.spQualification", " · PS {current}/{total}{central}", { current:controlledPs, total:Math.max(1, Number(objective.totalPs) || 3), central:centralControl === playerSide ? "★" : "" });
+    hud.textContent = tutorialRuntimeI18n("tutorial.challengeHud.pressure", "PROVA IV · Pressione {current}/{target}{qualification} · Mano {hand} · Deck {deck}", { current, target, qualification, hand:handSize, deck:deckSize });
+    hud.title = objective.label || tutorialRuntimeI18n("tutorial.challengeHud.pressureTitle", "Vinci per Pressione.");
     return true;
   }
   if (objective.kind === "win_match") {
@@ -1081,23 +1165,23 @@ function tutorialRuntimeChallengeRenderHud() {
     const energy = Math.max(0, Number(state && state.energy && state.energy[playerSide]) || 0);
     const pressure = Math.max(0, Number(state && state.pressure && state.pressure[playerSide]) || 0);
     const pressureTarget = typeof pressureWinLimit === "function" ? pressureWinLimit() : 5;
-    hud.textContent = `PROVA V · Esame finale · Mano ${handSize} · Deck ${deckSize} · ENE ${energy} · Pressione ${pressure}/${pressureTarget}`;
-    hud.title = objective.label || "Vinci il match.";
+    hud.textContent = tutorialRuntimeI18n("tutorial.challengeHud.finalExam", "PROVA V · Esame finale · Mano {hand} · Deck {deck} · ENE {energy} · Pressione {pressure}/{target}", { hand:handSize, deck:deckSize, energy, pressure, target:pressureTarget });
+    hud.title = objective.label || tutorialRuntimeI18n("tutorial.challengeHud.finalExamTitle", "Vinci il match.");
     return true;
   }
   const target = Math.max(0, Number(objective.target) || 0);
   const destroyed = Math.max(0, Number(meta.enemyDestroyed) || 0);
   const waves = Array.isArray(scenario && scenario.waves) ? scenario.waves.length : 0;
   const wave = Math.max(1, Number(meta.waveIndex) + 1 || 1);
-  hud.textContent = `PROVA I · Eliminazione ${destroyed}/${target} · Ondata ${Math.min(wave, Math.max(1,waves))}/${Math.max(1,waves)}`;
-  hud.title = objective.label || "Elimina tutte le unità nemiche.";
+  hud.textContent = tutorialRuntimeI18n("tutorial.challengeHud.elimination", "PROVA I · Eliminazione {destroyed}/{target} · Ondata {wave}/{waves}", { destroyed, target, wave:Math.min(wave, Math.max(1,waves)), waves:Math.max(1,waves) });
+  hud.title = objective.label || tutorialRuntimeI18n("tutorial.challengeHud.eliminationTitle", "Elimina tutte le unità nemiche.");
   return true;
 }
 
 function tutorialRuntimeChallengeAnnounce(title, message, options={}) {
   if (typeof eventOverlayEnqueue === "function") {
     eventOverlayEnqueue({
-      title:String(title || "PROVA SUL CAMPO"),
+      title:String(title || tutorialRuntimeI18n("tutorial.fieldTestUpper", "PROVA SUL CAMPO")),
       message:String(message || ""),
       icon:options.icon || "◆",
       priority:options.priority || "high",
@@ -1168,8 +1252,8 @@ function tutorialRuntimeChallengeStartWave(index) {
   }
   tutorialRuntimeChallengeRenderHud();
   tutorialRuntimeChallengeAnnounce(
-    wave.label || `Ondata ${index + 1}`,
-    wave.message || (index === 0 ? "Due unità nemiche entrano nell'area." : "Nuovi rinforzi nemici entrano nell'area."),
+    wave.label || tutorialRuntimeI18n("tutorial.challengeEvents.wave", "Ondata {number}", { number:index + 1 }),
+    wave.message || (index === 0 ? tutorialRuntimeI18n("tutorial.challengeEvents.firstWave", "Due unità nemiche entrano nell'area.") : tutorialRuntimeI18n("tutorial.challengeEvents.reinforcements", "Nuovi rinforzi nemici entrano nell'area.")),
     { icon:String(index + 1), durationMs:1500 }
   );
   if (typeof renderAll === "function") renderAll();
@@ -1247,23 +1331,23 @@ function tutorialRuntimeChallengeInitializeScenario() {
   const intro = scenario.intro || {};
   tutorialRuntimeChallengeAnnounce(
     intro.title || (objectiveKind === "hold_ps"
-      ? "PROVA SUL CAMPO II · TENUTA"
+      ? tutorialRuntimeI18n("tutorial.challengeEvents.holdIntroTitle", "PROVA SUL CAMPO II · TENUTA")
       : objectiveKind === "occupy_enemy_hq"
-        ? "PROVA SUL CAMPO III · BRECCIA"
+        ? tutorialRuntimeI18n("tutorial.challengeEvents.breachIntroTitle", "PROVA SUL CAMPO III · BRECCIA")
         : objectiveKind === "win_by_pressure"
-          ? "PROVA SUL CAMPO IV · PRESSIONE"
+          ? tutorialRuntimeI18n("tutorial.challengeEvents.pressureIntroTitle", "PROVA SUL CAMPO IV · PRESSIONE")
           : objectiveKind === "win_match"
-            ? "PROVA SUL CAMPO V · ESAME FINALE"
-            : "PROVA SUL CAMPO I · ELIMINAZIONE"),
+            ? tutorialRuntimeI18n("tutorial.challengeEvents.finalIntroTitle", "PROVA SUL CAMPO V · ESAME FINALE")
+            : tutorialRuntimeI18n("tutorial.challengeEvents.eliminationIntroTitle", "PROVA SUL CAMPO I · ELIMINAZIONE")),
     intro.message || (objectiveKind === "hold_ps"
-      ? "Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi."
+      ? tutorialRuntimeI18n("tutorial.challengeEvents.holdIntro", "Conquista il PS centrale e mantienilo per 3 tuoi turni consecutivi.")
       : objectiveKind === "occupy_enemy_hq"
-        ? "Apri una via e porta una tua unità sulla cella del QG nemico."
+        ? tutorialRuntimeI18n("tutorial.challengeEvents.breachIntro", "Apri una via e porta una tua unità sulla cella del QG nemico.")
         : objectiveKind === "win_by_pressure"
-          ? "Mantieni il PS centrale e almeno 2 dei 3 PS finché il core assegna la vittoria per Pressione."
+          ? tutorialRuntimeI18n("tutorial.challengeEvents.pressureIntro", "Mantieni il PS centrale e almeno 2 dei 3 PS finché il core assegna la vittoria per Pressione.")
           : objectiveKind === "win_match"
-            ? "Partita completa: usa tutte le regole normali di Arena Rubra e sconfiggi Nexus Advanced con una qualunque condizione di vittoria valida."
-            : "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate."),
+            ? tutorialRuntimeI18n("tutorial.challengeEvents.finalIntro", "Partita completa: usa tutte le regole normali di Arena Rubra e sconfiggi Nexus Advanced con una qualunque condizione di vittoria valida.")
+            : tutorialRuntimeI18n("tutorial.challengeEvents.eliminationIntro", "Usa soltanto le unità già schierate. Nessuna carta, nessun acquisto: distruggi 4 unità Starter Nexus in due ondate.")),
     { icon:"◆", durationMs:2200 }
   );
   return true;
@@ -1318,7 +1402,7 @@ function tutorialRuntimeChallengeHandleHoldObjective(event) {
   if (type === turnStartedType && Number(data.player) === playerSide && meta.holdCount > 0 && tutorialRuntimeChallengeCentralPsControl(scenario) !== playerSide) {
     meta.holdCount = 0;
     tutorialRuntimeChallengeRenderHud();
-    tutorialRuntimeChallengeAnnounce("CONTROLLO INTERROTTO", "Il PS centrale è stato perso: il conteggio di Tenuta riparte da 0/3.", { icon:"!", durationMs:1300 });
+    tutorialRuntimeChallengeAnnounce(tutorialRuntimeI18n("tutorial.challengeEvents.controlLostTitle", "CONTROLLO INTERROTTO"), tutorialRuntimeI18n("tutorial.challengeEvents.controlLost", "Il PS centrale è stato perso: il conteggio di Tenuta riparte da 0/3."), { icon:"!", durationMs:1300 });
     return true;
   }
 
@@ -1332,8 +1416,8 @@ function tutorialRuntimeChallengeHandleHoldObjective(event) {
   tutorialRuntimeChallengeRenderHud();
   const target = Math.max(1, Number(objective.consecutiveTurns || objective.target) || 3);
   tutorialRuntimeChallengeAnnounce(
-    controlled ? "TENUTA" : "PS NON CONTROLLATO",
-    controlled ? `Controllo centrale mantenuto: ${Math.min(meta.holdCount,target)}/${target}.` : `Il PS centrale non è sotto controllo Nexus: Tenuta 0/${target}.`,
+    controlled ? tutorialRuntimeI18n("tutorial.challengeEvents.holdingTitle", "TENUTA") : tutorialRuntimeI18n("tutorial.challengeEvents.spNotControlledTitle", "PS NON CONTROLLATO"),
+    controlled ? tutorialRuntimeI18n("tutorial.challengeEvents.holding", "Controllo centrale mantenuto: {current}/{target}.", { current:Math.min(meta.holdCount,target), target }) : tutorialRuntimeI18n("tutorial.challengeEvents.spNotControlled", "Il PS centrale non è sotto controllo Nexus: Tenuta 0/{target}.", { target }),
     { icon:controlled ? "✓" : "!", durationMs:1100, priority:controlled ? "normal" : "high" }
   );
   if (meta.holdCount >= target) {
@@ -1364,7 +1448,7 @@ function tutorialRuntimeChallengeHandleHqObjective(event) {
     meta.hqOccupantUid = data.unitId == null ? null : String(data.unitId);
     meta.targetHqCoord = Array.isArray(targetCoord) ? [...targetCoord] : null;
     tutorialRuntimeChallengeRenderHud();
-    tutorialRuntimeChallengeAnnounce("BRECCIA COMPLETATA", "Una unità Exordium ha raggiunto il QG Nexus.", { icon:"✓", durationMs:1300 });
+    tutorialRuntimeChallengeAnnounce(tutorialRuntimeI18n("tutorial.challengeEvents.breachCompleteTitle", "BRECCIA COMPLETATA"), tutorialRuntimeI18n("tutorial.challengeEvents.breachComplete", "Una unità Exordium ha raggiunto il QG Nexus."), { icon:"✓", durationMs:1300 });
     tutorialChallengeRuntimeState.completing = true;
     tutorialRuntimeChallengeSchedule(() => {
       tutorialChallengeRuntimeState.completing = false;
@@ -1417,7 +1501,7 @@ function tutorialRuntimeChallengeHandlePressureObjective(event) {
     meta.pressureValue = Math.max(0, Number(data.current) || Number(state && state.pressure && state.pressure[playerSide]) || 0);
     meta.pressureTarget = Math.max(1, Number(data.limit) || Number(objective.target) || meta.pressureTarget || 5);
     tutorialRuntimeChallengeRenderHud();
-    tutorialRuntimeChallengeAnnounce("PRESSIONE", `Avanzamento strategico: ${Math.min(meta.pressureValue,meta.pressureTarget)}/${meta.pressureTarget}.`, { icon:"◆", durationMs:900, priority:"normal" });
+    tutorialRuntimeChallengeAnnounce(tutorialRuntimeI18n("tutorial.challengeEvents.pressureTitle", "PRESSIONE"), tutorialRuntimeI18n("tutorial.challengeEvents.pressureProgress", "Avanzamento strategico: {current}/{target}.", { current:Math.min(meta.pressureValue,meta.pressureTarget), target:meta.pressureTarget }), { icon:"◆", durationMs:900, priority:"normal" });
     return true;
   }
 
@@ -1433,7 +1517,7 @@ function tutorialRuntimeChallengeHandlePressureObjective(event) {
       meta.pressureWon = true;
       meta.pressureValue = Math.max(meta.pressureValue, Number(state && state.pressure && state.pressure[playerSide]) || Number(objective.target) || 5);
       tutorialRuntimeChallengeRenderHud();
-      tutorialRuntimeChallengeAnnounce("PRESSIONE COMPLETATA", "Il dominio territoriale è stato convertito in vittoria per Pressione.", { icon:"✓", durationMs:1300 });
+      tutorialRuntimeChallengeAnnounce(tutorialRuntimeI18n("tutorial.challengeEvents.pressureCompleteTitle", "PRESSIONE COMPLETATA"), tutorialRuntimeI18n("tutorial.challengeEvents.pressureComplete", "Il dominio territoriale è stato convertito in vittoria per Pressione."), { icon:"✓", durationMs:1300 });
       tutorialChallengeRuntimeState.completing = true;
       tutorialRuntimeChallengeSchedule(() => {
         tutorialChallengeRuntimeState.completing = false;
@@ -1475,7 +1559,7 @@ function tutorialRuntimeChallengeHandleFinalExamObjective(event) {
   if (winner === playerSide) {
     meta.matchWon = true;
     tutorialRuntimeChallengeRenderHud();
-    tutorialRuntimeChallengeAnnounce("ESAME SUPERATO", `Vittoria ${winType}: hai completato le cinque Prove sul campo.`, { icon:"✓", durationMs:1500 });
+    tutorialRuntimeChallengeAnnounce(tutorialRuntimeI18n("tutorial.challengeEvents.examPassedTitle", "ESAME SUPERATO"), tutorialRuntimeI18n("tutorial.challengeEvents.examPassed", "Vittoria {type}: hai completato le cinque Prove sul campo.", { type:winType }), { icon:"✓", durationMs:1500 });
     tutorialChallengeRuntimeState.completing = true;
     tutorialRuntimeChallengeSchedule(() => {
       tutorialChallengeRuntimeState.completing = false;
@@ -1645,17 +1729,17 @@ function tutorialRuntimeApplyChallengeSetup(challenge, scenario) {
 function tutorialRuntimeStartChallenge(id, options={}) {
   const challenge = tutorialRuntimeChallengeById(id);
   if (!challenge) {
-    tutorialRuntimeSetStatus(`Prova sul campo non trovata: ${id}`);
+    tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.challengeNotFound", "Prova sul campo non trovata: {id}", { id }));
     return false;
   }
   const unlock = tutorialRuntimeChallengeUnlockStatus();
   if (!unlock.unlocked) {
-    tutorialRuntimeSetStatus(`Prova bloccata: completa tutte le ${unlock.requiredLessons} lezioni dell'Accademia (${unlock.completedLessons}/${unlock.requiredLessons}).`);
+    tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.challengeLockedStatus", "Prova bloccata: completa tutte le {required} lezioni dell'Accademia ({completed}/{required}).", { completed:unlock.completedLessons, required:unlock.requiredLessons }));
     return false;
   }
   const scenario = challenge.scenarioId ? tutorialRuntimeChallengeScenarioById(challenge.scenarioId) : null;
   if (!scenario) {
-    tutorialRuntimeSetStatus(`${challenge.title} è sbloccata. Il contenuto giocabile sarà aggiunto nella milestone dedicata.`);
+    tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.challengePreparingStatus", "{title} è sbloccata. Il contenuto giocabile sarà aggiunto nella milestone dedicata.", { title:challenge.title }));
     return false;
   }
 
@@ -1677,7 +1761,7 @@ function tutorialRuntimeStartChallenge(id, options={}) {
     return false;
   }
   tutorialRuntimeSaveChallengeProgress(challenge.id, { incrementAttempt:true, outcome:"started" });
-  tutorialRuntimeSetStatus(`${challenge.title} · Prova sul campo avviata.`);
+  tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.challengeStarted", "{title} · Prova sul campo avviata.", { title:challenge.title }));
   return true;
 }
 
@@ -1703,7 +1787,7 @@ function tutorialRuntimeCompleteChallenge(options={}) {
     state.tutorialBotPaused = false;
   }
   if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-challenge-active");
-  tutorialRuntimeSetStatus(success ? "Prova sul campo completata." : "Prova sul campo terminata. Puoi riprovarla quando vuoi.");
+  tutorialRuntimeSetStatus(success ? tutorialRuntimeI18n("tutorial.challengeCompletedStatus", "Prova sul campo completata.") : tutorialRuntimeI18n("tutorial.challengeEndedStatus", "Prova sul campo terminata. Puoi riprovarla quando vuoi."));
   if (options.showResultModal !== false) arenaResultModalShowChallengeResultF9V3a(challenge, success, reason);
   else if (options.returnToTutorial !== false && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
     setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
@@ -1735,7 +1819,7 @@ function tutorialRuntimeAbortChallenge(options={}) {
   if (!options.silent && options.returnToTutorial !== false && !options.keepScreen && typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") {
     setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
     tutorialRuntimeRenderMenu();
-    tutorialRuntimeSetStatus(options.reason === "setup-failed" ? "Impossibile avviare la Prova sul campo." : "Prova sul campo chiusa.");
+    tutorialRuntimeSetStatus(options.reason === "setup-failed" ? tutorialRuntimeI18n("tutorial.challengeStartFailed", "Impossibile avviare la Prova sul campo.") : tutorialRuntimeI18n("tutorial.challengeClosed", "Prova sul campo chiusa."));
   }
   return wasActive;
 }
@@ -2478,7 +2562,12 @@ function tutorialRuntimeMessageForStepF9V4a(step) {
   if (!step || !step.message) return step && step.message || null;
   const scenarioId = String(tutorialRuntimeState.scenarioId || (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.id) || "");
   const patch = tutorialRuntimeDialoguePatchF9V4a(scenarioId, step.id);
-  return patch ? { ...step.message, ...patch } : step.message;
+  if (!patch) return step.message;
+  const key = `tutorialVoice.${scenarioId}.${step.id}.text`;
+  const localizedText = typeof ArenaI18n !== "undefined" && ArenaI18n.has(key)
+    ? ArenaI18n.t(key, {}, patch.text || step.message.text || "")
+    : patch.text;
+  return { ...step.message, ...patch, text:localizedText };
 }
 
 function tutorialRuntimeDialogueAuditF9V4a() {
@@ -2523,9 +2612,9 @@ function tutorialRuntimeNarrativeForStep(step) {
     showRepeat:true,
     showClose:true,
     showNext:informative,
-    closeLabel:"Esci",
-    nextLabel:informative ? "Avanti" : "Continua",
-    stepLabel:`Passo ${tutorialRuntimeState.stepIndex + 1}/${tutorialRuntimeState.scenario.steps.length}`,
+    closeLabel:tutorialRuntimeI18n("tutorial.exit", "Esci"),
+    nextLabel:informative ? tutorialRuntimeI18n("eventOverlay.next", "Avanti") : tutorialRuntimeI18n("common.continue", "Continua"),
+    stepLabel:tutorialRuntimeI18n("tutorial.stepLabel", "Passo {current}/{total}", { current:tutorialRuntimeState.stepIndex + 1, total:tutorialRuntimeState.scenario.steps.length }),
     onRender:() => {
       tutorialRuntimeSchedule(() => {
         if (!tutorialRuntimeState.active || tutorialRuntimeState.step !== step) return;
@@ -2900,7 +2989,7 @@ function tutorialRuntimeGateAction(action, data={}) {
   const result = tutorialRuntimeActionMatch(tutorialRuntimeState.step.completeOn, action, data);
   if (!result.handled) return { handled:false, allowed:true };
   if (!result.matched) {
-    tutorialRuntimeShowHint(tutorialRuntimeState.step.wrongActionText || "Questa non è la scelta richiesta dal passo.");
+    tutorialRuntimeShowHint(tutorialRuntimeState.step.wrongActionText || tutorialRuntimeI18n("tutorial.wrongAction", "Questa non è la scelta richiesta dal passo."));
     tutorialRuntimeState.lastAction = { kind:"action-rejected", action, data, stepId:tutorialRuntimeState.step.id, at:Date.now() };
     return { handled:true, allowed:false };
   }
@@ -3144,7 +3233,7 @@ function tutorialRuntimeEnterStep(index) {
     tutorialRuntimeState.preparingStep = false;
     tutorialRuntimeNarrativeForStep(step);
     tutorialRuntimeShowSpotlight(step);
-    tutorialRuntimeSetStatus(`${tutorialRuntimeState.scenario.title} · passo ${index + 1}/${tutorialRuntimeState.scenario.steps.length}`);
+    tutorialRuntimeSetStatus(`${tutorialRuntimeState.scenario.title} · ${tutorialRuntimeI18n("tutorial.stepLower", "passo {current}/{total}", { current:index + 1, total:tutorialRuntimeState.scenario.steps.length })}`);
   };
   tutorialRuntimeState.retryTimer = tutorialRuntimeSchedule(renderStep, step.focus ? 220 : 20, { sessionToken, stepToken });
   return true;
@@ -3170,7 +3259,7 @@ function tutorialRuntimeStartScenario(id, options={}) {
   tutorialRuntimeInstallActionContractF9V3b();
   const scenario = tutorialRuntimeScenarioById(id);
   if (!scenario) {
-    tutorialRuntimeSetStatus(`Scenario tutorial non trovato: ${id}`);
+    tutorialRuntimeSetStatus(tutorialRuntimeI18n("tutorial.scenarioNotFound", "Scenario tutorial non trovato: {id}", { id }));
     return false;
   }
   tutorialRuntimeAbort({ silent:true, keepScreen:true, reason:"restart" });
@@ -3212,8 +3301,8 @@ function tutorialRuntimeFinish() {
   if (state) state.tutorialBotPaused = false;
   if (typeof document !== "undefined" && document.body) document.body.classList.remove("tutorial-runtime-active");
   tutorialRuntimeRestoreCardPreviews();
-  const lessonPlanItem = typeof TUTORIAL_LESSON_PLAN_F9O6 !== "undefined" ? TUTORIAL_LESSON_PLAN_F9O6.find(item => item && item.id === (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.lessonId)) : null;
-  const completionMessage = lessonPlanItem && lessonPlanItem.title ? lessonPlanItem.title : (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.title || "Lezione guidata");
+  const lessonPlanItem = tutorialRuntimeLessonPlan().find(item => item && item.id === (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.lessonId)) || null;
+  const completionMessage = lessonPlanItem && lessonPlanItem.title ? lessonPlanItem.title : tutorialRuntimeI18n("tutorial.guidedLesson", tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.title || "Lezione guidata");
   // F9V3c: il risultato resta terminale e vincolante. Le lezioni non espongono
   // Log/Telemetria/Statistiche e propongono direttamente il passo didattico successivo.
   arenaResultModalShowLessonCompleteF9V3a(completionMessage, lessonPlanItem && lessonPlanItem.id || (tutorialRuntimeState.scenario && tutorialRuntimeState.scenario.lessonId) || "");
@@ -3240,13 +3329,29 @@ function tutorialRuntimeAbort(options={}) {
     if (typeof setAppScreen === "function" && typeof ARENA_APP_SCREENS !== "undefined") setAppScreen(ARENA_APP_SCREENS.TUTORIAL);
     tutorialRuntimeRenderMenu();
     const message = options.reason === "manual"
-      ? "Tutorial interrotto. Il checkpoint resta disponibile."
+      ? tutorialRuntimeI18n("tutorial.interrupted", "Tutorial interrotto. Il checkpoint resta disponibile.")
       : options.reason === "target-missing"
-        ? "Il passaggio non era disponibile. L’interfaccia è stata liberata: riprendi dal checkpoint oppure riavvia la lezione."
-        : "Tutorial chiuso.";
+        ? tutorialRuntimeI18n("tutorial.targetUnavailable", "Il passaggio non era disponibile. L’interfaccia è stata liberata: riprendi dal checkpoint oppure riavvia la lezione.")
+        : tutorialRuntimeI18n("tutorial.closed", "Tutorial chiuso.");
     tutorialRuntimeSetStatus(message);
   }
   return wasActive;
+}
+
+function tutorialRuntimeRefreshLanguage() {
+  if (!tutorialRuntimeState.active || !tutorialRuntimeState.scenarioId) return false;
+  const scenario = tutorialRuntimeScenarioById(tutorialRuntimeState.scenarioId);
+  if (!scenario || !Array.isArray(scenario.steps)) return false;
+  const index = Math.max(0, Math.min(Number(tutorialRuntimeState.stepIndex) || 0, scenario.steps.length - 1));
+  tutorialRuntimeState.scenario = scenario;
+  tutorialRuntimeState.stepIndex = index;
+  tutorialRuntimeState.step = scenario.steps[index] || null;
+  if (tutorialRuntimeState.step) {
+    tutorialRuntimeNarrativeForStep(tutorialRuntimeState.step);
+    tutorialRuntimeShowSpotlight(tutorialRuntimeState.step);
+    tutorialRuntimeSetStatus(`${scenario.title} · ${tutorialRuntimeI18n("tutorial.stepLower", "passo {current}/{total}", { current:index + 1, total:scenario.steps.length })}`);
+  }
+  return true;
 }
 
 function tutorialRuntimeDiagnostics() {

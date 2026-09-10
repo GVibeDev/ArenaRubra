@@ -1,0 +1,3348 @@
+{
+  "schemaVersion": "AR-AC1-REQUIRED-ASSETS-1",
+  "inventoryVersion": "S2-C6-VISUAL-ASSET-INVENTORY-1",
+  "releaseTarget": "Arena Rubra Starter 1.0 — Desktop / Web",
+  "policy": {
+    "required": "No fallback is accepted for release identity, frozen map backgrounds, five-skin modular geometry, official card frames, or missing-art placeholders.",
+    "optional": "Runtime enhancement with a verified lower-fidelity fallback.",
+    "devOnly": "Authoring/documentation material omitted from Distribution.",
+    "legacy": "Repository compatibility material omitted from Distribution.",
+    "unused": "Malformed or unreferenced material omitted from Distribution."
+  },
+  "summary": {
+    "required": {
+      "files": 69,
+      "bytes": 40694403
+    },
+    "optional": {
+      "files": 340,
+      "bytes": 106075083
+    },
+    "devOnly": {
+      "files": 17,
+      "bytes": 9278
+    },
+    "legacy": {
+      "files": 45,
+      "bytes": 2283110
+    },
+    "unused": {
+      "files": 1,
+      "bytes": 195915
+    }
+  },
+  "required": [
+    {
+      "path": "assets/cards/frames/agathoi_back.png",
+      "bytes": 36623,
+      "sha256": "37c3074d7db6f0b085eabe9de5ad1b986c57a40d6162e50a73226ae2a7767331",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/agathoi_tactic_frame.png",
+      "bytes": 2665821,
+      "sha256": "7e4eba15a51aebbe1f2209e020b1f306263012ba90ae95aa382f295406930553",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/agathoi_unit_frame.png",
+      "bytes": 2397867,
+      "sha256": "e405bd315ef176c219eb3cd5cadded450cf3244dcf865b4227e0439d48a62841",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/exordium_back.png",
+      "bytes": 38674,
+      "sha256": "5f2e6176c64677c34827abcccf17874a25adf13c1a9f913e619487b2f78345ed",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/exordium_tactic_frame.png",
+      "bytes": 2547267,
+      "sha256": "b91165e9da98a4e9d672f3dd14175121daa8a0378f21497ad1890a28a29e9361",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/exordium_unit_frame.png",
+      "bytes": 2241181,
+      "sha256": "4fa788d930ddd93271b6908ec58741a6a14375701af4e489d379294d1a0bf5eb",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/fabeot_back.png",
+      "bytes": 36135,
+      "sha256": "8ad630c977944ecbea84064e1adcc16978820bead9bf46f2625b50148b26e40d",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/fabeot_tactic_frame.png",
+      "bytes": 2705883,
+      "sha256": "29fd8f0a680f7a569f039f06dbb9687232e27beed87f4fcbde129ae7db075b5a",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/fabeot_unit_frame.png",
+      "bytes": 2703897,
+      "sha256": "7e97d0070f499eebee9441da6c0f1b533c6a8f098992b8b09f39a89440ca0f39",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/liberti_back.png",
+      "bytes": 33796,
+      "sha256": "0f0a757b4bf73f548ba714d7cc0b75efef3507078c44e73517bd0ae074c6776d",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/liberti_tactic_frame.png",
+      "bytes": 2645590,
+      "sha256": "8950c23fdcfcd9beb05a3b1652f1d573abaec0e519278a3c28abb4c53c984860",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/liberti_unit_frame.png",
+      "bytes": 2512466,
+      "sha256": "f46140608d838227a00a0cf1109ce8679ebdcdac7f587b4b3b148a7207b89097",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/nexus_back.png",
+      "bytes": 36796,
+      "sha256": "3f72eecc07153741ec8f600369f1f0e22592e03a0bc314f07eb763cd2ad6f121",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/nexus_tactic_frame.png",
+      "bytes": 2217081,
+      "sha256": "35fe64c1786daa2e84cda77aee94c1a90e91e92bd5e5c0dd823b2ca34835f100",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/frames/nexus_unit_frame.png",
+      "bytes": 2300881,
+      "sha256": "fe852379de5ac44165750607c0a5c297f385b2030d67b25b7305391bcc931e03",
+      "owner": "card-presentation",
+      "reason": "official card frame/back"
+    },
+    {
+      "path": "assets/cards/placeholders/missing_art_tactic.png",
+      "bytes": 31322,
+      "sha256": "03dde62818fceb4cfbd28370c1bef6b6def24fc1e9b6fe91d0edf76aae0fba50",
+      "owner": "card-presentation",
+      "reason": "verified missing-art fallback"
+    },
+    {
+      "path": "assets/cards/placeholders/missing_art_unit.png",
+      "bytes": 32105,
+      "sha256": "dd509d6e64dc1aeb5c0b49023b0b4a6692285a194ad486c3f753810df1bf5842",
+      "owner": "card-presentation",
+      "reason": "verified missing-art fallback"
+    },
+    {
+      "path": "assets/intro/arena-rubra-title.png",
+      "bytes": 3271480,
+      "sha256": "02bf716d0db8e57abd8d11d93b02ff09201fbe20f4a633f93e330f9c02718374",
+      "owner": "boot",
+      "reason": "release boot asset"
+    },
+    {
+      "path": "assets/intro/g-vibe-dev-logo.png",
+      "bytes": 473790,
+      "sha256": "a3019bdbdc34fa0c2c132334f42922d157138ac01dab3d40876d50feea8d577d",
+      "owner": "boot",
+      "reason": "release boot asset"
+    },
+    {
+      "path": "assets/maps/backgrounds/f9r3_narrow_path_desertcenter.webp",
+      "bytes": 696704,
+      "sha256": "674b4b3369b4d01b1defe1f216c23e8ae60e5dd99d0283dd749e67b4910a5f93",
+      "owner": "map-presentation",
+      "reason": "frozen Starter map background"
+    },
+    {
+      "path": "assets/maps/backgrounds/map-bg-custom_double_ms3ppdyc-plains_webp-ms3qzmsc.webp",
+      "bytes": 3492178,
+      "sha256": "a40452d38bb67a5f8767e2e411383e48f9e3fd3c5a4b9dd05e9a5a9216bda7dc",
+      "owner": "map-presentation",
+      "reason": "frozen Starter map background"
+    },
+    {
+      "path": "assets/maps/backgrounds/map-bg-custom_triple_ms3r4ifn-ruins_webp-ms3rwq9c.webp",
+      "bytes": 2890810,
+      "sha256": "5df2e20482575eb3ab3ca4e4f477f6440e2093a89ac7df471ba60996e8f23238",
+      "owner": "map-presentation",
+      "reason": "frozen Starter map background"
+    },
+    {
+      "path": "assets/maps/backgrounds/map-bg-custom_triple_ms3s2abv-trap_webp-ms3skg6o.webp",
+      "bytes": 3245958,
+      "sha256": "fa7fbfc9926ca29436409e9e55dbb67bea243d6393e5da672f373d3c3224102c",
+      "owner": "map-presentation",
+      "reason": "frozen Starter map background"
+    },
+    {
+      "path": "assets/maps/backgrounds/snow_bf_4pl_3x.webp",
+      "bytes": 626004,
+      "sha256": "6cb3ea1fa2f67c7b509a6e57dca0d787fcf5deac3c7e8059796d605be779e8dd",
+      "owner": "map-presentation",
+      "reason": "frozen Starter map background"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/corner_bl.webp",
+      "bytes": 10896,
+      "sha256": "5f11b1192db9069ce2dfa37932d4c0d853e3054e526d39bb149df08f916239eb",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/corner_br.webp",
+      "bytes": 10924,
+      "sha256": "2338483f4434c78206206715f5564436ddb1a2c786f7db0a8825bb86426aec70",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/corner_tl.webp",
+      "bytes": 10790,
+      "sha256": "09b855a959899a4105fbae79e9af77a584dcf8d6788d697d2437cf67992cf652",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/corner_tr.webp",
+      "bytes": 10888,
+      "sha256": "264b3dd2fe9713a4c65be6632d0be0540e53ebcaf78028c5a97d494d56c22aed",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/edge_bottom.webp",
+      "bytes": 6966,
+      "sha256": "a2385041392c1193d647448e0ad5ffd75fcd6f55bd161b2ed74a1b2644b2a43d",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/edge_left.webp",
+      "bytes": 8058,
+      "sha256": "7d5163694a2b92377a5fb9b5c5583e9308484dac3b1c791bdfb64b59f3f3c912",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/edge_right.webp",
+      "bytes": 8096,
+      "sha256": "0dcb9479cf61d59bb88ebe8e18a5da10836ce611ed23468b143cae9da6803f45",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/edge_top.webp",
+      "bytes": 10154,
+      "sha256": "11e6821a8c34146f5ae2ca65421844874d6bfd48ddd1ea6f336e0e84837c5b32",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/material.webp",
+      "bytes": 86152,
+      "sha256": "4e35144ee43fe7ad9ee98dda052c173014f07ab2d25187bdc710978122e0111f",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/corner_bl.webp",
+      "bytes": 5512,
+      "sha256": "a7c35381a766ada1dd95cbb2d25a47be94505d87060f9f2df63b94a97dcc1232",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/corner_br.webp",
+      "bytes": 5350,
+      "sha256": "900bbea2b601334f4672fa9eac69d026f55d47c1f9905661ea1be2970c828e13",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/corner_tl.webp",
+      "bytes": 5486,
+      "sha256": "734c23594a447db62dc8be7004c3bfa28c1609032d569aed22603fdc0e9eac1c",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/corner_tr.webp",
+      "bytes": 5676,
+      "sha256": "b26ac98fe87d020b8e3def47f99e5001b9017cc16fc5be6a2ee2ec4a4366a218",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/edge_bottom.webp",
+      "bytes": 5314,
+      "sha256": "9812fdbcc3b9b3d372370e8e31f64f5c7166f1d6a72231210ee6223659618001",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/edge_left.webp",
+      "bytes": 3786,
+      "sha256": "39d7fcef0764255bac1bd5d10694bd551ed8b70d349a756c08e229add8180f92",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/edge_right.webp",
+      "bytes": 3992,
+      "sha256": "a31558960e880755276225647092a0e4ae08cf7b7b87e84665a33c4b513630ba",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/edge_top.webp",
+      "bytes": 4990,
+      "sha256": "5b03ff16412d9134da40fea6dc3350318edea77dea2e1288c86e6a02338d5d13",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/material.webp",
+      "bytes": 59624,
+      "sha256": "a9dd182e4157882a3b4dbc344a459d6781c3b60a881f81fdfdc824af36dd1b5b",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/corner_bl.webp",
+      "bytes": 7922,
+      "sha256": "e5b5d949a66958064cbd29ec37d984e87fc7aa8fad3d4c73b815e7703b75fd7a",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/corner_br.webp",
+      "bytes": 7942,
+      "sha256": "ff531214366ee0a97209fa92fd1f378f46fee9f0b6f4f4a3983316c3fdd108f1",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/corner_tl.webp",
+      "bytes": 7902,
+      "sha256": "ad3261b8888f87e3f8117e43f80a93c5a29a63ea346905734816c3c465775957",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/corner_tr.webp",
+      "bytes": 7860,
+      "sha256": "899d696d52e444beb361c4cea6381a47ee873b4b9f8caa997551d3c92ca3fb1d",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/edge_bottom.webp",
+      "bytes": 10422,
+      "sha256": "bcf6b4b3e37a7c5b6a587abdbba42db7c731a6f909628ea7ee097fa8d3b2bb51",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/edge_left.webp",
+      "bytes": 8720,
+      "sha256": "f3d9f40708eb9452696b87cc4198ac469df18e0620557880ab8ed7862fb20f56",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/edge_right.webp",
+      "bytes": 8730,
+      "sha256": "b74284782aa7664db3a1caffdb27a13e4b4a3e004de0f6ed029ca40b8cd1b8de",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/edge_top.webp",
+      "bytes": 10462,
+      "sha256": "0d06def0456a81ac6d11090b34e5494c564c008f8c03d036cba301ad892995f6",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/material.webp",
+      "bytes": 81462,
+      "sha256": "730fb04d9c21850651b56642e80687e89df88cd63c8ae64bbfe6bfc2238ceb44",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_bl.webp",
+      "bytes": 12954,
+      "sha256": "5b60706b7c278cdb5effc9652d3ab6f87a933af3b9050c302eb36c42d56d09d0",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_br.webp",
+      "bytes": 13034,
+      "sha256": "929861a245ae746cbd0627b8012da9743fdeb457d665b3e3b74fca7bc56ab573",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_tl.webp",
+      "bytes": 12966,
+      "sha256": "b50155809b3f453f01922e9cc824cc6f4956a86e2f7a921b86756b84b529890e",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_tr.webp",
+      "bytes": 12938,
+      "sha256": "7d019e20e3d885a8e75c5ab72288f9073f8b3efa92a6af33dd5030ffb5f51d95",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_bottom.webp",
+      "bytes": 19762,
+      "sha256": "1e3d3d0475b9fb0338e4137cbc5b2219f377dc7db5e3ad92061a626a3dbbae34",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_left.webp",
+      "bytes": 9086,
+      "sha256": "5c1a7c68d39b8b6834c70d67e055c347bc0f71a8426cb92788e1ce77214edeea",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_right.webp",
+      "bytes": 8816,
+      "sha256": "af7f8c73c43b6b4390410c715e6a13e0d8f97963b7933be9e5dc1fc882cf32c5",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_top.webp",
+      "bytes": 25436,
+      "sha256": "048253ec65712a5e3d2458547fa37a15ea3748868f27b063a3fd0f5a8b3b3dff",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/material.webp",
+      "bytes": 201034,
+      "sha256": "eead6e443752e019e43f37096672820e15bdb6ac4f498d864f91ce13ddd0b92c",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/corner_bl.webp",
+      "bytes": 7922,
+      "sha256": "e5b5d949a66958064cbd29ec37d984e87fc7aa8fad3d4c73b815e7703b75fd7a",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/corner_br.webp",
+      "bytes": 7942,
+      "sha256": "ff531214366ee0a97209fa92fd1f378f46fee9f0b6f4f4a3983316c3fdd108f1",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/corner_tl.webp",
+      "bytes": 7902,
+      "sha256": "ad3261b8888f87e3f8117e43f80a93c5a29a63ea346905734816c3c465775957",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/corner_tr.webp",
+      "bytes": 7860,
+      "sha256": "899d696d52e444beb361c4cea6381a47ee873b4b9f8caa997551d3c92ca3fb1d",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/edge_bottom.webp",
+      "bytes": 8914,
+      "sha256": "7e15da1b872d2389dde5bdad3fc48b1a5a4e0db464055d0930e2877098d0f519",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/edge_left.webp",
+      "bytes": 6444,
+      "sha256": "10b7111b9c1c53fbd57d88055fead2b89b4cfa66b9a9ef8c5daac23dd6ffd213",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/edge_right.webp",
+      "bytes": 6320,
+      "sha256": "520537ba711d3a8d9075840a39d8b44dd9dc3aa99a3d0bd425c88a6831d67590",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/edge_top.webp",
+      "bytes": 8910,
+      "sha256": "850e9e2d5677706479ed7dd213ae8c2618ac84336f8227eeaf46f15f6ec716a7",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/material.webp",
+      "bytes": 21778,
+      "sha256": "7cd70896c46adc585c9346783d9aeb65b36e9b6e6690dc57003cf9573e374d46",
+      "owner": "ui-skin",
+      "reason": "five-skin modular geometry slot"
+    }
+  ],
+  "optional": [
+    {
+      "path": "assets/audio/432-hertz-rift.mp3",
+      "bytes": 3148394,
+      "sha256": "8f339958a994a4998ec8046a3b0e8c43d8f2583ad32726c8c9e2c3149f18bac2",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-agathoi-kleos-aionion.mp3",
+      "bytes": 3362794,
+      "sha256": "a1499df2fcf2fbe3aad0a861d021f29ed805f662882ca0840627ae7b72bb227d",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-defeat-rubra-losers.mp3",
+      "bytes": 2942519,
+      "sha256": "c9465efd8874c9d37decd2acd0a1a53c2a5f581e9191ebe50b3602efc01d3ff0",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-exordium-aureum-imperium.mp3",
+      "bytes": 1592295,
+      "sha256": "585e66f47cb619221ca3b628899e7136ecba0f7c23b27c32f3e4e921de06fc75",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-fabeot-vesper-tenebrarum.mp3",
+      "bytes": 2960394,
+      "sha256": "752800628b9b6cfa0167fefae5d776a816d99f22046b1c117a7bca30c91277d3",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-liberti-sine-vinculis.mp3",
+      "bytes": 3121033,
+      "sha256": "e844b2e22f0eec0cef96285a971f426ac7846c800af3e0904b8957ee621b578c",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-nexus-machina-concordia.mp3",
+      "bytes": 2285651,
+      "sha256": "acc81712549521cfed0ef8411cc9e9ae7f19c3bbd0f3c9db8733880a32d2d66b",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/audio/theme-victory-rubra-triumphans.mp3",
+      "bytes": 2480471,
+      "sha256": "647b0884779435c4ac24240bb894afd8db6563c02220dfe6f42b1c7a85f85aa0",
+      "owner": "audio-feedback",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/agaback.webp",
+      "bytes": 407684,
+      "sha256": "2fed92db1bd856bc34ed27f3993422cb748ac156d28b81b289872247be0309e9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agmsn01.webp",
+      "bytes": 235176,
+      "sha256": "03ac18e13afbb165720cc62f3d8c4fc21b75b1950c57024459d90f254150d97c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agmsn02.webp",
+      "bytes": 246262,
+      "sha256": "9532915fb477cb7b988350f240b352a851096841c6bcbf6d1631ec5fbb954ceb",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agmsnd01.webp",
+      "bytes": 292310,
+      "sha256": "b9dc93665a0f9594c390e100821219043226e8e5ae61536e2adfd50f7d906a59",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac01.jpg",
+      "bytes": 689737,
+      "sha256": "4891dcd9feea88d1667a50294477cd045a90adb90dba875ea7fcfae6797a68d0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac02.jpg",
+      "bytes": 689967,
+      "sha256": "1bdfa5aaa8c928e9b9e8b1dbea13e73c710d03b9484a5b7867afd315d793ba75",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac03.jpg",
+      "bytes": 698344,
+      "sha256": "656dea2edccc69ae7890ffa086df6c5768c8a2322da556f52077436bf1f86495",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac04.jpg",
+      "bytes": 697604,
+      "sha256": "1b17a98f8ca1025f2cbe474f73e8872bc76d1cfbc80addcf28ebe5bd363e63fa",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac05.jpg",
+      "bytes": 612654,
+      "sha256": "b1355ac280bb53e09a8e7990b8e15b4eaf76da2dffda0f445b0c5c9090086e69",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac06.jpg",
+      "bytes": 731622,
+      "sha256": "9f0adbb2e04bbef21f6c604ccad50d00a0042cc1cdcc8bc0cb89ec41502be5e8",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac07.jpg",
+      "bytes": 605367,
+      "sha256": "c504417b3e1c0a469ed6135c04f0db3bc93eec842c8a25b0bd84e1c539013fa8",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac08.jpg",
+      "bytes": 717504,
+      "sha256": "1efb5bd709886794ae35b63233dd1747dbf1d981c572ffb166bd09e8c4ea9b72",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac09.jpg",
+      "bytes": 644286,
+      "sha256": "c494981a3c0145098a87c8cc9de08f658661e6595a82b6354f2843644fa7f5d3",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac10.webp",
+      "bytes": 206418,
+      "sha256": "239b18ef9b8ecc049fbacf8a50434023df42c77d0cc014cfe910f2305e293d57",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac11.webp",
+      "bytes": 213308,
+      "sha256": "32c472ea653972a5857c778a12b772491c02cec0fd4d6a01668aa5f550792bf1",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac12.webp",
+      "bytes": 179470,
+      "sha256": "ffb85a3320a447da902305fcf53a86f29cd54246afac24d2b6fe4fdb9da272bc",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac13.webp",
+      "bytes": 208218,
+      "sha256": "236f55b4621c585745b104020dc62ec3aef5bea31056f8713eb6df37d066f8c7",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/agtac14.webp",
+      "bytes": 119058,
+      "sha256": "8f781826e6808da582e28abfafb0a0e7e90ca017be1a51bb48d1f4c294eb7209",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag0b00.jpg",
+      "bytes": 344889,
+      "sha256": "9edd745b1319a81ee1327cd8890ce4800503e1dacf9835f77bf971f22420da3a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag1b01.webp",
+      "bytes": 319828,
+      "sha256": "15a56170c76dc1213f12c3f5bd2fe8328019fcfa6385a8e0f014038d566bbdee",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag1b02.webp",
+      "bytes": 257758,
+      "sha256": "d5eea5feaca5dc15710d04be2f734278f0b06e60702fbdd70d55a2cd12e69593",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag1b03.webp",
+      "bytes": 325202,
+      "sha256": "c11ef5f419cf0cb30d1fb5907d9ffbe5f5d525aa8b6f8be8d274a0e60ea82c8b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag2b01.webp",
+      "bytes": 288442,
+      "sha256": "dbb138ea4e67e5f6b4f177fc825c6f062b6bdbd35ef4879883d17e9544b96bdf",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag2b02.webp",
+      "bytes": 292766,
+      "sha256": "3d0e54588e997d22a012ccf34ab912f03a4271b252b1184fc65bd0c5cc802b10",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag4b01__v2.webp",
+      "bytes": 455018,
+      "sha256": "1d50cc26a7513e78db3fc97659245fbf292e43a0f86a1e87791d2e540d3aa3de",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag4b01.webp",
+      "bytes": 464114,
+      "sha256": "a3333a80cc30c3790e9cdd7743e1fb270a2bbd00e810b6ab5215dfd3dcde6951",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/ag4b02.webp",
+      "bytes": 308884,
+      "sha256": "91c988769be3bcc0e16bc48d57eccb49a5c8fdd61f314a48ee8e6ed25c9ab043",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f01.webp",
+      "bytes": 225878,
+      "sha256": "0fa46dfb4c0f545e4c7d76aeaaa66b15ebe9f5b6970a9dc3c7081bc5575138e7",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f02.webp",
+      "bytes": 281630,
+      "sha256": "b37f9d3b46a5a762387fd4922605508826f147995c8abf724c2740cb8f658a1b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f03.webp",
+      "bytes": 231972,
+      "sha256": "b03da1bb3d676c888963e246ead55a7117ef3dfbdc0c61ec1ac2215f18fe4a6d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f04.jpg",
+      "bytes": 345663,
+      "sha256": "c5932342b982eb75bae1c75ea5cf3e8cd5b955cd32318754482ad7606a4c7641",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f05.webp",
+      "bytes": 265140,
+      "sha256": "e21bfaa17cb85ff50adeb955a62fb20ef851d300ecc12711ec11505f2d3c9a50",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f06.webp",
+      "bytes": 385406,
+      "sha256": "37b0c69afa7df1769a0915b01a1bcc2412e1553d9da95e5f3b30ba8d09873d34",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f07.webp",
+      "bytes": 333906,
+      "sha256": "354c57688b2421adcff764c7b3ed0a6c71dfbb29fb9b9340e8c11d032b32eb4e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f08.webp",
+      "bytes": 210752,
+      "sha256": "58f1a6bce1ecb8328defe394b7efedee2e86e30b5fc3d40add1c9418d57ce76b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f09.webp",
+      "bytes": 399390,
+      "sha256": "b3b0d7870af2c3b9311e20ea98b6da002e173493e85a87d9ac3140762076a65d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f10.webp",
+      "bytes": 409820,
+      "sha256": "dd163ba2868d6b5ee82cdd6dec172ebc4eabf729ed6f2cc6595d1b6606397c14",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f11.webp",
+      "bytes": 453074,
+      "sha256": "3c986a7a63d7bc93b278b9bafd39e5dfefec4f25edbcd7a7351733d8f40b41cc",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agc1f12.webp",
+      "bytes": 269394,
+      "sha256": "7823ea11b38d51cda16e1321a7d99cdf4405e84a8bd9ecba9dad002f3f56a151",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agcmd02.webp",
+      "bytes": 176694,
+      "sha256": "8ddac86c6763fb3c106e7cf0d1503dbb852b2a38245dde6846a06ffa00b05810",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agpiv01.webp",
+      "bytes": 341000,
+      "sha256": "9ab5016b696c5310c3f6151ce50e11a383bfb0213a6a1e846c15d17d6e285220",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/agpiv02.webp",
+      "bytes": 233264,
+      "sha256": "9a22b23cddc217f2ee4af9f244729757f7faa7dfc79bdf040b544add8a804baa",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/exoback.webp",
+      "bytes": 330964,
+      "sha256": "56d3278161a35835a2571bc18b9daa78ff8df5a0227e224028bba346ac058be9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/exmsn01.webp",
+      "bytes": 157436,
+      "sha256": "0cb6bc7cc234744bf4ba5629ee2d855ca3d6644d59d4859d78941de3fd18c364",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/exmsn02.webp",
+      "bytes": 128428,
+      "sha256": "5b193b3a6d581d5c9e538cae892b642e828ca1c6224288c5a18f9560c0f31fbb",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/exmsnd01.webp",
+      "bytes": 112700,
+      "sha256": "70de8cfe18e2b38ad658aadf07bd3ec58d3920e7380a23d2cf66075deaeb821e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac01.jpg",
+      "bytes": 622431,
+      "sha256": "3134aa4795bffed778008d83f3be91a1eff42a5a9d3b4da63588b96a89343c80",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac02.jpg",
+      "bytes": 541514,
+      "sha256": "959f18afbec4c9262b678d7851a84f592f870758c1aa81991a52d320b114db39",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac03.jpg",
+      "bytes": 554986,
+      "sha256": "dfdf56d0960d09b4e452c1d16b8da222dc4ebe36e62cffbd4d72692ea445ce56",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac04.jpg",
+      "bytes": 731646,
+      "sha256": "f19c2139c6d054bd0d199563c97f8ddb38ba96776a5bfb3f28d83db653705501",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac05.jpg",
+      "bytes": 623236,
+      "sha256": "77dabb7fc6c7e2a18a3f4780969c35c6b9d5142b59b1b9432f7851a95d32897c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac06.jpg",
+      "bytes": 519089,
+      "sha256": "2923e80ccaf583f63cfcf0141fe9492911030d0abfcd9e22dc13e7ee83fcc49a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac07.jpg",
+      "bytes": 528446,
+      "sha256": "40ff5bf9e0197af8d644c154a3a7df520d073fe5e937119c46219cd3a010ea1a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac08.jpg",
+      "bytes": 640198,
+      "sha256": "1b32a79488b05eccaf4c515cb0fd0a4378f5fda58f16b9228a376156d9b1be80",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac09.jpg",
+      "bytes": 554922,
+      "sha256": "f12ae7eaf8434296133db749acaded548ec4fc65945974a491a1d8791772f5ce",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac10.jpg",
+      "bytes": 597593,
+      "sha256": "3d06acc50bbcb75068251555c10ccd254f3110847b935d68754ca771cea41bde",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac11.jpg",
+      "bytes": 462031,
+      "sha256": "628e0bdf1d43a220fb791cea50a4ea519e41fcd46f56ea2b81dc742f4e4f0f56",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac12.jpg",
+      "bytes": 421979,
+      "sha256": "f7cba47f87d9d14847bfd2f10208c1e3dd309f5462ebc44cd41fb255c4e6af79",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac13.webp",
+      "bytes": 117650,
+      "sha256": "e598419f35ed647e3416e1816a6f08ab87732c4cfc31ff597dd3844e8de38b20",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac14.webp",
+      "bytes": 190996,
+      "sha256": "c829b4669a4431d5670fc76fffbe67eb071e8bf1a34dca85d4393a8569f48c6e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex0b00.jpg",
+      "bytes": 168859,
+      "sha256": "1686c7b13f52a57cba16d1e00280e8c23f4294bd771b639bb3ca8d11a15fce61",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex1b01.jpg",
+      "bytes": 143608,
+      "sha256": "8dd67b1c70c04a4704511e3252435b831f40a2a7cd23c0381c66f767deaee7ae",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex1b04.jpg",
+      "bytes": 127474,
+      "sha256": "87f5562738b5d01d882397602edcc87b9fbbc708f83756c9b416ba0263959dcd",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex2b01.jpg",
+      "bytes": 186223,
+      "sha256": "61c2211cbed1d14a03a821d265e206b1cfb324858a1e51de0e5a38e2e0c9f4c7",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex2b03.jpg",
+      "bytes": 180114,
+      "sha256": "fc80229a8ed908674f0e0fd0053653194c3acb8ac6065fc9fee202f1a077f4d7",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex2b04.jpg",
+      "bytes": 180047,
+      "sha256": "4b42f8dc9949041cf7b3f8f97010947c0e40bf6a2b81dea321136982cc6fae62",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/ex4b02.jpg",
+      "bytes": 192866,
+      "sha256": "2db450b8f0331fc2dad4504d879da672211b26e4d0385db15a9a0449a035f4d9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f01.jpg",
+      "bytes": 168746,
+      "sha256": "666a69ab93799a1477ed0eddb6e67c9e307b5f1e7f3afabe530804c44aadbb87",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f02.jpg",
+      "bytes": 205409,
+      "sha256": "b77e1d19e797ccf6852ede752f3b6b41f742fd29866cf42da1efd3be5c6aa86e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f03.jpg",
+      "bytes": 195616,
+      "sha256": "e4a93fea2fbdc6c269e0ce1d1d975b659ad3521ee2875f42ff903adc6fb049b9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f04.jpg",
+      "bytes": 191427,
+      "sha256": "657471dba3f9640bb2f299bf2dab06a59e980f0b38609ebb5cde2c63ee1c9e2c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f05.jpg",
+      "bytes": 440628,
+      "sha256": "3ad85a8e34f4d796d87c3170dd9da353b59a4f467bb3e4c2192e15eab9d03f30",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f06.jpg",
+      "bytes": 440628,
+      "sha256": "3ad85a8e34f4d796d87c3170dd9da353b59a4f467bb3e4c2192e15eab9d03f30",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f07.jpg",
+      "bytes": 517966,
+      "sha256": "f1ab274f4b54a45549197b6eacc9a721898aa8ff416e1228b87a6311a6f70069",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f08.jpg",
+      "bytes": 545522,
+      "sha256": "520175c3b6290b68254559f7af23bd2e77aab2242471b2d7d7009ffd632b78c3",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f09.jpg",
+      "bytes": 581597,
+      "sha256": "30cbbd551ec496d2157bf56e6b08088c0c1157d60cff7434f9fcace963bddf6d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exc1f10.jpg",
+      "bytes": 624658,
+      "sha256": "b6b0fc62a20557be7d84b7e6a1b7f527a3ecf0c63d8d66e95ca07563eb35975c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/excmd02.jpg",
+      "bytes": 147305,
+      "sha256": "f6a6d3e8affbd5cd3b30b2168c03a87c98198b1b2bb4d4bfaee6c6b569774d41",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/expiv01.jpg",
+      "bytes": 648760,
+      "sha256": "609aed90ad88e466ffb5fb174d400b041374d0f163228e3c9277915a06228940",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/expiv02.webp",
+      "bytes": 185386,
+      "sha256": "f5551ea1fe99c4f827e4c182e776386b7e6d911ad3d3c4c9ca5a44708a713e67",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exs1a01.webp",
+      "bytes": 122800,
+      "sha256": "e323d75e9158ce6a6577d604670c156784e598fb1a7293b10b052d12a14404fe",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exs1a02.webp",
+      "bytes": 176870,
+      "sha256": "d310c1789dff513fd56c7c3075ec1386a6d1cb14f26820cabc5a5b49d38596ec",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/exs1a03.webp",
+      "bytes": 122716,
+      "sha256": "d49cfd67c0f59e0618795069d1e97aa8f671f63ef19944923139904b5d0cc793",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/fabback.webp",
+      "bytes": 366432,
+      "sha256": "6fbde924d5dfcfa22d86a899127075e5d3f5c36d3379cc93fd1c99afbb6a0662",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac01.webp",
+      "bytes": 106404,
+      "sha256": "c31b8e20059a71e70ba10af3bd1d6008ba83c7eff133b221f8cb67162268f4c3",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac02.webp",
+      "bytes": 75910,
+      "sha256": "45486a853507c907dc91a0d8e30378b337d587637dafabd4bf4405017ee196d3",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac03.webp",
+      "bytes": 71614,
+      "sha256": "c948725e0afab477f6556242d6dd21c27d2daa86dc9f2abc7a4290df81b3742e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac04.webp",
+      "bytes": 96998,
+      "sha256": "1752040e9424091d6af11494b59fc3de40d5e89cac8d4fe038670fdd83fff79b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac05.webp",
+      "bytes": 139642,
+      "sha256": "7a9d4af819019715fcef443ca193f333f8b503c94d0f9c485e02c634b30ce06d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac06.webp",
+      "bytes": 106244,
+      "sha256": "4abfb28efdd9337870b2b86d2d8bbdd1284a9540bb18d3c4cb2317f87605103d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac07.webp",
+      "bytes": 142610,
+      "sha256": "57daa196d366639e8095b7829d5fca795a4ef22745e342cb8991277004bf42cd",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac08.webp",
+      "bytes": 83186,
+      "sha256": "1a666b93851e316673c114a1b178cee53307278fe8d77421ccfe9de8bf9953c6",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac09.webp",
+      "bytes": 161624,
+      "sha256": "088bb3c552950772ff43ab2866b30e3ed3fea56b6b7e4191889894acd9058bc9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac10.webp",
+      "bytes": 127636,
+      "sha256": "9699697a1a108dda438520278f685ff0007ff6a9558cb0cf44c613147a358a5a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac11.webp",
+      "bytes": 82510,
+      "sha256": "14f3ced97350a628c22db5e57b4e10f8879c2cc9443f004ca12c82d9c548aabb",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac12.webp",
+      "bytes": 71734,
+      "sha256": "11e470576d7f79b20310f6096d8fe980de2f95e83ae97c5b2242721763e46afd",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac13.webp",
+      "bytes": 94076,
+      "sha256": "fd6108e6923387884b3955170b9a0624c6fb420b3857f31e2dee21ae18bcc542",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fabtac14.webp",
+      "bytes": 114676,
+      "sha256": "91becc5e1d04b6ae560b1bb6485e389d326e32f816d5dc5f6a19a19f6a558310",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fbmsn01.webp",
+      "bytes": 59436,
+      "sha256": "d406f887fe853cfe6a3fe1e75c8b27418a9eee81ecc0ec12287294b5050b480e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fbmsn02.webp",
+      "bytes": 134092,
+      "sha256": "7f150d8f861f6afdf79a9ad6ecc066e2eafd38a4afd5ac4a59afa5fc5acda620",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/fbmsnd01.webp",
+      "bytes": 183572,
+      "sha256": "22e43b306c1264c8a5aeb69e7e113b0d0e462248f6483ccf1f05969989e74f19",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb0b00.webp",
+      "bytes": 57528,
+      "sha256": "dfc670825cd7ee7e4a534de66ede255824a0d6af7252d801c751d59fef3ed9e5",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb1b01.jpg",
+      "bytes": 127028,
+      "sha256": "e3c3570845f8abde1aa610c2e439177d03fceb46ff9dd45e699add3066c9a8b1",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb1b02.webp",
+      "bytes": 57258,
+      "sha256": "c86ed92f34d63336e0b7c92ce6efe1336d62bcbc5a820beb74364cdfc8ee83fc",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb1b03.webp",
+      "bytes": 68576,
+      "sha256": "4515104694ee17049e8f841fcf7eab8b9d59c417b9ad9a3c3ae9f45bc0862687",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb2b01.webp",
+      "bytes": 136570,
+      "sha256": "406c91416993ac882862c53d0845e8debb94b16a41055c07ecbd0202e69c32d5",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb2b02.webp",
+      "bytes": 108154,
+      "sha256": "0b4ab59a224c9b3eabec613c88e355629761823e4a8416bb58df3da2e26216ce",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fb4b01.webp",
+      "bytes": 116860,
+      "sha256": "6067844a1463a1ed1a4f75a9c26fd08cdc97ce7591ed3211f91141c345bf5a59",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f01.webp",
+      "bytes": 101420,
+      "sha256": "ef22d9ed411764071efba33f95b3f478a947ef51c673adca17e1f115bbf84eec",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f02.webp",
+      "bytes": 83018,
+      "sha256": "64f725e05849240510f8d95c4c696e15ab9beb0b3e51b33d4053a77e878c61de",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f03.webp",
+      "bytes": 117518,
+      "sha256": "50d95fbf7a7b65e417c4b2839e72bcba72117132af2f5a5cea32957f0cfc063c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f04.webp",
+      "bytes": 160444,
+      "sha256": "882832ef2b209a05aa3df3510b471235b4a7ad9d07accc0419799e16aaff0f9e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f05.webp",
+      "bytes": 109002,
+      "sha256": "bb741df0033f7c28e99d117d3405918206f16ee86bcb898166626398af1c366c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f06.webp",
+      "bytes": 124942,
+      "sha256": "5cc3ed5548ff6d610f23f761947dc925df40e37d9b4c246034ede5e1edb6260c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f07.webp",
+      "bytes": 137080,
+      "sha256": "abe7b9cc09a9492346323b1e44ddd72979ae9c411e77b61611d8bf246e56ac94",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1f08.webp",
+      "bytes": 166360,
+      "sha256": "d5a6907740fb8f84b3d975f44449d8342d98fbb8fa9b42579a48b68b72d8556e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1fxx.webp",
+      "bytes": 165760,
+      "sha256": "bb7940109cd0acb9d4ec0654d1a8cf8c5159fa02cb36dae264fe087f77c19729",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1ha01.webp",
+      "bytes": 132258,
+      "sha256": "3375c88b16b8a48431742dcd12c8833784df894993344ac9f09d09f4009f9be5",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbc1ha02.webp",
+      "bytes": 177266,
+      "sha256": "0dc4ae8366103df49c90e1586704099f8d871671c7080128ed3783f8deb719b6",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbcmd02.webp",
+      "bytes": 61402,
+      "sha256": "21112c31f54f23400fbd7bdc39ff4a4cf3ca4aaa3331e77cd4b0963de7cff7ba",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbpiv01.webp",
+      "bytes": 222928,
+      "sha256": "b5ab5243f2bcd60f430553712739b69d460a25451798a1e4369dac797a003a22",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbpiv02.webp",
+      "bytes": 107698,
+      "sha256": "822fd42c5dd6389f1811fa4ed0e94dc97f6fed52fe90b77cb5917d3a46cd7850",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbs1a01.webp",
+      "bytes": 108716,
+      "sha256": "f895318cb00ad5ff0890a0a8821f43ff423f46066deafabe4ed7f4fd8dd65ba9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbs1a02.webp",
+      "bytes": 133058,
+      "sha256": "9166a5075517640636ddfa8c80f2d4eb04f4783c044b85615dd2c5f48685a77e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/fbs1a03.webp",
+      "bytes": 82572,
+      "sha256": "c55aab3b289b52ca5d0683c3d202d53341498930eca2f1967841fd766008e624",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/libback.webp",
+      "bytes": 506260,
+      "sha256": "2861b2082488b327531cbd686a5dc19bd81e4d282273459868400c766724b85d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbmsn01.webp",
+      "bytes": 100464,
+      "sha256": "d4f2342c17a991c41d8997fb5c01c3d87233d4a3f96c03361ab62b28a7030999",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbmsn02.webp",
+      "bytes": 120664,
+      "sha256": "009b94c48eb5ebafe198a6b204979d3819425987962766f6cfd38c6ecae07fe5",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbmsnd01.webp",
+      "bytes": 164748,
+      "sha256": "2547aa2be632bd0cf489cc91f1fb7d9d5a6f8d525f34944d0d8d48c87c197d49",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac01.webp",
+      "bytes": 239018,
+      "sha256": "60dfbf753d4f6cf61acc7ecd6a04cc8f88f79a182b61224cc9ea6ea7e8757f05",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac02.webp",
+      "bytes": 186010,
+      "sha256": "356afc0ad2aa848798db384168f9b4d9f6cc3896152b41052e0362545f057dca",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac03.webp",
+      "bytes": 314720,
+      "sha256": "6d8ac48e8da90be446da7dc22d462d4531249df122ccefaf97aa10e2bca50512",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac04.webp",
+      "bytes": 296718,
+      "sha256": "77e035f841421a70f7162b5a98f57624732c7c9a139c0510951786a9935356dd",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac05.webp",
+      "bytes": 264892,
+      "sha256": "95802a7a65bef0434d37b5a9fc151ee5b0fc5ce0ff416f025d64d49e3839a03e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac06.webp",
+      "bytes": 320234,
+      "sha256": "07043469a796a481b986c51e782f3da6ad13543825d12e421b2b26c3bb858100",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac07.webp",
+      "bytes": 250906,
+      "sha256": "942bc3dd087afc4d7b74fe942a6354ffc311d3076bad9b6994ad3db1b1d85ed8",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac08.webp",
+      "bytes": 223806,
+      "sha256": "aabc8e93450197188a5314c23679c7ef1019658e59d5444e2e57c4f5af065829",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac09.webp",
+      "bytes": 217126,
+      "sha256": "a53def7872d7b9b8de8dbf70e2d52e7ecd2b03c7033b62a992bf2fe5514c6ef2",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac10.webp",
+      "bytes": 237808,
+      "sha256": "e49b781d73ad21847e79d3ad95b774f868a15c2b22c944072e4d5861429e17f0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac11.webp",
+      "bytes": 232948,
+      "sha256": "e8ffd20a3e057b9d1447f11e1e525bcf54bc92cb92de6a43b9e89484e4b7166c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac12.webp",
+      "bytes": 327492,
+      "sha256": "2e943b6adfbff446b7fbf71f6d3b1527966bb9ef301e07ba5f833899dc626780",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac13.webp",
+      "bytes": 180728,
+      "sha256": "d7de61325cdce30a61d7644a0f8445b68fa532fc29552e87401b212bcfead75c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/lbtac14.webp",
+      "bytes": 193340,
+      "sha256": "506b49a9c0f2439dc6882b210b5f0e5829151b2edab45d5620ec60967bebc5a0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lbs1a01.webp",
+      "bytes": 217878,
+      "sha256": "fbecd1c7b7d8ecf15255d35ba912fe009ededf424109a6955ba45a379b0088c1",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lbs1a02.webp",
+      "bytes": 639350,
+      "sha256": "90089214e8091b56fd21d04512c86e056d7a475426bb9f19deb70996c60d7c6a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lbs1a03.webp",
+      "bytes": 156258,
+      "sha256": "82a0cf8d65f5064b7421142a4358dd21c33869d7831109fd08ff2aef0ceba0d2",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lbs1a04.webp",
+      "bytes": 183602,
+      "sha256": "bdcdafb003b5b712ca648a5f84e45c75cf46d848c499e665499ff7dbcdfb7d86",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lbs1a05.webp",
+      "bytes": 192286,
+      "sha256": "46f552c8536bbbd485f28dc553ae97d34da9083d938a5217d0afc163bd861c53",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx0b00.jpg",
+      "bytes": 631844,
+      "sha256": "6ebefeb2abf086bf00652151eb037d40ab781adbc5f00f8107120cba413d015b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx2b01.jpg",
+      "bytes": 534726,
+      "sha256": "2f187a395eb0f7fca0d19407702d85f92e08e941bb22d4ad16b440e708f343e9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx2b02.jpg",
+      "bytes": 569411,
+      "sha256": "1b854c14e9c6701ad7395572995327efa76c9d13ee7eaef25ac28a1fbd78e45a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx3b01.webp",
+      "bytes": 294032,
+      "sha256": "bc5dc09a21d543c20abe294a818f83b36809fd63c7eaf737c154fc2b85f4063e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx3b02.webp",
+      "bytes": 230250,
+      "sha256": "0e4665ef46f8d37b63ff38a0ad9a2ba26ba100a0ddeb29e0129332046cba79d0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx3b03.jpg",
+      "bytes": 610685,
+      "sha256": "672f3935c1479f8636ab2d55f7115665abc1ffd28de0bf4a04a543e412f84be0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lx4b01.jpg",
+      "bytes": 724656,
+      "sha256": "dd6ab4dbc6242cdfc62c67163f05bebdfd5a06f2058b5bc0cdcb3708bfc67c90",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc103.webp",
+      "bytes": 256416,
+      "sha256": "4f79a1e6b3f53328ccb601b6931a0ba846ab2c0f43bb1465056808ec99f90512",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1f01.jpg",
+      "bytes": 536054,
+      "sha256": "400513ca90e3765ac5bf5ad2f202168901c0425cdbbb21d79eeae7dc8095747a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1f02.jpg",
+      "bytes": 668952,
+      "sha256": "6d74fcb5cb89331b433dac1552b39c0f7c208d636277aa97160c352809e1727e",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1f03.jpg",
+      "bytes": 634145,
+      "sha256": "983910436d9a2a451f684f4a97fceac099750dda604408c4ff1d7645104b72ee",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1f03.webp",
+      "bytes": 256416,
+      "sha256": "4f79a1e6b3f53328ccb601b6931a0ba846ab2c0f43bb1465056808ec99f90512",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1ha01.jpg",
+      "bytes": 533658,
+      "sha256": "b0075af645cc036b288a68f2ccc4d90e1997a54e2683ac136804d3a537ef30b0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1ha02.jpg",
+      "bytes": 619728,
+      "sha256": "a04b4d3d0747c28d0b1b8c299acbd2c1ea9c491cdded50909b82191a6dd13f6d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1ha03.jpg",
+      "bytes": 495290,
+      "sha256": "5be751aab73a38e90681d5d5d7d58c8e352fa1f1c0c3845e7c96e69030a041b1",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1ha03.webp",
+      "bytes": 168812,
+      "sha256": "24be90b3c541443813a142053139bf6f367ab0b4bde6ee685194909193ebfc99",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1ha04.webp",
+      "bytes": 306900,
+      "sha256": "da00156ee888d9c30e9aec0c5da4786147ae829a39706624d9135dc2a5647bc8",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxc1ha05.webp",
+      "bytes": 252878,
+      "sha256": "ec1dee07289c747a25a571e9663d3b3e930893cacda02145101e2e494aa0ea32",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxcmd02.jpg",
+      "bytes": 210378,
+      "sha256": "656d180031a9e169f8f0b8b321f34590a33831981ee09ec6bc353b26f82b76ad",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxpiv01.jpg",
+      "bytes": 681813,
+      "sha256": "2f7b3252df555f9406b4d07aa0653365fd585327f73fa48f22fc3b34bcb62914",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/lxpiv02.webp",
+      "bytes": 219112,
+      "sha256": "4ee399b20bee54155e13f0aa08058ba9e64f0fd97f072474fdb591d1100f9176",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/nexback.webp",
+      "bytes": 224234,
+      "sha256": "a1ca2862f0d9959bf314b6d6582e0c25f5cb80c6c22607b331a5abbcccd15aae",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxmsn01.jpg",
+      "bytes": 558867,
+      "sha256": "e04890362a98f6ed072ce32c5290554ca3c48b75dee40b79cef654041aad519c",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxmsn01.png",
+      "bytes": 2553455,
+      "sha256": "7165c2bafa66c3b5b9f22f91af4130ceaf4981003fb475df73e361eb2c0e5897",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxmsn02.jpg",
+      "bytes": 537714,
+      "sha256": "6fd871212b7c775660031d93af52a1ac09c174e74e2df391b5f4425aa59086de",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxmsn02.png",
+      "bytes": 2291691,
+      "sha256": "525283f6e934fe1d9c235dc652f955430dbe1de6e3bd96751c2d57c1864f7bbd",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxmsn03.jpg",
+      "bytes": 502445,
+      "sha256": "f2e56889f6190d5e5f0c7d36022409edc9305984ca661fd9156de6a6150a419b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxmsnd01.png",
+      "bytes": 2282637,
+      "sha256": "d65426d1b93b680b13488b0f3091316aaa0a8cb42c4fcc5b9d1353b86821695f",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac01.jpg",
+      "bytes": 196438,
+      "sha256": "c77f3100621bdfa76f94842e0041aab3b401ab3c11293e288575d1c9957d0cfb",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac02.jpg",
+      "bytes": 113009,
+      "sha256": "1484cbdceea4f57de2a5c800fc81b18a18e1e2b28790e07f0d42503a85fecbf5",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac03.jpg",
+      "bytes": 124022,
+      "sha256": "a0c583e10b124f4a1b1fa6e3ff286d41f71ac5280d116402ea90664f855fde57",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac04.jpg",
+      "bytes": 130185,
+      "sha256": "2695aa29f1be97d19372ab10bd5bb5412cca618e594c6446d86561fad937ebc7",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac05.jpg",
+      "bytes": 206269,
+      "sha256": "04226faf650dd58f9bf169f12f84cf2f90575727d7f6ca6224562182ef4d6fdf",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac06.jpg",
+      "bytes": 157138,
+      "sha256": "d288586f02998f5c4a7a0a3b9d1d47f5dcf708a6b790312b68a673f597316d1d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac07.jpg",
+      "bytes": 152294,
+      "sha256": "9e6ed7963a16d49aaf9e7a24c623040ffbb3ff719e60c3be43abf43e72816631",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac08.jpg",
+      "bytes": 143708,
+      "sha256": "0c210ab45e8a3e174628987e01091ca7dc27796837962b059fffcd1bd4afba67",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac09.jpg",
+      "bytes": 162042,
+      "sha256": "f2bfa49669bc3978b0b61fed64fee4ed5568a66ebb7380cf948cc85eadc46db9",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac10.jpg",
+      "bytes": 182627,
+      "sha256": "bc122a0b1eacb1eabdd392fcac257e314dc0f8ec66302b14edd7be9aa685f633",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac11.jpg",
+      "bytes": 173867,
+      "sha256": "24037a636961e941f688885c336b96a49e7f22e1e91d377626309131e90f13c4",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac12.jpg",
+      "bytes": 172105,
+      "sha256": "9350139fe53522d34746f4ea2d5303d167531c155844292f15d9325e456a6d58",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac13.webp",
+      "bytes": 165006,
+      "sha256": "936f6db5de604302e76b2248050469f1758a1e1544036a8af1609c5325dbcb0a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/nxtac14.webp",
+      "bytes": 162258,
+      "sha256": "b61a575c47675cf11106ca429bbcce526b267e98f911b27f5579e183e981e7ed",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx0b00.webp",
+      "bytes": 76548,
+      "sha256": "e6c5cbd203a17669e600e0d63a6978e20cffac2c7e7cdf46b061b1349908cc92",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx2b01.webp",
+      "bytes": 70804,
+      "sha256": "5c075f0009e1ff69cafeb623212b4cb74d9acd9a7fd88abcb4e8b34d44b10373",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx2b04.webp",
+      "bytes": 50604,
+      "sha256": "c0eafbab527630b0e766fdd1ef747e900c499b1fb71df9701cd5e32222c76640",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx2b05.webp",
+      "bytes": 56232,
+      "sha256": "9353532a98c59988c77a2d5abd747565e6ae871c2200975425742301d7dcaccc",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx3b01.webp",
+      "bytes": 61948,
+      "sha256": "ed4e83cc3eb4894d39c3ea5decb7221a0d66bf401605bec2f668c1c086ca2f88",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx3b03.webp",
+      "bytes": 68620,
+      "sha256": "936148288ecdb45c49f10afd236a356beb69e540a1aa446286b6f8709ae24aa0",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nx4b03.webp",
+      "bytes": 61760,
+      "sha256": "c29eda24a00b8aa0b7529bddba5e7ac152f50204b74e1be2c340a4e12c3b49bc",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f01.webp",
+      "bytes": 77194,
+      "sha256": "f88bf96df6929eba5b3c52d25c832b1637d7e6fef5490bbaa6c42001cb412248",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f02.webp",
+      "bytes": 79230,
+      "sha256": "086b2a42cad3b5ac891b0a28127ba0a677c6fe47c2ffa6eda21136dfadfc9c02",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f03.webp",
+      "bytes": 61802,
+      "sha256": "a3c98ae017acdafda6e41e08865e11b58ab88a6045d5b78120d1f5223e5f070b",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f04.webp",
+      "bytes": 77210,
+      "sha256": "75cfa47169dbd6a36215e510bd9c746396adb2e370fb658ed98346c0cc93f5a3",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f05.webp",
+      "bytes": 76206,
+      "sha256": "efb0bc2e8fb0e21a196f90f20acfdabc6e8cb1ccb97483834a6205b76ce33ebd",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f06.webp",
+      "bytes": 76704,
+      "sha256": "5f6b91d9f0aba1357ba4cacb71d46b9ec76999350ab32eb9994a8a07034b8c25",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f07.webp",
+      "bytes": 24680,
+      "sha256": "aeb1358d0b334d2018259c3c0329c6d5f406c19b593315da87193e84d396ea8a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f08.webp",
+      "bytes": 138816,
+      "sha256": "92339bb3b6ba9fe86261c4ad3fced02465abffee98d1b6909408f288b66a44aa",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxc1f09.webp",
+      "bytes": 58520,
+      "sha256": "10a53e9f6d9aaa08fa89da5ada82427b3837f0a83e97e7e3791c11f512c398fa",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/NXCMD01.webp",
+      "bytes": 65560,
+      "sha256": "4bdfe08c9ef75aa24eac39448acc5d6726866694e75c621934fefe2dcbea2984",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/NXCMD02.webp",
+      "bytes": 55750,
+      "sha256": "fd3f436f5be9467ed54f530808101aa06fea9aad0f3162915bcff9a9cf30fe60",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxpiv01.webp",
+      "bytes": 94942,
+      "sha256": "80684896700bb54192aed542064d8f7176ec4cacade76a0124910be6dfe5d29d",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxpiv02.webp",
+      "bytes": 255272,
+      "sha256": "9649567377cac3d0c59f1949c613d327bb0f4d853a6cb8700b3b7648ddbe3f59",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxs1a01.webp",
+      "bytes": 126414,
+      "sha256": "853f2fd1623e72b01c4eb1aca5fd9e9207d7b5331ffc82373db2687a0a5fc631",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxs1a02.webp",
+      "bytes": 155318,
+      "sha256": "2a61135507fdaa774b5e10023ccc0e49e993ba44a954043b8a75a0d7119bd14a",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/nxs1a03.webp",
+      "bytes": 159046,
+      "sha256": "314eac6da79db4061ed04ceba13320fa11d68993c0ea896fd8a2a55c0bb1f1e7",
+      "owner": "card-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/arena_rubra_default.webp",
+      "bytes": 686352,
+      "sha256": "f759ceede2774179afb81f483e1029c0a17118348396b8cd2472853523eacd7e",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/basalt_night.webp",
+      "bytes": 1102320,
+      "sha256": "e6eb636114789e251844975359d05583fc215c7b309c3c301368a63b394a6655",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/battlegrounds.webp",
+      "bytes": 1036220,
+      "sha256": "d9c49bfa5bd127fb9cc269977fc3d7ac3df4ac6842700f6201d8c440238c98af",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/desertcenter.webp",
+      "bytes": 696704,
+      "sha256": "674b4b3369b4d01b1defe1f216c23e8ae60e5dd99d0283dd749e67b4910a5f93",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/overgrowth_ruins.webp",
+      "bytes": 1099224,
+      "sha256": "e58e80357e5ce809b8dbad920c5dc48deb6cbb0953b8de9caf2b989cf1ef6cf3",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/plains.webp",
+      "bytes": 3492178,
+      "sha256": "a40452d38bb67a5f8767e2e411383e48f9e3fd3c5a4b9dd05e9a5a9216bda7dc",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/red_dust.webp",
+      "bytes": 1274224,
+      "sha256": "7cc3fbe0cb8f3a416e61b599a8d8404cc42e8e2c2f5f8812a7a0352a48ab5707",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/ruins.webp",
+      "bytes": 2890810,
+      "sha256": "5df2e20482575eb3ab3ca4e4f477f6440e2093a89ac7df471ba60996e8f23238",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/The Snatch.webp",
+      "bytes": 284000,
+      "sha256": "af2f4851ee1af9f6165a7429e74c238fa8287d5321635499e959270e6582d3eb",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/trap.webp",
+      "bytes": 3245958,
+      "sha256": "fa7fbfc9926ca29436409e9e55dbb67bea243d6393e5da672f373d3c3224102c",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/maps/backgrounds/velvet_hoods.webp",
+      "bytes": 860472,
+      "sha256": "7a92b1b3bc444a066fe5a2e10f400a4dc1002fa2e948a4fda2f0638ad1104c1c",
+      "owner": "map-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/agathoi/approve.webp",
+      "bytes": 152802,
+      "sha256": "195c8f76c6b1e9d9ba1a024830a9dcf4b1e93e69c96b591244f5b85b9c9c6ac1",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/agathoi/explain.webp",
+      "bytes": 135218,
+      "sha256": "f6a2ee4eb530d80f5cc2f565c16e601be83beb28c9495512bd5bb9f9fb84a98f",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/agathoi/neutral.webp",
+      "bytes": 143630,
+      "sha256": "20413bc3e5342eadb3c0e8fdb87b06e9349c7804e5cb69b90b0aa77998f227d2",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/agathoi/stern.webp",
+      "bytes": 153700,
+      "sha256": "10b357848b3c3bff8dc9bd2d0d88a41bed223aef4157ad6b5f243c7aca17971c",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/agathoi/warning.webp",
+      "bytes": 153700,
+      "sha256": "10b357848b3c3bff8dc9bd2d0d88a41bed223aef4157ad6b5f243c7aca17971c",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/exordium/approve.webp",
+      "bytes": 41032,
+      "sha256": "59d2c15b6381ee75c663b8f76737264573a7871415a89b267904c1c4fcd6d3fb",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/exordium/explain.webp",
+      "bytes": 37742,
+      "sha256": "e5b116fdbfc9830ee13421df9379617a47868020ca40ab76ff97a29d9d13947b",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/exordium/neutral.webp",
+      "bytes": 39392,
+      "sha256": "c7f5ae214747c412823569b7a7805579a06dd75d75595f5855f83b5d2d559d0c",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/exordium/stern.webp",
+      "bytes": 38714,
+      "sha256": "165bebeb9d2969427dfdd952e4d66382db185f80bd572064d5488153655ecca6",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/exordium/warning.webp",
+      "bytes": 34914,
+      "sha256": "1a4ad41ceb02a16c6d67a3c6cfb865836d666a93423d013402d27fb8c46ec017",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/fabeot/approve.webp",
+      "bytes": 45038,
+      "sha256": "23268aa3c9e7d88e28f41582a027905b28f76f1dd6eee3e7fff8af6305fae2cd",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/fabeot/explain.webp",
+      "bytes": 49006,
+      "sha256": "7d693d2c38b865a6df2c1a16f39cea5a9a9adf6c1393a2b5b9ec528f9d04205b",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/fabeot/neutral.webp",
+      "bytes": 45742,
+      "sha256": "9a97f0a40f38393887d0e39d5a5fd453d8caabb0438fa62c8ec2bd6651549817",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/fabeot/stern.webp",
+      "bytes": 40808,
+      "sha256": "bc994eb9353e9b99b3c2a398614a6d7cc431d63859eaeba62f39f4675c0f787d",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/fabeot/warning.webp",
+      "bytes": 52116,
+      "sha256": "375121855d9d7c532fd8da825fd6b8c128f8f40c9d6855028f6f2ff416a98a78",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/liberti/approve.webp",
+      "bytes": 88434,
+      "sha256": "bfeda588e7f3b520ece17bbdb1e5659b753186f83d862de9cc6a3d4e7ab50960",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/liberti/explain.webp",
+      "bytes": 83748,
+      "sha256": "128ceca82d01aa0590ba28f54fd37cc81f9fcbf2c34a8baf4a2b0dbce63f6fa7",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/liberti/neutral.webp",
+      "bytes": 86392,
+      "sha256": "7611a6100314ddaf1a0b54b65809d5e41318cddd45d04667f4b47cc950bd96dc",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/liberti/stern.webp",
+      "bytes": 88434,
+      "sha256": "bfeda588e7f3b520ece17bbdb1e5659b753186f83d862de9cc6a3d4e7ab50960",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/liberti/warning.webp",
+      "bytes": 88434,
+      "sha256": "bfeda588e7f3b520ece17bbdb1e5659b753186f83d862de9cc6a3d4e7ab50960",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/nexus/approve.webp",
+      "bytes": 71016,
+      "sha256": "8d792fc305c53d9cd4322d9ba59d05fa5a59a07f2dd60d4c9a80dbaa1146d4fd",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/nexus/explain.webp",
+      "bytes": 68944,
+      "sha256": "b82f1ff8c4b04f40e959032f7463e27c2ceeb658295e7d307a52d13eba4237ee",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/nexus/neutral.webp",
+      "bytes": 71684,
+      "sha256": "22035c55d74e3f14c1e9233d2b58799aea569b7231de3e2f7ac1f99f54f1909c",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/nexus/stern.webp",
+      "bytes": 70970,
+      "sha256": "f92850fd55d14bf136ebf8087c6f7d723fc84f915e38ae4c5afedf1d33889cef",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/narrative/portraits/nexus/warning.webp",
+      "bytes": 72872,
+      "sha256": "305323fac6c4ddd00fd90832ea6581b60b23c79dd949be972ec97bd072455bd5",
+      "owner": "tutorial-narrative",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/infantry.webp",
+      "bytes": 13676,
+      "sha256": "d1e0ab45508565aef7a9d69f5d6c0e62a0785561ab70da129266ac25a24a4562",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/infantry/elite.webp",
+      "bytes": 16992,
+      "sha256": "ad67a267e87ca87bfee7bd547acba040a44604760a50bf57af448203a35f5591",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/infantry/heavy.webp",
+      "bytes": 24850,
+      "sha256": "815242ef5528b673a59d67049c58b5263e1d2c74c737fab54584e9038027ec8a",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/infantry/light.webp",
+      "bytes": 25816,
+      "sha256": "8342c4d4c2498552397e62d2a04058594250fbf31a39ea53eeaafb7a65c8c3fb",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/infantry/starter.webp",
+      "bytes": 14680,
+      "sha256": "1e4429a03d92b69afaeec9d676a5c587855981b4e7b783fc62faa19e234880d1",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/pivot.webp",
+      "bytes": 25382,
+      "sha256": "5b94375bfec1e254f9760b32d78fd94d1dbd4ea07322661437f00f357f61ad3a",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/structure.webp",
+      "bytes": 29656,
+      "sha256": "b7cef071366928cd6b2899b29e9096f0ecf6b5ceceb82ce7759b64dbd9bc8a86",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/structure/elite.webp",
+      "bytes": 46236,
+      "sha256": "917762cf7d32cfcd32e1ca77a8c5157970d7dc4156756e972ecad997540eb15e",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/structure/heavy.webp",
+      "bytes": 49168,
+      "sha256": "1ce0b368a1748f2c8279eeed05ff3905a37a29014eeb57d5e337ffb002b82adb",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/structure/light.webp",
+      "bytes": 28474,
+      "sha256": "5cd607fa8722b88997419478d1935b2b148f31ae4c14435b2ecbf46eeea0e668",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/units/agc1f04.webp",
+      "bytes": 40718,
+      "sha256": "f621693bbbace3e0acadc1ddb4ae796141dce27488be4d1be8f3f90fe650afc5",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/vehicle.webp",
+      "bytes": 23580,
+      "sha256": "a850124e6e526b15e7f31abb18eb938591478a19eb262a4b35efa448bb352c94",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/vehicle/elite.webp",
+      "bytes": 43322,
+      "sha256": "3034966a2e61868c92d5820a5f18fa18269800e15b8aea9f2083ef7941e89f04",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/vehicle/heavy.webp",
+      "bytes": 19788,
+      "sha256": "009648c9bbe1326d5a1b6271125501d3a890579bf0f5a171b399db90dea15ee7",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/agathoi/vehicle/light.webp",
+      "bytes": 32082,
+      "sha256": "7138d47dfe03f21e15c01ff4bd780a5bfa0b43506411443a7dcf903247b247bd",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/commander/commander.webp",
+      "bytes": 33590,
+      "sha256": "1e91a1ae9b2da91eb8ff95a0dab3900188619dc4ca5555b298120d1b41d71624",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/infantry.webp",
+      "bytes": 38342,
+      "sha256": "105b37c49714c6c316c77280949c4f423e8968f0fc8edddee7bf987d80eaa7c8",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/infantry/elite.webp",
+      "bytes": 14070,
+      "sha256": "0834fd5331384b767016aed1bc52c52a35e16f3f34c9aa6095dad57c1a618419",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/infantry/heavy.webp",
+      "bytes": 14106,
+      "sha256": "9cc19a794b3508b69bfb4bcc7cdb04774ab20a81e21279746da55ae18a90e347",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/infantry/light.webp",
+      "bytes": 23784,
+      "sha256": "21042c39c4c86a2686a310e01c0e03230fa79e4400c60cf4a7f0a2fe55fe8473",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/pivot.webp",
+      "bytes": 62458,
+      "sha256": "c8db4d786489ce0f017c65141b0e6f1b8ab795d237cd80a0574c8433d4d9b1df",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/structure.webp",
+      "bytes": 52998,
+      "sha256": "65d49858de54dfc99c67c777687316d4f567c6f6a014d67f3d600226842d433c",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/structure/elite.webp",
+      "bytes": 42874,
+      "sha256": "c544d22152959361c0a71cbf2b5c8e44bc7231889cdf0737c9e4f4167245d1b1",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/structure/heavy.webp",
+      "bytes": 18030,
+      "sha256": "bc28becc503f18c90a6327af3911bd286a154acc3f2f84dca6c45e61abaaae59",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/structure/Light.webp",
+      "bytes": 12376,
+      "sha256": "75688ecf601428b6499b9ca2e557008b2e6265d035b63e8cde64c7dbc8bf9504",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/vehicle.webp",
+      "bytes": 51010,
+      "sha256": "de9ea1e0b087682172d3cf53f95b90b9b93053e88491247021c39dc8a3b49660",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/vehicle/elite.webp",
+      "bytes": 18018,
+      "sha256": "6134aae163efaa620f72c03ae2713a7253a40853aff8f0d18c0c0f683373b1be",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/vehicle/heavy.webp",
+      "bytes": 15412,
+      "sha256": "063f15a4c1854459c211439d260b7bf967d07ed6858ac7af123253c907cdeb7d",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/vehicle/light.webp",
+      "bytes": 51010,
+      "sha256": "de9ea1e0b087682172d3cf53f95b90b9b93053e88491247021c39dc8a3b49660",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/exordium/vehicle/starter.webp",
+      "bytes": 13390,
+      "sha256": "68153e82b0624c3e5cda565baa017101f4afdba5d8039e295d57d9fed50b7dad",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/commander/commander.webp",
+      "bytes": 13436,
+      "sha256": "434e52233c5482554060727d2ec155b6ce89dc255b05f93c77af9649b1f1aaa1",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/infantry.webp",
+      "bytes": 7910,
+      "sha256": "77e7f2f2852cac57a58b7600ceb0921284e23b2489341e923b853fe55e5b9fb0",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/infantry/elite.webp",
+      "bytes": 11792,
+      "sha256": "660181051668933d30c7d501cfdfba7c3e95a9002d22585b08d221fd57965520",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/infantry/heavy.webp",
+      "bytes": 9764,
+      "sha256": "c255e1ea2a0ad2465abc83cb1affbc847f59cd3e13efec23eb5a8c70021a67a2",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/infantry/light.webp",
+      "bytes": 8696,
+      "sha256": "c7a6f3ae482a20150966107b17569cc23f5a36c4d64abbb2b2dc60b4623b8c71",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/infantry/starter.webp",
+      "bytes": 7910,
+      "sha256": "77e7f2f2852cac57a58b7600ceb0921284e23b2489341e923b853fe55e5b9fb0",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/pivot.webp",
+      "bytes": 13092,
+      "sha256": "657a2cb00851257b65eb9e7bdcead44a79d66eba1b5105dd50827c22df7535bd",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/structure.webp",
+      "bytes": 10480,
+      "sha256": "8c64c7345b629fe3910caeb00a07a3f2167fc07ffd2512e7237d665d450479b4",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/structure/elite.webp",
+      "bytes": 14618,
+      "sha256": "48c8a699b79e9cad13b86b6b0a766b35ae996842999ab28220b3be837caef33d",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/structure/heavy.webp",
+      "bytes": 13548,
+      "sha256": "52f155833ff4582099ec56d439bc67bef729db44ea548510df35c5897d30bc17",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/structure/light.webp",
+      "bytes": 9166,
+      "sha256": "1aa09851e838b7e77e1c199cd1faffeb256c2643c0cd6c1fc3fd0612e241e950",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/vehicle.webp",
+      "bytes": 8846,
+      "sha256": "c8cd85fb6757f8a006bbde9c1e1338170119865e934fefd0e22cedc4af109244",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/vehicle/elite.webp",
+      "bytes": 11546,
+      "sha256": "1851bd60db8f57bcc809e4866b3cb8fe0ae34c1e2b247c78409fa41f1a748fb1",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/vehicle/heavy.webp",
+      "bytes": 11700,
+      "sha256": "65bf2111577a9403ec5ab5ae189a8eac7cbb1147327213fe25728e99691d4554",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/fabeot/vehicle/light.webp",
+      "bytes": 9414,
+      "sha256": "d962078ba13e414b2505e0d439b164e03b15c7f7712202a35d6b71f22d1088c7",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/commander/commander.webp",
+      "bytes": 21446,
+      "sha256": "bf3188d85f03c68006b2a989e23ee4ac664005f161a2fbd67eda6a5d10fea40a",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/infantry.webp",
+      "bytes": 17118,
+      "sha256": "5f9c0c2e83c5fce6e4d8c1b89f6586e079dcea40236926533c1a18c5cc6aaaaa",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/infantry/elite.webp",
+      "bytes": 15178,
+      "sha256": "ba39d2ae3be1e00e14dd1d17551208f4ceaccd9ae659c88c75be462d5af7ae6b",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/infantry/heavy.webp",
+      "bytes": 18794,
+      "sha256": "9469ada421fd0fbefcadf51d205315fe51bbfa7db56c3155f7875aabe7d051c1",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/pivot.webp",
+      "bytes": 20672,
+      "sha256": "ec9cd8456d9b80704a92fab6dd321436044c0fe52915de5c0bc5f5a3c5bebf1b",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/structure.webp",
+      "bytes": 24454,
+      "sha256": "e25816980f9ddb12595fe8433e81c8844dc8a2ec86c797512b1ea3dd2b0ca65c",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/structure/heavy.webp",
+      "bytes": 24328,
+      "sha256": "02b5852d9894ae31eb33a3aece326e7ae439aeecd6f9fdb93f8ac072e694cff9",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/structure/light.webp",
+      "bytes": 20658,
+      "sha256": "eaa3c894eddaa81551e51021ff3643fe7e2b1ca2514926c4a40ac561a0ae7ed2",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/units/lx3b02.webp",
+      "bytes": 38436,
+      "sha256": "6994b1c08894543a6e286bec8e5b2bdd5d45a3c441a9eee7a596998f4be7fefb",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/vehicle.webp",
+      "bytes": 18240,
+      "sha256": "2a2e3c0041ad1707cbce8d82622a4bc857dd6d4abd421d3c48b1a343b132337d",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/vehicle/elite.webp",
+      "bytes": 23334,
+      "sha256": "29cc982accca242c7ef613da96ab3ea9d27f722c1b5a7a953e5dd9c6c81f0161",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/vehicle/heavy.webp",
+      "bytes": 20284,
+      "sha256": "879a12f3a22d80fd1df5a7e9be8422b2206900e75cda6dcd27e5157d3cd33c2c",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/liberti/vehicle/light.webp",
+      "bytes": 16764,
+      "sha256": "e475c746eb6b419640937ba5009aee125951cb19dbe77fd61bf217f7507c15bb",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/infantry.webp",
+      "bytes": 26146,
+      "sha256": "7fcd3951c1e524fbcf54577dfcfac1e5b80b5bc2a67583c10ec6560b45bdcab6",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/infantry/elite.webp",
+      "bytes": 18272,
+      "sha256": "818bb1f59a559327a6304bee06d19935a8c082d86ada2221a7a9079652d91d2a",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/infantry/heavy.webp",
+      "bytes": 19642,
+      "sha256": "e41f8fed20bbe27263d49e8f207a09fbb0a6941befcbb34731a9522b99954195",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/infantry/light.webp",
+      "bytes": 14810,
+      "sha256": "08654e6f762926abd3bc725b3bd20d0d9f6aa538605a18ed10bc9be307d56913",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/infantry/starter.webp",
+      "bytes": 26146,
+      "sha256": "7fcd3951c1e524fbcf54577dfcfac1e5b80b5bc2a67583c10ec6560b45bdcab6",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/pivot.webp",
+      "bytes": 59258,
+      "sha256": "34f7483eef35623a2e716010dcba402409378bdd326b22f9851c2d98f14a05ad",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/structure.webp",
+      "bytes": 51876,
+      "sha256": "1bb228ca01cf238a0c581bca73d5c2c829c8b0e44d0be232a5bd2e39793df9eb",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/structure/elite.webp",
+      "bytes": 23480,
+      "sha256": "6444e02dca365c1fd3c1965f3167bce78fbaa5c9833cf90768beeed20dbe6ce3",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/structure/heavy.webp",
+      "bytes": 23652,
+      "sha256": "34f7789f35acfb25f532b0fc57a9228048684ae124ded27474fcf4516d78cb3a",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/structure/light.webp",
+      "bytes": 21078,
+      "sha256": "23e1459f32aa348b10d38b4097212b0ad2b0e7fd70af393332511c9c12357cb9",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/units/NX2B04.webp",
+      "bytes": 15058,
+      "sha256": "6d58427301df3315d8bd86385b98461035be91da63ee2e6ed9b3685baa2c7214",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/units/NXC1F05.webp",
+      "bytes": 21080,
+      "sha256": "1d3afe04d1bfadb5450121f490203265fb78a01dd4ca47aed003d50418bd4340",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/vehicle.webp",
+      "bytes": 47998,
+      "sha256": "521d5a78bcc7f34ac6e5ac915ff23abd23e67a0467594215bd38770b79e2a931",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/vehicle/elite.webp",
+      "bytes": 18452,
+      "sha256": "a832e1fc2cba7e725008dbf677f966e092d172583648fd611e492466781a86a9",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/vehicle/heavy.webp",
+      "bytes": 19682,
+      "sha256": "651caad22af269f5bf17a2fcb24d1222da160674907555d9bf02dae0ecfcc19c",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/vehicle/light.webp",
+      "bytes": 47998,
+      "sha256": "521d5a78bcc7f34ac6e5ac915ff23abd23e67a0467594215bd38770b79e2a931",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/tokens/nexus/vehicle/starter.webp",
+      "bytes": 18560,
+      "sha256": "097c8db66351cd9ed306a8196cf56a0702b93aa21ee85c67700cc7bfed0ace04",
+      "owner": "token-presentation",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/crest.webp",
+      "bytes": 5368,
+      "sha256": "fbf5d02978395bdef7a33db07c5b445a8923287962d69d81014bbe2838c7753a",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/divider.webp",
+      "bytes": 12372,
+      "sha256": "b67bbd1f2e86928c8050e860926325df28cbbbd9f0e1f606342be90ec62717ec",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/crest.webp",
+      "bytes": 3446,
+      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/divider.webp",
+      "bytes": 12074,
+      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/divider.webp",
+      "bytes": 10790,
+      "sha256": "df637d5fc740435f5869182b7cb8f8c2c163240ede40c2c8bc86a7c61b0b3664",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/crest.webp",
+      "bytes": 23994,
+      "sha256": "4d111350f3f77962ac9fa049140add214e4a05d3ca6ae64f4dcd910fc9c2a8b3",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/divider.webp",
+      "bytes": 18494,
+      "sha256": "eb3cf026283288484c144fde8bcc0d3b134e77aba7c5b32970e637221494e6a0",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/divider.webp",
+      "bytes": 8592,
+      "sha256": "fb6e5d8a285df29e7ebe714d4c3487879543f0744763b11bfdc892f262b1ac64",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    }
+  ],
+  "devOnly": [
+    {
+      "path": "assets/audio/README_F9O1_AUDIO.md",
+      "bytes": 463,
+      "sha256": "b6a1d7831933e66bed622410d0b9e3c04f897387e17ef03b4e9b9ff59ae90708",
+      "owner": "audio-feedback",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/audio/sfx/README_F9O5A_SFX.md",
+      "bytes": 511,
+      "sha256": "1c26a46379678b471ab606117d8c493dc42aca85000fa44ca5b59e473605d44b",
+      "owner": "audio-feedback",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/README_F9O4_CARD_BACKS.md",
+      "bytes": 588,
+      "sha256": "31aee06d8c699e0a16826a587736484cb0598acaa0b9b430e65021bc11eee97b",
+      "owner": "card-presentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/README.md",
+      "bytes": 1459,
+      "sha256": "36eca41a21e0d71f4b8c9d5d3f675fa682fcc79bdc1ebc9466997b627c29837c",
+      "owner": "card-presentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/maps/backgrounds/README_F9O1_MAPS.md",
+      "bytes": 364,
+      "sha256": "b7731bccab78e18625a837b93ef8352c81490be4d6b0cb48fbf17b7e8471f72a",
+      "owner": "map-presentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/maps/backgrounds/README.md",
+      "bytes": 331,
+      "sha256": "b03d092acb480fd1567a265715d73fe947abc96be2395d1bbc454772d887c547",
+      "owner": "map-presentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/README_F9O6_PORTRAITS.md",
+      "bytes": 302,
+      "sha256": "ff4333f53b62b4cca9c9883386588a39e760b765f9d764bb4ec308f5b6ad32eb",
+      "owner": "tutorial-narrative",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/README_F9O7B_NARRATOR_PORTRAITS.md",
+      "bytes": 530,
+      "sha256": "7da630efeef2089b4080ba419dcdcefc885e431aa91080d5df9c5fe07f9a9575",
+      "owner": "tutorial-narrative",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/README_ASSETS_LITE.md",
+      "bytes": 1217,
+      "sha256": "5bad35fb8367b418c631df25d70e692afe9e89e339efeca6eb43919a92400235",
+      "owner": "asset-documentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/README_ASSETS_LITE.txt",
+      "bytes": 258,
+      "sha256": "1f28e66e1d6aff3c8d30b0e5eeaa7ad95593bdf23f4efd76325ef18f28d471ac",
+      "owner": "asset-documentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/README_F9O5_TOKEN_TAXONOMY.md",
+      "bytes": 1373,
+      "sha256": "8b24948669412cd5c0bca5bddcc8b99f754689fad662fcb16c93b6e159664b12",
+      "owner": "token-presentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/README.md",
+      "bytes": 507,
+      "sha256": "0e39c6c6b70b3f547ce892fccd1093e393554a87f97dfbddc9a405cf48033ade",
+      "owner": "token-presentation",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/ui/faction_skins/agathoi_kleos/manifest.txt",
+      "bytes": 275,
+      "sha256": "a6c44460ecf80d96bc2c19a765d69d96ba2aafb52cfc2a3b6ef13d9dfda2e7f2",
+      "owner": "ui-skin",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/ui/faction_skins/exordium_imperium/manifest.txt",
+      "bytes": 275,
+      "sha256": "a6c44460ecf80d96bc2c19a765d69d96ba2aafb52cfc2a3b6ef13d9dfda2e7f2",
+      "owner": "ui-skin",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/manifest.txt",
+      "bytes": 275,
+      "sha256": "a6c44460ecf80d96bc2c19a765d69d96ba2aafb52cfc2a3b6ef13d9dfda2e7f2",
+      "owner": "ui-skin",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/ui/faction_skins/liberti_sine_vinculis/manifest.txt",
+      "bytes": 275,
+      "sha256": "a6c44460ecf80d96bc2c19a765d69d96ba2aafb52cfc2a3b6ef13d9dfda2e7f2",
+      "owner": "ui-skin",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/manifest.txt",
+      "bytes": 275,
+      "sha256": "a6c44460ecf80d96bc2c19a765d69d96ba2aafb52cfc2a3b6ef13d9dfda2e7f2",
+      "owner": "ui-skin",
+      "reason": "asset documentation or authoring manifest; excluded from Distribution staging"
+    }
+  ],
+  "legacy": [
+    {
+      "path": "assets/audio/sfx/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "audio-feedback",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/agathoi/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/agathoi/tactics/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/agathoi/units/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/exordium/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/exordium/tactics/extac03.jpg~",
+      "bytes": 554986,
+      "sha256": "dfdf56d0960d09b4e452c1d16b8da222dc4ebe36e62cffbd4d72692ea445ce56",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/exordium/units/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/fabeot/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/fabeot/tactics/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/fabeot/units/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/liberti/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/liberti/tactics/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/liberti/units/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/nexus/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/nexus/tactics/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/art/nexus/units/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/frames/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/cards/placeholders/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "card-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/agathoi/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "tutorial-narrative",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/exordium/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "tutorial-narrative",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/fabeot/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "tutorial-narrative",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/liberti/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "tutorial-narrative",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/narrative/portraits/nexus/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "tutorial-narrative",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/agathoi/infantry/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/agathoi/structure/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/agathoi/units/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/agathoi/vehicle/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/exordium/infantry/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/exordium/structure/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/exordium/units/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/exordium/vehicle/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/fabeot/infantry/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/fabeot/structure/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/fabeot/units/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/fabeot/vehicle/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/liberti/infantry/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/liberti/structure/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/liberti/units/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/liberti/vehicle/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/nexus/infantry/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/nexus/structure/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/nexus/units/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/nexus/vehicle/.keep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    },
+    {
+      "path": "assets/tokens/tokens.zip",
+      "bytes": 1728124,
+      "sha256": "99c368dff695036577ddf503ecdf79ed094b92b56d9e39922fd3efbf57b9963a",
+      "owner": "token-presentation",
+      "reason": "repository placeholder, backup, or source archive; excluded from Distribution staging"
+    }
+  ],
+  "unused": [
+    {
+      "path": "assets/cards/art/nexus/units/-0",
+      "bytes": 195915,
+      "sha256": "2779282a0a2e39d07829d56adc247b968e728810c77ea86a6357bd8ca77ee385",
+      "owner": "card-presentation",
+      "reason": "unreferenced malformed artifact; excluded from Distribution staging"
+    }
+  ]
+}

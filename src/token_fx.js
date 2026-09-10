@@ -66,7 +66,11 @@ function tokenFxSyncControlsF9O5a() {
   if (typeof document === "undefined") return;
   const mode = TOKEN_FX_STATE_F9O5A.mode;
   if (document.documentElement) document.documentElement.dataset.tokenFxMode = tokenFxEffectiveModeF9O5a();
-  const labels = { on:"Miniature FX ON", reduced:"Miniature FX RIDOTTE", off:"Miniature FX OFF" };
+  const labels = {
+    on:typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.tokenFxOn", {}, "Miniature FX ON") : "Miniature FX ON",
+    reduced:typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.tokenFxReduced", {}, "Miniature FX RIDOTTE") : "Miniature FX RIDOTTE",
+    off:typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.tokenFxOff", {}, "Miniature FX OFF") : "Miniature FX OFF"
+  };
   document.querySelectorAll("[data-arena-token-fx-toggle]").forEach(button => {
     button.textContent = labels[mode];
     button.setAttribute("aria-pressed", mode === "on" ? "true" : "false");

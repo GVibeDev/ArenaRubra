@@ -86,6 +86,7 @@ function setAppScreen(screen) {
     refreshMainMenuLocalDataSummary();
     if (typeof controlCenterRefresh === "function") controlCenterRefresh();
   }
+  if (typeof ArenaI18n !== "undefined") ArenaI18n.apply(document);
 }
 
 function readControlValue(id, fallback = "") {
@@ -114,6 +115,11 @@ function appEscapeHtml(value) {
   }[char]));
 }
 
+function appI18n(key, fallback, params = {}) {
+  if (typeof arenaI18nText === "function") return arenaI18nText(key, fallback, params);
+  return Object.entries(params).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), String(fallback || ""));
+}
+
 function appShortDateLabel(value) {
   const text = String(value || "");
   if (!text) return "";
@@ -122,21 +128,23 @@ function appShortDateLabel(value) {
 }
 
 function setupDeckOptionLabel(entry) {
-  if (!entry) return "Nessun deck salvato";
+  if (!entry) return appI18n("setup.noSavedDeck", "Nessun deck salvato");
   const payload = entry.payload || {};
-  const deckName = entry.deckName || payload.deckName || payload.name || entry.key || "Deck salvato";
+  const deckName = entry.deckName || payload.deckName || payload.name || entry.key || appI18n("setup.savedDeck", "Deck salvato");
   const count = Array.isArray(payload.deckIds) ? payload.deckIds.length : null;
-  const countLabel = payload.supplementalMissionId ? `${count == null ? "?" : count} + Missione` : `${count == null ? "?" : count} carte`;
+  const countLabel = payload.supplementalMissionId
+    ? appI18n("setup.cardsPlusMission", "{count} + Missione", { count:count == null ? "?" : count })
+    : appI18n("setup.cardCount", "{count} carte", { count:count == null ? "?" : count });
   const mode = entry.containsCustomCards ? "CUSTOM" : (entry.builtIn || payload.builtIn ? "BUILT-IN" : "OFFICIAL");
   const saved = entry.builtIn || payload.builtIn ? "" : appShortDateLabel(entry.savedAt || payload.savedAt || payload.updatedAt || payload.importedAt || "");
-  const commander = payload.commanderName || entry.commanderId || "Comandante";
+  const commander = payload.commanderName || entry.commanderId || appI18n("setup.commander", "Comandante");
   return `${deckName} · ${countLabel} · ${mode} · ${commander}${saved ? ` · ${saved}` : ""}`;
 }
 
 function setupUpdateDeckBadge(side, text, tone = "starter") {
   const badge = typeof document !== "undefined" ? document.getElementById(`setupP${side}DeckBadge`) : null;
   if (!badge) return;
-  badge.textContent = text || "Deck Starter";
+  badge.textContent = text || appI18n("setup.starterDeck", "Deck Starter");
   badge.classList.toggle("custom", tone === "custom");
   badge.classList.toggle("official", tone === "official");
   badge.classList.toggle("bad", tone === "bad");
@@ -149,12 +157,18 @@ function refreshMainMenuResumeState() {
   if (!resumeBtn) return;
   const hasGame = typeof state !== "undefined" && !!state;
   resumeBtn.disabled = !hasGame;
-  resumeBtn.title = hasGame ? "Riprendi la sessione runtime corrente" : "Nessuna sessione attiva";
+  resumeBtn.title = hasGame
+    ? appI18n("menu.play.resumeTitleLong", "Riprendi la sessione runtime corrente")
+    : appI18n("menu.play.resumeUnavailable", "Nessuna sessione attiva");
   const title = resumeBtn.querySelector("strong");
   const hint = resumeBtn.querySelector("small");
-  if (title) title.textContent = "Riprendi";
-  if (hint) hint.textContent = hasGame ? "Sessione runtime corrente" : "Nessuna sessione attiva";
-  if (!title && !hint) resumeBtn.textContent = hasGame ? "Riprendi partita" : "Riprendi partita non disponibile";
+  if (title) title.textContent = appI18n("menu.play.resumeTitle", "Riprendi");
+  if (hint) hint.textContent = hasGame
+    ? appI18n("menu.play.resumeHint", "Sessione runtime corrente")
+    : appI18n("menu.play.resumeUnavailable", "Nessuna sessione attiva");
+  if (!title && !hint) resumeBtn.textContent = hasGame
+    ? appI18n("menu.play.resumeGame", "Riprendi partita")
+    : appI18n("menu.play.resumeGameUnavailable", "Riprendi partita non disponibile");
 }
 
 function refreshMainMenuLocalDataSummary() {
@@ -165,16 +179,18 @@ function refreshMainMenuLocalDataSummary() {
     ? arenaStorageBackendDiagnostics()
     : { backendName: "localStorage", initialized: true, pendingWrites: 0 };
   const backendLabels = {
-    opfs: "directory privata OPFS",
-    indexedDB: "archivio IndexedDB",
-    localStorage: "compatibilità localStorage",
-    memory: "memoria temporanea",
-    uninitialized: "inizializzazione"
+    opfs: appI18n("menu.storage.backendOpfs", "directory privata OPFS"),
+    indexedDB: appI18n("menu.storage.backendIndexedDb", "archivio IndexedDB"),
+    localStorage: appI18n("menu.storage.backendLocalStorage", "compatibilità localStorage"),
+    memory: appI18n("menu.storage.backendMemory", "memoria temporanea"),
+    uninitialized: appI18n("menu.storage.backendUninitialized", "inizializzazione")
   };
-  const backendLabel = backendLabels[diagnostics.backendName] || diagnostics.backendName || "archivio locale";
+  const backendLabel = backendLabels[diagnostics.backendName] || diagnostics.backendName || appI18n("menu.storage.backendFallback", "archivio locale");
   if (status) {
     const pending = Number(diagnostics.pendingWrites) || 0;
-    status.textContent = `Archivio locale: ${backendLabel}${pending ? ` · ${pending} scrittura/e` : ""}`;
+    status.textContent = pending
+      ? appI18n("menu.storage.labelPending", `Archivio locale: ${backendLabel} · ${pending} scrittura/e`, { backend: backendLabel, count: pending })
+      : appI18n("menu.storage.label", `Archivio locale: ${backendLabel}`, { backend: backendLabel });
     status.dataset.storageTone = diagnostics.backendName === "memory" || diagnostics.error ? "warn" : "good";
   }
   if (summary) {
@@ -184,7 +200,11 @@ function refreshMainMenuLocalDataSummary() {
     const maps = typeof getCustomMapDefinitions === "function" ? getCustomMapDefinitions().length : 0;
     const stats = typeof arenaStorageReadMatchupStats === "function" ? arenaStorageReadMatchupStats().length : 0;
     const history = typeof arenaStorageReadMatchHistory === "function" ? arenaStorageReadMatchHistory().length : 0;
-    summary.textContent = `${cards} carte custom · ${decks} deck custom · ${maps} mappe custom · ${stats} record matchup · ${history} partite nello storico`;
+    summary.textContent = appI18n(
+      "menu.storage.summary",
+      `${cards} carte custom · ${decks} deck custom · ${maps} mappe custom · ${stats} record matchup · ${history} partite nello storico`,
+      { cards, decks, maps, stats, history }
+    );
   }
   if (typeof controlCenterRefreshMetrics === "function") controlCenterRefreshMetrics();
 }
@@ -247,7 +267,13 @@ function refreshSetupMapSelector(preferredId = "") {
   const previous = preferredId || select.value || "map1_starter";
   select.innerHTML = definitions.map(definition => {
     const custom = definition.official ? "" : " · CUSTOM";
-    return `<option value="${appEscapeHtml(definition.id)}">${appEscapeHtml(definition.name)} · ${definition.playerCount}G · ${definition.geometry.cells.length} celle · movimento ×${definition.movementMultiplier}${custom}</option>`;
+    const localizedName = typeof arenaContentText === "function" ? arenaContentText("maps", definition.id, "name", definition.name) : definition.name;
+    const label = appI18n(
+      "setup.mapOption",
+      `${localizedName} · ${definition.playerCount}G · ${definition.geometry.cells.length} celle · movimento ×${definition.movementMultiplier}${custom}`,
+      { name: localizedName, players: definition.playerCount, cells: definition.geometry.cells.length, movement: definition.movementMultiplier, custom }
+    );
+    return `<option value="${appEscapeHtml(definition.id)}">${appEscapeHtml(label)}</option>`;
   }).join("");
   select.value = definitions.some(definition => definition.id === previous) ? previous : "map1_starter";
   refreshSetupForSelectedMap();
@@ -264,18 +290,25 @@ function refreshSetupForSelectedMap() {
   const initiative = document.getElementById("setupInitiativeMode");
   if (initiative) {
     const previous = initiative.value || "random";
-    initiative.innerHTML = `<option value="random">Casuale</option>${Array.from({ length: count }, (_, index) => `<option value="${index + 1}">Giocatore ${index + 1}</option>`).join("")}`;
+    initiative.innerHTML = `<option value="random">${appEscapeHtml(appI18n("setup.random", "Casuale"))}</option>${Array.from({ length: count }, (_, index) => `<option value="${index + 1}">${appEscapeHtml(appI18n("setup.player", `Giocatore ${index + 1}`, { number: index + 1 }))}</option>`).join("")}`;
     initiative.value = previous === "random" || Number(previous) <= count ? previous : "random";
   }
   const heading = document.getElementById("setupMapHeading");
-  if (heading) heading.textContent = `Setup ${definition.name}`;
+  const localizedMapName = typeof arenaContentText === "function" ? arenaContentText("maps", definition.id, "name", definition.name) : definition.name;
+  if (heading) heading.textContent = appI18n("setup.heading", `Setup ${localizedMapName}`, { map: localizedMapName });
   const meta = document.getElementById("setupMapMeta");
   if (meta) {
     const usage = typeof mapTerrainUsage === "function" ? mapTerrainUsage(definition) : {};
     const special = Object.entries(usage).filter(([key]) => key !== "free").map(([key, value]) => `${key} ${value}`).join(" · ");
     const lab = typeof mapEditorState !== "undefined" && mapEditorState && mapEditorState.labMapId === definition.id ? "MATCH LAB · " : "";
     const central = typeof getCentralStrategicPoint === "function" ? getCentralStrategicPoint(definition) : null;
-    meta.textContent = `${lab}${definition.playerCount} giocatori FFA · ${definition.geometry.cells.length} celle · ${definition.strategicPoints.length} PS · centro ${central ? `[${central.coord.join(",")}]` : "non valido"} · movimento ×${definition.movementMultiplier}${special ? ` · ${special}` : " · terreno standard"}`;
+    const center = central ? `[${central.coord.join(",")}]` : appI18n("setup.invalidCenter", "non valido");
+    const terrain = special ? ` · ${special}` : appI18n("setup.standardTerrain", " · terreno standard");
+    meta.textContent = appI18n(
+      "setup.mapMeta",
+      `${lab}${definition.playerCount} giocatori FFA · ${definition.geometry.cells.length} celle · ${definition.strategicPoints.length} PS · centro ${center} · movimento ×${definition.movementMultiplier}${terrain}`,
+      { lab, players: definition.playerCount, cells: definition.geometry.cells.length, points: definition.strategicPoints.length, center, movement: definition.movementMultiplier, terrain }
+    );
   }
   refreshSetupDeckSelectors();
 }
@@ -301,7 +334,7 @@ function setupApplySelectedDeckIdentity(side, entries = null) {
   if (commanderSelect) {
     commanderSelect.disabled = mode === "custom";
     commanderSelect.title = mode === "custom"
-      ? "Nel modo Deck salvato il comandante è determinato dal deck selezionato."
+      ? appI18n("setup.savedDeckCommanderTitle", "Nel modo Deck salvato il comandante è determinato dal deck selezionato.")
       : "";
   }
   if (mode !== "custom") return null;
@@ -327,7 +360,7 @@ function setupPopulateSavedDeckSelectForSide(side, entries = null) {
         const label = setupDeckOptionLabel(entry);
         return `<option value="${appEscapeHtml(entry.key)}">${appEscapeHtml(label)}</option>`;
       }).join("")
-    : `<option value="">Nessun deck salvato</option>`;
+    : `<option value="">${appEscapeHtml(appI18n("setup.noSavedDeck", "Nessun deck salvato"))}</option>`;
   [select, legacySelect].forEach(el => {
     if (!el) return;
     el.innerHTML = optionHtml;
@@ -365,8 +398,8 @@ function refreshSetupDeckSelectorForSide(side) {
   const deckName = (info.check && info.check.deckName) || (payload && (payload.deckName || payload.name)) || "";
   const isCustomLab = Boolean(info.check && (info.check.runtimeMode === "custom_lab" || info.check.containsCustomCards));
   if (customOption) customOption.textContent = info.savedDeckEntries.length
-    ? `Deck integrato / salvato / Custom Lab (${info.savedDeckEntries.length})`
-    : "Deck integrato/salvato non disponibile";
+    ? appI18n("setup.savedDeckAvailable", `Deck integrato / salvato / Custom Lab (${info.savedDeckEntries.length})`, { count: info.savedDeckEntries.length })
+    : appI18n("setup.savedDeckUnavailable", "Deck integrato/salvato non disponibile");
   infoEl.classList.toggle("good", info.mode === "custom" && info.check && info.check.ok);
   infoEl.classList.toggle("bad", info.mode === "custom" && (!info.check || !info.check.ok));
   if (info.mode === "custom") {
@@ -374,17 +407,25 @@ function refreshSetupDeckSelectorForSide(side) {
       const shortSaved = appShortDateLabel(savedAt);
       const builtin = Boolean(info.check.builtIn || payload.builtIn);
       setupUpdateDeckBadge(side, isCustomLab ? `CUSTOM · ${payload.customCount || 0}` : (builtin ? "BUILT-IN" : "OFFICIAL"), isCustomLab ? "custom" : "official");
-      const countLabel = info.check.supplementalMissionId ? `${info.check.countedDeckSize}/30 + Missione supplementare` : `${info.check.deckIds.length} carte`;
-      infoEl.textContent = `${isCustomLab ? "Custom Match Test Lab" : (builtin ? "Deck integrato" : "Deck personalizzato ufficiale")}: “${deckName || "deck"}” · ${info.faction} · ${payload.commanderName || info.commanderId} · ${countLabel}${shortSaved && !builtin ? ` · ${shortSaved}` : ""}.`;
+      const countLabel = info.check.supplementalMissionId
+        ? appI18n("setup.supplementalMissionCount", `${info.check.countedDeckSize}/30 + Missione supplementare`, { count: info.check.countedDeckSize })
+        : appI18n("setup.cardCount", `${info.check.deckIds.length} carte`, { count: info.check.deckIds.length });
+      const deckType = isCustomLab
+        ? appI18n("setup.customMatchLab", "Custom Match Test Lab")
+        : (builtin ? appI18n("setup.integratedDeck", "Deck integrato") : appI18n("setup.officialCustomDeck", "Deck personalizzato ufficiale"));
+      infoEl.textContent = `${deckType}: “${deckName || "deck"}” · ${info.faction} · ${payload.commanderName || info.commanderId} · ${countLabel}${shortSaved && !builtin ? ` · ${shortSaved}` : ""}.`;
     } else {
-      setupUpdateDeckBadge(side, "Deck non valido", "bad");
-      infoEl.textContent = `Deck personalizzato non disponibile/valido: ${((info.check && info.check.issues) || ["nessun deck salvato selezionato"]).join("; ")}.`;
+      setupUpdateDeckBadge(side, appI18n("setup.invalidDeck", "Deck non valido"), "bad");
+      const issues = ((info.check && info.check.issues) || [appI18n("setup.noSelectedDeck", "nessun deck salvato selezionato")]).join("; ");
+      infoEl.textContent = appI18n("setup.invalidDeckInfo", `Deck personalizzato non disponibile/valido: ${issues}.`, { issues });
     }
   } else {
-    setupUpdateDeckBadge(side, info.savedDeckEntries.length ? `${info.savedDeckEntries.length} salvati` : "Deck Starter", "starter");
+    setupUpdateDeckBadge(side, info.savedDeckEntries.length
+      ? appI18n("setup.savedCount", `${info.savedDeckEntries.length} salvati`, { count: info.savedDeckEntries.length })
+      : appI18n("setup.starterDeck", "Deck Starter"), "starter");
     infoEl.textContent = info.savedDeckEntries.length
-      ? `Deck automatico Starter. Deck salvati disponibili per questa fazione/comandante: ${info.savedDeckEntries.length}. Se vuoi usarli, cambia Modalità deck.`
-      : `Deck automatico Starter.`;
+      ? appI18n("setup.automaticDeckAvailable", `Deck automatico Starter. Deck salvati disponibili per questa fazione/comandante: ${info.savedDeckEntries.length}. Se vuoi usarli, cambia Modalità deck.`, { count: info.savedDeckEntries.length })
+      : appI18n("setup.automaticDeckInfo", "Deck automatico Starter.");
   }
 }
 
@@ -401,15 +442,15 @@ function validateSetupDeckSelectionsBeforeStart() {
     const info = setupDeckInfoForSide(side);
     if (info.mode !== "custom") return;
     if (!info.check || !info.check.ok) {
-      issues.push(`G${side}: ${((info.check && info.check.issues) || ["deck personalizzato non valido"]).join("; ")}`);
+      issues.push(`G${side}: ${((info.check && info.check.issues) || [appI18n("setup.customDeckInvalid", "deck personalizzato non valido")]).join("; ")}`);
     }
   });
   const errorEl = document.getElementById("setupDeckError");
   if (errorEl) {
     errorEl.classList.toggle("bad", issues.length > 0);
-    errorEl.textContent = issues.length ? `Impossibile avviare: ${issues.join(" | ")}` : "";
+    errorEl.textContent = issues.length ? appI18n("setup.unableToStart", "Impossibile avviare: {issues}", { issues:issues.join(" | ") }) : "";
   }
-  if (issues.length && typeof alert === "function") alert(`Deck personalizzato non valido.\n${issues.join("\n")}`);
+  if (issues.length && typeof alert === "function") alert(appI18n("setup.customDeckAlert", "Deck personalizzato non valido.\n{issues}", { issues:issues.join("\n") }));
   return { ok: issues.length === 0, issues };
 }
 
@@ -496,7 +537,7 @@ function startGameFromSetupScreen() {
       const errorEl = document.getElementById("setupDeckError");
       if (errorEl) {
         errorEl.classList.add("bad");
-        errorEl.textContent = `Avvio partita fallito: ${err && err.message ? err.message : err}`;
+        errorEl.textContent = appI18n("setup.gameStartFailed", "Avvio partita fallito: {error}", { error:err && err.message ? err.message : err });
       }
     }
   }
@@ -557,6 +598,32 @@ function openMainMenu() {
 
 function initializeArenaAppShell() {
   if (typeof document === "undefined") return;
+  if (typeof window !== "undefined" && !window.__arenaAppI18nBound) {
+    window.__arenaAppI18nBound = true;
+    window.addEventListener("arena:languagechange", () => {
+      refreshMainMenuResumeState();
+      refreshMainMenuLocalDataSummary();
+      refreshSetupForSelectedMap();
+      if (typeof arenaProductProfileApplyDomF9W2a === "function") arenaProductProfileApplyDomF9W2a();
+      if (currentAppScreen() === ARENA_APP_SCREENS.GAME) {
+        if (typeof renderAll === "function" && typeof state !== "undefined" && state) renderAll();
+        else if (typeof renderGameHud === "function") renderGameHud();
+      }
+      if (typeof tutorialRuntimeRefreshLanguage === "function") tutorialRuntimeRefreshLanguage();
+      if (currentAppScreen() === ARENA_APP_SCREENS.TUTORIAL && typeof tutorialRuntimeRenderMenu === "function") tutorialRuntimeRenderMenu();
+      if (currentAppScreen() === ARENA_APP_SCREENS.DECK_BUILDER && typeof renderDeckBuilderScreen === "function") renderDeckBuilderScreen();
+      if (currentAppScreen() === ARENA_APP_SCREENS.CARD_POOL && typeof renderCardPoolScreen === "function") renderCardPoolScreen();
+      if (typeof controlCenterStateF9U3 !== "undefined" && controlCenterStateF9U3.activePanel && typeof controlCenterRenderActivePanel === "function") {
+        controlCenterSetText("controlCenterPanelTitle", controlCenterToolI18n(`panels.${controlCenterStateF9U3.activePanel}`, CONTROL_CENTER_PANEL_LABELS[controlCenterStateF9U3.activePanel] || ""));
+        controlCenterRenderActivePanel();
+      }
+      if (typeof arenaAudioSyncControls === "function") arenaAudioSyncControls();
+      if (typeof arenaSfxSyncControlsF9O5a === "function") arenaSfxSyncControlsF9O5a();
+      if (typeof cardMotionSyncControls === "function") cardMotionSyncControls();
+      if (typeof tokenFxSyncControlsF9O5a === "function") tokenFxSyncControlsF9O5a();
+      if (typeof ArenaI18n !== "undefined") ArenaI18n.apply(document);
+    });
+  }
   if (typeof applyBuildInfoToDom === "function") applyBuildInfoToDom();
   initializeMainMenuDeveloperTools();
   refreshMainMenuLocalDataSummary();

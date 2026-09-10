@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -11,11 +12,7 @@ page_errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     page = browser.new_page(viewport={"width": 920, "height": 500}, has_touch=True, is_mobile=True)
     page.on("pageerror", lambda exc: page_errors.append(str(exc)))
     page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
@@ -119,7 +116,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert setup["build"] in {"C2-STABLE-1-F9O4f-APK-M4c","C2-STABLE-1-F9O4e-APK-M4c","C2-STABLE-1-F9O5-APK-M4c","C2-STABLE-1-F9O5a-APK-M4c", "C2-STABLE-1-F9O5b-APK-M4c", "C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c",'C2-STABLE-1-F9S1b1-APK-M4c','C2-STABLE-1-F9T0-APK-M4c','C2-STABLE-1-F9T1-APK-M4c'}, setup
+assert_valid_build_version(setup["build"])
 assert initial["side"] == "1" and initial["canvases"] == 5 and initial["ready"] == 5, initial
 assert initial["hidden"] >= 1 and initial["hiddenCanvases"] == 0, initial
 assert initial["cache"]["cached"] >= 10, initial

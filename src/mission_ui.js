@@ -28,6 +28,12 @@ const MISSION_UI_RENDER_EVENT_TYPES = new Set([
   "CARD_UNBLOCKED"
 ]);
 
+function missionUiText(key, fallback, params={}) {
+  return typeof arenaI18nText === "function"
+    ? arenaI18nText(`missionUi.${key}`, fallback, params)
+    : fallback;
+}
+
 function missionUiInvalidate(reason="manual") {
   MISSION_UI_STATE.renderRevision = Number(MISSION_UI_STATE.renderRevision || 0) + 1;
   MISSION_UI_STATE.lastInvalidationReason = String(reason || "manual");
@@ -188,41 +194,41 @@ function missionUiCanViewDetails(viewerSide, ownerSide) {
 }
 
 function missionUiBlockedReason(side) {
-  if (!state) return "Partita non inizializzata";
+  if (!state) return missionUiText("reasons.notStarted", "Partita non inizializzata");
   const card = missionUiCardForSide(side);
-  if (!card) return "Missione assente";
-  if (state.winner) return "Partita conclusa";
-  if (typeof missionIsRecoveryLocked === "function" && missionIsRecoveryLocked(side)) return "Missione recuperata: sarà utilizzabile dal prossimo turno personale";
-  if (typeof playerHandLocked === "function" && playerHandLocked(side)) return "Mano bloccata";
-  if (state.handLocked && Number(state.handLocked[side] || 0) > 0) return "Mano bloccata";
+  if (!card) return missionUiText("reasons.absent", "Missione assente");
+  if (state.winner) return missionUiText("reasons.ended", "Partita conclusa");
+  if (typeof missionIsRecoveryLocked === "function" && missionIsRecoveryLocked(side)) return missionUiText("reasons.recoveryLocked", "Missione recuperata: sarà utilizzabile dal prossimo turno personale");
+  if (typeof playerHandLocked === "function" && playerHandLocked(side)) return missionUiText("reasons.handLocked", "Mano bloccata");
+  if (state.handLocked && Number(state.handLocked[side] || 0) > 0) return missionUiText("reasons.handLocked", "Mano bloccata");
   if (typeof handCardBlocked === "function" && handCardBlocked(card)) {
-    return typeof handCardBlockReason === "function" ? handCardBlockReason(card) : "Carta bloccata";
+    return typeof handCardBlockReason === "function" ? handCardBlockReason(card) : missionUiText("reasons.cardBlocked", "Carta bloccata");
   }
   return "";
 }
 
 function missionUiStatus(side) {
   const runtime = missionUiRuntime(side);
-  if (!runtime || !runtime.active) return { key:"absent", label:"Nessuna Missione", detail:"Il deck non contiene una Missione." };
+  if (!runtime || !runtime.active) return { key:"absent", label:missionUiText("status.absent", "Nessuna Missione"), detail:missionUiText("status.absentDetail", "Il deck non contiene una Missione.") };
   if (runtime.played) {
-    if (runtime.rewardPending) return { key:"reward_pending", label:"SCELTA RICOMPENSA", detail:"La Missione è stata giocata: completa la scelta richiesta dalla ricompensa." };
-    return { key:"resolved", label:"RISOLTA", detail:"Missione giocata e ricompensa risolta in questo ciclo." };
+    if (runtime.rewardPending) return { key:"reward_pending", label:missionUiText("status.rewardPending", "SCELTA RICOMPENSA"), detail:missionUiText("status.rewardPendingDetail", "La Missione è stata giocata: completa la scelta richiesta dalla ricompensa.") };
+    return { key:"resolved", label:missionUiText("status.resolved", "RISOLTA"), detail:missionUiText("status.resolvedDetail", "Missione giocata e ricompensa risolta in questo ciclo.") };
   }
   const blocked = missionUiBlockedReason(side);
-  if (blocked) return { key:"blocked", label:"BLOCCATA", detail:blocked };
+  if (blocked) return { key:"blocked", label:missionUiText("status.blocked", "BLOCCATA"), detail:blocked };
   if (runtime.ready) {
     const multiplier = runtime.missionClass === "desperate" ? ` · ×${Math.max(1, runtime.readyCount || 1)}` : "";
-    return { key:"ready", label:`PRONTA${multiplier}`, detail:"Le condizioni necessarie risultano soddisfatte." };
+    return { key:"ready", label:`${missionUiText("status.ready", "PRONTA")}${multiplier}`, detail:missionUiText("status.readyDetail", "Le condizioni necessarie risultano soddisfatte.") };
   }
-  return { key:"tracking", label:"IN CORSO", detail:"Il tracker sta verificando gli obiettivi." };
+  return { key:"tracking", label:missionUiText("status.tracking", "IN CORSO"), detail:missionUiText("status.trackingDetail", "Il tracker sta verificando gli obiettivi.") };
 }
 
 function missionUiPlayCheck(side, card=null, options={}) {
   const runtime = missionUiRuntime(side);
-  if (!runtime || !runtime.active) return { ok:false, reason:"Missione assente" };
+  if (!runtime || !runtime.active) return { ok:false, reason:missionUiText("reasons.absent", "Missione assente") };
   return runtime.missionClass === "desperate"
-    ? (typeof missionCanPlayDesperate === "function" ? missionCanPlayDesperate(side, card, options) : { ok:false, reason:"Runtime Missione disperata non disponibile" })
-    : (typeof missionCanPlayOrdinary === "function" ? missionCanPlayOrdinary(side, card, options) : { ok:false, reason:"Runtime Missione ordinaria non disponibile" });
+    ? (typeof missionCanPlayDesperate === "function" ? missionCanPlayDesperate(side, card, options) : { ok:false, reason:missionUiText("reasons.desperateRuntimeUnavailable", "Runtime Missione disperata non disponibile") })
+    : (typeof missionCanPlayOrdinary === "function" ? missionCanPlayOrdinary(side, card, options) : { ok:false, reason:missionUiText("reasons.ordinaryRuntimeUnavailable", "Runtime Missione ordinaria non disponibile") });
 }
 
 function missionUiActivateCard(side, options={}) {
@@ -244,8 +250,9 @@ function missionUiActivateCard(side, options={}) {
 
 function missionUiCompactPanelHtml(side) {
   const runtime = missionUiRuntime(side);
-  if (!runtime || !runtime.active) return `<section class="mapMissionCompact mapMissionCompact-absent"><div class="mapMissionCompactHeader"><strong>Missione</strong><span>FACOLTATIVA · assente</span></div></section>`;
+  if (!runtime || !runtime.active) return `<section class="mapMissionCompact mapMissionCompact-absent"><div class="mapMissionCompactHeader"><strong>${missionUiText("mission", "Missione")}</strong><span>${missionUiText("optionalAbsent", "FACOLTATIVA · assente")}</span></div></section>`;
   const definition = missionUiDefinition(side);
+  const missionName = definition && definition.name ? definition.name : runtime.missionName;
   const items = definition && typeof missionObjectivesFor === "function" ? missionObjectivesFor(definition) : [];
   const status = missionUiStatus(side);
   const check = missionUiPlayCheck(side, null, { evaluate:false, source:"ui_render_compact" });
@@ -256,41 +263,41 @@ function missionUiCompactPanelHtml(side) {
     const active = Boolean(entry && entry.satisfied);
     const icon = done ? "✓" : (active ? "●" : "○");
     const progress = missionUiProgressText(item, entry);
-    return `<div class="mapMissionCompactRow${done ? " completed" : active ? " active" : ""}" title="${missionUiEscape(item.text || "")}"><span class="mapMissionCompactIcon">${icon}</span><span class="mapMissionCompactText">${index + 1}. ${missionUiEscape(item.text || `Obiettivo ${index + 1}`)}</span><span class="mapMissionCompactValue">${missionUiEscape(progress)}</span></div>`;
+    return `<div class="mapMissionCompactRow${done ? " completed" : active ? " active" : ""}" title="${missionUiEscape(item.text || "")}"><span class="mapMissionCompactIcon">${icon}</span><span class="mapMissionCompactText">${index + 1}. ${missionUiEscape(item.text || missionUiText("objective", "Obiettivo {number}", { number:index + 1 }))}</span><span class="mapMissionCompactValue">${missionUiEscape(progress)}</span></div>`;
   }).join("");
   let controls = `<span class="mapMissionCompactReason">${missionUiEscape(check.reason || status.detail || "")}</span>`;
   if (missionUiOwnerHasPrivateView(side) && !runtime.played) {
     if (pending) {
-      controls = `<div class="mapMissionCompactConfirm"><span>Giocare “${missionUiEscape(runtime.missionName)}”?</span><button class="ghost" type="button" onclick="missionUiCancelPlay()">Annulla</button><button type="button" onclick="missionUiConfirmPlay(${side})">Conferma</button></div>`;
+      controls = `<div class="mapMissionCompactConfirm"><span>${missionUiText("playQuestion", "Giocare “{mission}”?", { mission:missionUiEscape(missionName) })}</span><button class="ghost" type="button" onclick="missionUiCancelPlay()">${missionUiText("cancel", "Annulla")}</button><button type="button" onclick="missionUiConfirmPlay(${side})">${missionUiText("confirm", "Conferma")}</button></div>`;
     } else {
       const multiplier = runtime.missionClass === "desperate" ? ` ×${Math.max(1, runtime.readyCount || 1)}` : "";
-      controls = `<div class="mapMissionCompactActions"><span class="mapMissionCompactReason">${missionUiEscape(check.reason || status.detail || "")}</span><button type="button" onclick="missionUiRequestPlay(${side})"${check.ok ? "" : " disabled"}>Gioca${multiplier}</button></div>`;
+      controls = `<div class="mapMissionCompactActions"><span class="mapMissionCompactReason">${missionUiEscape(check.reason || status.detail || "")}</span><button type="button" onclick="missionUiRequestPlay(${side})"${check.ok ? "" : " disabled"}>${missionUiText("play", "Gioca")}${multiplier}</button></div>`;
     }
   }
   return `<section class="mapMissionCompact mapMissionCompact-${status.key}" data-mission-side="${side}">
-    <div class="mapMissionCompactHeader"><strong>${missionUiEscape(runtime.missionName || "Missione")}</strong><span>${missionUiEscape(status.label)}</span></div>
+    <div class="mapMissionCompactHeader"><strong>${missionUiEscape(missionName || missionUiText("mission", "Missione"))}</strong><span>${missionUiEscape(status.label)}</span></div>
     <div class="mapMissionCompactRows">${rows}</div>
     <div class="mapMissionCompactFooter">${controls}</div>
   </section>`;
 }
 
 function missionUiEntryState(entry) {
-  if (!entry) return { key:"missing", label:"NON VALUTATO" };
-  if (entry.completed) return { key:"completed", label:"COMPLETATO" };
-  if (entry.satisfied) return { key:"satisfied", label:"ATTIVO" };
-  return { key:"incomplete", label:"INCOMPLETO" };
+  if (!entry) return { key:"missing", label:missionUiText("entry.notEvaluated", "NON VALUTATO") };
+  if (entry.completed) return { key:"completed", label:missionUiText("entry.completed", "COMPLETATO") };
+  if (entry.satisfied) return { key:"satisfied", label:missionUiText("entry.active", "ATTIVO") };
+  return { key:"incomplete", label:missionUiText("entry.incomplete", "INCOMPLETO") };
 }
 
 function missionUiValue(value) {
-  if (typeof value === "boolean") return value ? "Sì" : "No";
+  if (typeof value === "boolean") return value ? missionUiText("yes", "Sì") : missionUiText("no", "No");
   if (value == null || value === "") return "—";
   return String(value);
 }
 
 function missionUiProgressText(item, entry) {
-  if (!entry) return "Non valutato";
+  if (!entry) return missionUiText("notEvaluated", "Non valutato");
   if (item && item.consecutive) {
-    return `${missionUiValue(entry.current)} · serie ${Number(entry.streak || 0)}/${item.consecutive}`;
+    return missionUiText("streak", "{value} · serie {current}/{target}", { value:missionUiValue(entry.current), current:Number(entry.streak || 0), target:item.consecutive });
   }
   return `${missionUiValue(entry.current)} / ${missionUiValue(entry.target)}`;
 }
@@ -302,11 +309,11 @@ function missionUiObjectiveHtml(item, entry, index) {
       <div class="missionObjectiveIndex">${index + 1}</div>
       <div class="missionObjectiveBody">
         <div class="missionObjectiveHeader">
-          <strong>${missionUiEscape(item && item.text ? item.text : `Obiettivo ${index + 1}`)}</strong>
+          <strong>${missionUiEscape(item && item.text ? item.text : missionUiText("objective", "Obiettivo {number}", { number:index + 1 }))}</strong>
           <span class="missionObjectiveState">${missionUiEscape(stateInfo.label)}</span>
         </div>
         <div class="missionObjectiveProgress">${missionUiEscape(missionUiProgressText(item, entry))}</div>
-        <div class="missionObjectiveDetail">${missionUiEscape(entry && entry.detail ? entry.detail : "Non valutato")}</div>
+        <div class="missionObjectiveDetail">${missionUiEscape(entry && entry.detail ? entry.detail : missionUiText("notEvaluated", "Non valutato"))}</div>
       </div>
     </div>`;
 }
@@ -314,14 +321,14 @@ function missionUiObjectiveHtml(item, entry, index) {
 function missionUiActionHtml(side, viewerSide) {
   const runtime = missionUiRuntime(side);
   if (!runtime || !runtime.active) return "";
-  if (runtime.played) return `<div class="missionUiHint">${runtime.rewardPending ? "Completa la scelta della ricompensa." : "Missione risolta e carta negli scarti."}</div>`;
+  if (runtime.played) return `<div class="missionUiHint">${runtime.rewardPending ? missionUiText("completeRewardChoice", "Completa la scelta della ricompensa.") : missionUiText("resolvedDiscarded", "Missione risolta e carta negli scarti.")}</div>`;
   const check = missionUiPlayCheck(side, null, { evaluate:false, source:"ui_render_detailed" });
   if (!missionUiOwnerHasPrivateView(side)) return `<div class="missionUiHint">${missionUiEscape(check.reason)}</div>`;
   if (MISSION_UI_STATE.playPendingSide === side) {
-    return `<div class="missionRevealConfirm"><span>Confermi il gioco di “${missionUiEscape(runtime.missionName)}”? La carta andrà negli scarti e la ricompensa sarà applicata.</span><div class="missionUiButtons"><button class="ghost" type="button" onclick="missionUiCancelPlay()">Annulla</button><button type="button" onclick="missionUiConfirmPlay(${side})">Conferma Missione</button></div></div>`;
+    return `<div class="missionRevealConfirm"><span>${missionUiText("confirmPlayDetail", "Confermi il gioco di “{mission}”? La carta andrà negli scarti e la ricompensa sarà applicata.", { mission:missionUiEscape(runtime.missionName) })}</span><div class="missionUiButtons"><button class="ghost" type="button" onclick="missionUiCancelPlay()">${missionUiText("cancel", "Annulla")}</button><button type="button" onclick="missionUiConfirmPlay(${side})">${missionUiText("confirmMission", "Conferma Missione")}</button></div></div>`;
   }
   const multiplier = runtime.missionClass === "desperate" ? ` ×${Math.max(1, runtime.readyCount || 1)}` : "";
-  return `<div class="missionUiButtons"><button type="button" ${check.ok ? "" : "disabled"} onclick="missionUiRequestPlay(${side})">Gioca Missione${multiplier}</button></div><div class="missionUiHint">${missionUiEscape(check.reason)}</div>`;
+  return `<div class="missionUiButtons"><button type="button" ${check.ok ? "" : "disabled"} onclick="missionUiRequestPlay(${side})">${missionUiText("playMission", "Gioca Missione")}${multiplier}</button></div><div class="missionUiHint">${missionUiEscape(check.reason)}</div>`;
 }
 
 function missionUiHiddenPanelHtml(ownerSide) {
@@ -329,12 +336,12 @@ function missionUiHiddenPanelHtml(ownerSide) {
     <article class="missionPanel missionPanelHidden" data-mission-side="${ownerSide}">
       <div class="missionPanelHeader">
         <div>
-          <span class="missionEyebrow">G${ownerSide} · Missione</span>
-          <h4>MISSIONE NASCOSTA</h4>
+          <span class="missionEyebrow">G${ownerSide} · ${missionUiText("mission", "Missione")}</span>
+          <h4>${missionUiText("hidden", "MISSIONE NASCOSTA")}</h4>
         </div>
-        <span class="missionStatus missionStatus-hidden">PRIVATA</span>
+        <span class="missionStatus missionStatus-hidden">${missionUiText("private", "PRIVATA")}</span>
       </div>
-      <div class="missionHiddenBody">Presenza, nome, obiettivi e progressi non sono informazioni pubbliche fino alla rivelazione.</div>
+      <div class="missionHiddenBody">${missionUiText("hiddenDetail", "Presenza, nome, obiettivi e progressi non sono informazioni pubbliche fino alla rivelazione.")}</div>
     </article>`;
 }
 
@@ -343,11 +350,12 @@ function missionUiDetailedPanelHtml(ownerSide, viewerSide) {
   if (!runtime || !runtime.active) {
     return `
       <article class="missionPanel missionPanelAbsent" data-mission-side="${ownerSide}">
-        <div class="missionPanelHeader"><div><span class="missionEyebrow">G${ownerSide}</span><h4>Nessuna Missione</h4></div><span class="missionStatus missionStatus-absent">FACOLTATIVA</span></div>
-        <div class="missionHiddenBody">Il deck è composto da 30 carte ordinarie.</div>
+        <div class="missionPanelHeader"><div><span class="missionEyebrow">G${ownerSide}</span><h4>${missionUiText("status.absent", "Nessuna Missione")}</h4></div><span class="missionStatus missionStatus-absent">${missionUiText("optional", "FACOLTATIVA")}</span></div>
+        <div class="missionHiddenBody">${missionUiText("ordinaryDeck", "Il deck è composto da 30 carte ordinarie.")}</div>
       </article>`;
   }
   const definition = missionUiDefinition(ownerSide);
+  const missionName = definition && definition.name ? definition.name : runtime.missionName;
   const items = definition && typeof missionObjectivesFor === "function" ? missionObjectivesFor(definition) : [];
   const status = missionUiStatus(ownerSide);
   const selectedClass = MISSION_UI_STATE.selectedSide === ownerSide ? " isSelected" : "";
@@ -356,15 +364,15 @@ function missionUiDetailedPanelHtml(ownerSide, viewerSide) {
     <article class="missionPanel missionPanel-${status.key}${selectedClass}${publicClass}" data-mission-side="${ownerSide}">
       <div class="missionPanelHeader">
         <div>
-          <span class="missionEyebrow">G${ownerSide} · ${missionUiEscape(runtime.missionClass === "desperate" ? "Missione disperata" : "Missione ordinaria")} · ciclo ${runtime.cycle || 1}</span>
-          <h4>${missionUiEscape(runtime.missionName || runtime.missionId || "Missione")}</h4>
+          <span class="missionEyebrow">G${ownerSide} · ${missionUiEscape(runtime.missionClass === "desperate" ? missionUiText("desperate", "Missione disperata") : missionUiText("ordinary", "Missione ordinaria"))} · ${missionUiText("cycle", "ciclo {number}", { number:runtime.cycle || 1 })}</span>
+          <h4>${missionUiEscape(missionName || runtime.missionId || missionUiText("mission", "Missione"))}</h4>
         </div>
         <span class="missionStatus missionStatus-${status.key}" title="${missionUiEscape(status.detail)}">${missionUiEscape(status.label)}</span>
       </div>
       <div class="missionObjectiveList">
         ${items.map((item, index) => missionUiObjectiveHtml(item, runtime.entries && runtime.entries[item.id], index)).join("")}
       </div>
-      <div class="missionRewardPreview"><strong>Ricompensa:</strong> ${missionUiEscape(definition && definition.reward ? definition.reward.text : "Non disponibile")}</div>
+      <div class="missionRewardPreview"><strong>${missionUiText("reward", "Ricompensa:")}</strong> ${missionUiEscape(definition && definition.reward ? definition.reward.text : missionUiText("unavailable", "Non disponibile"))}</div>
       <div class="missionPanelFooter">
         <span>${missionUiEscape(status.detail)}</span>
         ${missionUiActionHtml(ownerSide, viewerSide)}
@@ -381,10 +389,10 @@ function missionUiDashboardHtml(viewerSide = state && state.currentPlayer) {
   const viewer = Number(viewerSide || state.currentPlayer || 1);
   const other = viewer === 1 ? 2 : 1;
   return `
-    <section class="missionDashboard" id="missionDashboard" aria-label="Missioni e progressi">
+    <section class="missionDashboard" id="missionDashboard" aria-label="${missionUiText("dashboardAria", "Missioni e progressi")}">
       <div class="missionDashboardTitle">
-        <div><strong>Missioni</strong><span>F9N10 · Missioni su cicli multipli, recupero protetto e gestione IA.</span></div>
-        <button class="ghost missionDiagnosticsBtn" type="button" onclick="copyMissionDiagnosticsJson()">Copia diagnostica</button>
+        <div><strong>${missionUiText("missions", "Missioni")}</strong><span>${missionUiText("dashboardDetail", "F9N10 · Missioni su cicli multipli, recupero protetto e gestione IA.")}</span></div>
+        <button class="ghost missionDiagnosticsBtn" type="button" onclick="copyMissionDiagnosticsJson()">${missionUiText("copyDiagnostics", "Copia diagnostica")}</button>
       </div>
       <div class="missionDashboardGrid">
         ${missionUiPanelForSideHtml(viewer, viewer)}
@@ -396,9 +404,10 @@ function missionUiDashboardHtml(viewerSide = state && state.currentPlayer) {
 
 function missionUiMapBadgeHtml(side) {
   const runtime = missionUiRuntime(side);
-  if (!runtime || !runtime.active) return `<button class="ghost missionMapBadge missionMapBadge-absent" type="button" onclick="missionUiOpenPanel(${side})">Missione: nessuna</button>`;
+  if (!runtime || !runtime.active) return `<button class="ghost missionMapBadge missionMapBadge-absent" type="button" onclick="missionUiOpenPanel(${side})">${missionUiText("none", "Missione: nessuna")}</button>`;
   const status = missionUiStatus(side);
-  const label = `${runtime.missionName || runtime.missionId || "Missione"} · ${status.label}`;
+  const definition = missionUiDefinition(side);
+  const label = `${definition && definition.name || runtime.missionName || runtime.missionId || missionUiText("mission", "Missione")} · ${status.label}`;
   return `<button class="ghost missionMapBadge missionMapBadge-${status.key}" type="button" onclick="missionUiOpenPanel(${side})">${missionUiEscape(label)}</button>`;
 }
 
@@ -535,45 +544,46 @@ function missionUiPendingRewardChoiceHtml() {
   if (pending.kind === "mission_player_target_selection") {
     const buttons = (pending.targetSides || []).map(side => {
       const info = typeof f9q3d1TargetSummary === "function" ? f9q3d1TargetSummary(side) : {faction:state.factions && state.factions[side],energy:state.energy && state.energy[side],hand:state.hand && state.hand[side] ? state.hand[side].length : 0,deck:state.deck && state.deck[side] ? state.deck[side].length : 0,pressure:state.pressure && state.pressure[side] || 0,ps:typeof countControlledPS === "function" ? countControlledPS(side) : 0};
-      return `<button type="button" class="missionRewardCard" onclick="missionRewardConfirmPlayerTarget(${side})"><strong>${missionUiEscape(playerName(side))}</strong><span>${missionUiEscape(info.faction || "Fazione")} · ENE ${info.energy} · PS ${info.ps} · Pressione ${info.pressure} · Mano ${info.hand} · Deck ${info.deck}</span></button>`;
+      return `<button type="button" class="missionRewardCard" onclick="missionRewardConfirmPlayerTarget(${side})"><strong>${missionUiEscape(playerName(side))}</strong><span>${missionUiEscape(info.faction || missionUiText("faction", "Fazione"))} · ENE ${info.energy} · PS ${info.ps} · ${missionUiText("pressure", "Pressione")} ${info.pressure} · ${missionUiText("hand", "Mano")} ${info.hand} · Deck ${info.deck}</span></button>`;
     }).join("");
-    return `<section class="missionRewardChoice" aria-label="Scelta avversario ricompensa Missione"><div class="missionRewardChoiceHeader"><div><strong>Scegli l’avversario della Missione “${missionUiEscape(pending.missionName)}”</strong><span>Solo i giocatori attivi sono bersagli validi.</span></div><span class="missionStatus missionStatus-reward_pending">FFA</span></div><div class="missionRewardCardGrid">${buttons}</div></section>`;
+    return `<section class="missionRewardChoice" aria-label="${missionUiText("chooseOpponentAria", "Scelta avversario ricompensa Missione")}"><div class="missionRewardChoiceHeader"><div><strong>${missionUiText("chooseOpponent", "Scegli l’avversario della Missione “{mission}”", { mission:missionUiEscape(pending.missionName) })}</strong><span>${missionUiText("activePlayersOnly", "Solo i giocatori attivi sono bersagli validi.")}</span></div><span class="missionStatus missionStatus-reward_pending">FFA</span></div><div class="missionRewardCardGrid">${buttons}</div></section>`;
   }
   if (pending.kind === "enemy_discard_selection") {
     const cards = typeof missionPendingDiscardEligibleCards === "function" ? missionPendingDiscardEligibleCards() : [];
     const selected = new Set(pending.selectedUids || []);
     return `
-      <section class="missionRewardChoice" aria-label="Scelta scarto ricompensa Missione">
+      <section class="missionRewardChoice" aria-label="${missionUiText("discardChoiceAria", "Scelta scarto ricompensa Missione")}">
         <div class="missionRewardChoiceHeader">
-          <div><strong>${missionUiEscape(playerName(pending.chooserSide))} sceglie le carte da scartare</strong><span>Missione “${missionUiEscape(pending.missionName)}” · seleziona ${pending.required} carte ordinarie.</span></div>
+          <div><strong>${missionUiText("chooseDiscard", "{player} sceglie le carte da scartare", { player:missionUiEscape(playerName(pending.chooserSide)) })}</strong><span>${missionUiText("chooseDiscardDetail", "Missione “{mission}” · seleziona {count} carte ordinarie.", { mission:missionUiEscape(pending.missionName), count:pending.required })}</span></div>
           <span class="missionStatus missionStatus-reward_pending">${selected.size}/${pending.required}</span>
         </div>
         <div class="missionRewardCardGrid">
           ${cards.map(card => {
             const active = selected.has(card.cardUid);
             const uid = missionUiEscape(card.cardUid);
-            return `<button type="button" class="missionRewardCard${active ? " isSelected" : ""}" onclick="missionRewardToggleDiscardSelection('${uid}')"><strong>${missionUiEscape(card.name || card.id)}</strong><span>${missionUiEscape(card.cardType || card.sourceType || "carta")} · ${Number(card.cost) || 0} ENE</span></button>`;
+            const localizedCard = typeof arenaContentCard === "function" ? arenaContentCard(card) : card;
+            return `<button type="button" class="missionRewardCard${active ? " isSelected" : ""}" onclick="missionRewardToggleDiscardSelection('${uid}')"><strong>${missionUiEscape(localizedCard.name || card.id)}</strong><span>${missionUiEscape(card.cardType || card.sourceType || missionUiText("card", "carta"))} · ${Number(card.cost) || 0} ENE</span></button>`;
           }).join("")}
         </div>
-        <div class="missionUiButtons"><button type="button" ${selected.size === pending.required ? "" : "disabled"} onclick="missionRewardConfirmDiscardSelection()">Conferma scarto scelto</button></div>
+        <div class="missionUiButtons"><button type="button" ${selected.size === pending.required ? "" : "disabled"} onclick="missionRewardConfirmDiscardSelection()">${missionUiText("confirmDiscard", "Conferma scarto scelto")}</button></div>
       </section>`;
   }
   if (pending.kind === "mission_target_selection") {
     const complete = typeof missionTargetGroupsComplete === "function" && missionTargetGroupsComplete(pending);
-    return `<section class="missionRewardChoice" aria-label="Scelta bersagli ricompensa Missione">
-      <div class="missionRewardChoiceHeader"><div><strong>Scegli i bersagli della Missione “${missionUiEscape(pending.missionName)}”</strong><span>Moltiplicatore ×${pending.multiplier}. Ogni bersaglio deve essere distinto; le quote senza bersaglio valido sono sprecate.</span></div><span class="missionStatus missionStatus-reward_pending">×${pending.multiplier}</span></div>
+    return `<section class="missionRewardChoice" aria-label="${missionUiText("targetChoiceAria", "Scelta bersagli ricompensa Missione")}">
+      <div class="missionRewardChoiceHeader"><div><strong>${missionUiText("chooseTargets", "Scegli i bersagli della Missione “{mission}”", { mission:missionUiEscape(pending.missionName) })}</strong><span>${missionUiText("chooseTargetsDetail", "Moltiplicatore ×{multiplier}. Ogni bersaglio deve essere distinto; le quote senza bersaglio valido sono sprecate.", { multiplier:pending.multiplier })}</span></div><span class="missionStatus missionStatus-reward_pending">×${pending.multiplier}</span></div>
       ${(pending.groups || []).map(group => {
         const selected = new Set(group.selectedUids || []);
         const units = typeof missionPendingTargetEligibleUnits === "function" ? missionPendingTargetEligibleUnits(group.key) : [];
-        return `<div class="missionRewardTargetGroup"><div class="missionObjectiveHeader"><strong>${missionUiEscape(group.label)}</strong><span>${selected.size}/${group.required}${group.wasted ? ` · ${group.wasted} sprecata/e` : ""}</span></div><div class="missionRewardCardGrid">${units.map(unit => `<button type="button" class="missionRewardCard${selected.has(unit.uid) ? " isSelected" : ""}" onclick="missionRewardToggleTargetSelection('${missionUiEscape(group.key)}','${missionUiEscape(unit.uid)}')"><strong>${missionUiEscape(unit.name)}</strong><span>${missionUiEscape(unit.type)} · ${missionUiEscape(unit.weight || "")}</span></button>`).join("") || `<span class="missionUiHint">Nessun bersaglio valido: quota sprecata.</span>`}</div></div>`;
+        return `<div class="missionRewardTargetGroup"><div class="missionObjectiveHeader"><strong>${missionUiEscape(group.label)}</strong><span>${selected.size}/${group.required}${group.wasted ? missionUiText("wasted", " · {count} sprecata/e", { count:group.wasted }) : ""}</span></div><div class="missionRewardCardGrid">${units.map(unit => `<button type="button" class="missionRewardCard${selected.has(unit.uid) ? " isSelected" : ""}" onclick="missionRewardToggleTargetSelection('${missionUiEscape(group.key)}','${missionUiEscape(unit.uid)}')"><strong>${missionUiEscape(typeof arenaContentText === "function" ? arenaContentText("units", unit.blueprintId || unit.sourceId || unit.id, "name", unit.name) : unit.name)}</strong><span>${missionUiEscape(typeof arenaContentTaxonomy === "function" ? arenaContentTaxonomy("types", unit.type, unit.type) : unit.type)} · ${missionUiEscape(typeof arenaContentTaxonomy === "function" ? arenaContentTaxonomy("weights", unit.weight, unit.weight || "") : (unit.weight || ""))}</span></button>`).join("") || `<span class="missionUiHint">${missionUiText("noTarget", "Nessun bersaglio valido: quota sprecata.")}</span>`}</div></div>`;
       }).join("")}
-      <div class="missionUiButtons"><button type="button" ${complete ? "" : "disabled"} onclick="missionRewardConfirmTargetSelection()">Conferma bersagli</button></div>
+      <div class="missionUiButtons"><button type="button" ${complete ? "" : "disabled"} onclick="missionRewardConfirmTargetSelection()">${missionUiText("confirmTargets", "Conferma bersagli")}</button></div>
     </section>`;
   }
   if (pending.kind === "repeat_attack_confirmation") {
     const attacker = typeof missionRewardUnitByUid === "function" ? missionRewardUnitByUid(pending.attackerUid) : null;
     const defender = typeof missionRewardUnitByUid === "function" ? missionRewardUnitByUid(pending.defenderUid) : null;
-    return `<section class="missionRewardChoice" aria-label="Ripetizione attacco Missione"><div class="missionRewardChoiceHeader"><div><strong>Ripetere l’attacco?</strong><span>${missionUiEscape(attacker ? attacker.name : "Attaccante")} contro ${missionUiEscape(defender ? defender.name : "bersaglio")} · cariche disponibili ${pending.remaining}.</span></div><span class="missionStatus missionStatus-reward_pending">${pending.remaining}</span></div><div class="missionUiButtons"><button class="ghost" type="button" onclick="missionRewardSkipRepeatAttack()">Conserva per dopo</button><button type="button" onclick="missionRewardConfirmRepeatAttack()">Ripeti ora</button></div></section>`;
+    return `<section class="missionRewardChoice" aria-label="${missionUiText("repeatAttackAria", "Ripetizione attacco Missione")}"><div class="missionRewardChoiceHeader"><div><strong>${missionUiText("repeatAttack", "Ripetere l’attacco?")}</strong><span>${missionUiText("repeatAttackDetail", "{attacker} contro {defender} · cariche disponibili {count}.", { attacker:missionUiEscape(attacker ? attacker.name : missionUiText("attacker", "Attaccante")), defender:missionUiEscape(defender ? defender.name : missionUiText("target", "bersaglio")), count:pending.remaining })}</span></div><span class="missionStatus missionStatus-reward_pending">${pending.remaining}</span></div><div class="missionUiButtons"><button class="ghost" type="button" onclick="missionRewardSkipRepeatAttack()">${missionUiText("saveForLater", "Conserva per dopo")}</button><button type="button" onclick="missionRewardConfirmRepeatAttack()">${missionUiText("repeatNow", "Ripeti ora")}</button></div></section>`;
   }
   return "";
 }

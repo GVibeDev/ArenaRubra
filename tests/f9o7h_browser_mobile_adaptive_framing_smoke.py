@@ -1,18 +1,14 @@
+from browser_runtime import chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-import re, os, shutil
+import re
 ROOT=Path(__file__).resolve().parents[1]
 index=(ROOT/'index.html').read_text()
 scripts=re.findall(r'<script\s+src="([^"]+)"\s*></script>',index)
 html=re.sub(r'<script\s+src="[^"]+"\s*></script>','',index)
 html=re.sub(r'<link\s+rel="stylesheet"\s+href="[^"]+"\s*/?>','',html)
-def exe():
-    for c in [os.environ.get('PLAYWRIGHT_CHROMIUM_EXECUTABLE'),shutil.which('chromium'),'/usr/bin/chromium']:
-        if c and Path(c).exists(): return str(c)
 with sync_playwright() as p:
-    opts={'headless':True,'args':['--no-sandbox','--allow-file-access-from-files']}
-    if exe(): opts['executable_path']=exe()
-    b=p.chromium.launch(**opts)
+    b=p.chromium.launch(**chromium_launch_options())
     ctx=b.new_context(viewport={'width':844,'height':390},is_mobile=True,has_touch=True,device_scale_factor=1)
     page=ctx.new_page(); page.set_default_timeout(12000)
     errors=[]; console=[]

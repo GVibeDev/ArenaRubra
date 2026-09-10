@@ -19,6 +19,13 @@ let cardMotionDom = null;
 const CARD_MOTION_SETTINGS_KEY = "presentation";
 const cardMotionPreferenceState = { reduced:false, loaded:false };
 
+function cardMotionI18n(key, fallback, params = {}) {
+  if (typeof ArenaI18n !== "undefined" && ArenaI18n && typeof ArenaI18n.t === "function") {
+    return ArenaI18n.t(`game.cardMotion.${key}`, params, fallback);
+  }
+  return Object.entries(params || {}).reduce((text, [name, value]) => String(text).split(`{${name}}`).join(String(value)), String(fallback || ""));
+}
+
 function cardPresentationHumanSides() {
   if (typeof state === "undefined" || !state || !state.modes) return [];
   return (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1, 2]).filter(side => state.modes[side] === "human");
@@ -59,7 +66,7 @@ function cardPresentationCanRevealTransfer(fromSide, toSide) {
   return Boolean(viewer && (Number(viewer) === Number(fromSide) || Number(viewer) === Number(toSide)));
 }
 
-function cardPresentationEventCardName(data, fallback = "Carta coperta") {
+function cardPresentationEventCardName(data, fallback = cardMotionI18n("hiddenCard", "Carta coperta")) {
   const d = data || {};
   if (d.public === true || cardPresentationCanRevealTransfer(d.fromSide, d.toSide) || cardPresentationCanViewHand(d.player || d.side)) {
     return d.cardName || d.name || fallback;
@@ -67,7 +74,7 @@ function cardPresentationEventCardName(data, fallback = "Carta coperta") {
   return fallback;
 }
 
-function cardPresentationVisibleCardName(side, card, fallback = "una carta coperta") {
+function cardPresentationVisibleCardName(side, card, fallback = cardMotionI18n("aHiddenCard", "una carta coperta")) {
   if (!card) return fallback;
   if (cardPresentationCanViewHand(side) || cardPresentationCardIsPublic(card)) return card.name || card.id || fallback;
   return fallback;
@@ -75,13 +82,13 @@ function cardPresentationVisibleCardName(side, card, fallback = "una carta coper
 
 function cardPresentationVisibleCardsLabel(side, cards, options = {}) {
   const list = Array.isArray(cards) ? cards.filter(Boolean) : [];
-  if (!list.length) return options.emptyLabel || "nessuna";
-  const hiddenLabel = options.hiddenLabel || "carta coperta";
-  const formatter = typeof options.formatter === "function" ? options.formatter : card => card.name || card.id || "Carta";
+  if (!list.length) return options.emptyLabel || cardMotionI18n("none", "nessuna");
+  const hiddenLabel = options.hiddenLabel || cardMotionI18n("hiddenCardLower", "carta coperta");
+  const formatter = typeof options.formatter === "function" ? options.formatter : card => card.name || card.id || cardMotionI18n("card", "Carta");
   const canView = cardPresentationCanViewHand(side);
   const publicCount = list.filter(cardPresentationCardIsPublic).length;
   if (!canView && publicCount === 0 && options.compactHidden !== false) {
-    return `${list.length} carta${list.length === 1 ? "" : "e"} coperta${list.length === 1 ? "" : "e"}`;
+    return cardMotionI18n(list.length === 1 ? "hiddenCountOne" : "hiddenCountMany", list.length === 1 ? "1 carta coperta" : "{count} carte coperte", { count:list.length });
   }
   return list.map(card => canView || cardPresentationCardIsPublic(card) ? formatter(card) : hiddenLabel).join(", ");
 }
@@ -102,10 +109,10 @@ function cardBackVisualHtml(faction, options = {}) {
   const candidates = cardBackCandidatesForFaction(faction);
   const safeCandidates = candidates.map(cardBackEscape).join("|");
   const first = candidates[0] || "";
-  const blocked = options.blocked ? `<span class="cardBackBlockedMark" aria-label="Carta bloccata">⊘</span>` : "";
+  const blocked = options.blocked ? `<span class="cardBackBlockedMark" aria-label="${cardBackEscape(cardMotionI18n("blockedCard", "Carta bloccata"))}">⊘</span>` : "";
   const compact = options.compact ? " compact" : "";
   return `<div class="factionCardBack${compact}" data-card-back-faction="${cardBackEscape(faction || "neutral")}">
-    ${first ? `<img class="factionCardBackImage" src="${cardBackEscape(first)}" data-card-back-candidates="${safeCandidates}" data-card-back-index="0" alt="Dorso carta ${cardBackEscape(faction || "")}" onerror="cardBackImageFallback(this)">` : ""}
+    ${first ? `<img class="factionCardBackImage" src="${cardBackEscape(first)}" data-card-back-candidates="${safeCandidates}" data-card-back-index="0" alt="${cardBackEscape(cardMotionI18n("cardBack", "Dorso carta {faction}", { faction:faction || "" }))}" onerror="cardBackImageFallback(this)">` : ""}
     <div class="factionCardBackFallback" aria-hidden="true"><strong>${cardBackEscape(faction || "AR")}</strong><span>ARENA RUBRA</span></div>
     ${blocked}
   </div>`;
@@ -163,7 +170,9 @@ function cardMotionSyncControls() {
   const reduced = Boolean(cardMotionPreferenceState.reduced);
   if (document.documentElement) document.documentElement.dataset.cardMotion = reduced ? "reduced" : "on";
   document.querySelectorAll("[data-arena-card-motion-toggle]").forEach(button => {
-    button.textContent = reduced ? "Carte animate RIDOTTE" : "Carte animate ON";
+    button.textContent = reduced
+      ? (typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.cardAnimationsReduced", {}, "Carte animate RIDOTTE") : "Carte animate RIDOTTE")
+      : (typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.animatedCardsOn", {}, "Carte animate ON") : "Carte animate ON");
     button.setAttribute("aria-pressed", reduced ? "true" : "false");
     button.classList.toggle("isReduced", reduced);
   });
@@ -229,8 +238,8 @@ function cardMotionClearTimer() {
 function cardMotionFaceHtml(item) {
   if (!item.faceUp) return cardBackVisualHtml(item.faction, { compact:true, blocked:item.kind === "block" });
   return `<div class="cardMotionFace faction-${cardBackEscape(String(item.faction || "neutral").toLowerCase())}">
-    <span class="cardMotionKind">${cardBackEscape(item.label || "CARTA")}</span>
-    <strong>${cardBackEscape(item.cardName || "Carta")}</strong>
+    <span class="cardMotionKind">${cardBackEscape(item.label || cardMotionI18n("cardUpper", "CARTA"))}</span>
+    <strong>${cardBackEscape(item.cardName || cardMotionI18n("card", "Carta"))}</strong>
     <small>${cardBackEscape(item.faction || "")}</small>
   </div>`;
 }
@@ -281,7 +290,7 @@ function cardMotionEnqueue(item) {
   const previous = cardMotionRecent.get(key) || 0;
   if (now - previous < CARD_MOTION_CONFIG.dedupeWindowMs) return false;
   cardMotionRecent.set(key, now);
-  item = { id:`card-motion-${++cardMotionSeq}`, kind:"generic", faceUp:false, faction:"", label:"CARTA", caption:"", ...item };
+  item = { id:`card-motion-${++cardMotionSeq}`, kind:"generic", faceUp:false, faction:"", label:cardMotionI18n("cardUpper", "CARTA"), caption:"", ...item };
   if (cardMotionQueue.length >= CARD_MOTION_CONFIG.queueMax) cardMotionQueue.shift();
   cardMotionQueue.push(item);
   cardMotionShowNext();
@@ -308,25 +317,29 @@ function cardMotionDescriptorForGameEvent(event) {
     const first = Array.isArray(d.cards) ? d.cards[0] : null;
     const card = cardMotionResolveDrawnCard(side, first);
     const visible = cardPresentationCanViewHand(side);
-    return { kind:"draw", side, faction:d.faction || (typeof state !== "undefined" && state && state.factions && state.factions[side]), faceUp:Boolean(visible && card), cardName:visible && card ? card.name : "", label:"PESCA", caption:`${visible && card ? card.name : "Carta pescata"}${Number(d.count) > 1 ? ` ×${d.count}` : ""}`, key:`draw:${event.seq || ""}:${side}` };
+    const drawnName = visible && card ? card.name : cardMotionI18n("cardDrawn", "Carta pescata");
+    return { kind:"draw", side, faction:d.faction || (typeof state !== "undefined" && state && state.factions && state.factions[side]), faceUp:Boolean(visible && card), cardName:visible && card ? card.name : "", label:cardMotionI18n("drawUpper", "PESCA"), caption:cardMotionI18n(Number(d.count) > 1 ? "drawnMany" : "drawnOne", Number(d.count) > 1 ? "{card} ×{count}" : "{card}", { card:drawnName, count:Number(d.count) || 1 }), key:`draw:${event.seq || ""}:${side}` };
   }
   if (type === "CARD_PLAYED") {
     // La Missione ha il proprio evento pubblico MISSION_PLAYED: evitare due animazioni consecutive della stessa carta.
     if (d.sourceType === "mission" || d.cardType === "mission") return null;
-    return { kind:"play", side:d.player, faction:d.faction, faceUp:true, cardName:d.cardName || "Carta", label:"GIOCATA", caption:`${d.cardName || "Carta"} giocata`, key:`play:${d.cardUid || event.seq}` };
+    const cardName = d.cardName || cardMotionI18n("card", "Carta");
+    return { kind:"play", side:d.player, faction:d.faction, faceUp:true, cardName, label:cardMotionI18n("playedUpper", "GIOCATA"), caption:cardMotionI18n("played", "{card} giocata", { card:cardName }), key:`play:${d.cardUid || event.seq}` };
   }
-  if (type === "MISSION_PLAYED") return { kind:"mission", side:d.player, faction:d.faction, faceUp:true, cardName:d.missionName || "Missione", label:"MISSIONE", caption:"Missione giocata", key:`mission:${d.player}:${d.missionId}:${d.cycle || ""}` };
+  if (type === "MISSION_PLAYED") return { kind:"mission", side:d.player, faction:d.faction, faceUp:true, cardName:d.missionName || cardMotionI18n("mission", "Missione"), label:cardMotionI18n("missionUpper", "MISSIONE"), caption:cardMotionI18n("missionPlayed", "Missione giocata"), key:`mission:${d.player}:${d.missionId}:${d.cycle || ""}` };
   if (type === "CARD_DISCARDED") {
     const visible = cardPresentationCanViewHand(d.player || d.side) || d.public === true;
-    return { kind:"discard", side:d.player || d.side, faction:d.faction, faceUp:visible, cardName:visible ? (d.cardName || "Carta") : "", label:"SCARTO", caption:visible ? `${d.cardName || "Carta"} scartata` : "Carta avversaria scartata", key:`discard:${d.cardUid || event.seq}` };
+    const cardName = d.cardName || cardMotionI18n("card", "Carta");
+    return { kind:"discard", side:d.player || d.side, faction:d.faction, faceUp:visible, cardName:visible ? cardName : "", label:cardMotionI18n("discardUpper", "SCARTO"), caption:visible ? cardMotionI18n("discarded", "{card} scartata", { card:cardName }) : cardMotionI18n("opponentDiscarded", "Carta avversaria scartata"), key:`discard:${d.cardUid || event.seq}` };
   }
   if (type === "CARD_STOLEN") {
     const reveal = cardPresentationCanRevealTransfer(d.fromSide, d.toSide);
-    return { kind:"steal", side:d.toSide, faction:d.toFaction, faceUp:reveal, cardName:reveal ? (d.cardName || "Carta") : "", label:"FURTO", caption:reveal ? `${d.cardName || "Carta"} rubata` : "Carta coperta rubata", key:`steal:${d.cardUid || event.seq}` };
+    const cardName = d.cardName || cardMotionI18n("card", "Carta");
+    return { kind:"steal", side:d.toSide, faction:d.toFaction, faceUp:reveal, cardName:reveal ? cardName : "", label:cardMotionI18n("stealUpper", "FURTO"), caption:reveal ? cardMotionI18n("stolen", "{card} rubata", { card:cardName }) : cardMotionI18n("hiddenStolen", "Carta coperta rubata"), key:`steal:${d.cardUid || event.seq}` };
   }
-  if (type === "CARD_BLOCKED") return { kind:"block", side:d.enemy, faction:d.enemyFaction, faceUp:false, label:"BLOCCO", caption:`${Number(d.count || (d.blocked && d.blocked.length) || 1)} carta/e bloccata/e`, key:`block:${d.enemy}:${event.seq || d.round || ""}` };
-  if (type === "CARD_UNBLOCKED") return { kind:"unblock", side:d.player, faction:d.faction, faceUp:false, label:"SBLOCCO", caption:`${Number(d.count || 1)} carta/e liberata/e`, key:`unblock:${d.player}:${event.seq || d.round || ""}` };
-  if (type === "DECK_RECOVERED") return { kind:"recover", side:d.player, faction:d.faction, faceUp:false, label:"RIMESCOLA", caption:`Deck riorganizzato · ${d.deckSize || 0} carte`, key:`recover:${d.player}:${d.missionCycle || ""}:${event.seq || ""}` };
+  if (type === "CARD_BLOCKED") { const count=Number(d.count || (d.blocked && d.blocked.length) || 1); return { kind:"block", side:d.enemy, faction:d.enemyFaction, faceUp:false, label:cardMotionI18n("blockUpper", "BLOCCO"), caption:cardMotionI18n("blockedCount", "{count} carta/e bloccata/e", { count }), key:`block:${d.enemy}:${event.seq || d.round || ""}` }; }
+  if (type === "CARD_UNBLOCKED") { const count=Number(d.count || 1); return { kind:"unblock", side:d.player, faction:d.faction, faceUp:false, label:cardMotionI18n("unblockUpper", "SBLOCCO"), caption:cardMotionI18n("unblockedCount", "{count} carta/e liberata/e", { count }), key:`unblock:${d.player}:${event.seq || d.round || ""}` }; }
+  if (type === "DECK_RECOVERED") return { kind:"recover", side:d.player, faction:d.faction, faceUp:false, label:cardMotionI18n("shuffleUpper", "RIMESCOLA"), caption:cardMotionI18n("deckRecovered", "Deck riorganizzato · {count} carte", { count:d.deckSize || 0 }), key:`recover:${d.player}:${d.missionCycle || ""}:${event.seq || ""}` };
   return null;
 }
 

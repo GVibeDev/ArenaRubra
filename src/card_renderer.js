@@ -592,6 +592,7 @@ const cardRendererHandThumbPrewarm = new Map();
 
 function cardRendererHandThumbVisualKey(card) {
   if (!card) return "";
+  card = typeof arenaContentCard === "function" ? arenaContentCard(card) : card;
   const art = card && card.customArt && card.customArt.dataUrl ? String(card.customArt.dataUrl) : "";
   const artToken = art ? `${art.length}:${art.slice(0, 24)}:${art.slice(-24)}` : "";
   let assetToken = "";
@@ -774,9 +775,18 @@ function cardRendererEscapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function cardRendererText(key, fallback, params = {}) {
+  return typeof ArenaI18n !== "undefined"
+    ? ArenaI18n.t(`cardRenderer.${key}`, params, fallback)
+    : fallback;
+}
+
 function cardRendererPassiveEntries(card) {
   if (!card || card.sourceType === "tactic" || card.sourceType === "mission") return [];
-  const bp = cardRendererSourceBlueprint(card) || (card.custom ? card : null);
+  const sourceBlueprint = cardRendererSourceBlueprint(card) || (card.custom ? card : null);
+  const bp = sourceBlueprint && typeof ArenaContentI18n !== "undefined"
+    ? ArenaContentI18n.project("units", sourceBlueprint, ["name", "description", "ability.name", "ability.description", "psBonus.description", "deploymentRule.label", "commanderArchetype"])
+    : sourceBlueprint;
   if (!bp) return [];
   const entries = [];
   const add = (name, description) => {
@@ -786,22 +796,22 @@ function cardRendererPassiveEntries(card) {
   };
   const rules = Array.isArray(bp.factionRules) ? bp.factionRules : [];
 
-  if (bp.vanguard) add("Avanguardia", "Può agire nel turno in cui entra in gioco.");
-  if (bp.frontLine) add("Prima Linea", "Intercetta attacchi base diretti a unità alleate adiacenti, quando la regola è applicabile.");
-  if (Number.isFinite(bp.passiveThorns) && bp.passiveThorns > 0) add("Spine", `Chi attacca questa unità subisce ${bp.passiveThorns} danno diretto.`);
-  if (bp.guardThornsOnIdle) add("Spine", "Se termina il turno senza attaccare/usare abilità/costruire, ottiene Spine 1 fino al prossimo turno.");
-  if (rules.includes("Superiorità Numerica")) add("Superiorità Numerica", "Bonus d'attacco Liberti quando il bersaglio è pressato da più unità valide.");
-  if (rules.includes("Sanguinamento") || (Number.isFinite(bp.bleedValue) && bp.bleedValue > 0)) add("Sanguinamento", `Gli attacchi possono applicare Sanguinamento${Number.isFinite(bp.bleedValue) && bp.bleedValue > 0 ? ` ${bp.bleedValue}` : ""}, infliggendo pressione nel tempo.`);
-  if (bp.bleedImmune) add("Immunità Sanguinamento", "Non subisce gli effetti di Sanguinamento.");
-  if (Number.isFinite(bp.antiStructureAtt) && bp.antiStructureAtt > 0) add("Anti-Struttura", `+${bp.antiStructureAtt} ATT quando attacca strutture.`);
-  if (Number.isFinite(bp.attacksPerTurn) && bp.attacksPerTurn > 1) add("Attacchi Multipli", `Può effettuare ${bp.attacksPerTurn} attacchi base per turno, se le condizioni lo permettono.`);
-  if (bp.psBonus && bp.psBonus.description) add("Bonus PS", bp.psBonus.description);
-  if (bp.costAdjacencyVehicle && Number.isFinite(bp.costAdjacencyVehicle.value)) add("Coordinamento", `Riduce il costo di ${Math.abs(bp.costAdjacencyVehicle.value)} ENE vicino a veicoli alleati, fino al minimo previsto.`);
-  if (Number.isFinite(bp.onKillHealInfantry) && bp.onKillHealInfantry > 0) add("Predazione", `Quando distrugge una fanteria nemica recupera ${bp.onKillHealInfantry} HP.`);
-  if (bp.ability && bp.ability.passive) add(bp.ability.name || "Passiva", bp.ability.description || "Abilità passiva.");
+  if (bp.vanguard) add(cardRendererText("vanguard", "Avanguardia"), cardRendererText("vanguardDescription", "Può agire nel turno in cui entra in gioco."));
+  if (bp.frontLine) add(cardRendererText("frontLine", "Prima Linea"), cardRendererText("frontLineDescription", "Intercetta attacchi base diretti a unità alleate adiacenti, quando la regola è applicabile."));
+  if (Number.isFinite(bp.passiveThorns) && bp.passiveThorns > 0) add(cardRendererText("thorns", "Spine"), cardRendererText("thornsDescription", "Chi attacca questa unità subisce {value} danno diretto.", { value:bp.passiveThorns }));
+  if (bp.guardThornsOnIdle) add(cardRendererText("thorns", "Spine"), cardRendererText("guardThornsDescription", "Se termina il turno senza attaccare/usare abilità/costruire, ottiene Spine 1 fino al prossimo turno."));
+  if (rules.includes("Superiorità Numerica")) add(cardRendererText("numericalSuperiority", "Superiorità Numerica"), cardRendererText("numericalSuperiorityDescription", "Bonus d'attacco Liberti quando il bersaglio è pressato da più unità valide."));
+  if (rules.includes("Sanguinamento") || (Number.isFinite(bp.bleedValue) && bp.bleedValue > 0)) add(cardRendererText("bleeding", "Sanguinamento"), cardRendererText("bleedingDescription", "Gli attacchi possono applicare Sanguinamento{value}, infliggendo pressione nel tempo.", { value:Number.isFinite(bp.bleedValue) && bp.bleedValue > 0 ? ` ${bp.bleedValue}` : "" }));
+  if (bp.bleedImmune) add(cardRendererText("bleedingImmunity", "Immunità Sanguinamento"), cardRendererText("bleedingImmunityDescription", "Non subisce gli effetti di Sanguinamento."));
+  if (Number.isFinite(bp.antiStructureAtt) && bp.antiStructureAtt > 0) add(cardRendererText("antiStructure", "Anti-Struttura"), cardRendererText("antiStructureDescription", "+{value} ATT quando attacca strutture.", { value:bp.antiStructureAtt }));
+  if (Number.isFinite(bp.attacksPerTurn) && bp.attacksPerTurn > 1) add(cardRendererText("multipleAttacks", "Attacchi Multipli"), cardRendererText("multipleAttacksDescription", "Può effettuare {value} attacchi base per turno, se le condizioni lo permettono.", { value:bp.attacksPerTurn }));
+  if (bp.psBonus && bp.psBonus.description) add(cardRendererText("spBonus", "Bonus PS"), bp.psBonus.description);
+  if (bp.costAdjacencyVehicle && Number.isFinite(bp.costAdjacencyVehicle.value)) add(cardRendererText("coordination", "Coordinamento"), cardRendererText("coordinationDescription", "Riduce il costo di {value} ENE vicino a veicoli alleati, fino al minimo previsto.", { value:Math.abs(bp.costAdjacencyVehicle.value) }));
+  if (Number.isFinite(bp.onKillHealInfantry) && bp.onKillHealInfantry > 0) add(cardRendererText("predation", "Predazione"), cardRendererText("predationDescription", "Quando distrugge una fanteria nemica recupera {value} HP.", { value:bp.onKillHealInfantry }));
+  if (bp.ability && bp.ability.passive) add(bp.ability.name || cardRendererText("passive", "Passiva"), bp.ability.description || cardRendererText("passiveDescription", "Abilità passiva."));
   if (bp.customAbilitySchema && bp.customAbilitySchema.passive) {
     const passive = bp.customAbilitySchema.passive;
-    add(passive.label || passive.kind || "Passiva custom", passive.description || passive.label || "Passiva custom data-only.");
+    add(passive.label || passive.kind || cardRendererText("customPassive", "Passiva custom"), passive.description || passive.label || cardRendererText("customPassiveDescription", "Passiva custom data-only."));
   }
   return entries;
 }
@@ -816,7 +826,7 @@ function cardRendererPassiveBadgesHtml(card, escapeFn = cardRendererEscapeHtml) 
   const entries = cardRendererPassiveEntries(card);
   if (!entries.length) return "";
   const esc = typeof escapeFn === "function" ? escapeFn : cardRendererEscapeHtml;
-  return `<div class="cardRendererPassiveBadges" aria-label="Tratti passivi">${entries.map(entry => `<span class="cardRendererPassiveBadge" tabindex="0" title="${esc(entry.description)}"><strong>${esc(entry.name)}</strong></span>`).join("")}</div>`;
+  return `<div class="cardRendererPassiveBadges" aria-label="${esc(cardRendererText("passiveTraits", "Tratti passivi"))}">${entries.map(entry => `<span class="cardRendererPassiveBadge" tabindex="0" title="${esc(entry.description)}"><strong>${esc(entry.name)}</strong></span>`).join("")}</div>`;
 }
 
 function cardRendererLocalizedUnitType(card) {
@@ -826,29 +836,28 @@ function cardRendererLocalizedUnitType(card) {
   const unitTypeRaw = String(card.unitType || "").trim();
   const weightRaw = String(card.unitClassLabel || card.weight || "").trim();
   const typeMap = {
-    comandante: "COMANDANTE",
-    fanteria: "FANTERIA",
-    veicolo: "VEICOLO",
-    struttura: "STRUTTURA"
+    comandante: ArenaContentI18n.taxonomy("types", "Comandante", "Comandante").toUpperCase(),
+    fanteria: ArenaContentI18n.taxonomy("types", "Fanteria", "Fanteria").toUpperCase(),
+    veicolo: ArenaContentI18n.taxonomy("types", "Veicolo", "Veicolo").toUpperCase(),
+    struttura: ArenaContentI18n.taxonomy("types", "Struttura", "Struttura").toUpperCase()
   };
   const weightMap = {
-    leggera: "LEGGERA", leggero: "LEGGERO",
-    pesante: "PESANTE",
-    elite: "ELITE",
-    pivot: "PIVOT"
+    leggera: ArenaContentI18n.taxonomy("weights", "Leggera", "Leggera").toUpperCase(),
+    leggero: ArenaContentI18n.taxonomy("weights", "Leggera", "Leggera").toUpperCase(),
+    pesante: ArenaContentI18n.taxonomy("weights", "Pesante", "Pesante").toUpperCase(),
+    elite: ArenaContentI18n.taxonomy("weights", "Elite", "Elite").toUpperCase(),
+    pivot: ArenaContentI18n.taxonomy("weights", "Pivot", "Pivot").toUpperCase()
   };
-  if (cardType === "commander" || deckRole === "commander" || unitTypeRaw.toLowerCase() === "comandante") return "COMANDANTE";
+  if (cardType === "commander" || deckRole === "commander" || unitTypeRaw.toLowerCase() === "comandante") return typeMap.comandante;
   const typeKey = unitTypeRaw.toLowerCase();
   const weightKey = weightRaw.toLowerCase();
-  const localizedType = typeMap[typeKey] || unitTypeRaw.toUpperCase() || "UNITA";
+  const localizedType = typeMap[typeKey] || unitTypeRaw.toUpperCase() || cardRendererText("unit", "Unità").toUpperCase();
   const localizedWeight = weightMap[weightKey] || weightRaw.toUpperCase();
   return [localizedType, localizedWeight].filter(Boolean).join(" ").trim();
 }
 
 function cardRendererLocalizedTacticType(card) {
-  if (!card) return "TATTICA";
-  const category = String(card.category || "").trim();
-  return category ? `TATTICA · ${category.toUpperCase()}` : "TATTICA";
+  return cardRendererText("tactic", "Tattica").toUpperCase();
 }
 
 function cardRendererUsesTacticLayout(card) {
@@ -856,10 +865,10 @@ function cardRendererUsesTacticLayout(card) {
 }
 
 function cardRendererSourceTypeLabel(card) {
-  if (!card) return "Carta";
-  if (card.sourceType === "mission") return "Missione";
-  if (card.sourceType === "tactic") return "Tattica";
-  return "Unità";
+  if (!card) return cardRendererText("card", "Carta");
+  if (card.sourceType === "mission") return cardRendererText("mission", "Missione");
+  if (card.sourceType === "tactic") return cardRendererText("tactic", "Tattica");
+  return cardRendererText("unit", "Unità");
 }
 
 function cardRendererStatPalette() {
@@ -872,23 +881,36 @@ function cardRendererStatPalette() {
 }
 function cardRendererTypeText(card) {
   if (!card) return "—";
-  if (card.sourceType === "mission") return card.missionClass === "desperate" ? "MISSIONE DISPERATA" : "MISSIONE";
+  if (card.sourceType === "mission") return card.missionClass === "desperate" ? cardRendererText("desperateMission", "Missione disperata").toUpperCase() : cardRendererText("mission", "Missione").toUpperCase();
   if (card.sourceType === "tactic") return cardRendererLocalizedTacticType(card);
   return cardRendererLocalizedUnitType(card) || String(card.cardType || "CARTA").toUpperCase();
 }
 
 function cardRendererDescriptionText(card) {
   if (!card) return "";
+  card = typeof arenaContentCard === "function" ? arenaContentCard(card) : card;
   if (card.sourceType === "mission") return String(card.effectText || card.description || "").trim();
   if (card.custom && (card.description || card.abilityText || card.effectText || card.notes)) {
     const passiveText = cardRendererPassiveText(card);
     return [card.description, card.abilityText, passiveText, card.effectText, card.notes].filter(Boolean).join(" ").trim();
   }
   if (card.sourceType === "tactic") {
-    const tactic = cardRendererSourceTactic(card);
-    return [card.effectText, tactic && tactic.notes, tactic && tactic.target ? `Bersaglio: ${tactic.target}.` : ""].filter(Boolean).join(" ").trim();
+    const sourceTactic = cardRendererSourceTactic(card);
+    const tactic = sourceTactic && typeof ArenaContentI18n !== "undefined"
+      ? ArenaContentI18n.project("tactics", sourceTactic, ["name", "description", "effectText", "notes", "target", "category", "quality"])
+      : sourceTactic;
+    const language = typeof ArenaI18n !== "undefined" && typeof ArenaI18n.currentLanguage === "function" ? ArenaI18n.currentLanguage() : "it";
+    const tacticId = tactic && (tactic.id || tactic.tacticId || tactic.sourceId) || "";
+    const hasLocalizedTarget = Boolean(tacticId && typeof ArenaI18n !== "undefined" && ArenaI18n.has(`content.tactics.${tacticId}.target`));
+    const targetText = tactic && tactic.target && (language === "it" || hasLocalizedTarget)
+      ? cardRendererText("target", "Bersaglio: {target}.", { target:tactic.target })
+      : "";
+    return [card.effectText, tactic && tactic.notes, targetText].filter(Boolean).join(" ").trim();
   }
-  const bp = cardRendererSourceBlueprint(card);
+  const sourceBlueprint = cardRendererSourceBlueprint(card);
+  const bp = sourceBlueprint && typeof ArenaContentI18n !== "undefined"
+    ? ArenaContentI18n.project("units", sourceBlueprint, ["name", "description", "ability.name", "ability.description", "psBonus.description", "deploymentRule.label", "commanderArchetype"])
+    : sourceBlueprint;
   const parts = [];
   if (card.description) parts.push(card.description);
   if (card.abilityText) parts.push(card.abilityText);
@@ -900,7 +922,7 @@ function cardRendererDescriptionText(card) {
   const passiveText = cardRendererPassiveText(card);
   if (passiveText) parts.push(passiveText);
   if (bp && bp.psBonus && bp.psBonus.description && !parts.join(" ").includes(bp.psBonus.description)) parts.push(bp.psBonus.description);
-  if (!parts.length) parts.push("Nessuna abilità.");
+  if (!parts.length) parts.push(cardRendererText("noAbility", "Nessuna abilità."));
   return [...new Set(parts)].join(" ");
 }
 
@@ -1339,10 +1361,11 @@ function cardRendererDrawPreviewCanvas(canvas, card, options, generation) {
 
 function renderArenaCardPreviewCanvas(canvas, card, options = {}) {
   if (!canvas || typeof canvas.getContext !== "function") return false;
+  const presentationCard = typeof arenaContentCard === "function" ? arenaContentCard(card) : card;
   const generation = (Number(canvas.__arenaCardRenderGeneration) || 0) + 1;
   canvas.__arenaCardRenderGeneration = generation;
   canvas.__arenaCardRedrawPending = false;
-  return cardRendererDrawPreviewCanvas(canvas, card, options, generation);
+  return cardRendererDrawPreviewCanvas(canvas, presentationCard, options, generation);
 }
 
 function cardRendererCatalogCardById(cardId) {
@@ -1459,6 +1482,7 @@ function gameCardPreviewEnsureDefaultHandCard(side) {
 
 function gameCardPreviewBodyHtml(card, context = "hand") {
   if (!card) return `<div class="deckBuilderPreviewHelp">Nessuna carta selezionata.</div>`;
+  card = typeof arenaContentCard === "function" ? arenaContentCard(card) : card;
   const desc = cardRendererNormalizeDescription(cardRendererDescriptionText(card));
   const role = typeof deckBuilderRoleLabel === "function" ? deckBuilderRoleLabel(card) : (card.deckRole || "—");
   const prefix = context === "unit" ? "Unità in campo" : "Carta selezionata";

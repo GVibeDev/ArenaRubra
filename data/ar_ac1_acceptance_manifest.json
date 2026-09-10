@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "AR-AC1-ACCEPTANCE-1",
+  "milestone": "AR-AC1",
+  "criteria": [
+    { "id": 1, "name": "GameCore headless initialization", "evidence": ["src/core/game_core.js", "tests/ar_ac1_game_core_headless_smoke.js"] },
+    { "id": 2, "name": "Node-testable primary rules", "evidence": ["src/core/action_service.js", "src/core/runtime.js", "tests/ar_ac1_core_boundary_contract_smoke.js"] },
+    { "id": 3, "name": "UI excludes Match Data and persistence core", "evidence": ["src/data/match_data.js", "tests/ar_ac1_match_data_boundary_contract_smoke.js"] },
+    { "id": 4, "name": "Advanced AI split by domain", "evidence": ["src/ai/move_selection.js", "src/ai/combat_execution.js", "tests/ar_ac1_ai_move_selection_boundary_contract_smoke.js", "tests/ar_ac1_ai_attack_only_boundary_contract_smoke.js"] },
+    { "id": 5, "name": "Explicit dependencies for new modules", "evidence": ["src/core/action_service.js", "src/core/game_core.js", "src/core/state_domains.js"] },
+    { "id": 6, "name": "Runtime not exclusively dependent on global script order", "evidence": ["src/core/runtime.js", "src/runtime_profile.js", "tests/ar_ac1_game_action_service_smoke.js"] },
+    { "id": 7, "name": "CSS ownership boundaries", "evidence": ["css/OWNERSHIP.md", "css/layout/game_inspector.css", "tests/ar_ac1_css_ownership_smoke.js"] },
+    { "id": 8, "name": "Distinct DEV and Distribution loading", "evidence": ["src/runtime_profile.js", "tools/stage_runtime.js", "tests/ar_ac1_runtime_profile_contract_smoke.js", "tests/ar_ac1_browser_distribution_profile_smoke.py"] },
+    { "id": 9, "name": "Core behavior tests", "evidence": ["docs/architecture/AR_AC1_CORE_BEHAVIOR_GATE.md", "tools/run_node_smokes.js"] },
+    { "id": 10, "name": "Golden Matches", "evidence": ["tests/fixtures/ar_ac1_golden_matches.json", "tests/ar_ac1_browser_golden_matches_smoke.py", "docs/architecture/AR_AC1_GOLDEN_MATCH_GATE_REPORT.md"] },
+    { "id": 11, "name": "CI gates deployment", "evidence": [".github/workflows/pages.yml", "tests/ar_ac1_ci_gate_contract_smoke.js"] },
+    { "id": 12, "name": "No intentional gameplay changes", "evidence": ["data/starter_1_0_manifest.json", "tests/ar_ac1_golden_matches_contract_smoke.js"] },
+    { "id": 13, "name": "Storage and MatchRecord compatibility", "evidence": ["src/data/match_data.js", "tests/f9w1a_match_data_v2_smoke.js", "tests/ar_ac1_match_data_boundary_contract_smoke.js"] },
+    { "id": 14, "name": "Starter content and required assets retained", "evidence": ["data/required_assets.json", "tools/check_required_assets.js", "tests/ar_ac1_required_assets_gate_smoke.js"] },
+    { "id": 15, "name": "Player and DEV browser smoke", "evidence": ["tools/run_python_smokes.py", "tests/ar_ac1_browser_distribution_profile_smoke.py", "tests/f9w2a_browser_product_profile_smoke.py"] }
+  ]
+}

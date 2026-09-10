@@ -57,7 +57,9 @@ function arenaSfxSyncControlsF9O5a() {
   if (typeof document === "undefined") return;
   const percent = Math.round(arenaSfxStateF9O5a.volume * 100);
   document.querySelectorAll("[data-arena-sfx-toggle]").forEach(button => {
-    button.textContent = arenaSfxStateF9O5a.enabled ? "Effetti ON" : "Effetti OFF";
+    button.textContent = arenaSfxStateF9O5a.enabled
+      ? (typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.effectsOn", {}, "Effetti ON") : "Effetti ON")
+      : (typeof ArenaI18n !== "undefined" ? ArenaI18n.t("tools.controlCenter.effectsOff", {}, "Effetti OFF") : "Effetti OFF");
     button.setAttribute("aria-pressed", arenaSfxStateF9O5a.enabled ? "true" : "false");
     button.classList.toggle("isOff", !arenaSfxStateF9O5a.enabled);
   });

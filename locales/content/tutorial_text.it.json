@@ -1,0 +1,1212 @@
+{
+  "tutorialNarrative": {
+    "lesson-1-exordium": {
+      "title": "Lezione 1 · Disciplina di Aurex",
+      "steps": {
+        "lesson-welcome": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Benvenuto nelle schiere di Aurex. Imparerai a leggere le carte, schierare le unità, affrontare la DEF, usare un’abilità attiva e giocare una tattica."
+          }
+        },
+        "read-tribune-card": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Ogni carta mostra il costo in ENE, il nome, il tipo e le statistiche. HP indica quanto danno può sopportare l’unità; DEF è la protezione da consumare; ATT è la forza dell’attacco base. Il Tribuno costa 2 ENE e possiede anche un’abilità."
+          },
+          "spotlight": {
+            "label": "Il Tribuno"
+          }
+        },
+        "collapse-hand": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Riduci la Mano per osservare meglio la mappa."
+          },
+          "spotlight": {
+            "label": "Riduci mano"
+          },
+          "wrongActionText": "Premi Riduci mano."
+        },
+        "show-hand": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Riapri la Mano. Potrai ridurla e mostrarla ogni volta che serve."
+          },
+          "spotlight": {
+            "label": "Mostra mano"
+          },
+          "wrongActionText": "Premi Mostra mano."
+        },
+        "select-tribune-card": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona Il Tribuno. Dopo aver scelto una carta unità, la mappa evidenzia le celle legali di sbarco."
+          },
+          "spotlight": {
+            "label": "Il Tribuno"
+          },
+          "wrongActionText": "Seleziona la carta Il Tribuno."
+        },
+        "deploy-tribune": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Schiera Il Tribuno sulla cella indicata. Le unità senza Avanguardia entrano esauste e agiranno da un turno successivo."
+          },
+          "spotlight": {
+            "label": "Cella di sbarco"
+          },
+          "wrongActionText": "Schiera Il Tribuno sulla cella evidenziata."
+        },
+        "fante-robot-arrives": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Un Fante Robot Nexus entra nell’area di addestramento. Possiede 2 HP, 1 DEF e 2 ATT."
+          },
+          "spotlight": {
+            "label": "Fante Robot Nexus"
+          }
+        },
+        "explain-defense": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Un attacco normale colpisce prima la DEF. Finché il bersaglio possiede DEF, l’eventuale forza in eccesso non passa agli HP. Dopo che la DEF è scesa a zero, un attacco successivo può ferire gli HP."
+          },
+          "spotlight": {
+            "label": "HP e DEF"
+          }
+        },
+        "end-first-turn": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Il Tribuno è esausto. Termina il turno per renderlo pronto nel prossimo."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "nexus-yields-initiative": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Il Nexus mantiene la posizione. È di nuovo il tuo turno: schiera il Legionario Pesante prima di impegnare il Tribuno."
+          },
+          "spotlight": {
+            "label": "Legionario Pesante"
+          }
+        },
+        "select-legionary-card": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona il Legionario Pesante. Costa 3 ENE, ha 3 HP, 2 DEF e 4 ATT."
+          },
+          "spotlight": {
+            "label": "Legionario Pesante"
+          },
+          "wrongActionText": "Seleziona il Legionario Pesante."
+        },
+        "deploy-legionary": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Schiera il Legionario sulla cella indicata. Entrerà esausto, ma sarà pronto dopo il turno del Nexus."
+          },
+          "spotlight": {
+            "label": "Cella di sbarco"
+          },
+          "wrongActionText": "Schiera il Legionario sulla cella evidenziata."
+        },
+        "select-tribune-for-attack": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona Il Tribuno. È pronto e si trova adiacente al Fante Robot."
+          },
+          "spotlight": {
+            "label": "Il Tribuno"
+          },
+          "wrongActionText": "Seleziona Il Tribuno."
+        },
+        "tribune-attacks-fante": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Attacca il Fante Robot. I 2 ATT del Tribuno consumeranno la sua unica DEF; il danno eccedente non raggiungerà ancora gli HP."
+          },
+          "spotlight": {
+            "label": "Fante Robot"
+          },
+          "wrongActionText": "Attacca il Fante Robot evidenziato."
+        },
+        "legionary-ready": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "La DEF del Fante Robot è ora a zero. Dopo il turno del Nexus, il Legionario è pronto a usare Colpo Pesante."
+          },
+          "spotlight": {
+            "label": "Legionario Pesante"
+          }
+        },
+        "select-legionary-unit": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona il Legionario Pesante."
+          },
+          "spotlight": {
+            "label": "Legionario Pesante"
+          },
+          "wrongActionText": "Seleziona il Legionario Pesante."
+        },
+        "activate-heavy-blow": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Premi il pulsante dell’abilità. Colpo Pesante costa 1 ENE, infligge 2 danni entro raggio 2 e poi entra in ricarica."
+          },
+          "spotlight": {
+            "label": "Colpo Pesante"
+          },
+          "wrongActionText": "Attiva Colpo Pesante."
+        },
+        "heavy-blow-target": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Colpisci il Fante Robot. Senza DEF, i 2 danni ridurranno direttamente i suoi 2 HP."
+          },
+          "spotlight": {
+            "label": "Bersaglio"
+          },
+          "wrongActionText": "Usa Colpo Pesante sul Fante Robot."
+        },
+        "mech-arrival": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Il Nexus risponde con un Mech Pesante: 4 HP, 3 DEF e 3 ATT. Una sola azione non basterà; dovrai coordinare tattica e unità."
+          },
+          "spotlight": {
+            "label": "Mech Pesante"
+          }
+        },
+        "read-emp-card": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Missile EMP è una tattica. Costa 3 ENE, infligge 2 danni e riduce permanentemente di 1 l’ATT del bersaglio. Le tattiche non diventano miniature: si risolvono dalla Mano."
+          },
+          "spotlight": {
+            "label": "Missile EMP"
+          }
+        },
+        "select-emp-card": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona Missile EMP."
+          },
+          "spotlight": {
+            "label": "Missile EMP"
+          },
+          "wrongActionText": "Seleziona Missile EMP."
+        },
+        "emp-target-mech": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Lancia Missile EMP contro il Mech Pesante."
+          },
+          "spotlight": {
+            "label": "Mech Pesante"
+          },
+          "wrongActionText": "Bersaglia il Mech Pesante con Missile EMP."
+        },
+        "emp-result": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Il Missile ha consumato 2 DEF: al Mech ne resta 1. Inoltre il suo ATT è sceso da 3 a 2. Ora il Tribuno può spezzare l’ultima protezione."
+          },
+          "spotlight": {
+            "label": "Mech indebolito"
+          }
+        },
+        "select-tribune-again": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona Il Tribuno."
+          },
+          "spotlight": {
+            "label": "Il Tribuno"
+          },
+          "wrongActionText": "Seleziona Il Tribuno."
+        },
+        "tribune-breaks-mech-defense": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Attacca il Mech Pesante. Il Tribuno consumerà l’ultima DEF, preparando il colpo decisivo."
+          },
+          "spotlight": {
+            "label": "Mech Pesante"
+          },
+          "wrongActionText": "Attacca il Mech Pesante."
+        },
+        "mech-counterattack": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Il Mech reagisce contro il Legionario. Grazie all’EMP attacca con 2: consuma la sua DEF, ma non raggiunge gli HP. Ora il Mech è privo di protezione."
+          },
+          "spotlight": {
+            "label": "Legionario Pesante"
+          }
+        },
+        "select-legionary-final": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Seleziona il Legionario Pesante per il colpo finale."
+          },
+          "spotlight": {
+            "label": "Legionario Pesante"
+          },
+          "wrongActionText": "Seleziona il Legionario Pesante."
+        },
+        "destroy-mech": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Attacca. Con DEF zero, i 4 ATT del Legionario colpiranno i 4 HP del Mech e lo distruggeranno."
+          },
+          "spotlight": {
+            "label": "Mech Pesante"
+          },
+          "wrongActionText": "Attacca il Mech Pesante con il Legionario."
+        },
+        "lesson-complete": {
+          "message": {
+            "speaker": "Narratore Exordium",
+            "text": "Lezione completata. Hai letto e giocato carte unità, consumato la DEF prima degli HP, usato un’abilità attiva e coordinato Missile EMP con due attacchi."
+          }
+        }
+      }
+    },
+    "lesson-2-nexus": {
+      "title": "Lezione 2 · Rete operativa Nexus",
+      "steps": {
+        "nexus-welcome": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Benvenuto nella rete Nexus. Questa lezione mostra la riserva Starter, le differenze tra Fanteria, Veicolo e Struttura, e il vantaggio di Avanguardia."
+          }
+        },
+        "starter-reserve-overview": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Le tre carte Starter restano sempre nella riserva: una Fanteria, un Veicolo e una Struttura. Non vengono pescate e non vengono consumate quando le usi; paghi comunque il loro costo in ENE e rispetti i limiti di campo."
+          },
+          "spotlight": {
+            "label": "Starter Nexus"
+          }
+        },
+        "read-security-droid": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il Droide di Sicurezza è la Fanteria Starter. La Fanteria muove di una cella e, dopo il movimento, può ancora attaccare, usare un’abilità o costruire una Struttura."
+          },
+          "spotlight": {
+            "label": "Droide di Sicurezza"
+          }
+        },
+        "select-security-droid-starter": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Seleziona il Droide di Sicurezza dalla riserva Starter."
+          },
+          "spotlight": {
+            "label": "Droide di Sicurezza"
+          },
+          "wrongActionText": "Seleziona il Droide di Sicurezza Starter."
+        },
+        "deploy-security-droid": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Schiera il Droide sulla cella indicata, vicino al QG. Come quasi tutte le unità appena schierate, entra esausto."
+          },
+          "spotlight": {
+            "label": "Sbarco iniziale"
+          },
+          "wrongActionText": "Schiera il Droide sulla cella evidenziata."
+        },
+        "starter-remains-available": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "La carta Starter è ancora nella riserva. Potrai schierare altre copie finché ENE, spazio e limiti della modalità lo consentono."
+          },
+          "spotlight": {
+            "label": "Starter ancora disponibile"
+          }
+        },
+        "end-turn-for-infantry": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Termina il turno. Il Droide sarà pronto quando la rete tornerà sotto il tuo controllo."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "exordium-passes-for-infantry": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il turno torna al Nexus. Ora il Droide può muovere e poi costruire nello stesso turno."
+          },
+          "spotlight": {
+            "label": "Fanteria pronta"
+          }
+        },
+        "select-security-droid-unit": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Seleziona il Droide di Sicurezza. Le celle raggiungibili verranno evidenziate subito."
+          },
+          "spotlight": {
+            "label": "Droide di Sicurezza"
+          },
+          "wrongActionText": "Seleziona il Droide di Sicurezza."
+        },
+        "move-security-droid": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Muovi il Droide sulla cella indicata. Dopo lo spostamento resterà pronto per costruire."
+          },
+          "spotlight": {
+            "label": "Avanzata Fanteria"
+          },
+          "wrongActionText": "Muovi il Droide sulla cella evidenziata."
+        },
+        "read-starter-structure": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "La Barriera Armata è la Struttura Starter. Le Strutture non si muovono, ma diventano nuovi nodi della rete: le unità possono sbarcare sul QG o nelle celle libere adiacenti a un edificio alleato."
+          },
+          "spotlight": {
+            "label": "Barriera Armata"
+          }
+        },
+        "select-starter-structure": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Seleziona la Barriera Armata dalla riserva Starter. Il Droide appena mosso agirà da costruttore."
+          },
+          "spotlight": {
+            "label": "Barriera Armata"
+          },
+          "wrongActionText": "Seleziona la Barriera Armata Starter."
+        },
+        "build-forward-structure": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Costruisci la Barriera sulla cella indicata. La Fanteria ha mosso e ora usa la propria azione per estendere la rete di sbarco."
+          },
+          "spotlight": {
+            "label": "Nodo avanzato"
+          },
+          "wrongActionText": "Costruisci la Barriera sulla cella evidenziata."
+        },
+        "deployment-network-online": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il nodo avanzato è operativo. Da questa Struttura puoi schierare nuove unità più vicino al Punto Strategico centrale."
+          },
+          "spotlight": {
+            "label": "Rete di sbarco"
+          }
+        },
+        "read-starter-vehicle": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il turno torna al Nexus. Il Quad Ricognitore è il Veicolo Starter: nel ritmo Rapida può muovere fino a due celle, ma normalmente deve scegliere tra movimento e azione."
+          },
+          "spotlight": {
+            "label": "Quad Ricognitore"
+          }
+        },
+        "select-starter-vehicle": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Seleziona il Quad Ricognitore dalla riserva Starter."
+          },
+          "spotlight": {
+            "label": "Quad Ricognitore"
+          },
+          "wrongActionText": "Seleziona il Quad Ricognitore Starter."
+        },
+        "deploy-quad-from-network": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Schiera il Quad sulla cella indicata, resa disponibile dalla Barriera avanzata."
+          },
+          "spotlight": {
+            "label": "Sbarco dalla rete"
+          },
+          "wrongActionText": "Schiera il Quad sulla cella evidenziata."
+        },
+        "ordinary-vehicle-exhausted": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il Quad è arrivato vicino al centro, ma entra esausto. Un Veicolo ordinario deve attendere il turno successivo prima di muovere."
+          },
+          "spotlight": {
+            "label": "Veicolo esausto"
+          }
+        },
+        "end-turn-for-quad": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Termina il turno per rendere pronto il Quad."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "exordium-passes-for-quad": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il Quad è pronto. Ora completerà il percorso ordinario verso il Punto Strategico."
+          },
+          "spotlight": {
+            "label": "Quad pronto"
+          }
+        },
+        "select-quad-unit": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Seleziona il Quad Ricognitore. Le celle raggiungibili verranno evidenziate subito."
+          },
+          "spotlight": {
+            "label": "Quad Ricognitore"
+          },
+          "wrongActionText": "Seleziona il Quad Ricognitore."
+        },
+        "quad-captures-center": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Muovi il Quad sul Punto Strategico centrale."
+          },
+          "spotlight": {
+            "label": "Punto Strategico centrale"
+          },
+          "wrongActionText": "Muovi il Quad sul Punto Strategico centrale."
+        },
+        "ordinary-route-complete": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Primo procedimento completato: rete avanzata, sbarco del Veicolo, attesa di un turno e movimento sul Punto Strategico."
+          },
+          "spotlight": {
+            "label": "PS controllato"
+          }
+        },
+        "prepare-vanguard-comparison": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il Quad libera il centro per il confronto. Il Mech Leggero è una carta della Mano e possiede Avanguardia: può agire nello stesso turno in cui entra in gioco."
+          },
+          "spotlight": {
+            "label": "Mech Leggero"
+          }
+        },
+        "select-vanguard-card": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Seleziona il Mech Leggero dalla Mano."
+          },
+          "spotlight": {
+            "label": "Mech Leggero"
+          },
+          "wrongActionText": "Seleziona il Mech Leggero."
+        },
+        "deploy-vanguard-from-network": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Schiera il Mech sulla stessa cella della rete avanzata. Avanguardia lo manterrà pronto."
+          },
+          "spotlight": {
+            "label": "Sbarco Avanguardia"
+          },
+          "wrongActionText": "Schiera il Mech sulla cella evidenziata."
+        },
+        "select-vanguard-unit": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Il Mech non è esausto. Selezionalo: le celle raggiungibili verranno evidenziate e potrà muovere immediatamente."
+          },
+          "spotlight": {
+            "label": "Mech Leggero pronto"
+          },
+          "wrongActionText": "Seleziona il Mech Leggero."
+        },
+        "vanguard-captures-center": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Muovi il Mech sul Punto Strategico. Avanguardia ha eliminato il turno di attesa."
+          },
+          "spotlight": {
+            "label": "Punto Strategico centrale"
+          },
+          "wrongActionText": "Muovi il Mech sul Punto Strategico centrale."
+        },
+        "nexus-lesson-complete": {
+          "message": {
+            "speaker": "Narratore Nexus",
+            "text": "Lezione completata. Hai usato la riserva Starter, mosso e costruito con la Fanteria, esteso la rete con una Struttura, raggiunto il centro con un Veicolo e confrontato lo sbarco ordinario con Avanguardia."
+          }
+        }
+      }
+    },
+    "lesson-3-agathoi": {
+      "title": "Lezione 3 · Il Punto non arretra",
+      "steps": {
+        "agathoi-welcome": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "La linea Agathoi non vince inseguendo ogni bersaglio. Imparerai a scegliere la difesa adatta, presidiare un Punto Strategico e resistere a tre ondate Exordium."
+          }
+        },
+        "defensive-line-overview": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "L’Oplita di Confine presidia il Punto centrale con 3 HP, 3 DEF e Spine 1 permanenti. La Radura Curativa adiacente mantiene aperta la rete alleata per le tattiche difensive."
+          },
+          "spotlight": {
+            "label": "Oplita di Confine"
+          }
+        },
+        "choose-first-defense": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "La Mano offre più risposte, ma la prima ondata è fragile. Manto di Rovi porta le Spine a 2 fino al prossimo turno: è la scelta più efficiente per punire un assalto leggero."
+          },
+          "spotlight": {
+            "label": "Manto di Rovi"
+          }
+        },
+        "select-thorns-tactic": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Seleziona Manto di Rovi."
+          },
+          "spotlight": {
+            "label": "Manto di Rovi"
+          },
+          "wrongActionText": "Seleziona Manto di Rovi."
+        },
+        "apply-thorns-to-oplite": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Applica Manto di Rovi all’Oplita."
+          },
+          "spotlight": {
+            "label": "Oplita di Confine"
+          },
+          "wrongActionText": "Bersaglia l’Oplita di Confine con Manto di Rovi."
+        },
+        "thorns-defense-ready": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "L’Oplita ora infligge 2 danni diretti a chi lo attacca. Le Spine non impediscono il colpo nemico: trasformano però ogni assalto in un costo."
+          },
+          "spotlight": {
+            "label": "Spine 2"
+          }
+        },
+        "end-turn-wave-one": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Termina il turno e lascia che l’Exordium urti contro la linea."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "wave-one-resolved": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "La Guardia ha consumato parte della DEF dell’Oplita, ma le Spine 2 l’hanno distrutta. Prima ondata respinta senza spendere un attacco."
+          },
+          "spotlight": {
+            "label": "Prima ondata respinta"
+          }
+        },
+        "choose-counterattack": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "La seconda ondata è più resistente. Natura Vigile concede Contrattacco: se l’Oplita sopravvive a un attacco base, risponde immediatamente una sola volta."
+          },
+          "spotlight": {
+            "label": "Natura Vigile"
+          }
+        },
+        "select-counterattack-tactic": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Seleziona Natura Vigile."
+          },
+          "spotlight": {
+            "label": "Natura Vigile"
+          },
+          "wrongActionText": "Seleziona Natura Vigile."
+        },
+        "apply-counterattack-to-oplite": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Concedi Contrattacco all’Oplita."
+          },
+          "spotlight": {
+            "label": "Oplita di Confine"
+          },
+          "wrongActionText": "Bersaglia l’Oplita di Confine con Natura Vigile."
+        },
+        "counterattack-ready": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Spine e Contrattacco sono reazioni diverse. Le Spine infliggono danno diretto; il Contrattacco usa l’ATT dell’Oplita e colpisce prima la DEF nemica."
+          },
+          "spotlight": {
+            "label": "Contrattacco pronto"
+          }
+        },
+        "end-turn-wave-two": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Termina il turno e prepara la risposta dell’Oplita."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "wave-two-resolved": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Il Legionario ha spezzato l’ultima DEF dell’Oplita. Le Spine lo hanno ferito e il Contrattacco lo ha abbattuto. L’Oplita conserva tutti gli HP."
+          },
+          "spotlight": {
+            "label": "Seconda ondata respinta"
+          }
+        },
+        "choose-fortification": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "La terza ondata mira alla Radura. Bastione Ligneo imposta la DEF attuale della Struttura pari ai suoi HP: la scelta corretta contro un singolo colpo molto potente."
+          },
+          "spotlight": {
+            "label": "Bastione Ligneo"
+          }
+        },
+        "select-fortification-tactic": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Seleziona Bastione Ligneo."
+          },
+          "spotlight": {
+            "label": "Bastione Ligneo"
+          },
+          "wrongActionText": "Seleziona Bastione Ligneo."
+        },
+        "fortify-healing-grove": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Fortifica la Radura Curativa."
+          },
+          "spotlight": {
+            "label": "Radura Curativa"
+          },
+          "wrongActionText": "Bersaglia la Radura Curativa con Bastione Ligneo."
+        },
+        "fortification-ready": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "La Radura possiede ora 4 DEF, pari ai suoi 4 HP. Finché il colpo incontra almeno un punto di DEF, l’eccesso non oltrepassa la protezione."
+          },
+          "spotlight": {
+            "label": "DEF pari agli HP"
+          }
+        },
+        "end-turn-wave-three": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Termina il turno. L’ultima ondata tenterà di demolire la Struttura."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "wave-three-survived": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "L’Artiglieria ha annullato tutta la DEF, ma non ha sottratto HP alla Radura. La fortificazione ha assorbito il colpo e la linea può rispondere."
+          },
+          "spotlight": {
+            "label": "Radura ancora integra"
+          }
+        },
+        "select-oplite-final": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Seleziona l’Oplita. Ha resistito alle ondate ed è ancora pronto ad agire."
+          },
+          "spotlight": {
+            "label": "Oplita di Confine"
+          },
+          "wrongActionText": "Seleziona l’Oplita di Confine."
+        },
+        "destroy-third-wave": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Attacca l’Artiglieria. Senza DEF e con 2 HP rimasti, verrà distrutta dai 2 ATT dell’Oplita."
+          },
+          "spotlight": {
+            "label": "Artiglieria Exordium"
+          },
+          "wrongActionText": "Attacca l’Artiglieria Exordium con l’Oplita."
+        },
+        "agathoi-lesson-complete": {
+          "message": {
+            "speaker": "Narratore Agathoi",
+            "text": "Lezione completata. Hai scelto tre difese diverse, trasformato gli attacchi nemici in danno con Spine e Contrattacco, fortificato una Struttura e mantenuto il controllo del Punto."
+          },
+          "spotlight": {
+            "label": "Punto difeso"
+          }
+        }
+      }
+    },
+    "lesson-4-liberti": {
+      "title": "Lezione 4 · La pressione apre il varco",
+      "steps": {
+        "liberti-welcome": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Gli Agathoi tengono il Punto centrale con un Anthropos di Pietra. Non lo abbatterai con un singolo colpo: dovrai leggere la Mano, scegliere le carte giuste e trasformare il numero in pressione."
+          }
+        },
+        "liberti-formation-overview": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "L’Anthropos possiede 6 HP e 4 DEF. Tre fanterie Liberti lo circondano: quando almeno un alleato è adiacente allo stesso bersaglio, Superiorità Numerica aggiunge +1 ATT all’attacco."
+          },
+          "spotlight": {
+            "label": "Anthropos di Pietra"
+          }
+        },
+        "inspect-liberti-hand": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Passa il puntatore sulle carte e leggi le anteprime. Nel tutorial l’anteprima resta pienamente visibile anche quando il resto della schermata è oscurato. Cerca una carta che faccia applicare Sanguinamento 2 al prossimo attacco di una fanteria."
+          },
+          "spotlight": {
+            "label": "Confronta le carte"
+          }
+        },
+        "choose-sanguis-card": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Scegli dalla Mano la carta che prepara Sanguinamento 2 sul prossimo attacco base di una fanteria."
+          },
+          "spotlight": {
+            "label": "Scegli la carta corretta"
+          },
+          "wrongActionText": "Confronta gli effetti: serve Marchio dei Sanguis."
+        },
+        "apply-sanguis-mark": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Applica Marchio dei Sanguis al Miliziano evidenziato."
+          },
+          "spotlight": {
+            "label": "Miliziano da marchiare"
+          },
+          "wrongActionText": "Bersaglia il Miliziano evidenziato con Marchio dei Sanguis."
+        },
+        "select-marked-militia": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Seleziona il Miliziano marchiato."
+          },
+          "spotlight": {
+            "label": "Miliziano marchiato"
+          },
+          "wrongActionText": "Seleziona il Miliziano marchiato."
+        },
+        "superiority-attack": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Attacca l’Anthropos. Il Miliziano passa da 2 a 3 ATT grazie alla Superiorità Numerica: consumerà 3 dei 4 punti DEF e applicherà Sanguinamento 2."
+          },
+          "spotlight": {
+            "label": "Anthropos di Pietra"
+          },
+          "wrongActionText": "Attacca l’Anthropos di Pietra con il Miliziano selezionato."
+        },
+        "bleed-prepared": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "La DEF è scesa da 4 a 1. Il bersaglio è ancora a 6 HP, ma Sanguinamento 2 lo colpirà direttamente all’inizio del suo turno, ignorando la DEF residua."
+          },
+          "spotlight": {
+            "label": "1 DEF · Sanguinamento 2"
+          }
+        },
+        "end-turn-for-bleed": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Termina il turno per far scattare il Sanguinamento."
+          },
+          "spotlight": {
+            "label": "Fine turno"
+          },
+          "wrongActionText": "Termina il turno con il pulsante evidenziato."
+        },
+        "bleed-resolved": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Il Sanguinamento ha sottratto 2 HP direttamente: l’Anthropos è sceso a 4 HP pur conservando 1 DEF. Ora serve una carta che trasformi l’accerchiamento in attacchi immediati."
+          },
+          "spotlight": {
+            "label": "Sanguinamento risolto"
+          }
+        },
+        "choose-coordinated-card": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Scegli la carta che ordina alle fanterie adiacenti al nemico di attaccare immediatamente, anche se hanno già agito."
+          },
+          "spotlight": {
+            "label": "Seconda scelta"
+          },
+          "wrongActionText": "Serve una carta di attacco coordinato: Esca d’Attacco."
+        },
+        "play-coordinated-attack": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Gioca Esca d’Attacco sull’Anthropos accerchiato."
+          },
+          "spotlight": {
+            "label": "Bersaglio accerchiato"
+          },
+          "wrongActionText": "Bersaglia l’Anthropos di Pietra con Esca d’Attacco."
+        },
+        "coordinated-pressure-resolved": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Esca d’Attacco ha attivato le fanterie in sequenza. La prima ha eliminato l’ultima DEF; le successive hanno abbattuto gli HP. Il Punto centrale è ora libero."
+          },
+          "spotlight": {
+            "label": "Varco aperto"
+          }
+        },
+        "select-predone-to-capture": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Seleziona il Predone Liberto. Le reazioni coordinate non gli hanno consumato l’azione normale."
+          },
+          "spotlight": {
+            "label": "Predone Liberto"
+          },
+          "wrongActionText": "Seleziona il Predone Liberto."
+        },
+        "capture-center-ps": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Muovi il Predone sul Punto Strategico e completa l’assalto."
+          },
+          "spotlight": {
+            "label": "Punto Strategico centrale"
+          },
+          "wrongActionText": "Muovi il Predone sul Punto Strategico centrale."
+        },
+        "liberti-lesson-complete": {
+          "message": {
+            "speaker": "Narratore Liberti",
+            "text": "Lezione completata. Hai confrontato le carte tramite anteprima, scelto la risposta corretta, applicato Sanguinamento, sfruttato Superiorità Numerica e convertito l’accerchiamento in conquista."
+          },
+          "spotlight": {
+            "label": "Punto conquistato"
+          }
+        }
+      }
+    },
+    "lesson-5-fabeot": {
+      "title": "Lezione 5 · Il contratto cambia padrone",
+      "steps": {
+        "fabeot-welcome": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Il Nexus ha lasciato un Fante Robot isolato. Non serve distruggerlo: prima rendilo vulnerabile, poi sfrutta il Marchio per trasferirne il controllo alla Cittadella."
+          },
+          "spotlight": {
+            "label": "Fante Robot"
+          }
+        },
+        "fabeot-contract-overview": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Sentenza Porpora costa 2 ENE. Il bersaglio marchiato subisce +1 danno da attacchi e abilità offensive fino a fine turno; quel Marchio soddisfa anche una clausola di acquisizione Fabeot."
+          },
+          "spotlight": {
+            "label": "Gerarca Fabeot"
+          }
+        },
+        "select-fabeot-hierarch": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Seleziona il Gerarca Fabeot."
+          },
+          "spotlight": {
+            "label": "Gerarca Fabeot"
+          },
+          "wrongActionText": "Seleziona il Gerarca Fabeot."
+        },
+        "activate-purple-sentence": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Attiva Sentenza Porpora."
+          },
+          "spotlight": {
+            "label": "Sentenza Porpora"
+          },
+          "wrongActionText": "Attiva Sentenza Porpora dal pannello dell’unità."
+        },
+        "mark-fante-with-vulnerability": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Applica il Marchio al Fante Robot."
+          },
+          "spotlight": {
+            "label": "Fante Robot"
+          },
+          "wrongActionText": "Bersaglia il Fante Robot con Sentenza Porpora."
+        },
+        "vulnerability-contract-ready": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Il Fante Robot è Marchiato e Vulnerabile: il prossimo attacco riceverà +1 danno. La sua DEF verrà rimossa, mentre i 2 HP resteranno entro il limite della Clausola di Acquisizione."
+          },
+          "spotlight": {
+            "label": "Marchiato · Vulnerabile +1"
+          }
+        },
+        "select-fabeot-adept": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Seleziona l’Adepto Fabeot."
+          },
+          "spotlight": {
+            "label": "Adepto Fabeot"
+          },
+          "wrongActionText": "Seleziona l’Adepto Fabeot."
+        },
+        "exploit-fabeot-vulnerability": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Attacca il Fante Robot. L’Adepto ha 1 ATT, ma la Vulnerabilità aggiunge 1 danno e rimuove l’unica DEF senza ferire gli HP."
+          },
+          "spotlight": {
+            "label": "Fante Robot vulnerabile"
+          },
+          "wrongActionText": "Attacca il Fante Robot con l’Adepto selezionato."
+        },
+        "target-ready-for-acquisition": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Il bersaglio è ancora vivo, ha costo 2, 2 HP e conserva il Marchio. Tutte le condizioni della Clausola di Acquisizione sono ora leggibili sulla mappa."
+          },
+          "spotlight": {
+            "label": "2 HP · 0 DEF · Marchiato"
+          }
+        },
+        "select-fabeot-citadel": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Seleziona la Cittadella Fabeot."
+          },
+          "spotlight": {
+            "label": "Cittadella Fabeot"
+          },
+          "wrongActionText": "Seleziona la Cittadella Fabeot."
+        },
+        "activate-acquisition-clause": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Attiva Clausola di Acquisizione. Costa 4 ENE e converte un bersaglio valido già marchiato."
+          },
+          "spotlight": {
+            "label": "Clausola di Acquisizione"
+          },
+          "wrongActionText": "Attiva Clausola di Acquisizione."
+        },
+        "convert-marked-fante": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Converti il Fante Robot marchiato."
+          },
+          "spotlight": {
+            "label": "Fante Robot acquisibile"
+          },
+          "wrongActionText": "Usa la Clausola sul Fante Robot marchiato."
+        },
+        "fabeot-conversion-resolved": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Il Fante Robot è passato sotto controllo Fabeot. Entra esausto e con Inibizione Azione: la conversione è permanente, ma non concede un’azione immediata."
+          },
+          "spotlight": {
+            "label": "Fante Robot convertito"
+          }
+        },
+        "inspect-fabeot-contracts": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Ora controlla le risorse dell’avversario. Embargo blocca una carta per ogni Punto Strategico Fabeot; Contratto di Usura sottrae 1 ENE e riduce l’entrata di 1 per due turni."
+          },
+          "spotlight": {
+            "label": "Contratti Fabeot"
+          }
+        },
+        "play-fabeot-embargo": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Gioca Embargo. L’Avamposto presidia un Punto Strategico e la Mano Nexus contiene una sola carta: il risultato è deterministico."
+          },
+          "spotlight": {
+            "label": "Embargo"
+          },
+          "wrongActionText": "Gioca Embargo."
+        },
+        "fabeot-embargo-resolved": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Embargo ha bloccato l’unica carta Nexus per un turno. Il numero di carte colpite deriva dai Punti Strategici controllati, non da una scelta nascosta."
+          },
+          "spotlight": {
+            "label": "1 PS controllato"
+          }
+        },
+        "play-fabeot-usury": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Gioca Contratto di Usura per disturbare il deposito e le prossime entrate ENE del Nexus."
+          },
+          "spotlight": {
+            "label": "Contratto di Usura"
+          },
+          "wrongActionText": "Gioca Contratto di Usura."
+        },
+        "fabeot-usury-resolved": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Il deposito Nexus è sceso da 5 a 4 ENE e subirà -1 ENE alle prossime due entrate. Mano, territorio e risorse sono tre leve distinte dello stesso controllo Fabeot."
+          },
+          "spotlight": {
+            "label": "ENE Nexus disturbata"
+          }
+        },
+        "fabeot-lesson-complete": {
+          "message": {
+            "speaker": "Narratore Fabeot",
+            "text": "Lezione completata. Hai applicato un Marchio di Vulnerabilità, preparato e convertito il bersaglio, bloccato la Mano nemica e disturbato il flusso ENE senza affidarti al caso."
+          },
+          "spotlight": {
+            "label": "Acquisizione completata"
+          }
+        }
+      }
+    }
+  },
+  "tutorialVoice": {
+    "lesson-1-exordium": {
+      "lesson-welcome": {
+        "text": "Benvenuto nelle schiere di Aurex. Il Nexus preferisce misurare il campo finché il momento è già passato; noi impariamo a leggerlo e a colpire quando conta. Carte, schieramento, DEF, abilità e tattiche sono parti dello stesso assalto."
+      },
+      "explain-defense": {
+        "text": "Un attacco normale consuma prima la DEF. L’ATT eccedente non passa agli HP: usare 4 ATT per togliere l’ultimo punto DEF spreca forza che potevi riservare al colpo successivo. Apri la protezione con il colpo giusto, poi colpisci gli HP."
+      },
+      "mech-arrival": {
+        "text": "Il Nexus risponde con un Mech Pesante: 4 HP, 3 DEF e 3 ATT. Non disperdere il fuoco: un nemico lasciato vivo continua ad agire. Concentra tattica e più unità sullo stesso bersaglio finché è eliminato."
+      },
+      "tribune-breaks-mech-defense": {
+        "text": "Usa Il Tribuno per consumare l’ultima DEF. È il colpo meno costoso che apre gli HP: conserva l’ATT del Legionario per il bersaglio ormai scoperto."
+      },
+      "destroy-mech": {
+        "text": "Adesso il Legionario chiude l’assalto. Con DEF zero, i 4 ATT vanno sui 4 HP: è qui che la potenza pesante rende, non un colpo prima."
+      },
+      "lesson-complete": {
+        "text": "Lezione completata. Un assalto serio parte quando Depot ENE, tattica disponibile e ricarica delle abilità sono allineati. Contro i calcoli Nexus o i contratti Fabeot, attaccare a metà significa offrire loro il turno che aspettavano."
+      }
+    },
+    "lesson-2-nexus": {
+      "nexus-welcome": {
+        "text": "Protocollo di addestramento attivo. Obiettivo: trasformare QG, Fanteria, Strutture e Avanguardia in una rete di presenza e schieramento. Valuta ogni posizione per costo, copertura e continuità operativa."
+      },
+      "read-starter-structure": {
+        "text": "La Barriera Armata è la Struttura Starter. Una Struttura può occupare un PS come ogni altra unità da campo; se costruita su un PS legalmente accessibile, ne mantiene il controllo e contemporaneamente crea un nodo di sbarco."
+      },
+      "build-forward-structure": {
+        "text": "Costruisci la Barriera sulla cella indicata. La Fanteria converte il proprio movimento in infrastruttura: la nuova posizione non serve solo a difendere, ma riduce la distanza dei futuri schieramenti."
+      },
+      "deployment-network-online": {
+        "text": "Il nodo avanzato è operativo immediatamente. Se possiedi ancora ENE, una carta unità e spazio legale, puoi usare la Struttura appena costruita per schierare nello stesso turno un reparto avanzato più vicino al fronte."
+      },
+      "vanguard-captures-center": {
+        "text": "Muovi il Mech sul Punto Strategico. Il controllo vale solo se la rete può sostenerlo: occupare un PS che non puoi rinforzare trasforma un vantaggio temporaneo in perdita di ENE e tempo."
+      },
+      "nexus-lesson-complete": {
+        "text": "Lezione completata. Regola operativa: costruisci dove la rete accorcia i rinforzi e prendi un PS quando il costo previsto per mantenerlo è inferiore al valore che produce."
+      }
+    },
+    "lesson-3-agathoi": {
+      "agathoi-welcome": {
+        "text": "La linea Agathoi non vince inseguendo ogni bersaglio. I Liberti chiamano slancio ciò che spesso lascia scoperto il terreno importante. Qui imparerai a scegliere cosa deve restare in piedi e a far pagare ogni tentativo di sottrarlo."
+      },
+      "defensive-line-overview": {
+        "text": "L’Oplita di Confine presidia il Punto centrale con 3 HP, 3 DEF e Spine 1 permanenti. Un PS difeso bene non è necessariamente quello con più unità: è quello la cui caduta spezzerebbe davvero la tua posizione."
+      },
+      "wave-two-resolved": {
+        "text": "Il Legionario ha spezzato l’ultima DEF dell’Oplita, ma Spine e Contrattacco lo hanno abbattuto. Conservare il vantaggio significa arrivare al turno successivo con il PS, gli HP e una risposta ancora disponibili."
+      },
+      "choose-fortification": {
+        "text": "La terza ondata mira alla Radura. Bastione Ligneo porta la DEF attuale della Struttura ai suoi HP. Non fortificare tutto: investi dove la perdita aprirebbe il PS o la rete che sostiene il resto della linea."
+      },
+      "agathoi-lesson-complete": {
+        "text": "Lezione completata. Non puoi difendere ogni PS con la stessa forza. Scegli quelli che puoi sostenere, proteggi quelli che tengono insieme la posizione e lascia all’avversario il costo di attaccare dove sei pronto."
+      }
+    },
+    "lesson-4-liberti": {
+      "liberti-welcome": {
+        "text": "Gli Agathoi hanno murato il centro con un Anthropos di Pietra. I Nexus costruiscono gabbie e i Fabeot contratti; nessuno dei due ama quando il fronte cambia direzione. Imparerai a trasformare numero e movimento in un varco, non a battere la testa sul punto più duro."
+      },
+      "liberti-formation-overview": {
+        "text": "L’Anthropos possiede 6 HP e 4 DEF. Tre fanterie Liberti lo circondano: Superiorità Numerica aggiunge +1 ATT quando un alleato condivide il bersaglio. La forza Liberti è far arrivare più attacchi sullo stesso nemico prima che possa recuperare."
+      },
+      "coordinated-pressure-resolved": {
+        "text": "Esca d’Attacco ha attivato le fanterie in sequenza: la prima ha eliminato l’ultima DEF, le successive hanno abbattuto gli HP. Questo è il valore dell’attacco concentrato: una sequenza completa il lavoro invece di lasciare più nemici mezzi danneggiati."
+      },
+      "capture-center-ps": {
+        "text": "Muovi il Predone sul Punto Strategico. Eliminare il presidio non basta: l’assalto produce vantaggio solo quando rioccupi il Punto e costringi l’altro a reagire alla tua posizione."
+      },
+      "liberti-lesson-complete": {
+        "text": "Lezione completata. Se sei in svantaggio, non inseguire il PS più difeso: colpisci quello sguarnito, costringi il nemico a spostarsi e riapri il fronte. I PS sono leve; usa quella che cede."
+      }
+    },
+    "lesson-5-fabeot": {
+      "fabeot-welcome": {
+        "text": "Il Nexus ha lasciato un Fante Robot isolato. Prevedibile. Gli altri chiamano proprietà ciò che non hanno ancora perso: prima rendi il bersaglio vulnerabile, poi trasferiscine il controllo alla Cittadella."
+      },
+      "fabeot-contract-overview": {
+        "text": "Sentenza Porpora costa 2 ENE. Il Marchio aumenta di 1 i danni offensivi e soddisfa una clausola di acquisizione. Un effetto è interessante solo quando apre il successivo: Marchio, danno e acquisizione valgono più della somma se sono ordinati correttamente."
+      },
+      "fabeot-embargo-resolved": {
+        "text": "Embargo ha bloccato l’unica carta Nexus per un turno. Ogni PS controllato aumenta il numero di carte che puoi bloccare. Il territorio non è sfondo: è capitale convertibile in pressione sulla Mano avversaria."
+      },
+      "fabeot-usury-resolved": {
+        "text": "Il Depot Nexus è sceso da 5 a 4 ENE e subirà -1 alle prossime due entrate. Chi attacca senza considerare Depot ENE, ricariche e tattiche disponibili tratta le proprie risorse con la stessa leggerezza degli altri. Noi preferiamo farlo fare all’avversario."
+      },
+      "fabeot-lesson-complete": {
+        "text": "Lezione completata. Il motore della partita ruota sui PS: ENE, Pressione e posizioni di schieramento obbligano tutti a scegliere. Se un PS è troppo protetto, minacciane un altro; quando la difesa si sposta, il valore cambia proprietario."
+      }
+    }
+  }
+}

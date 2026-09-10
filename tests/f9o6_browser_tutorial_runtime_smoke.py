@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -80,7 +80,7 @@ with sync_playwright() as p:
 unexpected = [msg for msg in console_errors if not msg.startswith("Arena AppShell: inizializzazione GameScreen non bloccante fallita")]
 result = {"initial":initial,"started":started,"welcome":welcome,"readCard":read_card,"collapse":collapse,"show":show,"cardStep":card_step,"deploy":deploy,"aborted":aborted,"pageErrors":page_errors,"consoleErrors":unexpected}
 print(json.dumps({"ok":True,**result}, ensure_ascii=False, indent=2))
-assert initial["build"] in {"C2-STABLE-1-F9O6-APK-M4c","C2-STABLE-1-F9O7e-APK-M4c","C2-STABLE-1-F9O7g-APK-M4c",'C2-STABLE-1-F9V3c-APK-M4c'}, initial
+assert_valid_build_version(initial["build"])
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menuButton"] and initial["runtimeApi"] == "function"
 assert started is True

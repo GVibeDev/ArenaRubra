@@ -1,0 +1,27 @@
+"use strict";
+
+const assert=require("assert");
+const fs=require("fs");
+const path=require("path");
+const vm=require("vm");
+const root=path.resolve(__dirname,"..");
+const source=fs.readFileSync(path.join(root,"src/core/state_domains.js"),"utf8");
+const context={structuredClone};context.globalThis=context;vm.createContext(context);vm.runInContext(source,context);
+const domains=vm.runInContext("ArenaStateDomains",context);
+assert(Object.isFrozen(domains));
+assert.strictEqual(domains.classifyKey("units"),"authoritative");
+assert.strictEqual(domains.classifyKey("aiFinalizationF9T0"),"ai");
+assert.strictEqual(domains.classifyKey("matchTelemetry"),"telemetry");
+assert.strictEqual(domains.classifyKey("selectedId"),"ui");
+const state={units:[{uid:"u1"}],energy:{1:3},aiFinalizationF9T0:{players:{}},matchTelemetry:{events:1},cardDebug:{mode:"x"}};
+const authoritative=domains.authoritative(state);
+assert.deepStrictEqual(JSON.parse(JSON.stringify(authoritative)),{units:[{uid:"u1"}],energy:{1:3}});
+authoritative.units[0].uid="changed";
+assert.strictEqual(state.units[0].uid,"u1");
+assert.deepStrictEqual(Object.keys(domains.ai(state)),["aiFinalizationF9T0"]);
+assert.deepStrictEqual(Object.keys(domains.telemetry(state)).sort(),["cardDebug","matchTelemetry"]);
+assert.deepStrictEqual(Object.keys(domains.withoutDiagnostics(state)).sort(),["energy","units"]);
+const ui=domains.uiInteraction({selectedId:"u1",mode:"move",pendingAbility:null,unrelated:4});
+assert.deepStrictEqual(JSON.parse(JSON.stringify(ui)),{selectedId:"u1",mode:"move",pendingAbility:null});
+assert(!/document|localStorage|sessionStorage|indexedDB|render\(/.test(source));
+console.log("AR-AC1 state domains smoke: 12/12 OK");

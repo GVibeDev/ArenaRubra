@@ -147,7 +147,7 @@ ok(read("src/build_info.js").includes('version: "C2-STABLE-1-F9U2b-APK-M4c"'), "
 ok(read("src/build_info.js").includes('F9Q3d4 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d4-APK-M4c"'), "validated F9Q3d4 baseline preserved");
 ok(read("index.html").includes('src/ffa_attribution.js'), "FFA attribution module loaded");
 ok(read("src/events.js").includes('PRESSURE_EVALUATED: "PRESSURE_EVALUATED"'), "typed Pressure evaluation event registered");
-ok(read("src/rules.js").includes('eliminatePlayer(player, null, "concessione")'), "concession no longer assigns arbitrary opponent");
+ok(read("src/rules/victory_lifecycle.js").includes('eliminatePlayer(player, null, "concessione")'), "concession no longer assigns arbitrary opponent");
 ok(read("src/combat.js").includes('damageKind:"hazard"'), "owned mine damage carries hazard attribution");
 
 console.log(`F9Q3d4 Elimination, Assist & Pressure Attribution smoke: ${checks}/${checks} OK`);

@@ -9,6 +9,11 @@ const files = [
   "data/terrain_registry.js",
   "data/official_maps_f9r3.js",
   "data/map_definitions.js",
+  "src/map_normalization.js",
+  "src/map_pathfinding.js",
+  "src/map_validation.js",
+  "src/map_persistence.js",
+  "src/map_state_queries.js",
   "src/map_runtime.js",
   "src/map_backgrounds.js",
   "src/map_editor.js"
@@ -112,7 +117,12 @@ for (const id of [
   assert.ok(html.includes('id="' + id + '"'), id + " missing");
 }
 assert.ok(html.includes('data-app-open-map-editor'));
-assert.ok(html.includes('src="src/map_editor.js"'));
+assert.ok(html.includes('ArenaRuntimeProfile.loadScript("src/map_editor.js","dev")'));
+assert.ok(html.includes('src="src/map_normalization.js"'));
+assert.ok(html.includes('src="src/map_pathfinding.js"'));
+assert.ok(html.includes('src="src/map_validation.js"'));
+assert.ok(html.includes('src="src/map_persistence.js"'));
+assert.ok(html.includes('src="src/map_state_queries.js"'));
 assert.ok(html.includes('src="src/map_runtime.js"'));
 console.log("F9Q3 map editor smoke: OK");
 `;

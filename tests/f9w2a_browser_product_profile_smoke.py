@@ -1,4 +1,5 @@
 from __future__ import annotations
+from browser_runtime import chromium_launch_options
 
 import contextlib
 import http.server
@@ -50,7 +51,7 @@ def main() -> None:
         raise SystemExit("F9W2a browser smoke richiede il checkout completo (index.html + asset), non il solo overwrite ZIP.")
 
     with local_server(ROOT) as url, sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(**chromium_launch_options())
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
         errors: list[str] = []
         page.on("pageerror", lambda exc: errors.append(str(exc)))

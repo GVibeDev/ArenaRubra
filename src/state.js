@@ -29,53 +29,12 @@ function createMatchId() {
   return Date.now() + "-" + Math.random().toString(36).slice(2, 8);
 }
 
-function readDeckSetupForSide(side) {
-  const modeEl = $(`p${side}DeckMode`) || $(`setupP${side}DeckMode`);
-  const savedKeyEl = $(`p${side}DeckSavedKey`) || $(`setupP${side}DeckSavedKey`);
-  const mode = modeEl ? modeEl.value : "template";
-  const savedKey = savedKeyEl ? String(savedKeyEl.value || "") : "";
-  return {
-    mode: mode === "custom" ? "custom" : "template",
-    savedKey
-  };
-}
-
-function readPlayerSetupValue(side, suffix, fallback) {
-  const setupEl = $(`setupP${side}${suffix}`);
-  const legacyEl = $(`p${side}${suffix}`);
-  return setupEl ? setupEl.value : (legacyEl ? legacyEl.value : fallback);
-}
-
+// AR-AC1 compatibility bridge. Caller inventory: newGame() plus browser/tests
+// that inspect the setup DTO. Remove only when those callers use the adapter API.
 function readGameSetupFromDom() {
-  const mapId = $("setupMapName") ? $("setupMapName").value : "map1_starter";
-  const definition = typeof getMapDefinitionById === "function" ? getMapDefinitionById(mapId) : null;
-  const playerCount = Math.max(2, Math.min(4, Number(definition && definition.playerCount) || 2));
-  const playerIds = Array.from({ length: playerCount }, (_, index) => index + 1);
-  const factionFallbacks = { 1: "Nexus", 2: "Exordium", 3: "Liberti", 4: "Agathoi" };
-  const factions = {};
-  const selectedCommanders = {};
-  const selectedDecks = {};
-  const modes = {};
-  playerIds.forEach(side => {
-    factions[side] = readPlayerSetupValue(side, "Faction", factionFallbacks[side]);
-    selectedCommanders[side] = readPlayerSetupValue(side, "Commander", null);
-    selectedDecks[side] = readDeckSetupForSide(side);
-    modes[side] = readPlayerSetupValue(side, "Mode", side === 1 ? "human" : "bot");
+  return ArenaSetupAdapter.readFromDom(document, {
+    getMapDefinitionById: typeof getMapDefinitionById === "function" ? getMapDefinitionById : null
   });
-  return {
-    mapId,
-    mapDefinition: definition,
-    playerCount,
-    playerIds,
-    factions,
-    selectedCommanders,
-    selectedDecks,
-    modes,
-    autoResignEnabled: $("autoResignToggle") ? $("autoResignToggle").checked : true,
-    aiMode: $("botAiMode") ? $("botAiMode").value : "advanced",
-    pacePreset: $("pacePreset") ? $("pacePreset").value : "standard",
-    gameScaleMode: $("gameScaleMode") ? $("gameScaleMode").value : "large_scale"
-  };
 }
 
 function createInitialGameState(setup) {

@@ -71,7 +71,8 @@ function newGame(setupOverrides = null) {
       const factions = setup.factions;
       const matchSeed = String(setup.matchSeed || (typeof createMatchSeed === "function" ? createMatchSeed() : Date.now()));
       const matchRng = typeof createMatchRngController === "function" ? createMatchRngController(matchSeed) : null;
-      const firstPlayer = chooseFirstPlayer(setup.playerIds, matchRng);
+      const initiativeMode = ArenaSetupAdapter.readInitiativeMode(document);
+      const firstPlayer = chooseFirstPlayer(setup.playerIds, matchRng, initiativeMode);
       state = createInitialGameState({
         ...setup,
         firstPlayer,
@@ -159,8 +160,8 @@ function newGame(setupOverrides = null) {
       maybeRunBot();
     }
 
-function chooseFirstPlayer(playerIds = null, rngController = null) {
-      const modeValue = $("initiativeMode").value;
+function chooseFirstPlayer(playerIds = null, rngController = null, initiativeMode = null) {
+      const modeValue = initiativeMode;
       const ids = Array.isArray(playerIds) && playerIds.length ? playerIds.map(Number) : [1, 2];
       if (ids.includes(Number(modeValue))) return Number(modeValue);
       const randomValue = rngController && typeof rngController.next === "function" ? rngController.next() : Math.random();

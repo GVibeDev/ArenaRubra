@@ -1,3 +1,4 @@
+from browser_runtime import chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -19,13 +20,14 @@ html = """
 """
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path="/usr/bin/chromium", args=["--no-sandbox"])
+    browser = p.chromium.launch(**chromium_launch_options())
     page = browser.new_page(viewport={"width": 1280, "height": 900})
     page.on("pageerror", lambda exc: page_errors.append(str(exc)))
     page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
     page.set_content(html, wait_until="load")
     page.add_script_tag(path=str(ROOT / "data/tutorial_scenarios.js"))
     page.add_script_tag(path=str(ROOT / "src/tutorial_runtime.js"))
+    page.evaluate("window.state = null")
     page.evaluate("tutorialRuntimeRenderMenu()")
 
     initial = page.evaluate("""() => ({
@@ -68,9 +70,8 @@ with sync_playwright() as p:
     assert all(card["unlocked"] == "true" for card in unlocked["cards"]), unlocked
     assert all("isAvailable" in card["cls"] for card in unlocked["cards"]), unlocked
     assert all("Sbloccata: Accademia completata." in card["text"] for card in unlocked["cards"]), unlocked
-    assert unlocked["disabled"][0] is False and all(unlocked["disabled"][1:]), unlocked
-    assert unlocked["labels"][0] == "Avvia", unlocked
-    assert all(label == "In preparazione" for label in unlocked["labels"][1:]), unlocked
+    assert not any(unlocked["disabled"]), unlocked
+    assert all(label == "Avvia" for label in unlocked["labels"]), unlocked
     assert "5/5" in unlocked["gate"] and "sbloccate" in unlocked["gate"].lower(), unlocked
     assert unlocked["diag"]["unlocked"] is True and unlocked["diag"]["completedLessons"] == 5, unlocked
 

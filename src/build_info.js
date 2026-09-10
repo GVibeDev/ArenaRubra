@@ -70,6 +70,10 @@
 // F9W2a1 Snow Battlefield Standard / Classic Official Map metadata.
 // F9W2b Menu Theme System metadata.
 // F9W2c Global Theme Scope & Skin Architecture metadata.
+// F9W2d4a frozen compatibility markers:
+// version: "C2-STABLE-1-F9W2d4a-APK-M4c"
+// buildName: "Inspector Position Ownership Hotfix"
+// buildChannel: "starter2-ui-inspector-position-w2d4a"
 // F9T2 validated-baseline candidate: logicBaseline: "C2-STABLE-1-F9T1-APK-M4c"
 // F9T1 validated baseline: logicBaseline: "C2-STABLE-1-F9T0-APK-M4c"
 // F9Q3d1 validated-baseline compatibility marker: version: "C2-STABLE-1-F9Q3d1-APK-M4c"
@@ -91,17 +95,17 @@
 
 const BUILD_INFO = Object.freeze({
   appName: "Arena Rubra",
-  stage: "Starter Game ALPHA",
-  version: "C2-STABLE-1-F9W2d4a-APK-M4c",
-  buildName: "Inspector Position Ownership Hotfix",
-  buildDate: "2026-08-27",
-  buildChannel: "starter2-ui-inspector-position-w2d4a",
+  stage: "Starter 1.0 RC",
+  version: "1.0.0-rc.1",
+  buildName: "Starter 1.0 Release Candidate 1",
+  buildDate: "2026-09-10",
+  buildChannel: "starter-1-0-rc-1",
   logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c",
   productProfileDefault: "dev",
   productProfileSwitchable: true,
   distributionProfileName: "Demo / Distribution",
   map: "Campo Starter · Diamond 4 · Claustro Clash · Narrow Path · Triple Battlefield · The Valley · Central hotspot · Plains 2G large · La Trappola · Snow BF - 4PL - 3x",
-  notes: "Candidata F9W2d4a costruita sulla F9W2d4 pubblicata su main (commit 311a05ca988c4c5343f7b00356c247d3a6fea328), ancora da validare. Corregge il conflitto fra layout statico e theme layer: selectedUnitFloat viene rimosso esclusivamente dal gruppo dinamico che forza position:relative, mentre resta nei selettori visuali del tema per colori, materiale, bordi, contenuti e pseudo-elementi. In questo modo il layout F9W2d4 mantiene la proprieta della posizione Desktop/Web con position:fixed a destra e preview da circa 370 px. Mobile M4, gameplay, AI, tutorial, mappe, Match Data, Player/DEV, skin, ornamentazione e presentation_theme restano invariati. Baseline logica F9T2c4 invariata.",
+  notes: "Starter 1.0 RC1 per Desktop/Web. Include Content Freeze, consolidamento architetturale AR-AC1, localizzazione completa IT/EN, Visual/Asset Gate, Documentation Freeze e release hardening S2-C7. Advanced resta il livello bot massimo ufficiale; Expert resta DEV/sperimentale; Android non e un requisito. Baseline logica F9T2c4 e catalogo Starter congelato invariati. La promozione finale richiede artifact da clean checkout, CI verde e workflow di approvazione del progetto.",
 });
 
 function buildInfoLabel() {

@@ -7,6 +7,16 @@ const vm = require("vm");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
+const pressurePerceptionSource = read("src/ai/pressure_perception.js");
+const finalizationMemorySource = read("src/ai/finalization_memory.js");
+const factionMaturitySource = read("src/ai/faction_maturity.js");
+const garrisonPlanningSource = read("src/ai/garrison_planning.js");
+const strategicStatusSource = read("src/ai/strategic_status.js");
+const moveContextSource = read("src/ai/move_context.js");
+const factionMoveScoringSource = read("src/ai/faction_move_scoring.js");
+const moveSelectionSource = read("src/ai/move_selection.js");
+const moveExecutionSource = read("src/ai/move_execution.js");
+const combatExecutionSource = read("src/ai/combat_execution.js");
 const aiSource = read("src/ai.js");
 const stateSource = read("src/state.js");
 const buildSource = read("src/build_info.js");
@@ -41,8 +51,8 @@ ok(buildSource.includes('buildChannel: "f9t0-candidate"'), "canale candidato F9T
 
 const nexusCore = bodyOf("botNexusCoreStructure");
 ok(!nexusCore.includes("|| true"), "Nexus core structure non accetta più ogni struttura per errore");
-const advancedMove = bodyOf("chooseAdvancedMove");
-ok(advancedMove.includes("botCreateAdvancedMoveContextF9T0"), "movimento avanzato usa il contesto F9T0");
+const advancedMove = moveSelectionSource;
+ok(advancedMove.includes("createMoveContext(unit, options, status)"), "movimento avanzato usa il contesto F9T0");
 ok(!advancedMove.includes("chooseEmergencyMove"), "nessun secondo scoring emergenza nel selettore");
 ok(!advancedMove.includes("chooseHomePsDutyMove"), "nessun secondo scoring PS domestico nel selettore");
 ok(!advancedMove.includes("chooseSaferStrategicMove"), "nessun terzo rescoring sicurezza nel selettore");
@@ -50,17 +60,19 @@ const botAct = bodyOf("botAct");
 ok(!botAct.includes("commanderSafetyMove(unit)"), "sicurezza comandante confluita nel punteggio unico");
 ok(!botAct.includes("homePsDutyActive(unit.side)"), "dovere PS domestico confluito nel punteggio unico");
 ok(botAct.includes("advancedStatus"), "stato strategico riusato nell'intera azione");
-const moveContext = bodyOf("botCreateAdvancedMoveContextF9T0");
-ok((moveContext.match(/homePsMoveScore\(/g) || []).length === 1, "homePsMoveScore calcolato una sola volta per candidato");
-ok((moveContext.match(/botGeneralDoctrineMoveBonus\(/g) || []).length === 1, "dottrina generale calcolata una sola volta per candidato");
-ok((moveContext.match(/botFactionDoctrineMoveBonusF9T0\(/g) || []).length === 1, "dottrina di fazione calcolata una sola volta per candidato");
+const moveContext = moveContextSource;
+ok((moveContext.match(/getHomePsMoveScore\(/g) || []).length === 1, "homePsMoveScore calcolato una sola volta per candidato");
+ok((moveContext.match(/getGeneralDoctrineMoveBonus\(/g) || []).length === 1, "dottrina generale calcolata una sola volta per candidato");
+ok((moveContext.match(/getFactionDoctrineMoveBonus\(/g) || []).length === 1, "dottrina di fazione calcolata una sola volta per candidato");
 const agathoiWrapper = bodyOf("chooseAdvancedAgathoiMove");
 ok(agathoiWrapper.includes("return chooseAdvancedMove"), "Agathoi usa il selettore unificato");
 const strategicStart = aiSource.indexOf("function strategicStatus");
 const strategicEnd = aiSource.indexOf("function logEmergencyIfNeeded", strategicStart);
 const strategicBody = aiSource.slice(strategicStart, strategicEnd);
-ok(strategicBody.includes("profile.requiredPs"), "soglie strategiche proporzionali a requiredPs");
-ok(!strategicBody.includes("ownPs >= 2 &&"), "rimossa la soglia fissa di due PS dalla chiusura strategica");
+ok(strategicStatusSource.includes("profile.requiredPs"), "soglie strategiche proporzionali a requiredPs");
+ok(!strategicStatusSource.includes("ownPs >= 2 &&"), "rimossa la soglia fissa di due PS dalla chiusura strategica");
+ok(strategicBody.includes("botUpdateFinalizationMemoryF9T0(player)"), "facade conserva l'aggiornamento memoria F9T0");
+ok(strategicBody.includes("botBuildGarrisonPlanF9T0(player, result)"), "facade conserva il piano guarnigione F9T0");
 
 // Sandbox dinamica minima per verificare i contratti di comportamento.
 const center = [0, 0, 0];
@@ -117,7 +129,7 @@ const context = {
   isMissionHandCard:() => false
 };
 vm.createContext(context);
-vm.runInContext(`${aiSource}\n;globalThis.__f9t0={strategicStatus,botNexusNetworkMaturityF9T0,botBuildGarrisonPlanF9T0,shouldReleasePsGarrison,botStallOscillationScoreF9T0,botRecordMoveChoiceF9T0};`, context, { filename:"ai.js" });
+vm.runInContext(`${pressurePerceptionSource}\n${finalizationMemorySource}\n${factionMaturitySource}\n${garrisonPlanningSource}\n${strategicStatusSource}\n${moveContextSource}\n${factionMoveScoringSource}\n${moveSelectionSource}\n${moveExecutionSource}\n${combatExecutionSource}\n${aiSource}\n;globalThis.__f9t0={strategicStatus,botNexusNetworkMaturityF9T0,botBuildGarrisonPlanF9T0,shouldReleasePsGarrison,botStallOscillationScoreF9T0,botRecordMoveChoiceF9T0};`, context, { filename:"ai.js" });
 const api = context.__f9t0;
 
 let status = api.strategicStatus(1);

@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const calls = [];
@@ -208,8 +209,7 @@ ev("tutorialRuntimeState.stepIndex=0; tutorialRuntimeState.scenario={steps:[__st
 ev("tutorialRuntimeNarrativeForStep(__stepF9V4a)");
 if (!context.__narrativeMessages || !context.__narrativeMessages[0] || context.__narrativeMessages[0].text === 'legacy') throw new Error("Narrative renderer did not consume F9V4a overlay");
 
-if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9W1a-APK-M4c") throw new Error("Build version invalid");
-if (ev("BUILD_INFO.buildChannel") !== "starter2-match-data-w1a") throw new Error("Build channel invalid");
+assertCurrentBuildInfo(ev("BUILD_INFO"));
 
 console.log(JSON.stringify({
   ok:true,

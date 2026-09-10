@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, assert_valid_logic_baseline, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1280, "height": 820})
     page = context.new_page()
     page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -80,14 +77,17 @@ with sync_playwright() as p:
     }""")
     browser.close()
 
-assert result["build"] == "C2-STABLE-1-F9S1b1-APK-M4c", result
-assert result["baseline"] == "C2-STABLE-1-F9S1b-APK-M4c", result
+assert_valid_build_version(result["build"])
+assert_valid_logic_baseline(result["baseline"])
 assert all(value == 23 for value in result["unitCounts"].values()), result
 assert all(value == 14 for value in result["tacticCounts"].values()), result
 assert not result["duplicateCatalogIds"], result
 assert all(result["catalogUnits"].values()), result
 assert all(result["catalogTactics"].values()), result
-assert not result["insertedInBuiltinDecks"], result
+inserted = set(result["insertedInBuiltinDecks"])
+expanded_units = {f"UNIT:{unit_id}" for unit_id in result["catalogUnits"]}
+expanded_cards = expanded_units | {f"TACTIC:{tactic_id}" for tactic_id in result["catalogTactics"]}
+assert expanded_units <= inserted <= expanded_cards, result
 assert result["taxonomy"]["ok"] and result["taxonomy"]["total"] == 115, result
 assert result["fxAudit"]["ok"] and result["fxAudit"]["total"] == 115, result
 assert result["artillery"] == {"selectionCount":2,"range":3,"value":2}, result

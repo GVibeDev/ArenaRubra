@@ -36,6 +36,11 @@ const ArenaDataStore = {
 const source = prefix
   + read("data/terrain_registry.js") + "\n"
   + read("data/map_definitions.js") + "\n"
+  + read("src/map_normalization.js") + "\n"
+  + read("src/map_pathfinding.js") + "\n"
+  + read("src/map_validation.js") + "\n"
+  + read("src/map_persistence.js") + "\n"
+  + read("src/map_state_queries.js") + "\n"
   + read("src/map_runtime.js") + "\n"
   + read("src/map_backgrounds.js") + `
 (async () => {

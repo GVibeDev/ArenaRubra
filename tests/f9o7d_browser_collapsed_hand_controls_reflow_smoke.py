@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -28,14 +28,14 @@ with sync_playwright() as p:
     page.evaluate("""() => { const splash=document.getElementById('appSplash'); if(splash){ splash.hidden=true; splash.style.display='none'; splash.setAttribute('aria-hidden','true'); } }""")
     page.wait_for_timeout(250)
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9S1b1-APK-M4c"
+    assert_valid_build_version(page.evaluate("BUILD_INFO.version"))
     page.evaluate("setAppScreen(ARENA_APP_SCREENS.GAME); newGame({ p1Faction:'Nexus', p2Faction:'Exordium', p1Mode:'human', p2Mode:'human', initiativeMode:'1' })")
     page.wait_for_timeout(350)
 
     open_state = page.evaluate("""() => ({
       overlayOpen: document.querySelector('#mapHandOverlay .mapHandOverlayInner') !== null,
       collapseVisible: !!document.querySelector('#mapHandOverlay .mapHandCollapseBtn'),
-      dockCompact: document.querySelector('#mapActionDock .mapCollapsedHandControls') !== null,
+      dockCompact: document.querySelector('#mapActionDock .mapLeftDockControls') !== null,
       openEndTurnInOverlay: document.querySelector('#mapHandOverlay .mapHandEndTurnBtn') !== null
     })""")
 
@@ -44,7 +44,7 @@ with sync_playwright() as p:
     collapsed = page.evaluate("""() => {
       const overlay=document.getElementById('mapHandOverlay');
       const dock=document.getElementById('mapActionDock');
-      const controls=dock.querySelector('.mapCollapsedHandControls');
+      const controls=dock.querySelector('.mapLeftDockControls');
       const dockRect=dock.getBoundingClientRect();
       const controlsRect=controls && controls.getBoundingClientRect();
       return {
@@ -53,23 +53,23 @@ with sync_playwright() as p:
         overlayDisplay:getComputedStyle(overlay).display,
         ariaHidden:overlay.getAttribute('aria-hidden'),
         controlsVisible:!!controls && controlsRect.width>0 && controlsRect.height>0,
-        showButtons:dock.querySelectorAll('.mapHandShowBtn').length,
-        endButtons:dock.querySelectorAll('.mapHandEndTurnBtn').length,
-        controlsInsideDock:!!controls && controls.parentElement===dock,
+        showButtons:dock.querySelectorAll('.mapLeftHandBtn').length,
+        endButtons:dock.querySelectorAll('.mapLeftEndTurnBtn').length,
+        controlsInsideDock:!!controls && dock.contains(controls),
         controlsBelowAbilities:!!controlsRect && controlsRect.top >= dockRect.top,
         oldRightCompact:document.querySelector('#mapHandOverlay .mapHandOverlayCompact') !== null,
-        globalShowButtons:document.querySelectorAll('.mapHandShowBtn').length,
-        globalEndTurnButtons:document.querySelectorAll('.mapHandEndTurnBtn').length
+        globalShowButtons:document.querySelectorAll('.mapLeftHandBtn').length,
+        globalEndTurnButtons:document.querySelectorAll('.mapLeftEndTurnBtn').length
       };
     }""")
 
-    page.locator("#mapActionDock .mapHandShowBtn").click()
+    page.locator("#mapActionDock .mapLeftHandBtn").click()
     page.wait_for_timeout(250)
     reopened = page.evaluate("""() => ({
       overlayOpen:document.querySelector('#mapHandOverlay .mapHandOverlayInner') !== null,
       overlayDisplay:getComputedStyle(document.getElementById('mapHandOverlay')).display,
       ariaHidden:document.getElementById('mapHandOverlay').getAttribute('aria-hidden'),
-      dockCompact:document.querySelector('#mapActionDock .mapCollapsedHandControls') !== null,
+      dockCompact:document.querySelector('#mapActionDock .mapLeftDockControls') !== null,
       openEndTurnInOverlay:document.querySelector('#mapHandOverlay .mapHandEndTurnBtn') !== null,
       moveUnitsInOverlay:document.querySelector('#mapHandOverlay .mapHandMoveUnitsBtn') !== null,
       collapseInOverlay:document.querySelector('#mapHandOverlay .mapHandCollapseBtn') !== null
@@ -80,8 +80,8 @@ unexpected = [msg for msg in console_errors if not msg.startswith("Arena AppShel
 assert open_state == {
     "overlayOpen": True,
     "collapseVisible": True,
-    "dockCompact": False,
-    "openEndTurnInOverlay": True
+    "dockCompact": True,
+    "openEndTurnInOverlay": False
 }, open_state
 assert collapsed["overlayClass"] is True, collapsed
 assert collapsed["overlayChildren"] == 0, collapsed
@@ -96,8 +96,8 @@ assert reopened == {
     "overlayOpen": True,
     "overlayDisplay": "block",
     "ariaHidden": None,
-    "dockCompact": False,
-    "openEndTurnInOverlay": True,
+    "dockCompact": True,
+    "openEndTurnInOverlay": False,
     "moveUnitsInOverlay": True,
     "collapseInOverlay": True
 }, reopened

@@ -3,6 +3,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 const ROOT = path.resolve(__dirname, "..");
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
@@ -12,15 +13,21 @@ const runtime = read("src/control_center.js");
 const app = read("src/app.js");
 const build = read("src/build_info.js");
 const precheck = read("src/precheck.js");
+const telemetry = read("src/match_telemetry.js");
+const expertRuntime = read("src/expert_ai/expert_runtime.js");
 let checks = 0;
 const ok = (value, message) => { assert.ok(value, message); checks += 1; };
 const once = id => (index.match(new RegExp(`id=["']${id}["']`, "g")) || []).length === 1;
 
-ok(build.includes('version: "C2-STABLE-1-F9V3c-APK-M4c"'), "versione F9T2c");
-ok(build.includes('buildName: "Tutorial Challenge I · Elimination"'), "nome build F9T2d");
-ok(build.includes('logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'), "baseline logica F9T2c4");
-ok(build.includes('buildChannel: "starter2-result-flow-v3c"'), "canale candidato F9T2c");
-ok(build.includes("F9Q3e1-2") && build.includes("F9T1-1") && build.includes("F9T2d3-1"), "schema base, contratto Expert ed estensione dottrinale dichiarati");
+assertCurrentBuildInfo(build); checks += 1;
+ok(
+  telemetry.includes('MATCH_TELEMETRY_SCHEMA_VERSION = "F9Q3e1-2"') &&
+  telemetry.includes('MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION = "F9T1-1"') &&
+  telemetry.includes('MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION = "F9T2d3-1"') &&
+  expertRuntime.includes('EXPERT_AI_SCHEMA_VERSION_F9T1 = "F9T1-1"') &&
+  expertRuntime.includes('EXPERT_AI_DOCTRINE_SCHEMA_VERSION_F9T2 = "F9T2d3-1"'),
+  "schema base, contratto Expert ed estensione dottrinale coerenti nelle fonti autorevoli"
+);
 
 [
   "mainMenuNewGameBtn", "mainMenuTutorialBtn", "mainMenuResumeBtn", "mainMenuMapArchiveBtn",

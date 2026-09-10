@@ -1,5 +1,6 @@
 "use strict";
 const fs=require("fs"),path=require("path"),vm=require("vm"),assert=require("assert");
+const {assertCurrentBuildInfo}=require("./helpers/build_info_contract");
 const ROOT=path.resolve(__dirname,".."); let checks=0;
 const ok=(v,m)=>{assert.ok(v,m);checks++;};
 const eq=(a,b,m)=>{assert.strictEqual(a,b,m);checks++;};
@@ -204,8 +205,7 @@ ok(telemetry.includes('varranAssault:0'),"scanner Varran presente negli aggregat
 ok(telemetry.includes('recordKind === "varran_assault_candidate_audit_batch"'),"batch Varran riconosciuto come candidate audit");
 ok(telemetry.includes("varranActualBonusEffectiveDamage"),"margine reale aggregato");
 const build=fs.readFileSync(path.join(ROOT,"src/build_info.js"),"utf8");
-ok(build.includes('version: "C2-STABLE-1-F9V3c-APK-M4c"'),"versione build corretta");
-ok(build.includes('logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'),"baseline logica preservata");
+assertCurrentBuildInfo(build); checks++;
 const ai=fs.readFileSync(path.join(ROOT,"src/ai.js"),"utf8");
 const preemptIndex=ai.indexOf("expertFactionTryReservedStationaryAssaultActionF9T2d2a");
 const emergencyIndex=ai.indexOf("emergencyBotAction(unit",preemptIndex);

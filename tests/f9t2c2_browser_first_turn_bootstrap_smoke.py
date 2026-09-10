@@ -1,10 +1,11 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json,re
 ROOT=Path(__file__).resolve().parents[1]
 errors=[]; console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path="/usr/bin/chromium",args=["--no-sandbox","--allow-file-access-from-files"])
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={"width":1366,"height":900}); page.set_default_timeout(120000)
     page.on("pageerror",lambda exc:errors.append(str(exc)))
     page.on("console",lambda msg:console_errors.append(msg.text) if msg.type=="error" else None)
@@ -36,7 +37,7 @@ with sync_playwright() as p:
       return {build:BUILD_INFO.version,oldMatchId,newMatchId,currentPlayer:state.currentPlayer,botRunning:Boolean(botRunning),active:Object.keys(expertRuntimeStateF9T1.activeByPlayer).length,totals:JSON.parse(JSON.stringify(expert.totals)),turns,modules:JSON.parse(JSON.stringify(expert.modules)),persistent:JSON.parse(JSON.stringify(state.expertAiF9T1||{}))};
     }""")
     browser.close()
-assert result['build']=='C2-STABLE-1-F9T2d3-APK-M4c',result
+assert_valid_build_version(result['build'])
 assert result['oldMatchId']!=result['newMatchId'],result
 assert result['botRunning'] is False and result['active']==0,result
 assert result['totals']['turnsStarted']==1,result

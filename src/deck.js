@@ -687,7 +687,11 @@ function handCardBlocked(card) {
 
 function handCardBlockReason(card) {
   if (!handCardBlocked(card)) return "";
-  return `${card.c2c7aBlockedSource || "Embargo"}: carta bloccata per ${card.c2c7aBlockedTurns} turno/i`;
+  const fallback = "{source}: carta bloccata per {turns} turno/i";
+  const source = card.c2c7aBlockedSource || "Embargo";
+  return typeof arenaI18nText === "function"
+    ? arenaI18nText("game.cardBlockedForTurns", fallback, { source, turns:card.c2c7aBlockedTurns })
+    : fallback.replace("{source}", source).replace("{turns}", String(card.c2c7aBlockedTurns));
 }
 
 function tickHandCardLocksAtEnd(side) {

@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -34,11 +34,12 @@ with sync_playwright() as p:
         playerIds:[1,2],
         events:[],eventSeq:0,
         units:[],cells:[],pressure:{1:5,2:0},energy:{1:3,2:2},
+        aiFinalizationF9T0:{schema:'F9T0-1'},
         matchRecorded:false
       };
     }""")
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3c-APK-M4c"
+    assert_valid_build_version(page.evaluate("BUILD_INFO.version"))
 
     page.evaluate("""() => emitGameEvent({
       type:EventTypes.VICTORY,
@@ -52,7 +53,7 @@ with sync_playwright() as p:
       screen:document.body.dataset.appScreen
     })""")
     assert victory["visible"] is True, victory
-    assert "VITTORIA" in victory["text"] and "Giocatore 1" in victory["text"] and "Exordium" in victory["text"], victory
+    assert "VITTORIA" in victory["text"] and "GIOCATORE 1" in victory["text"].upper() and "EXORDIUM" in victory["text"].upper(), victory
     assert "Round 24" in victory["text"] and "Pressione Strategica" in victory["text"], victory
     assert all(action in victory["actions"] for action in ["log","telemetry","statistics","main-menu","new-game"]), victory
     assert "academy" not in victory["actions"], victory
@@ -70,7 +71,7 @@ with sync_playwright() as p:
     }""")
     page.wait_for_timeout(80)
     defeat = page.evaluate("document.getElementById('arenaResultModalRootF9V3a')?.innerText || ''")
-    assert "SCONFITTA" in defeat and "Giocatore 2" in defeat and "Nexus" in defeat, defeat
+    assert "SCONFITTA" in defeat and "GIOCATORE 2" in defeat.upper() and "NEXUS" in defeat.upper(), defeat
 
     # Pareggio terminale.
     page.evaluate("""() => {

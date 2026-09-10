@@ -1,9 +1,8 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
-import os
 import re
-import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 index = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -13,24 +12,6 @@ html = re.sub(r'<link\s+rel="stylesheet"\s+href="[^"]+"\s*/?>', "", html)
 page_errors = []
 console_errors = []
 trace = []
-
-
-def browser_executable():
-    candidates = [
-        os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE"),
-        shutil.which("chromium"),
-        shutil.which("chromium-browser"),
-        shutil.which("google-chrome"),
-        shutil.which("chrome"),
-        shutil.which("msedge"),
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        "/usr/bin/chromium",
-    ]
-    for candidate in candidates:
-        if candidate and Path(candidate).exists():
-            return str(candidate)
-    return None
 
 
 def snap(page, label):
@@ -72,14 +53,7 @@ def snap(page, label):
 
 
 with sync_playwright() as playwright:
-    launch_options = {
-        "headless": True,
-        "args": ["--no-sandbox", "--allow-file-access-from-files"],
-    }
-    executable = browser_executable()
-    if executable:
-        launch_options["executable_path"] = executable
-    browser = playwright.chromium.launch(**launch_options)
+    browser = playwright.chromium.launch(**chromium_launch_options())
     page = browser.new_page(viewport={"width": 1365, "height": 900})
     page.set_default_timeout(10000)
     page.on("pageerror", lambda exc: page_errors.append(str(exc)))
@@ -300,7 +274,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9V4a-APK-M4c", initial
+assert_valid_build_version(initial["build"])
 assert initial["audit"]["ok"] and initial["audit"]["scenarios"] == 5 and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available": 5, "starts": 5, "lesson5": True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

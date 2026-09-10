@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -68,7 +69,7 @@ def snapshot(page):
 page_errors=[]
 console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
 
     desktop_context=browser.new_context(viewport={'width':1440,'height':960})
     desktop=desktop_context.new_page()
@@ -97,7 +98,7 @@ with sync_playwright() as p:
     mobile_result=snapshot(mobile)
     browser.close()
 
-assert before['build']=='C2-STABLE-1-F9T2d3-APK-M4c',before
+assert_valid_build_version(before['build'])
 assert before['headerButtons']==['Deck Builder','Card Editor','Duplica selezionata','Menu principale'],before
 assert before['nav']==['Galleria','Tabella','← Precedente','Successiva →','Apri focus','Chiudi focus'],before
 assert before['selectedName'],before

@@ -3,9 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const root = path.resolve(__dirname, "..");
 const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
+const snowMapData = fs.readFileSync(path.join(root, "data", "official_maps_f9w2a1.js"), "utf8");
 const build = fs.readFileSync(path.join(root, "src", "build_info.js"), "utf8");
 
 for (const token of [
@@ -31,20 +33,17 @@ for (const token of [
   'if (typeof arenaUiThemeInitializeF9W2c === "function") arenaUiThemeInitializeF9W2c();'
 ]) assert(ui.includes(token), `missing F9W2c contract token: ${token}`);
 
-for (const token of [
-  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
-  'buildName: "Agathoi Palette Readability Hotfix"',
-  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
-  'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
-]) assert(build.includes(token), `missing F9W2c build metadata: ${token}`);
+const buildInfo = assertCurrentBuildInfo(build);
 
 // Validated predecessor contracts remain present.
 for (const token of [
   'const ARENA_MENU_THEME_SCHEMA_F9W2B = "F9W2b-1"',
-  'const ARENA_PRODUCT_PROFILE_SCHEMA_F9W2A = "F9W2a-1"',
+  'const ARENA_PRODUCT_PROFILE_SCHEMA_F9W2A = "F9W2a-1"'
+]) assert(ui.includes(token), `validated predecessor regression marker missing: ${token}`);
+for (const token of [
   'const F9W2A1_SNOW_BF_OFFICIAL_MAP = Object.freeze(',
   '"id":"map10_snow_bf_4pl_3x"'
-]) assert(ui.includes(token), `validated predecessor regression marker missing: ${token}`);
+]) assert(snowMapData.includes(token), `validated Snow predecessor marker missing: ${token}`);
 
 const start = ui.indexOf('// F9W2b — Menu Theme System');
 const end = ui.indexOf('// F9W2c END', start);
@@ -170,5 +169,5 @@ console.log(JSON.stringify({
   modularSkinSlots:true,
     materialPass:true,
   predecessorRegression:true,
-  build:'C2-STABLE-1-F9W2d3-APK-M4c'
+  build:buildInfo.version
 }, null, 2));

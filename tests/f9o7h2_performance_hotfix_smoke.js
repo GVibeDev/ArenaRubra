@@ -128,6 +128,11 @@ const source = [
   prefix,
   read("src/hex.js"),
   read("data/terrain_registry.js"),
+  read("src/map_normalization.js"),
+  read("src/map_pathfinding.js"),
+  read("src/map_validation.js"),
+  read("src/map_persistence.js"),
+  read("src/map_state_queries.js"),
   read("src/map_runtime.js"),
   read("src/movement.js"),
   checks

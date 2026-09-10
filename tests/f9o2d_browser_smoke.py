@@ -1,3 +1,4 @@
+from browser_runtime import chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -21,7 +22,7 @@ HTML='''<!doctype html><html data-token-graphics-mode="on"><body>
 </body></html>'''
 
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={"width":720,"height":420}, has_touch=True)
     page.on('pageerror', lambda exc: errors.append(str(exc)))
     page.on('console', lambda msg: console_errors.append(msg.text) if msg.type=='error' else None)

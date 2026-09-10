@@ -13,6 +13,11 @@
 // - main.js/pace future: currentPace
 // - render/events: log
 
+function economyI18n(key, fallback, params = {}) {
+  if (typeof arenaI18nText === "function") return arenaI18nText(`game.${key}`, fallback, params);
+  return Object.entries(params).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), String(fallback || ""));
+}
+
 
     function capBonusFromUnits(player, group) {
       if (!state) return 0;
@@ -238,13 +243,16 @@ function fieldLimitFor(bp, player=null) {
 
 
     function limitReason(player, bp) {
-      if (bp.type === "Struttura") return "Nessun cap generale strutture";
-      if (bp.type === "Comandante") return "Comandante già in campo";
-      if (bp.weight === "Pivot") return "Pivot già in campo";
-      if (bp.weight === "Elite") return "Elite già in campo";
-      if (countsAsLightCap(bp)) return `Limite ${String(bp.type || "unità").toLowerCase()} leggere raggiunto (${lightFieldLimit(player, bp.type)})`;
-      if (String(bp.weight || "").toLowerCase().startsWith("pesant")) return "Limite pesanti raggiunto";
-      return "Limite unità raggiunto";
+      if (bp.type === "Struttura") return economyI18n("noStructureCap", "Nessun cap generale strutture");
+      if (bp.type === "Comandante") return economyI18n("commanderAlreadyFielded", "Comandante già in campo");
+      if (bp.weight === "Pivot") return economyI18n("pivotAlreadyFielded", "Pivot già in campo");
+      if (bp.weight === "Elite") return economyI18n("eliteAlreadyFielded", "Elite già in campo");
+      if (countsAsLightCap(bp)) {
+        const type = typeof arenaContentTaxonomy === "function" ? arenaContentTaxonomy("types", bp.type || "Fanteria", bp.type || "unità") : String(bp.type || "unità").toLowerCase();
+        return economyI18n("lightLimitReached", "Limite {type} leggere raggiunto ({limit})", { type:String(type).toLowerCase(), limit:lightFieldLimit(player, bp.type) });
+      }
+      if (String(bp.weight || "").toLowerCase().startsWith("pesant")) return economyI18n("heavyLimitReached", "Limite pesanti raggiunto");
+      return economyI18n("unitLimitReached", "Limite unità raggiunto");
     }
 
 

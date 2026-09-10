@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -80,7 +80,7 @@ print(json.dumps({
     "consoleErrors": unexpected
 }, ensure_ascii=False, indent=2))
 
-assert result["build"] == "C2-STABLE-1-F9W1a-APK-M4c", result
+assert_valid_build_version(result["build"])
 assert result["record"] and result["record"]["schemaVersion"] == "AR-MATCH-2", result
 assert result["record"]["playerCount"] == 4 and len(result["record"]["participants"]) == 4, result["record"]
 assert [p["mode"] for p in result["record"]["participants"]] == ["human","bot","human","bot"], result["record"]["participants"]

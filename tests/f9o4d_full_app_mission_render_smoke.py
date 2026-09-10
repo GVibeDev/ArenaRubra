@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -11,11 +12,7 @@ page_errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path='/usr/bin/chromium',
-        args=['--no-sandbox', '--allow-file-access-from-files'],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     page = browser.new_page(viewport={'width': 1280, 'height': 820}, has_touch=True)
     page.on('pageerror', lambda exc: page_errors.append(str(exc)))
     page.on('console', lambda msg: console_errors.append(msg.text) if msg.type == 'error' else None)
@@ -101,7 +98,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial['build'] in {'C2-STABLE-1-F9O4d-APK-M4c','C2-STABLE-1-F9O4f-APK-M4c','C2-STABLE-1-F9O4e-APK-M4c','C2-STABLE-1-F9O5-APK-M4c','C2-STABLE-1-F9O5a-APK-M4c','C2-STABLE-1-F9O5b-APK-M4c','C2-STABLE-1-F9O6-APK-M4c','C2-STABLE-1-F9O7e-APK-M4c','C2-STABLE-1-F9S1b1-APK-M4c'}, initial
+assert_valid_build_version(initial['build'])
 assert not initial['ready'] and 'IN CORSO' in initial['dockText'], initial
 assert ready['ready'] and 'PRONTA' in ready['dockText'] and 'PRONTA' in ready['panelText'], ready
 assert len(ready['values']) == 3 and ready['values'][0].startswith('2') and ready['values'][1] == '3 / 3' and '8 ENE' in ready['values'][2], ready

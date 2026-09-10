@@ -15,12 +15,12 @@ ok(render.includes("return false;\n    }\n\n    function renderHiddenMissionHand
 ok(render.includes("manuallyCollapsed: false"),"stato riduzione manuale presente");
 ok(render.includes("function mapHandOverlayCollapse()"),"funzione riduzione manuale presente");
 ok(render.includes("MAP_HAND_OVERLAY_STATE.manuallyCollapsed = true"),"riduzione attivabile");
-ok(render.includes("onclick=\"mapHandOverlayCollapse()\">Riduci mano"),"pulsante Riduci mano presente");
+ok(render.includes('onclick="mapHandOverlayCollapse()"') && render.includes('renderI18n("game.collapseHand", "Riduci mano")'),"pulsante Riduci mano localizzato presente");
 ok(render.includes("MAP_HAND_OVERLAY_STATE.hiddenForMovement || MAP_HAND_OVERLAY_STATE.manuallyCollapsed"),"render compatto usa riduzione manuale");
 ok(!/function mapHandOverlayCollapse\(\)[\s\S]{0,260}state\.modes\[state\.currentPlayer\] === \"bot\"/.test(render),"riduzione non bloccata durante bot");
 ok(render.includes("class=\"mapActionDockEnergy\""),"blocco ENE nel dock presente");
 ok(render.includes("${currentEnergy}<small> ENE</small>"),"ENE corrente evidenziata");
-ok(render.includes("+${income.total} prossimo turno"),"income successivo secondario presente");
+ok(render.includes('renderI18n("game.nextTurnIncome", "+{income} prossimo turno", { income:income.total })'),"income successivo localizzato presente");
 ok(css.includes(".mapActionDockEnergy strong"),"stile ENE evidente presente");
 ok(css.includes("top: 50% !important"),"dock centrato sull'asse verticale");
 ok(css.includes("transform: translateY(-50%) !important"),"centratura verticale applicata");

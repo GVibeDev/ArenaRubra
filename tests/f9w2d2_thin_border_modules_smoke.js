@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const root = path.resolve(__dirname, "..");
 const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
@@ -31,12 +32,7 @@ for (const forbidden of [
   'crestImage:'
 ]) assert(!ui.includes(forbidden), `obsolete ornament contract still active: ${forbidden}`);
 
-for (const token of [
-  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
-  'buildName: "Agathoi Palette Readability Hotfix"',
-  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
-  'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
-]) assert(build.includes(token), `missing current build metadata: ${token}`);
+const buildInfo = assertCurrentBuildInfo(build);
 
 // The ornament layer must use exactly the 4 corners + 4 sides.
 const layerStart = ui.indexOf('background-image:\n        var(--arena-ui-corner-tl)');
@@ -70,5 +66,5 @@ console.log(JSON.stringify({
   horizontalSideThickness:'16px',
   verticalSideThickness:'14px',
   scrollPolicyPreserved:true,
-  build:'C2-STABLE-1-F9W2d3-APK-M4c'
+  build:buildInfo.version
 }, null, 2));

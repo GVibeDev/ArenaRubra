@@ -1,10 +1,11 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json,re
 ROOT=Path(__file__).resolve().parents[1]
 errors=[]; console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={'width':1366,'height':900}); page.set_default_timeout(120000)
     page.on('pageerror',lambda exc:errors.append(str(exc)))
     page.on('console',lambda msg:console_errors.append(msg.text) if msg.type=='error' else None)
@@ -42,7 +43,7 @@ with sync_playwright() as p:
       return {build:BUILD_INFO.version,reconciled,summary,turn:JSON.parse(JSON.stringify(turn)),module:JSON.parse(JSON.stringify(expert.modules.Exordium))};
     }""")
     browser.close()
-assert result['build']=='C2-STABLE-1-F9T2d3-APK-M4c',result
+assert_valid_build_version(result['build'])
 assert result['reconciled'] is True,result
 turn=result['turn']; mod=result['module']
 assert turn['candidateAuditsTotal']==22 and turn['candidateAuditsStored']==12 and turn['candidateAuditsDropped']==10,result

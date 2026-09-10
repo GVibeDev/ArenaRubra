@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1280, "height": 820})
     page = context.new_page()
     page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -116,11 +113,12 @@ with sync_playwright() as p:
     }""")
     browser.close()
 
-assert result["build"].startswith("C2-STABLE-1-F9"), result
-assert len(result["summaries"]) == 9, result
-assert len(result["selector"]) == 9, result
-assert [entry["id"] for entry in result["summaries"]] == [item[0] for item in result["expected"]], result
-for summary, expected in zip(result["summaries"], result["expected"]):
+assert_valid_build_version(result["build"])
+assert len(result["summaries"]) == 10, result
+assert len(result["selector"]) == 10, result
+assert [entry["id"] for entry in result["summaries"][:9]] == [item[0] for item in result["expected"]], result
+assert result["summaries"][9]["id"] == "map10_snow_bf_4pl_3x" and result["summaries"][9]["valid"], result
+for summary, expected in zip(result["summaries"][:9], result["expected"]):
     assert summary["name"] == expected[1], (summary, expected)
     assert summary["players"] == expected[2], (summary, expected)
     assert summary["ps"] == expected[3], (summary, expected)

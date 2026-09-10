@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, assert_valid_logic_baseline, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -45,11 +46,7 @@ page_errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
 
     desktop_context = browser.new_context(viewport={"width": 1440, "height": 960})
     desktop = desktop_context.new_page()
@@ -169,8 +166,8 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert desktop_before["build"] == "C2-STABLE-1-F9U2b-APK-M4c", desktop_before
-assert desktop_before["baseline"] == "C2-STABLE-1-F9U2a-APK-M4c", desktop_before
+assert_valid_build_version(desktop_before["build"])
+assert_valid_logic_baseline(desktop_before["baseline"])
 assert desktop_before["schema"] == "F9Q3e1-2", desktop_before
 assert desktop_before["gameActionBar"] is None, desktop_before
 assert desktop_before["mobileBarDisplay"] == "none", desktop_before
@@ -190,7 +187,7 @@ assert desktop_before["precheck"]["ok"] and not desktop_before["precheck"]["prob
 
 assert not debug_open["hidden"] and debug_open["expanded"] == "true", debug_open
 assert debug_open["actions"] == ["hand", "log", "stats", "telemetry"], debug_open
-assert "F9U2b" in debug_open["metadata"] and "F9Q3e1-2" in debug_open["metadata"], debug_open
+assert desktop_before["build"] in debug_open["metadata"] and "F9Q3e1-2" in debug_open["metadata"], debug_open
 assert log_open["active"] and log_open["scrim"], log_open
 assert telemetry_open["statsActive"] and telemetry_open["panelPresent"] and telemetry_open["statsOpen"], telemetry_open
 assert "F9Q3e1-2" in telemetry_open["panelText"], telemetry_open

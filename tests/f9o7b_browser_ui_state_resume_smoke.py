@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -28,7 +28,7 @@ with sync_playwright() as p:
     page.evaluate("""() => { const splash=document.getElementById('appSplash'); if(splash){ splash.hidden=true; splash.style.display='none'; splash.setAttribute('aria-hidden','true'); } }""")
     page.wait_for_timeout(250)
 
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3c-APK-M4c"
+    assert_valid_build_version(page.evaluate("BUILD_INFO.version"))
     assert page.evaluate("tutorialRuntimeResetProgress()") is True
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(300)

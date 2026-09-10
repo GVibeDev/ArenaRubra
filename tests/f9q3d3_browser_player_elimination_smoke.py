@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1365, "height": 900})
     page = context.new_page()
     page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -24,13 +21,14 @@ with sync_playwright() as p:
     html = re.sub(r'<link\s+rel="stylesheet"\s+href="[^"]+"\s*/?>', '', html)
     page.set_content(html, wait_until="load")
     page.add_style_tag(path=str(ROOT / "css/style.css"))
-    for rel in scripts:
+    # ui.js avvia un boot storage asincrono non necessario alla fixture di
+    # lifecycle; escluderlo evita che completi mentre lo stato sintetico è attivo.
+    for rel in (rel for rel in scripts if rel != "src/ui.js"):
         page.add_script_tag(path=str(ROOT / rel))
     page.wait_for_function(
         "typeof BUILD_INFO !== 'undefined' && typeof eliminatePlayer === 'function' "
         "&& typeof playerLifecycleCleanupElimination === 'function' && typeof requestPlayerTargetSelection === 'function'"
     )
-
     initial = page.evaluate("""() => {
       const precheck=runPrecheck({quiet:true,source:'f9q3d3-browser'});
       window.__events=[];
@@ -135,12 +133,10 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert initial == {
-    "version":"C2-STABLE-1-F9Q3d3-APK-M4c",
-    "active":[1,2,3,4],
-    "overlayVisible":True,
-    "precheck":{"ok":True,"problems":[],"warnings":[]}
-}, initial
+assert_valid_build_version(initial["version"])
+assert initial["active"] == [1,2,3,4], initial
+assert initial["overlayVisible"] is True, initial
+assert initial["precheck"] == {"ok":True,"problems":[],"warnings":[]}, initial
 assert eliminated["ok"] is True, eliminated
 assert eliminated["active"] == [1,3,4], eliminated
 assert eliminated["lifecycle"] == "eliminated", eliminated

@@ -1,0 +1,20 @@
+"use strict";
+
+const assert=require("assert");
+const fs=require("fs");
+const path=require("path");
+const root=path.resolve(__dirname,"..");
+const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
+const legacy=read("css/style.css");
+const inspector=read("css/layout/game_inspector.css");
+const ownership=read("css/OWNERSHIP.md");
+const ui=read("src/ui.js");
+const index=read("index.html");
+assert(index.indexOf('href="css/style.css"')<index.indexOf('href="css/layout/game_inspector.css"'));
+assert(!legacy.includes("F9W2d4 - Right-side Selected Unit Inspector Hotfix"));
+for(const token of ["position: fixed","right: 14px","width: min(420px, calc(100vw - 28px))","max-width: 370px"]) assert(inspector.includes(token),token);
+assert(ownership.includes("Theme layers may style")||ownership.includes("Theme colors"));
+const conflict=/body\.app-screen-game \.selectedUnitFloat,[\s\S]{0,120}position:relative/;
+assert(!conflict.test(ui),"theme must not own Inspector position");
+assert(inspector.length<2000,"first ownership module remains bounded");
+console.log("AR-AC1 CSS ownership smoke: 10/10 OK");

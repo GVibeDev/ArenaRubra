@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "projectionVersion": "AR-AC1-GOLDEN-2",
+  "matches": [
+    {
+      "id": "GOLDEN-001",
+      "seed": "AR-AC1-GOLDEN-001-NEXUS-EXORDIUM",
+      "mapId": "map1_starter",
+      "factions": { "1": "Nexus", "2": "Exordium" },
+      "commanders": { "1": "NXCMD01", "2": "EX0B00" },
+      "decks": {
+        "1": "Nexus::NXCMD01::bastione-mobile",
+        "2": "Exordium::EX0B00::doppio-assalto-imperiale"
+      },
+      "actionTurns": 40,
+      "expectedProjectionHash": "053c6d50481fe7edbba1fd6a22e234bcfb1f8edb3eb163261ac58153f17cdf62"
+    },
+    {
+      "id": "GOLDEN-002",
+      "seed": "AR-AC1-GOLDEN-002-LIBERTI-AGATHOI",
+      "mapId": "custom_double_ms0ra3ds",
+      "factions": { "1": "Liberti", "2": "Agathoi" },
+      "commanders": { "1": "LX0B00", "2": "AG0B00" },
+      "decks": {
+        "1": "Liberti::LX0B00::orda-della-fossa",
+        "2": "Agathoi::AG0B00::citta-vivente"
+      },
+      "actionTurns": 40,
+      "expectedProjectionHash": "1fa783d592e5538e5b94857c4c9a72bbc7653d9722d0091697134fd4afb2765a"
+    },
+    {
+      "id": "GOLDEN-003",
+      "seed": "AR-AC1-GOLDEN-003-FABEOT-NEXUS",
+      "mapId": "custom_double_ms3ppdyc",
+      "factions": { "1": "Fabeot", "2": "Nexus" },
+      "commanders": { "1": "FB0B00", "2": "NXCMD02" },
+      "decks": {
+        "1": "Fabeot::FB0B00::sentenza-di-stasi",
+        "2": "Nexus::NXCMD02::logistica-di-massa"
+      },
+      "actionTurns": 40,
+      "expectedProjectionHash": "66b6b8587198aa4ccfb65a63304e945a7aa0227d725491b5ea990c2c108d80f9"
+    },
+    {
+      "id": "GOLDEN-004-3P",
+      "seed": "AR-AC1-GOLDEN-004-THREE-PLAYER",
+      "mapId": "map2_triumvirate",
+      "factions": { "1": "Nexus", "2": "Liberti", "3": "Fabeot" },
+      "commanders": { "1": "NXCMD01", "2": "LX0B00", "3": "FB0B00" },
+      "decks": {
+        "1": "Nexus::NXCMD01::bastione-mobile",
+        "2": "Liberti::LX0B00::orda-della-fossa",
+        "3": "Fabeot::FB0B00::sentenza-di-stasi"
+      },
+      "actionTurns": 60,
+      "expectedProjectionHash": "dad4b0aa49195f9dc21fb05fb0e7c95c4a6cac188cf511ac76e3967d21a2a879"
+    },
+    {
+      "id": "GOLDEN-005-4P",
+      "seed": "AR-AC1-GOLDEN-005-FOUR-PLAYER",
+      "mapId": "map3_quadrivium",
+      "factions": { "1": "Exordium", "2": "Agathoi", "3": "Nexus", "4": "Fabeot" },
+      "commanders": { "1": "EX0B00", "2": "AG0B00", "3": "NXCMD01", "4": "FB0B00" },
+      "decks": {
+        "1": "Exordium::EX0B00::doppio-assalto-imperiale",
+        "2": "Agathoi::AG0B00::citta-vivente",
+        "3": "Nexus::NXCMD01::bastione-mobile",
+        "4": "Fabeot::FB0B00::sentenza-di-stasi"
+      },
+      "actionTurns": 80,
+      "expectedProjectionHash": "463fb00ce8a2e29b4d3d75da5f8c9be902ef84a973c279730ab2d91525980370"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 "use strict";
 const fs=require("fs"),path=require("path"),vm=require("vm"),assert=require("assert");
+const {assertCurrentBuildInfo}=require("./helpers/build_info_contract");
 const ROOT=path.resolve(__dirname,".."); let checks=0;
 const ok=(v,m)=>{assert.ok(v,m);checks++}; const equal=(a,e,m)=>{assert.strictEqual(a,e,m);checks++};
 const same=(a,b)=>Array.isArray(a)&&Array.isArray(b)&&a.join(",")===b.join(",");
@@ -113,8 +114,7 @@ const decisions=h=>h.emitted.filter(e=>e.type==="AI_EXPERT_DECISION").map(e=>e.d
   const build=fs.readFileSync(path.join(ROOT,"src/build_info.js"),"utf8");
   const runtime=fs.readFileSync(path.join(ROOT,"src/expert_ai/expert_runtime.js"),"utf8");
   const telemetry=fs.readFileSync(path.join(ROOT,"src/match_telemetry.js"),"utf8");
-  ok(build.includes('version: "C2-STABLE-1-F9V3c-APK-M4c"'),"versione build F9T2d3");
-  ok(build.includes('logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'),"baseline logica F9T2c4 preservata");
+  assertCurrentBuildInfo(build); checks++;
   ok(runtime.includes('EXPERT_AI_DOCTRINE_SCHEMA_VERSION_F9T2 = "F9T2d3-1"'),"schema runtime F9T2d3-1");
   ok(telemetry.includes('MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION = "F9T2d3-1"'),"schema telemetria F9T2d3-1");
   ok(telemetry.includes("commanderDeploymentCommitmentsExecuted"),"aggregati commitment presenti");

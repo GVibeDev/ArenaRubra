@@ -17,40 +17,86 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install browser test runtime
+        run: |
+          python -m pip install -r tests/requirements.txt
+          python -m playwright install --with-deps chromium
+          npm install --prefix "$RUNNER_TEMP/arena-node-runtime" --no-save --ignore-scripts playwright@1.62.0
+          echo "NODE_PATH=$RUNNER_TEMP/arena-node-runtime/node_modules" >> "$GITHUB_ENV"
+
+      - name: Gate JavaScript syntax
+        run: node tools/check_js_syntax.js
+
+      - name: Gate Python syntax
+        run: python tools/check_python_syntax.py
+
+      - name: Gate frozen Starter 1.0 content
+        run: node tools/generate_starter_1_0_manifest.js --check
+
+      - name: Gate locale parity and placeholders
+        run: node tools/check_locales.js
+
+      - name: Gate frozen presentation locales
+        run: node tools/check_content_locales.js
+
+      - name: Gate required assets
+        run: node tools/check_required_assets.js
+
+      - name: Gate Node behavior contracts
+        run: node tools/run_node_smokes.js
+
+      - name: Gate Player and DEV browser behavior
+        run: python tools/run_python_smokes.py
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
 
-      - name: Stage browser runtime
-        shell: bash
+      - name: Stage DEV and Distribution runtimes
         run: |
-          set -euo pipefail
-          rm -rf _site
-          mkdir -p _site
+          node tools/stage_runtime.js --profile dev --output _site_dev
+          node tools/build_distribution_artifact.js --output _site_distribution
 
-          cp index.html _site/
-          cp -R assets _site/assets
-          cp -R css _site/css
-          cp -R data _site/data
-          cp -R src _site/src
+      - name: Gate staged profile composition
+        run: |
+          node tools/check_staged_profile.js --profile dev --root _site_dev
+          node tools/check_staged_profile.js --profile distribution --root _site_distribution
 
-          test -f _site/index.html
-          test -f _site/css/style.css
-          test -f _site/data/maps.js
-          test -f _site/src/main.js
-          test -f _site/assets/intro/g-vibe-dev-logo.png
-          test -f _site/assets/intro/arena-rubra-title.png
+      - name: Gate staged Distribution browser boot
+        env:
+          ARENA_BROWSER_ROOT: _site_distribution
+          ARENA_BROWSER_PROFILE_QUERY: ""
+        run: python tests/ar_ac1_browser_distribution_profile_smoke.py
 
-          echo "Arena Rubra static runtime staged successfully."
-          du -sh _site
+      - name: Gate staged Distribution release matrix
+        env:
+          ARENA_BROWSER_ROOT: _site_distribution
+        run: node tests/s2_c7_browser_release_matrix_smoke.js
+
+      - name: Gate final artifact manifest and boot
+        env:
+          ARENA_BROWSER_ROOT: _site_distribution
+        run: node tests/s2_c7_artifact_final_smoke.js
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: _site
+          path: _site_distribution
 
   deploy:
     needs: build

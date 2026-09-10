@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1365, "height": 900})
     page = context.new_page()
     page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -159,7 +156,7 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert result["version"] == "C2-STABLE-1-F9U2b-APK-M4c", result
+assert_valid_build_version(result["version"])
 assert result["precheck"]["ok"] is True, result
 assert result["precheck"]["problems"] == [], result
 assert result["precheck"]["warnings"] == [], result

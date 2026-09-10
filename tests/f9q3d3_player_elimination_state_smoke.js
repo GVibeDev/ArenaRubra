@@ -35,7 +35,7 @@ const ctx = {
 };
 ctx.globalThis=ctx;
 vm.createContext(ctx);
-for (const file of ["src/map_runtime.js","src/player_lifecycle.js","src/rules.js"]) vm.runInContext(read(file),ctx,{filename:file});
+for (const file of ["src/map_normalization.js","src/map_pathfinding.js","src/map_validation.js","src/map_persistence.js","src/map_state_queries.js","src/map_runtime.js","src/player_lifecycle.js","src/rules/victory_lifecycle.js","src/rules/pressure_victory.js","src/rules.js"]) vm.runInContext(read(file),ctx,{filename:file});
 const evalIn = code => vm.runInContext(code,ctx);
 
 ctx.state={

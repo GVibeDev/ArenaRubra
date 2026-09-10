@@ -1,6 +1,7 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-import os, re, shutil
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 index = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -10,16 +11,8 @@ html = re.sub(r'<link\s+rel="stylesheet"\s+href="[^"]+"\s*/?>', "", html)
 page_errors=[]
 console_errors=[]
 
-def executable():
-    for candidate in [os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE"), shutil.which("chromium"), shutil.which("google-chrome"), "/usr/bin/chromium"]:
-        if candidate and Path(candidate).exists(): return str(candidate)
-    return None
-
 with sync_playwright() as p:
-    opts={"headless":True,"args":["--no-sandbox","--allow-file-access-from-files"]}
-    exe=executable()
-    if exe: opts["executable_path"]=exe
-    browser=p.chromium.launch(**opts)
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={"width":1365,"height":900})
     page.set_default_timeout(10000)
     page.on("pageerror",lambda e:page_errors.append(str(e)))
@@ -32,7 +25,7 @@ with sync_playwright() as p:
     page.evaluate("document.dispatchEvent(new Event('DOMContentLoaded'))")
     page.evaluate("""() => { const s=document.getElementById('appSplash'); if(s){s.hidden=true;s.style.display='none';} }""")
     page.wait_for_timeout(350)
-    assert page.evaluate("BUILD_INFO.version") == "C2-STABLE-1-F9V3c-APK-M4c"
+    assert_valid_build_version(page.evaluate("BUILD_INFO.version"))
     assert page.evaluate("tutorialRuntimeStartScenario('lesson-1-exordium')") is True
     page.wait_for_timeout(700)
 

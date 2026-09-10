@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, assert_valid_logic_baseline, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -65,7 +66,7 @@ page_errors = []
 console_errors = []
 results = {}
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox', '--allow-file-access-from-files'])
+    browser = p.chromium.launch(**chromium_launch_options())
 
     ctx = browser.new_context(viewport={'width': 1440, 'height': 1000})
     page = ctx.new_page(); page.set_default_timeout(20000)
@@ -80,7 +81,7 @@ with sync_playwright() as p:
     page.locator('#controlCenterPanelCloseBtn').click()
 
     page.locator('#mainMenuMapArchiveBtn').click()
-    page.wait_for_function("document.querySelectorAll('[data-control-center-map-row]').length === 9")
+    page.wait_for_function("document.querySelectorAll('[data-control-center-map-row]').length === 10")
     map_panel = panel_snapshot(page)
     map_rows = page.locator('[data-control-center-map-row]').count()
     first_map_id = page.locator('[data-control-center-map-row]').first.get_attribute('data-control-center-map-row')
@@ -160,28 +161,28 @@ with sync_playwright() as p:
     }
     browser.close()
 
-assert desktop['build'] == 'C2-STABLE-1-F9T2d3-APK-M4c', desktop
-assert desktop['baseline'] == 'C2-STABLE-1-F9T2c4-APK-M4c', desktop
+assert_valid_build_version(desktop['build'])
+assert_valid_logic_baseline(desktop['baseline'])
 assert desktop['areas'] == ['Gioca', 'Carte e deck', 'Mappe', 'Analisi', 'Sistema'], desktop
 assert desktop['version'] == desktop['build'] and desktop['logic'] == desktop['baseline'], desktop
 assert desktop['schema'] == 'F9Q3e1-2', desktop
-assert desktop['decks'] == '50' and desktop['maps'] == '9', desktop
+assert desktop['decks'] == '50' and desktop['maps'] == '10', desktop
 assert desktop['storage'] and desktop['lastMatch'], desktop
 assert desktop['diagnostics'] == 'Nessun errore' and desktop['diagnosticTone'] in ('good', 'warn'), desktop
 assert desktop['snap']['diagnostics']['errorCount'] == 0, desktop
-assert desktop['snap']['officialDecks'] == 50 and desktop['snap']['officialMaps'] == 9, desktop
+assert desktop['snap']['officialDecks'] == 50 and desktop['snap']['officialMaps'] == 10, desktop
 assert desktop['debugHidden'] is False and desktop['resumeDisabled'] is True, desktop
 assert '<strong>Riprendi</strong>' in desktop['resumeMarkup'] and '<small>Nessuna sessione attiva</small>' in desktop['resumeMarkup'], desktop
 assert desktop['overflow'] <= 1, desktop
 
 assert version_panel['open'] and version_panel['title'] == 'Versione' and 'Baseline logica' in version_panel['text'], version_panel
-assert map_panel['open'] and map_panel['title'] == 'Archivio mappe' and map_rows == 9, map_panel
+assert map_panel['open'] and map_panel['title'] == 'Archivio mappe' and map_rows == 10, map_panel
 assert setup_selected == first_map_id and setup_panel_closed, (setup_selected, first_map_id, setup_panel_closed)
-assert stats_panel['title'] == 'Statistiche' and 'Registro matchup' in stats_panel['text'], stats_panel
+assert stats_panel['title'] == 'Statistiche' and 'Statistiche MatchRecord 2.0' in stats_panel['text'], stats_panel
 assert history_panel['title'] == 'Cronologia' and 'Storico partite' in history_panel['text'], history_panel
 assert telemetry_panel['title'] == 'Telemetria' and ('F9Q3e1-2' in telemetry_panel['text'] or 'Telemetria' in telemetry_panel['text']), telemetry_panel
 assert log_panel['title'] == 'Log' and 'Log partita attiva' in log_panel['text'], log_panel
-assert settings_panel['title'] == 'Impostazioni' and 'Modalità sviluppatore' in settings_panel['text'], settings_panel
+assert settings_panel['title'] == 'Impostazioni' and 'Profilo DEV' in settings_panel['text'], settings_panel
 assert debug_hidden_after_off and debug_visible_after_on, (debug_hidden_after_off, debug_visible_after_on)
 assert debug_panel['title'] == 'Debug' and 'Diagnostica di sviluppo' in debug_panel['text'] and debug_metrics >= 4, debug_panel
 assert transfer_panel['title'] == 'Import / Export' and 'backup di sicurezza' in transfer_panel['text'].lower() and transfer_actions == 3, transfer_panel

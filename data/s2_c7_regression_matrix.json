@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "S2-C7-MATRIX-1",
+  "milestone": "S2-C7",
+  "policy": {
+    "blockersAllowed": 0,
+    "reproducibleSoftlocksAllowed": 0,
+    "target": "Desktop / Web",
+    "desktopWrapper": "not-planned",
+    "androidRequirement": false
+  },
+  "coverage": [
+    { "id": "config-2p-human-human", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js"] },
+    { "id": "config-2p-human-bot", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js"] },
+    { "id": "config-2p-bot-bot", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js"] },
+    { "id": "config-3p-mixed", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js", "tests/f9q2_multiplayer_terrain_smoke.js"] },
+    { "id": "config-4p-mixed", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js", "tests/f9q2_multiplayer_terrain_smoke.js"] },
+    { "id": "all-frozen-official-maps", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js", "tests/f9r3_proportional_pressure_official_maps_smoke.js"] },
+    { "id": "victory-hq-and-elimination", "status": "covered", "evidence": ["tests/ar_ac1_victory_lifecycle_boundary_contract_smoke.js", "tests/f9q2_multiplayer_elimination_smoke.js"] },
+    { "id": "victory-pressure-and-round-limit", "status": "covered", "evidence": ["tests/ar_ac1_pressure_victory_boundary_contract_smoke.js", "tests/f9r3_proportional_pressure_official_maps_smoke.js"] },
+    { "id": "ene-economy-and-ps", "status": "covered", "evidence": ["tests/ar_ac1_game_core_headless_smoke.js", "tests/f9q3b_pressure_battlefield_readability_smoke.js"] },
+    { "id": "combat-actions", "status": "covered", "evidence": ["tests/ar_ac1_game_action_service_smoke.js", "tests/ar_ac1_game_core_headless_smoke.js"] },
+    { "id": "deck-and-recovery", "status": "covered", "evidence": ["tests/f9n10_recovery_cycle_smoke.js", "tests/f9v3c_result_flow_tutorial_ux_deck_recovery_smoke.js"] },
+    { "id": "missions", "status": "covered", "evidence": ["tests/f9n10_mission_ai_smoke.js", "tests/f9n8_runtime_integration_smoke.js", "tests/f9n9_runtime_integration_smoke.js"] },
+    { "id": "tactics", "status": "covered", "evidence": ["tests/f9n1_custom_tactics_smoke.js", "tests/s2_c5b4_content_i18n_smoke.js"] },
+    { "id": "commander-selection-and-lifecycle", "status": "covered", "evidence": ["tests/ar_ac1_setup_adapter_contract_smoke.js", "tests/ar_ac1_victory_lifecycle_boundary_contract_smoke.js"] },
+    { "id": "tutorial", "status": "covered", "evidence": ["tests/f9v3b_tutorial_action_contract_smoke.js", "tests/f9v3b_tutorial_contract_coverage_smoke.js", "tests/f9v4a_strategic_tutorial_content_voice_smoke.js"] },
+    { "id": "challenge-suite", "status": "covered", "evidence": ["tests/f9v2a_tutorial_challenge_framework_smoke.js", "tests/f9v2c_tutorial_challenge2_hold_ps_smoke.js", "tests/f9v2d_tutorial_challenge3_hq_breach_smoke.js", "tests/f9v2e_tutorial_challenge4_pressure_smoke.js", "tests/f9v2f_tutorial_challenge5_final_exam_smoke.js"] },
+    { "id": "result-modal", "status": "covered", "evidence": ["tests/f9v3a_unified_result_modal_smoke.js"] },
+    { "id": "history-and-telemetry", "status": "covered", "evidence": ["tests/f9w1a_match_data_v2_smoke.js", "tests/f9q3e1_match_telemetry_foundation_smoke.js"] },
+    { "id": "italian-english", "status": "covered", "evidence": ["tests/s2_c5b_browser_localization_smoke.js", "tests/s2_c5b1_locale_parity_smoke.js"] },
+    { "id": "themes-and-layout", "status": "covered", "evidence": ["tests/s2_c6_browser_visual_gate_smoke.js", "tests/s2_c6_visual_asset_presentation_gate_smoke.js"] },
+    { "id": "player-dev-separation", "status": "covered", "evidence": ["tests/ar_ac1_runtime_profile_contract_smoke.js", "tests/ar_ac1_staging_gate_smoke.js", "tests/s2_c7_browser_release_matrix_smoke.js"] },
+    { "id": "storage-migration-import-old", "status": "covered", "evidence": ["tests/f9q3a_local_data_vault_smoke.js", "tests/f9w1a_match_data_v2_smoke.js"] },
+    { "id": "asset-required-and-fallback", "status": "covered", "evidence": ["tests/ar_ac1_required_assets_gate_smoke.js", "tests/s2_c6_visual_asset_presentation_gate_smoke.js", "tests/s2_c7_browser_release_matrix_smoke.js"] },
+    { "id": "long-match-and-populated-board", "status": "covered", "evidence": ["tests/s2_c6_browser_visual_gate_smoke.js", "tests/ar_ac1_browser_golden_matches_smoke.js", "tests/ar_ac1_golden_matches_contract_smoke.js"] },
+    { "id": "screen-change-new-game-memory", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js"] },
+    { "id": "stale-callback-guard", "status": "covered", "evidence": ["tests/f9t2c2_bootstrap_forward_pivot_impact_smoke.js", "tests/f9o7b_tutorial_ui_state_resume_smoke.js"] },
+    { "id": "startup-bot-render-performance", "status": "covered", "evidence": ["tests/s2_c7_browser_release_matrix_smoke.js", "tests/f9o7h2_performance_hotfix_smoke.js"] },
+    { "id": "distribution-packaging", "status": "covered", "evidence": ["tests/ar_ac1_staging_gate_smoke.js", "tools/build_distribution_artifact.js"] },
+    { "id": "artifact-manifest-and-checksum", "status": "covered", "evidence": ["tools/build_distribution_artifact.js"] },
+    { "id": "desktop-wrapper", "status": "not-planned", "evidence": ["docs/release/STARTER_1_0_DEV_GUIDE.md"] }
+  ]
+}

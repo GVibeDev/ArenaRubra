@@ -30,6 +30,19 @@ let narrativePortraitLoadToken = 0;
 let narrativeState = { messages:[], index:0, options:{}, open:false };
 let narrativeDom = null;
 
+function eventOverlayText(key, fallback, params={}) {
+  return typeof arenaI18nText === "function"
+    ? arenaI18nText(`eventOverlay.${key}`, fallback, params)
+    : fallback;
+}
+
+function eventOverlayUnitName(data={}, fallback="Unità") {
+  const unit = eventOverlayResolveUnit(data);
+  const id = data.blueprintId || (unit && (unit.blueprintId || unit.sourceId || unit.id));
+  const sourceName = data.unitName || data.targetName || (unit && unit.name) || fallback;
+  return typeof arenaContentText === "function" ? arenaContentText("units", id, "name", sourceName) : sourceName;
+}
+
 function eventOverlayReducedMotion() {
   if (typeof window === "undefined" || !window.matchMedia) return false;
   return Boolean(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -55,7 +68,7 @@ function eventOverlayEnsureDom() {
     root.setAttribute("aria-live", "polite");
     root.setAttribute("aria-atomic", "true");
     root.innerHTML = `
-      <button id="gameEventOverlayCard" class="gameEventOverlayCard" type="button" hidden aria-label="Chiudi messaggio evento">
+      <button id="gameEventOverlayCard" class="gameEventOverlayCard" type="button" hidden aria-label="${eventOverlayText("closeEvent", "Chiudi messaggio evento")}">
         <span class="gameEventOverlayIcon" aria-hidden="true"></span>
         <span class="gameEventOverlayCopy">
           <strong class="gameEventOverlayTitle"></strong>
@@ -82,13 +95,13 @@ function eventOverlayEnsureDom() {
 }
 
 function eventOverlayNormalizeItem(item) {
-  const safe = item && typeof item === "object" ? item : { title:String(item || "Evento") };
+  const safe = item && typeof item === "object" ? item : { title:String(item || eventOverlayText("event", "Evento")) };
   const priorityName = Object.prototype.hasOwnProperty.call(EVENT_OVERLAY_PRIORITY, safe.priority) ? safe.priority : "info";
   return {
     id: safe.id || `evt-${Date.now()}-${++eventOverlaySequence}`,
     key: safe.key || `${safe.type || "event"}:${safe.title || ""}:${safe.message || ""}`,
     type: safe.type || "EVENT",
-    title: String(safe.title || "EVENTO"),
+    title: String(safe.title || eventOverlayText("eventUpper", "EVENTO")),
     message: String(safe.message || ""),
     icon: String(safe.icon || "◆"),
     side: Number(safe.side) || null,
@@ -194,7 +207,7 @@ function eventOverlayClear(options={}) {
 function eventOverlaySideLabel(side, faction=null) {
   const s = Number(side);
   const factionName = faction || (typeof state !== "undefined" && state && state.factions ? state.factions[s] : null);
-  return `Giocatore ${s || "?"}${factionName ? ` · ${factionName}` : ""}`;
+  return `${eventOverlayText("player", "Giocatore {number}", { number:s || "?" })}${factionName ? ` · ${factionName}` : ""}`;
 }
 
 function eventOverlayCoordLabel(coord) {
@@ -232,35 +245,35 @@ function eventOverlayDescriptorsForGameEvent(event) {
   if (!type) return out;
 
   if (type === "TURN_STARTED") {
-    out.push({ type, title:"INIZIO TURNO", message:eventOverlaySideLabel(d.player, d.faction), icon:"▶", side:d.player, faction:d.faction, key:`turn:${d.round}:${d.player}` });
+    out.push({ type, title:eventOverlayText("turnStarted", "INIZIO TURNO"), message:eventOverlaySideLabel(d.player, d.faction), icon:"▶", side:d.player, faction:d.faction, key:`turn:${d.round}:${d.player}` });
   }
 
   if (type === "PS_CONTROL_CHANGED") {
     const prev = Number(d.previousControl) || null;
     const next = Number(d.nextControl) || null;
     const coord = eventOverlayCoordLabel(d.coord);
-    if (!prev && next) out.push({ type, title:"PS OCCUPATO", message:`${eventOverlaySideLabel(next)} ${coord}`.trim(), icon:"⬢", side:next, key:`ps-occupied:${coord}:${next}:${d.round}` });
-    else if (prev && !next) out.push({ type, title:d.locked ? "PS BLOCCATO" : "PS LIBERATO", message:`Punto Strategico ${coord}`.trim(), icon:d.locked ? "⊘" : "◇", side:prev, priority:d.locked ? "high" : "info", key:`ps-${d.locked ? "locked" : "freed"}:${coord}:${d.round}` });
-    else if (prev && next && prev !== next) out.push({ type, title:"PS CONQUISTATO", message:`${eventOverlaySideLabel(next)} ${coord}`.trim(), icon:"⬢", side:next, priority:"high", key:`ps-captured:${coord}:${next}:${d.round}` });
+    if (!prev && next) out.push({ type, title:eventOverlayText("psOccupied", "PS OCCUPATO"), message:`${eventOverlaySideLabel(next)} ${coord}`.trim(), icon:"⬢", side:next, key:`ps-occupied:${coord}:${next}:${d.round}` });
+    else if (prev && !next) out.push({ type, title:d.locked ? eventOverlayText("psLocked", "PS BLOCCATO") : eventOverlayText("psFreed", "PS LIBERATO"), message:`${eventOverlayText("strategicPoint", "Punto Strategico")} ${coord}`.trim(), icon:d.locked ? "⊘" : "◇", side:prev, priority:d.locked ? "high" : "info", key:`ps-${d.locked ? "locked" : "freed"}:${coord}:${d.round}` });
+    else if (prev && next && prev !== next) out.push({ type, title:eventOverlayText("psCaptured", "PS CONQUISTATO"), message:`${eventOverlaySideLabel(next)} ${coord}`.trim(), icon:"⬢", side:next, priority:"high", key:`ps-captured:${coord}:${next}:${d.round}` });
   }
 
   if (type === "UNIT_SPAWNED" || type === "UNIT_BUILT") {
     const unit = eventOverlayResolveUnit(d);
     const unitType = d.unitType || (unit && unit.type) || "";
     const unitWeight = d.unitWeight || (unit && unit.weight) || "";
-    const name = d.unitName || (unit && unit.name) || "Unità";
-    if (unitType === "Comandante") out.push({ type, title:"COMANDANTE IN GIOCO", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${name}`, icon:"★", side:d.player, priority:"high", key:`commander-in:${d.unitId}` });
-    else if (String(unitWeight).toLowerCase() === "pivot") out.push({ type, title:"PIVOT IN GIOCO", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${name}`, icon:"◆", side:d.player, priority:"high", key:`pivot-in:${d.unitId}` });
+    const name = eventOverlayUnitName(d, eventOverlayText("unit", "Unità"));
+    if (unitType === "Comandante") out.push({ type, title:eventOverlayText("commanderInPlay", "COMANDANTE IN GIOCO"), message:`${eventOverlaySideLabel(d.player, d.faction)} · ${name}`, icon:"★", side:d.player, priority:"high", key:`commander-in:${d.unitId}` });
+    else if (String(unitWeight).toLowerCase() === "pivot") out.push({ type, title:eventOverlayText("pivotInPlay", "PIVOT IN GIOCO"), message:`${eventOverlaySideLabel(d.player, d.faction)} · ${name}`, icon:"◆", side:d.player, priority:"high", key:`pivot-in:${d.unitId}` });
   }
 
   if (type === "UNIT_DESTROYED") {
-    if (d.unitType === "Comandante") out.push({ type, title:"COMANDANTE SCONFITTO", message:`${eventOverlaySideLabel(d.side, d.faction)} · ${d.unitName || "Comandante"}`, icon:"✦", side:d.side, priority:"critical", key:`commander-out:${d.unitId}` });
-    else if (String(d.unitWeight || d.unitRole || "").toLowerCase() === "pivot") out.push({ type, title:"PIVOT DISTRUTTA", message:`${eventOverlaySideLabel(d.side, d.faction)} · ${d.unitName || "Pivot"}`, icon:"✕", side:d.side, priority:"critical", key:`pivot-out:${d.unitId}` });
+    if (d.unitType === "Comandante") out.push({ type, title:eventOverlayText("commanderDefeated", "COMANDANTE SCONFITTO"), message:`${eventOverlaySideLabel(d.side, d.faction)} · ${eventOverlayUnitName(d, eventOverlayText("commander", "Comandante"))}`, icon:"✦", side:d.side, priority:"critical", key:`commander-out:${d.unitId}` });
+    else if (String(d.unitWeight || d.unitRole || "").toLowerCase() === "pivot") out.push({ type, title:eventOverlayText("pivotDestroyed", "PIVOT DISTRUTTA"), message:`${eventOverlaySideLabel(d.side, d.faction)} · ${eventOverlayUnitName(d, "Pivot")}`, icon:"✕", side:d.side, priority:"critical", key:`pivot-out:${d.unitId}` });
   }
 
   if (type === "MISSION_READY") {
     const def = eventOverlayMissionDefinition(d.missionId);
-    if (!def || def.missionClass !== "desperate") out.push({ type, title:"MISSIONE SUPERATA", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${d.missionName || (def && def.name) || "Missione"}`, icon:"✓", side:d.player, priority:"high", key:`mission-ready:${d.player}:${d.missionId}:${d.cycle}` });
+    if (!def || def.missionClass !== "desperate") out.push({ type, title:eventOverlayText("missionCompleted", "MISSIONE SUPERATA"), message:`${eventOverlaySideLabel(d.player, d.faction)} · ${(def && def.name) || d.missionName || eventOverlayText("mission", "Missione")}`, icon:"✓", side:d.player, priority:"high", key:`mission-ready:${d.player}:${d.missionId}:${d.cycle}` });
   }
 
   if (type === "MISSION_PROGRESS_CHANGED") {
@@ -272,8 +285,8 @@ function eventOverlayDescriptorsForGameEvent(event) {
       const index = Math.max(0, list.findIndex(entry => entry.id === d.objectiveId));
       out.push({
         type,
-        title:`MISSIONE DISPERATA · ${index + 1}/${list.length || 3}`,
-        message:`${d.missionName || def.name}: ${(item && item.text) || "condizione superata"}`,
+        title:`${eventOverlayText("desperateMission", "MISSIONE DISPERATA")} · ${index + 1}/${list.length || 3}`,
+        message:`${def.name || d.missionName}: ${(item && item.text) || eventOverlayText("conditionMet", "condizione superata")}`,
         icon:"⚠",
         side:d.player,
         priority:"high",
@@ -282,24 +295,24 @@ function eventOverlayDescriptorsForGameEvent(event) {
     }
   }
 
-  if (type === "MISSION_PLAYED") out.push({ type, title:"CARTA MISSIONE GIOCATA", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${d.missionName || "Missione"}`, icon:"▣", side:d.player, priority:"high", key:`mission-played:${d.player}:${d.missionId}:${d.cycle}` });
-  if (type === "DECK_EXHAUSTED") out.push({ type, title:"DECK TERMINATO", message:eventOverlaySideLabel(d.player, d.faction), icon:"□", side:d.player, priority:"high", key:`deck-empty:${d.player}:${d.round}` });
-  if (type === "DECK_RECOVERED") out.push({ type, title:"DECK RIMESCOLATO", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${d.deckSize || 0} carte`, icon:"↻", side:d.player, priority:"high", key:`deck-recovered:${d.player}:${d.missionCycle || 0}:${d.deckSize}` });
-  if (type === "PRESSURE_CHANGED" && Number(d.delta) > 0) out.push({ type, title:"AUMENTO PRESSIONE", message:`${eventOverlaySideLabel(d.player, d.faction)} · ${d.current}/${d.limit}`, icon:"▲", side:d.player, priority:"high", key:`pressure:${d.player}:${d.current}:${d.round}` });
-  if (type === "HQ_THREATENED") out.push({ type, title:"QG MINACCIATO", message:`${eventOverlaySideLabel(d.hqSide, d.hqFaction)} · nemico entro R${d.range || 4}`, icon:"!", side:d.hqSide, priority:"critical", key:`hq-threat:${d.hqSide}:${d.episode || 1}` });
-  if (type === "UNIT_CONVERTED") out.push({ type, title:"UNITÀ CONVERTITA", message:`${d.unitName || d.targetName || "Unità"} passa a ${eventOverlaySideLabel(d.newSide, d.newFaction)}`, icon:"⇄", side:d.newSide, priority:"high", key:`converted:${d.unitId || d.targetId}:${d.newSide}` });
+  if (type === "MISSION_PLAYED") { const def = eventOverlayMissionDefinition(d.missionId); out.push({ type, title:eventOverlayText("missionCardPlayed", "CARTA MISSIONE GIOCATA"), message:`${eventOverlaySideLabel(d.player, d.faction)} · ${(def && def.name) || d.missionName || eventOverlayText("mission", "Missione")}`, icon:"▣", side:d.player, priority:"high", key:`mission-played:${d.player}:${d.missionId}:${d.cycle}` }); }
+  if (type === "DECK_EXHAUSTED") out.push({ type, title:eventOverlayText("deckExhausted", "DECK TERMINATO"), message:eventOverlaySideLabel(d.player, d.faction), icon:"□", side:d.player, priority:"high", key:`deck-empty:${d.player}:${d.round}` });
+  if (type === "DECK_RECOVERED") out.push({ type, title:eventOverlayText("deckReshuffled", "DECK RIMESCOLATO"), message:`${eventOverlaySideLabel(d.player, d.faction)} · ${eventOverlayText("cards", "{count} carte", { count:d.deckSize || 0 })}`, icon:"↻", side:d.player, priority:"high", key:`deck-recovered:${d.player}:${d.missionCycle || 0}:${d.deckSize}` });
+  if (type === "PRESSURE_CHANGED" && Number(d.delta) > 0) out.push({ type, title:eventOverlayText("pressureIncreased", "AUMENTO PRESSIONE"), message:`${eventOverlaySideLabel(d.player, d.faction)} · ${d.current}/${d.limit}`, icon:"▲", side:d.player, priority:"high", key:`pressure:${d.player}:${d.current}:${d.round}` });
+  if (type === "HQ_THREATENED") out.push({ type, title:eventOverlayText("hqThreatened", "QG MINACCIATO"), message:`${eventOverlaySideLabel(d.hqSide, d.hqFaction)} · ${eventOverlayText("enemyWithin", "nemico entro R{range}", { range:d.range || 4 })}`, icon:"!", side:d.hqSide, priority:"critical", key:`hq-threat:${d.hqSide}:${d.episode || 1}` });
+  if (type === "UNIT_CONVERTED") out.push({ type, title:eventOverlayText("unitConverted", "UNITÀ CONVERTITA"), message:eventOverlayText("unitConvertedDetail", "{unit} passa a {player}", { unit:eventOverlayUnitName(d, eventOverlayText("unit", "Unità")), player:eventOverlaySideLabel(d.newSide, d.newFaction) }), icon:"⇄", side:d.newSide, priority:"high", key:`converted:${d.unitId || d.targetId}:${d.newSide}` });
   if (type === "CARD_STOLEN") {
-    const visibleName = typeof cardPresentationEventCardName === "function" ? cardPresentationEventCardName(d, "Carta coperta") : (d.cardName || "Carta");
-    out.push({ type, title:"CARTA RUBATA", message:`${eventOverlaySideLabel(d.toSide, d.toFaction)} · ${visibleName}`, icon:"↤", side:d.toSide, priority:"high", key:`card-stolen:${d.cardUid}:${d.toSide}` });
+    const visibleName = typeof cardPresentationEventCardName === "function" ? cardPresentationEventCardName(d, eventOverlayText("hiddenCard", "Carta coperta")) : (d.cardName || eventOverlayText("card", "Carta"));
+    out.push({ type, title:eventOverlayText("cardStolen", "CARTA RUBATA"), message:`${eventOverlaySideLabel(d.toSide, d.toFaction)} · ${visibleName}`, icon:"↤", side:d.toSide, priority:"high", key:`card-stolen:${d.cardUid}:${d.toSide}` });
   }
-  if (type === "CARD_BLOCKED" && Number(d.count || (d.blocked && d.blocked.length) || 0) > 0) out.push({ type, title:"CARTE BLOCCATE", message:`${eventOverlaySideLabel(d.enemy, d.enemyFaction)} · ${Number(d.count || d.blocked.length)} carta/e`, icon:"⊘", side:d.enemy, priority:"high", key:`card-blocked:${d.enemy}:${d.round || ""}:${d.source || ""}` });
+  if (type === "CARD_BLOCKED" && Number(d.count || (d.blocked && d.blocked.length) || 0) > 0) out.push({ type, title:eventOverlayText("cardsBlocked", "CARTE BLOCCATE"), message:`${eventOverlaySideLabel(d.enemy, d.enemyFaction)} · ${eventOverlayText("cards", "{count} carte", { count:Number(d.count || d.blocked.length) })}`, icon:"⊘", side:d.enemy, priority:"high", key:`card-blocked:${d.enemy}:${d.round || ""}:${d.source || ""}` });
 
   if (type === "VICTORY") {
     const winner = Number(d.winner) || null;
     const humanSides = typeof state !== "undefined" && state && state.modes ? (typeof mapRuntimePlayerIds === "function" ? mapRuntimePlayerIds(state) : [1,2]).filter(side => state.modes[side] === "human") : [];
     const localDefeat = Boolean(winner && humanSides.length === 1 && humanSides[0] !== winner);
-    if (winner) out.push({ type, title:localDefeat ? "SCONFITTA" : "VITTORIA", message:`${eventOverlaySideLabel(winner, d.winnerFaction)} · ${d.winType || "partita conclusa"}`, icon:localDefeat ? "◆" : "✹", side:winner, priority:"critical", key:`victory:${winner}:${d.round}:${d.winType}` });
-    else out.push({ type, title:"PAREGGIO", message:d.message || "Partita conclusa", icon:"＝", priority:"critical", key:`draw:${d.round}:${d.winType}` });
+    if (winner) out.push({ type, title:localDefeat ? eventOverlayText("defeat", "SCONFITTA") : eventOverlayText("victory", "VITTORIA"), message:`${eventOverlaySideLabel(winner, d.winnerFaction)} · ${eventOverlayText(`winTypes.${d.winType || "default"}`, d.winType || eventOverlayText("gameEnded", "partita conclusa"))}`, icon:localDefeat ? "◆" : "✹", side:winner, priority:"critical", key:`victory:${winner}:${d.round}:${d.winType}` });
+    else out.push({ type, title:eventOverlayText("draw", "PAREGGIO"), message:eventOverlayText("gameEnded", d.message || "Partita conclusa"), icon:"＝", priority:"critical", key:`draw:${d.round}:${d.winType}` });
   }
 
   return out;
@@ -384,15 +397,15 @@ function narrativeEnsureDom() {
         </div>
         <div class="narrativeContent">
           <div class="narrativeHeader">
-            <strong id="narrativeSpeaker">Narratore</strong>
+            <strong id="narrativeSpeaker">${eventOverlayText("narrator", "Narratore")}</strong>
             <span class="narrativeStepLabel"></span>
           </div>
           <div id="narrativeText" class="narrativeText"></div>
           <div class="narrativeControls">
-            <button class="ghost narrativePrevBtn" type="button">Indietro</button>
-            <button class="ghost narrativeRepeatBtn" type="button">Ripeti</button>
-            <button class="ghost narrativeCloseBtn" type="button">Chiudi</button>
-            <button class="primary narrativeNextBtn" type="button">Avanti</button>
+            <button class="ghost narrativePrevBtn" type="button">${eventOverlayText("back", "Indietro")}</button>
+            <button class="ghost narrativeRepeatBtn" type="button">${eventOverlayText("repeat", "Ripeti")}</button>
+            <button class="ghost narrativeCloseBtn" type="button">${eventOverlayText("close", "Chiudi")}</button>
+            <button class="primary narrativeNextBtn" type="button">${eventOverlayText("next", "Avanti")}</button>
           </div>
         </div>
       </section>`;
@@ -478,7 +491,7 @@ function narrativeNormalizeMessage(message, index=0) {
   const expression = NARRATIVE_EXPRESSIONS.includes(safe.expression) ? safe.expression : "neutral";
   return {
     id:safe.id || `narrative-${index + 1}`,
-    speaker:String(safe.speaker || "Narratore"),
+    speaker:String(safe.speaker || eventOverlayText("narrator", "Narratore")),
     text:String(safe.text || ""),
     portraitSet:safe.portraitSet || null,
     portraitSrc:safe.portraitSrc || null,
@@ -510,10 +523,12 @@ function narrativeRender() {
   dom.repeat.hidden = options.showRepeat === false;
   dom.close.hidden = options.showClose === false;
   dom.next.hidden = options.showNext === false;
-  dom.close.textContent = options.closeLabel || "Chiudi";
+  dom.close.textContent = options.closeLabel || eventOverlayText("close", "Chiudi");
   dom.prev.disabled = narrativeState.index <= 0 || options.disablePrev === true;
   dom.next.disabled = options.disableNext === true;
-  dom.next.textContent = options.nextLabel || (narrativeState.index >= narrativeState.messages.length - 1 ? "Fine" : "Avanti");
+  dom.prev.textContent = eventOverlayText("back", "Indietro");
+  dom.repeat.textContent = eventOverlayText("repeat", "Ripeti");
+  dom.next.textContent = options.nextLabel || (narrativeState.index >= narrativeState.messages.length - 1 ? eventOverlayText("finish", "Fine") : eventOverlayText("next", "Avanti"));
   narrativeLoadPortrait(dom, message);
   if (typeof narrativeState.options.onRender === "function") {
     try { narrativeState.options.onRender(message, narrativeState.index); }

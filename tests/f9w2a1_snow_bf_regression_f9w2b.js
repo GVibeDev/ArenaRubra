@@ -4,17 +4,22 @@ const path = require("path");
 const assert = require("assert");
 const crypto = require("crypto");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const root = path.resolve(__dirname, "..");
+const mapData = fs.readFileSync(path.join(root, "data", "official_maps_f9w2a1.js"), "utf8");
 const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
 const build = fs.readFileSync(path.join(root, "src", "build_info.js"), "utf8");
+assertCurrentBuildInfo(build);
 const marker = "const F9W2A1_SNOW_BF_OFFICIAL_MAP = Object.freeze(";
-const start = ui.indexOf(marker);
+const start = mapData.indexOf(marker);
 assert(start >= 0, "Snow BF official map constant missing");
 const jsonStart = start + marker.length;
-const end = ui.indexOf(");\n\nfunction arenaOfficialSnowMapCloneF9W2a1", jsonStart);
+const endLf = mapData.indexOf(");\n\nconst F9W2A1_OFFICIAL_MAP_DEFINITIONS", jsonStart);
+const endCrLf = mapData.indexOf(");\r\n\r\nconst F9W2A1_OFFICIAL_MAP_DEFINITIONS", jsonStart);
+const end = endLf >= 0 ? endLf : endCrLf;
 assert(end > jsonStart, "Snow BF official map constant terminator missing");
-const map = JSON.parse(ui.slice(jsonStart, end));
+const map = JSON.parse(mapData.slice(jsonStart, end));
 
 assert.strictEqual(map.id, "map10_snow_bf_4pl_3x");
 assert.strictEqual(map.name, "Snow BF - 4PL - 3x");
@@ -83,24 +88,11 @@ const gameplayHash = crypto.createHash("sha256").update(stableStringify(gameplay
 assert.strictEqual(gameplayHash, "119055f3cc7cfcbd7b36a0fd5ce0f856b4369e8164f71ca4b162432a0da90a8f", "gameplay payload changed from supplied JSON");
 
 
-// Execute the isolated registration block against the public map-runtime entrypoints.
-const blockEnd = ui.indexOf("// F9W2a1 END", start);
-assert(blockEnd > start, "F9W2a1 registration block end missing");
-const blockCode = ui.slice(start, blockEnd);
-const context = {
-  console,
-  mapRuntimeClone:value => JSON.parse(JSON.stringify(value)),
-  mapRuntimeSafeId:value => String(value || ""),
-  getBuiltinMapDefinitions:() => [{id:"map1_starter", official:true}],
-  getMapDefinitionById:id => id === "map1_starter" ? {id:"map1_starter", official:true} : null
-};
-context.globalThis = context;
-vm.runInNewContext(blockCode, context, {filename:"f9w2a1-registration.js"});
-const registered = context.getBuiltinMapDefinitions();
-assert.strictEqual(registered.filter(item => item.id === map.id).length, 1, "Snow BF must register exactly once");
-assert.strictEqual(context.getMapDefinitionById(map.id).official, true);
-assert.strictEqual(context.getMapDefinitionById("map1_starter").id, "map1_starter");
-assert.strictEqual(context.getBuiltinMapDefinitions().filter(item => item.id === map.id).length, 1, "registration must be idempotent");
+const context = vm.createContext({ console, Object });
+vm.runInContext(mapData, context, {filename:"official_maps_f9w2a1.js"});
+const registered = vm.runInContext("Object.values(F9W2A1_OFFICIAL_MAP_DEFINITIONS)", context);
+assert.strictEqual(registered.length, 1, "Snow BF provider must publish exactly one definition");
+assert.strictEqual(registered[0].id, map.id);
 
 const background = path.join(root, map.presentation.backgroundAssetPath);
 let backgroundHash = "patch-only-skip";
@@ -112,13 +104,12 @@ if (fs.existsSync(background)) {
 }
 
 for (const token of [
-  "function arenaInstallOfficialSnowMapF9W2a1()",
-  "root.getBuiltinMapDefinitions = wrappedBuiltin",
-  "root.getMapDefinitionById = wrappedGetById",
-  "arenaInstallOfficialSnowMapF9W2a1();",
-  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
-  'buildChannel: "starter2-ui-agathoi-palette-w2d3"'
-]) assert(ui.includes(token) || build.includes(token), `missing F9W2a1 contract token: ${token}`);
+  "const F9W2A1_SNOW_BF_OFFICIAL_MAP = Object.freeze(",
+  "const F9W2A1_OFFICIAL_MAP_DEFINITIONS = Object.freeze({"
+]) assert(mapData.includes(token), `missing F9W2a1 data contract token: ${token}`);
+for (const token of ["arenaInstallOfficialSnowMapF9W2a1", "__arenaOfficialSnowMapF9W2a1Installed"]) {
+  assert(!ui.includes(token), `legacy Snow UI patch remains: ${token}`);
+}
 
 console.log(JSON.stringify({
   status:"PASS",

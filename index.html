@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Arena Rubra</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout/game_inspector.css">
   <link rel="stylesheet" href="css/renderer_calibration_lab.css">
+  <link rel="stylesheet" href="css/components/language_picker.css">
 </head>
 <!-- F9R3 · Official Map & Pressure Lab (validated baseline compatibility marker) -->
 <body>
 
-  <div id="appSplash" class="appSplash" role="dialog" aria-modal="true" aria-label="Intro Arena Rubra" data-splash-phase="boot">
+  <div id="appSplash" class="appSplash" role="dialog" aria-modal="true" aria-label="Intro Arena Rubra" data-i18n-aria-label="splash.dialogLabel" data-splash-phase="boot">
     <div class="splashSlides" aria-hidden="true">
       <div class="splashSlide splashSlideDev" data-splash-panel="dev">
         <img src="assets/intro/g-vibe-dev-logo.png" alt="" />
@@ -21,168 +23,175 @@
     </div>
     <div class="splashShade"></div>
     <div class="splashUi">
-      <button class="primary splashEnterBtn" id="splashEnterBtn" type="button">Starter Game : Blueprint</button>
+      <button class="primary splashEnterBtn" id="splashEnterBtn" type="button" data-i18n="splash.enter">Starter Game : Blueprint</button>
     </div>
   </div>
-  <audio id="introMusic" src="assets/audio/432-hertz-rift.mp3" preload="auto" autoplay loop playsinline aria-label="Musica Arena Rubra"></audio>
+  <audio id="introMusic" src="assets/audio/432-hertz-rift.mp3" preload="auto" autoplay loop playsinline aria-label="Musica Arena Rubra" data-i18n-aria-label="splash.musicLabel"></audio>
 
   <!-- Frozen static regression markers: data-arena-music-control data-arena-music-toggle data-arena-music-volume data-arena-music-volume-output data-arena-card-motion-toggle -->
-  <section id="mainMenuScreen" class="appScreen mainMenuScreen" data-app-screen-panel="mainMenu" aria-label="Menu principale Arena Rubra">
+  <section id="mainMenuScreen" class="appScreen mainMenuScreen" data-app-screen-panel="mainMenu" aria-label="Menu principale Arena Rubra" data-i18n-aria-label="menu.ariaLabel">
     <div class="mainMenuBackdrop"></div>
     <div class="mainMenuCard mainMenuCardF9Q3a">
       <header class="mainMenuHero">
         <div class="mainMenuHeroBrand">
-          <div class="mainMenuKicker">G Vibe Dev presenta</div>
+          <div class="mainMenuKicker" data-i18n="menu.kicker">G Vibe Dev presenta</div>
           <h1><span id="buildAppName">Arena Rubra</span></h1>
-          <p class="mainMenuTagline">Tattica, carte e controllo del territorio su campo esagonale.</p>
+          <p class="mainMenuTagline" data-i18n="menu.tagline">Tattica, carte e controllo del territorio su campo esagonale.</p>
         </div>
-        <div class="mainMenuHeroStatus" aria-label="Stato applicazione">
+        <div class="mainMenuHeroStatus" aria-label="Stato applicazione" data-i18n-aria-label="menu.appStatusLabel">
+          <label class="arenaLanguagePicker" for="arenaLanguageSelect">
+            <span data-i18n="language.selectorLabel">Lingua</span>
+            <select id="arenaLanguageSelect" disabled>
+              <option value="it">Italiano</option>
+              <option value="en">English</option>
+            </select>
+          </label>
           <span class="mainMenuStage" id="buildStage">Starter Game ALPHA</span>
           <span class="mainMenuBuildChip"><span id="menuBuildVersion">C2-STABLE-1-F9S1b1-APK-M4c</span></span>
           <span class="mainMenuStorageChip" id="menuStorageStatus">Archivio locale: inizializzazione…</span>
         </div>
       </header>
 
-      <div class="mainMenuDashboard controlCenterDashboard" aria-label="Centro di controllo Arena Rubra">
+      <div class="mainMenuDashboard controlCenterDashboard" aria-label="Centro di controllo Arena Rubra" data-i18n-aria-label="menu.controlCenterLabel">
         <section class="mainMenuActionGroup mainMenuActionGroupPlay mainMenuPlayPanel controlCenterArea controlCenterAreaPlay" aria-labelledby="controlCenterPlayTitle">
           <div class="mainMenuSectionHeading">
-            <span class="mainMenuSectionEyebrow">Gioca</span>
-            <h2 id="controlCenterPlayTitle">Entra nell’Arena</h2>
-            <p>Avvia un match, riprendi la sessione corrente o accedi alle cinque lezioni guidate.</p>
+            <span class="mainMenuSectionEyebrow" data-i18n="menu.play.eyebrow">Gioca</span>
+            <h2 id="controlCenterPlayTitle" data-i18n="menu.play.title">Entra nell’Arena</h2>
+            <p data-i18n="menu.play.description">Avvia un match, riprendi la sessione corrente o accedi alle cinque lezioni guidate.</p>
           </div>
           <div class="controlCenterActionGrid controlCenterActionGridPlay">
             <button class="primary mainMenuPrimaryAction controlCenterActionPrimary" id="mainMenuNewGameBtn" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">▶</span>
-              <span><strong>Nuova partita</strong><small>Setup e Custom Match</small></span>
+              <span><strong data-i18n="menu.play.newTitle">Nuova partita</strong><small data-i18n="menu.play.newHint">Setup e Custom Match</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuTutorialBtn" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">◆</span>
-              <span><strong>Tutorial</strong><small>Cinque lezioni guidate</small></span>
+              <span><strong data-i18n="menu.play.tutorialTitle">Tutorial</strong><small data-i18n="menu.play.tutorialHint">Cinque lezioni guidate</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuResumeBtn" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">↻</span>
-              <span><strong>Riprendi</strong><small>Sessione runtime corrente</small></span>
+              <span><strong data-i18n="menu.play.resumeTitle">Riprendi</strong><small data-i18n="menu.play.resumeHint">Sessione runtime corrente</small></span>
             </button>
           </div>
         </section>
 
         <section class="mainMenuStudioPanel controlCenterArea controlCenterAreaCards" aria-labelledby="controlCenterCardsTitle">
           <div class="mainMenuSectionHeading">
-            <span class="mainMenuSectionEyebrow">Carte e deck</span>
-            <h2 id="controlCenterCardsTitle">Libreria tattica</h2>
-            <p>Costruisci i mazzi, consulta il catalogo e crea carte custom senza alterare i contenuti ufficiali.</p>
+            <span class="mainMenuSectionEyebrow" data-i18n="menu.cards.eyebrow">Carte e deck</span>
+            <h2 id="controlCenterCardsTitle" data-i18n="menu.cards.title">Libreria tattica</h2>
+            <p data-i18n="menu.cards.description">Costruisci i mazzi, consulta il catalogo e crea carte custom senza alterare i contenuti ufficiali.</p>
           </div>
           <div class="controlCenterActionGrid">
             <button class="ghost mainMenuStudioTile" data-app-open-deck-builder type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">▤</span>
-              <span><strong>Deck Builder</strong><small>50 deck ufficiali e libreria locale</small></span>
+              <span><strong data-i18n="menu.cards.builderTitle">Deck Builder</strong><small data-i18n="menu.cards.builderHint">50 deck ufficiali e libreria locale</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" data-app-open-card-pool type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">◫</span>
-              <span><strong>Pool carte</strong><small>Catalogo, filtri e focus carta</small></span>
+              <span><strong data-i18n="menu.cards.poolTitle">Pool carte</strong><small data-i18n="menu.cards.poolHint">Catalogo, filtri e focus carta</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" data-app-open-card-editor type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">✦</span>
-              <span><strong>Card Editor</strong><small>Creazione e archivio custom</small></span>
+              <span><strong data-i18n="menu.cards.editorTitle">Card Editor</strong><small data-i18n="menu.cards.editorHint">Creazione e archivio custom</small></span>
             </button>
           </div>
         </section>
 
         <section class="controlCenterArea controlCenterAreaMaps" aria-labelledby="controlCenterMapsTitle">
           <div class="mainMenuSectionHeading">
-            <span class="mainMenuSectionEyebrow">Mappe</span>
-            <h2 id="controlCenterMapsTitle">Campi di battaglia</h2>
-            <p>Consulta mappe ufficiali e custom oppure apri l’editor tecnico con validazione live.</p>
+            <span class="mainMenuSectionEyebrow" data-i18n="menu.maps.eyebrow">Mappe</span>
+            <h2 id="controlCenterMapsTitle" data-i18n="menu.maps.title">Campi di battaglia</h2>
+            <p data-i18n="menu.maps.description">Consulta mappe ufficiali e custom oppure apri l’editor tecnico con validazione live.</p>
           </div>
           <div class="controlCenterActionGrid">
             <button class="ghost mainMenuStudioTile" id="mainMenuMapArchiveBtn" data-control-center-panel="mapArchive" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">▦</span>
-              <span><strong>Archivio mappe</strong><small>Geometria, PS, validazione e avvio</small></span>
+              <span><strong data-i18n="menu.maps.archiveTitle">Archivio mappe</strong><small data-i18n="menu.maps.archiveHint">Geometria, PS, validazione e avvio</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" data-app-open-map-editor type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">⬡</span>
-              <span><strong>Map Editor</strong><small>Terreni, sfondi e Match Lab</small></span>
+              <span><strong data-i18n="menu.maps.editorTitle">Map Editor</strong><small data-i18n="menu.maps.editorHint">Terreni, sfondi e Match Lab</small></span>
             </button>
           </div>
         </section>
 
         <section class="controlCenterArea controlCenterAreaAnalysis" aria-labelledby="controlCenterAnalysisTitle">
           <div class="mainMenuSectionHeading">
-            <span class="mainMenuSectionEyebrow">Analisi</span>
-            <h2 id="controlCenterAnalysisTitle">Dati di gioco</h2>
-            <p>Leggi record persistenti e dati runtime senza dover entrare nel pannello Debug della partita.</p>
+            <span class="mainMenuSectionEyebrow" data-i18n="menu.analysis.eyebrow">Analisi</span>
+            <h2 id="controlCenterAnalysisTitle" data-i18n="menu.analysis.title">Dati di gioco</h2>
+            <p data-i18n="menu.analysis.description">Leggi record persistenti e dati runtime senza dover entrare nel pannello Debug della partita.</p>
           </div>
           <div class="controlCenterActionGrid controlCenterActionGridCompact">
             <button class="ghost mainMenuStudioTile" id="mainMenuStatsBtn" data-control-center-panel="statistics" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">Σ</span>
-              <span><strong>Statistiche</strong><small>Registro matchup</small></span>
+              <span><strong data-i18n="menu.analysis.statsTitle">Statistiche</strong><small data-i18n="menu.analysis.statsHint">Registro matchup</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuHistoryBtn" data-control-center-panel="history" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">◷</span>
-              <span><strong>Cronologia</strong><small>Storico completo</small></span>
+              <span><strong data-i18n="menu.analysis.historyTitle">Cronologia</strong><small data-i18n="menu.analysis.historyHint">Storico completo</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuTelemetryBtn" data-control-center-panel="telemetry" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">⌁</span>
-              <span><strong>Telemetria</strong><small>Schema F9Q3e1-2</small></span>
+              <span><strong data-i18n="menu.analysis.telemetryTitle">Telemetria</strong><small data-i18n="menu.analysis.telemetryHint">Schema F9Q3e1-2</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuLogBtn" data-control-center-panel="log" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">≡</span>
-              <span><strong>Log</strong><small>Eventi tipizzati runtime</small></span>
+              <span><strong data-i18n="menu.analysis.logTitle">Log</strong><small data-i18n="menu.analysis.logHint">Eventi tipizzati runtime</small></span>
             </button>
           </div>
         </section>
 
         <section class="mainMenuPresentationPanel controlCenterArea controlCenterAreaSystem" aria-labelledby="controlCenterSystemTitle">
           <div class="mainMenuSectionHeading">
-            <span class="mainMenuSectionEyebrow">Sistema</span>
-            <h2 id="controlCenterSystemTitle">Applicazione e archivio</h2>
-            <p>Versione, preferenze, diagnostica di sviluppo e backup sono riuniti in un unico punto.</p>
+            <span class="mainMenuSectionEyebrow" data-i18n="menu.system.eyebrow">Sistema</span>
+            <h2 id="controlCenterSystemTitle" data-i18n="menu.system.title">Applicazione e archivio</h2>
+            <p data-i18n="menu.system.description">Versione, preferenze, diagnostica di sviluppo e backup sono riuniti in un unico punto.</p>
           </div>
           <div class="controlCenterActionGrid controlCenterActionGridCompact">
             <button class="ghost mainMenuStudioTile" id="mainMenuAboutBtn" data-control-center-panel="version" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">i</span>
-              <span><strong>Versione</strong><small>Build e baseline</small></span>
+              <span><strong data-i18n="menu.system.versionTitle">Versione</strong><small data-i18n="menu.system.versionHint">Build e baseline</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuSettingsBtn" data-control-center-panel="settings" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">⚙</span>
-              <span><strong>Impostazioni</strong><small>Audio e presentazione</small></span>
+              <span><strong data-i18n="menu.system.settingsTitle">Impostazioni</strong><small data-i18n="menu.system.settingsHint">Audio e presentazione</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuOptionsBtn" data-control-center-panel="debug" data-control-center-dev-only type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">⌘</span>
-              <span><strong>Debug</strong><small>Precheck e diagnostica completa</small></span>
+              <span><strong data-i18n="menu.system.debugTitle">Debug</strong><small data-i18n="menu.system.debugHint">Precheck e diagnostica completa</small></span>
             </button>
             <button class="ghost mainMenuStudioTile" id="mainMenuTransferBtn" data-control-center-panel="transfer" type="button">
               <span class="mainMenuTileIcon" aria-hidden="true">⇄</span>
-              <span><strong>Import / Export</strong><small>Backup completo del vault</small></span>
+              <span><strong data-i18n="menu.system.transferTitle">Import / Export</strong><small data-i18n="menu.system.transferHint">Backup completo del vault</small></span>
             </button>
           </div>
         </section>
       </div>
 
-      <section class="controlCenterStatusBoard" aria-label="Stato del sistema">
+      <section class="controlCenterStatusBoard" aria-label="Stato del sistema" data-i18n-aria-label="menu.status.boardLabel">
         <article class="controlCenterStatusCard" id="controlCenterVersionCard" data-tone="neutral">
-          <span>Versione completa</span><strong id="controlCenterVersion">—</strong><small id="controlCenterVersionMeta">—</small>
+          <span data-i18n="menu.status.fullVersion">Versione completa</span><strong id="controlCenterVersion">—</strong><small id="controlCenterVersionMeta">—</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterLogicBaselineCard" data-tone="neutral">
-          <span>Baseline logica</span><strong id="controlCenterLogicBaseline">—</strong><small id="controlCenterLogicBaselineMeta">—</small>
+          <span data-i18n="menu.status.logicBaseline">Baseline logica</span><strong id="controlCenterLogicBaseline">—</strong><small id="controlCenterLogicBaselineMeta">—</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterTelemetrySchemaCard" data-tone="neutral">
-          <span>Schema telemetrico</span><strong id="controlCenterTelemetrySchema">—</strong><small id="controlCenterTelemetrySchemaMeta">—</small>
+          <span data-i18n="menu.status.telemetrySchema">Schema telemetrico</span><strong id="controlCenterTelemetrySchema">—</strong><small id="controlCenterTelemetrySchemaMeta">—</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterOfficialDecksCard" data-tone="neutral">
-          <span>Deck ufficiali</span><strong id="controlCenterOfficialDecks">—</strong><small id="controlCenterOfficialDecksMeta">—</small>
+          <span data-i18n="menu.status.officialDecks">Deck ufficiali</span><strong id="controlCenterOfficialDecks">—</strong><small id="controlCenterOfficialDecksMeta">—</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterOfficialMapsCard" data-tone="neutral">
-          <span>Mappe ufficiali</span><strong id="controlCenterOfficialMaps">—</strong><small id="controlCenterOfficialMapsMeta">—</small>
+          <span data-i18n="menu.status.officialMaps">Mappe ufficiali</span><strong id="controlCenterOfficialMaps">—</strong><small id="controlCenterOfficialMapsMeta">—</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterStorageSpaceCard" data-tone="neutral">
-          <span>Spazio archivio</span><strong id="controlCenterStorageSpace">Calcolo…</strong><small id="controlCenterStorageSpaceMeta">Stima archivio in corso</small>
+          <span data-i18n="menu.status.storageSpace">Spazio archivio</span><strong id="controlCenterStorageSpace" data-i18n="menu.status.calculating">Calcolo…</strong><small id="controlCenterStorageSpaceMeta" data-i18n="menu.status.storageEstimate">Stima archivio in corso</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterLastMatchCard" data-tone="neutral">
-          <span>Ultimo match registrato</span><strong id="controlCenterLastMatch">—</strong><small id="controlCenterLastMatchMeta">—</small>
+          <span data-i18n="menu.status.lastMatch">Ultimo match registrato</span><strong id="controlCenterLastMatch">—</strong><small id="controlCenterLastMatchMeta">—</small>
         </article>
         <article class="controlCenterStatusCard" id="controlCenterDiagnosticCard" data-tone="neutral">
-          <span>Errori diagnostici</span><strong id="controlCenterDiagnosticErrors">Verifica…</strong><small id="controlCenterDiagnosticErrorsMeta">Precheck in corso</small>
+          <span data-i18n="menu.status.diagnosticErrors">Errori diagnostici</span><strong id="controlCenterDiagnosticErrors" data-i18n="menu.status.checking">Verifica…</strong><small id="controlCenterDiagnosticErrorsMeta" data-i18n="menu.status.precheck">Precheck in corso</small>
         </article>
       </section>
 
@@ -193,61 +202,61 @@
         <div class="controlCenterPanelSheet" role="dialog" aria-modal="true" aria-labelledby="controlCenterPanelTitle">
           <header class="controlCenterPanelHeader">
             <div>
-              <span class="mainMenuSectionEyebrow">Centro di controllo</span>
-              <h2 id="controlCenterPanelTitle">Dettaglio</h2>
+              <span class="mainMenuSectionEyebrow" data-i18n="menu.panel.eyebrow">Centro di controllo</span>
+              <h2 id="controlCenterPanelTitle" data-i18n="menu.panel.detail">Dettaglio</h2>
             </div>
-            <button class="ghost compactIconBtn" id="controlCenterPanelCloseBtn" type="button" aria-label="Chiudi pannello Centro di controllo">×</button>
+            <button class="ghost compactIconBtn" id="controlCenterPanelCloseBtn" type="button" aria-label="Chiudi pannello Centro di controllo" data-i18n-aria-label="menu.panel.closeLabel">×</button>
           </header>
           <div id="controlCenterPanelBody" class="controlCenterPanelBody"></div>
         </div>
       </section>
 
       <footer class="mainMenuFooter">
-        <p class="mainMenuNotes" id="menuBuildNotes">Fondazione mappe, terreni ed editor multigiocatore.</p>
-        <div class="mainMenuBuildMeta" aria-label="Metadati build">
-          <span><strong>Patch</strong> <span id="menuBuildName">Camera, Storage & Menu</span></span>
-          <span><strong>Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></span>
-          <span><strong>Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></span>
-          <span><strong>Data</strong> <span id="menuBuildDate">2026-07-26</span></span>
+        <p class="mainMenuNotes" id="menuBuildNotes" data-i18n="menu.footer.notes">Fondazione mappe, terreni ed editor multigiocatore.</p>
+        <div class="mainMenuBuildMeta" aria-label="Metadati build" data-i18n-aria-label="menu.footer.metadataLabel">
+          <span><strong data-i18n="menu.footer.patch">Patch</strong> <span id="menuBuildName">Camera, Storage & Menu</span></span>
+          <span><strong data-i18n="menu.footer.baseline">Baseline</strong> <span id="menuLogicBaseline">C2-STABLE-1-APK-M4c</span></span>
+          <span><strong data-i18n="menu.footer.channel">Canale</strong> <span id="menuBuildChannel">freeze-candidate</span></span>
+          <span><strong data-i18n="menu.footer.date">Data</strong> <span id="menuBuildDate">2026-07-26</span></span>
         </div>
       </footer>
     </div>
   </section>
 
-  <section id="tutorialScreen" class="appScreen tutorialScreen" data-app-screen-panel="tutorial" aria-label="Tutorial Arena Rubra">
+  <section id="tutorialScreen" class="appScreen tutorialScreen" data-app-screen-panel="tutorial" aria-label="Tutorial Arena Rubra" data-i18n-aria-label="tutorial.ariaLabel">
     <div class="mainMenuBackdrop"></div>
     <div class="tutorialScreenCard">
-      <div class="mainMenuKicker">Accademia di Arena Rubra</div>
-      <h2>Tutorial in cinque lezioni</h2>
-      <p class="setupIntro">Cinque lezioni progressive insegnano le regole fondamentali attraverso brevi scenari guidati. Sono disponibili Exordium per combattimento e tattiche, Nexus per Starter, tipi di unità, rete di sbarco e Avanguardia, e Agathoi per Spine, Contrattacco, fortificazione e difesa del Punto Strategico.</p>
+      <div class="mainMenuKicker" data-i18n="tutorial.kicker">Accademia di Arena Rubra</div>
+      <h2 data-i18n="tutorial.title">Tutorial in cinque lezioni</h2>
+      <p class="setupIntro" data-i18n="tutorial.intro">Cinque lezioni progressive insegnano le regole fondamentali attraverso brevi scenari guidati. Sono disponibili Exordium per combattimento e tattiche, Nexus per Starter, tipi di unità, rete di sbarco e Avanguardia, e Agathoi per Spine, Contrattacco, fortificazione e difesa del Punto Strategico.</p>
       <div id="tutorialLessonGrid" class="tutorialLessonGrid"></div>
       <div class="tutorialMenuActions">
         <button class="primary" id="tutorialRuntimeDemoBtn" type="button">Avvia Lezione 1</button>
         <button class="ghost" id="tutorialResumeBtn" type="button">Riprendi Lezione 1</button>
-        <button class="ghost" id="tutorialResetProgressBtn" type="button">Azzera progressi tutorial</button>
-        <button class="ghost" data-app-back-menu type="button">Torna al menu</button>
+        <button class="ghost" id="tutorialResetProgressBtn" type="button" data-i18n="tutorial.resetProgress">Azzera progressi tutorial</button>
+        <button class="ghost" data-app-back-menu type="button" data-i18n="tutorial.backMenu">Torna al menu</button>
       </div>
       <div id="tutorialRuntimeStatus" class="tutorialRuntimeStatus" aria-live="polite"></div>
     </div>
   </section>
 
-  <section id="setupScreen" class="appScreen setupScreen" data-app-screen-panel="setup" aria-label="Setup nuova partita Arena Rubra">
+  <section id="setupScreen" class="appScreen setupScreen" data-app-screen-panel="setup" aria-label="Setup nuova partita Arena Rubra" data-i18n-aria-label="setup.ariaLabel">
     <div class="mainMenuBackdrop"></div>
     <div class="setupScreenCard">
-      <div class="mainMenuKicker">Nuova partita</div>
+      <div class="mainMenuKicker" data-i18n="setup.kicker">Nuova partita</div>
       <h2 id="setupMapHeading">Setup Starter MAP1</h2>
-      <p class="setupIntro">F9K7 separa identità giocatore, deck runtime e regole partita. I deck custom restano nel Custom Match Lab: nessuna modifica a gameplay, AI o bilanciamento.</p>
+      <p class="setupIntro" data-i18n="setup.intro">F9K7 separa identità giocatore, deck runtime e regole partita. I deck custom restano nel Custom Match Lab: nessuna modifica a gameplay, AI o bilanciamento.</p>
 
       <div class="setupScreenGrid">
         <section class="setupSideBox faction-nexus-box setupPlayerBox">
           <div class="setupSideHeader">
-            <h3>Giocatore 1</h3>
+            <h3 data-i18n="setup.player" data-i18n-params='{"number":1}'>Giocatore 1</h3>
             <span class="setupDeckBadge" id="setupP1DeckBadge">Deck Starter</span>
           </div>
           <div class="setupPlayerSubsection">
-            <h4>Identità</h4>
+            <h4 data-i18n="setup.identity">Identità</h4>
             <div class="setupFieldGrid">
-              <label for="setupP1Faction">Fazione</label>
+              <label for="setupP1Faction" data-i18n="setup.faction">Fazione</label>
               <select id="setupP1Faction">
                 <option value="Nexus">Nexus</option>
                 <option value="Exordium">Exordium</option>
@@ -255,23 +264,23 @@
                 <option value="Agathoi">Agathoi</option>
                 <option value="Fabeot">Fabeot</option>
               </select>
-              <label for="setupP1Commander">Comandante</label>
+              <label for="setupP1Commander" data-i18n="setup.commander">Comandante</label>
               <select id="setupP1Commander"></select>
-              <label for="setupP1Mode">Controllo</label>
+              <label for="setupP1Mode" data-i18n="setup.control">Controllo</label>
               <select id="setupP1Mode">
-                <option value="human">Umano</option>
-                <option value="bot">Bot</option>
+                <option value="human" data-i18n="setup.human">Umano</option>
+                <option value="bot" data-i18n="setup.bot">Bot</option>
               </select>
             </div>
           </div>
           <div class="setupPlayerSubsection setupDeckRuntimeBox">
-            <h4>Deck runtime</h4>
-            <label for="setupP1DeckMode">Modalità deck</label>
+            <h4 data-i18n="setup.deckRuntime">Deck runtime</h4>
+            <label for="setupP1DeckMode" data-i18n="setup.deckMode">Modalità deck</label>
             <select id="setupP1DeckMode">
-              <option value="template" selected>Deck automatico Starter</option>
-              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+              <option value="template" selected data-i18n="setup.automaticDeck">Deck automatico Starter</option>
+              <option value="custom" data-i18n="setup.customDeck">Deck personalizzato / Custom Match Lab</option>
             </select>
-            <label for="setupP1DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <label for="setupP1DeckSavedKey" class="setupDeckSavedLabel" data-i18n="setup.savedDeck">Deck salvato</label>
             <select id="setupP1DeckSavedKey" class="setupDeckSavedSelect"></select>
             <div class="setupDeckInfo" id="setupP1DeckInfo">Deck automatico Starter.</div>
           </div>
@@ -279,13 +288,13 @@
 
         <section class="setupSideBox faction-exordium-box setupPlayerBox">
           <div class="setupSideHeader">
-            <h3>Giocatore 2</h3>
+            <h3 data-i18n="setup.player" data-i18n-params='{"number":2}'>Giocatore 2</h3>
             <span class="setupDeckBadge" id="setupP2DeckBadge">Deck Starter</span>
           </div>
           <div class="setupPlayerSubsection">
-            <h4>Identità</h4>
+            <h4 data-i18n="setup.identity">Identità</h4>
             <div class="setupFieldGrid">
-              <label for="setupP2Faction">Fazione</label>
+              <label for="setupP2Faction" data-i18n="setup.faction">Fazione</label>
               <select id="setupP2Faction">
                 <option value="Exordium">Exordium</option>
                 <option value="Nexus">Nexus</option>
@@ -293,23 +302,23 @@
                 <option value="Agathoi">Agathoi</option>
                 <option value="Fabeot">Fabeot</option>
               </select>
-              <label for="setupP2Commander">Comandante</label>
+              <label for="setupP2Commander" data-i18n="setup.commander">Comandante</label>
               <select id="setupP2Commander"></select>
-              <label for="setupP2Mode">Controllo</label>
+              <label for="setupP2Mode" data-i18n="setup.control">Controllo</label>
               <select id="setupP2Mode">
-                <option value="bot">Bot</option>
-                <option value="human">Umano</option>
+                <option value="bot" data-i18n="setup.bot">Bot</option>
+                <option value="human" data-i18n="setup.human">Umano</option>
               </select>
             </div>
           </div>
           <div class="setupPlayerSubsection setupDeckRuntimeBox">
-            <h4>Deck runtime</h4>
-            <label for="setupP2DeckMode">Modalità deck</label>
+            <h4 data-i18n="setup.deckRuntime">Deck runtime</h4>
+            <label for="setupP2DeckMode" data-i18n="setup.deckMode">Modalità deck</label>
             <select id="setupP2DeckMode">
-              <option value="template" selected>Deck automatico Starter</option>
-              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+              <option value="template" selected data-i18n="setup.automaticDeck">Deck automatico Starter</option>
+              <option value="custom" data-i18n="setup.customDeck">Deck personalizzato / Custom Match Lab</option>
             </select>
-            <label for="setupP2DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <label for="setupP2DeckSavedKey" class="setupDeckSavedLabel" data-i18n="setup.savedDeck">Deck salvato</label>
             <select id="setupP2DeckSavedKey" class="setupDeckSavedSelect"></select>
             <div class="setupDeckInfo" id="setupP2DeckInfo">Deck automatico Starter.</div>
           </div>
@@ -317,13 +326,13 @@
 
         <section class="setupSideBox setupPlayerBox" id="setupPlayer3Box" hidden>
           <div class="setupSideHeader">
-            <h3>Giocatore 3</h3>
+            <h3 data-i18n="setup.player" data-i18n-params='{"number":3}'>Giocatore 3</h3>
             <span class="setupDeckBadge" id="setupP3DeckBadge">Deck Starter</span>
           </div>
           <div class="setupPlayerSubsection">
-            <h4>Identità</h4>
+            <h4 data-i18n="setup.identity">Identità</h4>
             <div class="setupFieldGrid">
-              <label for="setupP3Faction">Fazione</label>
+              <label for="setupP3Faction" data-i18n="setup.faction">Fazione</label>
               <select id="setupP3Faction">
                 <option value="Liberti">Liberti</option>
                 <option value="Nexus">Nexus</option>
@@ -331,23 +340,23 @@
                 <option value="Agathoi">Agathoi</option>
                 <option value="Fabeot">Fabeot</option>
               </select>
-              <label for="setupP3Commander">Comandante</label>
+              <label for="setupP3Commander" data-i18n="setup.commander">Comandante</label>
               <select id="setupP3Commander"></select>
-              <label for="setupP3Mode">Controllo</label>
+              <label for="setupP3Mode" data-i18n="setup.control">Controllo</label>
               <select id="setupP3Mode">
-                <option value="bot">Bot</option>
-                <option value="human">Umano</option>
+                <option value="bot" data-i18n="setup.bot">Bot</option>
+                <option value="human" data-i18n="setup.human">Umano</option>
               </select>
             </div>
           </div>
           <div class="setupPlayerSubsection setupDeckRuntimeBox">
-            <h4>Deck runtime</h4>
-            <label for="setupP3DeckMode">Modalità deck</label>
+            <h4 data-i18n="setup.deckRuntime">Deck runtime</h4>
+            <label for="setupP3DeckMode" data-i18n="setup.deckMode">Modalità deck</label>
             <select id="setupP3DeckMode">
-              <option value="template" selected>Deck automatico Starter</option>
-              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+              <option value="template" selected data-i18n="setup.automaticDeck">Deck automatico Starter</option>
+              <option value="custom" data-i18n="setup.customDeck">Deck personalizzato / Custom Match Lab</option>
             </select>
-            <label for="setupP3DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <label for="setupP3DeckSavedKey" class="setupDeckSavedLabel" data-i18n="setup.savedDeck">Deck salvato</label>
             <select id="setupP3DeckSavedKey" class="setupDeckSavedSelect"></select>
             <div class="setupDeckInfo" id="setupP3DeckInfo">Deck automatico Starter.</div>
           </div>
@@ -355,13 +364,13 @@
 
         <section class="setupSideBox setupPlayerBox" id="setupPlayer4Box" hidden>
           <div class="setupSideHeader">
-            <h3>Giocatore 4</h3>
+            <h3 data-i18n="setup.player" data-i18n-params='{"number":4}'>Giocatore 4</h3>
             <span class="setupDeckBadge" id="setupP4DeckBadge">Deck Starter</span>
           </div>
           <div class="setupPlayerSubsection">
-            <h4>Identità</h4>
+            <h4 data-i18n="setup.identity">Identità</h4>
             <div class="setupFieldGrid">
-              <label for="setupP4Faction">Fazione</label>
+              <label for="setupP4Faction" data-i18n="setup.faction">Fazione</label>
               <select id="setupP4Faction">
                 <option value="Agathoi">Agathoi</option>
                 <option value="Nexus">Nexus</option>
@@ -369,23 +378,23 @@
                 <option value="Liberti">Liberti</option>
                 <option value="Fabeot">Fabeot</option>
               </select>
-              <label for="setupP4Commander">Comandante</label>
+              <label for="setupP4Commander" data-i18n="setup.commander">Comandante</label>
               <select id="setupP4Commander"></select>
-              <label for="setupP4Mode">Controllo</label>
+              <label for="setupP4Mode" data-i18n="setup.control">Controllo</label>
               <select id="setupP4Mode">
-                <option value="bot">Bot</option>
-                <option value="human">Umano</option>
+                <option value="bot" data-i18n="setup.bot">Bot</option>
+                <option value="human" data-i18n="setup.human">Umano</option>
               </select>
             </div>
           </div>
           <div class="setupPlayerSubsection setupDeckRuntimeBox">
-            <h4>Deck runtime</h4>
-            <label for="setupP4DeckMode">Modalità deck</label>
+            <h4 data-i18n="setup.deckRuntime">Deck runtime</h4>
+            <label for="setupP4DeckMode" data-i18n="setup.deckMode">Modalità deck</label>
             <select id="setupP4DeckMode">
-              <option value="template" selected>Deck automatico Starter</option>
-              <option value="custom">Deck personalizzato / Custom Match Lab</option>
+              <option value="template" selected data-i18n="setup.automaticDeck">Deck automatico Starter</option>
+              <option value="custom" data-i18n="setup.customDeck">Deck personalizzato / Custom Match Lab</option>
             </select>
-            <label for="setupP4DeckSavedKey" class="setupDeckSavedLabel">Deck salvato</label>
+            <label for="setupP4DeckSavedKey" class="setupDeckSavedLabel" data-i18n="setup.savedDeck">Deck salvato</label>
             <select id="setupP4DeckSavedKey" class="setupDeckSavedSelect"></select>
             <div class="setupDeckInfo" id="setupP4DeckInfo">Deck automatico Starter.</div>
           </div>
@@ -393,54 +402,54 @@
       </div>
 
       <section class="setupMatchBox">
-        <h3>Parametri match</h3>
+        <h3 data-i18n="setup.matchParameters">Parametri match</h3>
         <div class="setupMatchGrid">
           <div>
-            <label for="setupPacePreset">Preset ritmo</label>
+            <label for="setupPacePreset" data-i18n="setup.pacePreset">Preset ritmo</label>
             <select id="setupPacePreset">
-              <option value="standard" selected>Standard</option>
-              <option value="competitive">Rapida / Competitive</option>
+              <option value="standard" selected data-i18n="setup.standard">Standard</option>
+              <option value="competitive" data-i18n="setup.competitive">Rapida / Competitive</option>
             </select>
           </div>
           <div>
-            <label for="setupGameScaleMode">Scala di gioco</label>
+            <label for="setupGameScaleMode" data-i18n="setup.gameScale">Scala di gioco</label>
             <select id="setupGameScaleMode">
-              <option value="large_scale" selected>Vasta scala · Starter senza cap dedicato</option>
-              <option value="tactical">Tattica · massimo 2 Starter per tipo in campo</option>
+              <option value="large_scale" selected data-i18n="setup.largeScale">Vasta scala · Starter senza cap dedicato</option>
+              <option value="tactical" data-i18n="setup.tacticalScale">Tattica · massimo 2 Starter per tipo in campo</option>
             </select>
           </div>
           <div>
-            <label for="setupInitiativeMode">Iniziativa iniziale</label>
+            <label for="setupInitiativeMode" data-i18n="setup.initialInitiative">Iniziativa iniziale</label>
             <select id="setupInitiativeMode">
-              <option value="random">Casuale</option>
-              <option value="1">Giocatore 1</option>
-              <option value="2">Giocatore 2</option>
+              <option value="random" data-i18n="setup.random">Casuale</option>
+              <option value="1" data-i18n="setup.player" data-i18n-params='{"number":1}'>Giocatore 1</option>
+              <option value="2" data-i18n="setup.player" data-i18n-params='{"number":2}'>Giocatore 2</option>
             </select>
           </div>
           <div>
-            <label for="setupMapName">Mappa</label>
+            <label for="setupMapName" data-i18n="setup.map">Mappa</label>
             <select id="setupMapName" aria-describedby="setupMapMeta">
               <option>Starter MAP1 · radius 6</option>
             </select>
             <div id="setupMapMeta" class="setupMapMeta"></div>
           </div>
           <div>
-            <label for="setupBotAiMode">AI dei bot</label>
+            <label for="setupBotAiMode" data-i18n="setup.botAi">AI dei bot</label>
             <select id="setupBotAiMode">
-              <option value="base">Base v0.9</option>
-              <option value="advanced" selected>Avanzata v1.8.11</option>
-            <option value="expert">Expert F9T2d · Catena d’assalto di Varran</option>
+              <option value="base" data-i18n="setup.baseAi">Base v0.9</option>
+              <option value="advanced" selected data-i18n="setup.advancedAi">Avanzata v1.8.11</option>
+            <option value="expert" data-i18n="setup.expertAi">Expert F9T2d · Catena d’assalto di Varran</option>
             </select>
           </div>
         </div>
-        <label class="checkline setupCheckline"><input id="setupAutoResignToggle" type="checkbox" checked /> Resa tecnica automatica dei bot</label>
+        <label class="checkline setupCheckline"><input id="setupAutoResignToggle" type="checkbox" checked /> <span data-i18n="setup.autoResign">Resa tecnica automatica dei bot</span></label>
       </section>
 
       <div class="setupDeckError" id="setupDeckError" aria-live="polite"></div>
 
       <div class="setupScreenActions">
-        <button class="ghost" id="setupBackMenuBtn" type="button">Torna al menu</button>
-        <button class="primary" id="setupStartGameBtn" type="button">Avvia partita</button>
+        <button class="ghost" id="setupBackMenuBtn" type="button" data-i18n="setup.backToMenu">Torna al menu</button>
+        <button class="primary" id="setupStartGameBtn" type="button" data-i18n="setup.startGame">Avvia partita</button>
       </div>
       <p class="mainMenuNotes">Build <span id="setupBuildVersion">C2-STABLE-1-F9O2d-APK-M4c</span> · <span id="setupBuildName">Token Layering & Active Unit Cues</span></p>
     </div>
@@ -641,36 +650,36 @@
     </div>
   </section>
 
-  <section id="deckBuilderScreen" class="appScreen deckBuilderScreen" data-app-screen-panel="deckBuilder" aria-label="Costruisci deck Arena Rubra">
+  <section id="deckBuilderScreen" class="appScreen deckBuilderScreen" data-app-screen-panel="deckBuilder" aria-label="Costruisci deck Arena Rubra" data-i18n-aria-label="tools.deckBuilder.screenLabel">
     <div class="mainMenuBackdrop"></div>
     <div class="deckBuilderCard">
       <div class="deckBuilderHeader">
         <div>
           <div class="mainMenuKicker">Deck Builder</div>
-          <h2>Costruisci deck</h2>
-          <p class="deckBuilderIntro">F9S1c1 integra il roster ufficiale da 50 deck e rende la costruzione più compatta: controllo copie unificato, libreria a nomi e analisi immediata della curva ENE.</p>
+          <h2 data-i18n="tools.deckBuilder.title">Costruisci deck</h2>
+          <p class="deckBuilderIntro" data-i18n="tools.deckBuilder.intro">F9S1c1 integra il roster ufficiale da 50 deck e rende la costruzione più compatta: controllo copie unificato, libreria a nomi e analisi immediata della curva ENE.</p>
         </div>
         <div class="deckBuilderHeaderActions">
-          <div class="deckBuilderQuickActions" aria-label="Azioni principali Deck Builder">
-            <button class="primary" id="deckBuilderSaveBtn" type="button">Salva</button>
-            <button class="ghost" id="deckBuilderLoadSavedBtn" type="button">Carica scelto</button>
-            <button class="ghost" id="deckBuilderResetTemplateBtn" type="button">Ripristina</button>
-            <button class="ghost" id="deckBuilderClearBtn" type="button">Svuota</button>
-            <button class="ghost" data-app-open-card-pool type="button">Pool carte</button>
-            <button class="ghost" data-app-open-card-editor type="button">Carta custom</button>
-            <button class="primary" data-app-back-menu type="button">Menu</button>
+          <div class="deckBuilderQuickActions" aria-label="Azioni principali Deck Builder" data-i18n-aria-label="tools.deckBuilder.mainActions">
+            <button class="primary" id="deckBuilderSaveBtn" type="button" data-i18n="tools.deckBuilder.save">Salva</button>
+            <button class="ghost" id="deckBuilderLoadSavedBtn" type="button" data-i18n="tools.deckBuilder.loadSelected">Carica scelto</button>
+            <button class="ghost" id="deckBuilderResetTemplateBtn" type="button" data-i18n="tools.deckBuilder.restore">Ripristina</button>
+            <button class="ghost" id="deckBuilderClearBtn" type="button" data-i18n="tools.deckBuilder.clear">Svuota</button>
+            <button class="ghost" data-app-open-card-pool type="button" data-i18n="tools.deckBuilder.cardPool">Pool carte</button>
+            <button class="ghost" data-app-open-card-editor type="button" data-i18n="tools.deckBuilder.customCard">Carta custom</button>
+            <button class="primary" data-app-back-menu type="button" data-i18n="tools.deckBuilder.menu">Menu</button>
           </div>
           <details class="deckBuilderAdvancedTools">
-            <summary>Strumenti avanzati</summary>
+            <summary data-i18n="tools.deckBuilder.advancedTools">Strumenti avanzati</summary>
             <div class="deckBuilderAdvancedActions">
-              <button class="ghost" id="deckBuilderCopyJsonBtn" type="button">Copia report JSON</button>
-              <button class="ghost" id="deckBuilderCopyDeckJsonBtn" type="button">Copia deck JSON</button>
-              <button class="danger" id="deckBuilderDeleteSavedBtn" type="button">Elimina deck scelto</button>
-              <button class="ghost" id="deckBuilderExportAllDecksBtn" type="button">Scarica tutti i deck</button>
-              <button class="ghost" id="deckBuilderCopyAllDecksBtn" type="button">Copia tutti i deck</button>
-              <button class="ghost" id="deckBuilderImportDecksBtn" type="button">Importa file JSON</button>
-              <button class="ghost" id="deckBuilderPasteImportBtn" type="button">Incolla JSON</button>
-              <button class="ghost" id="deckBuilderAssetManifestBtn" type="button">Manifest asset carte</button>
+              <button class="ghost" id="deckBuilderCopyJsonBtn" type="button" data-i18n="tools.deckBuilder.copyReport">Copia report JSON</button>
+              <button class="ghost" id="deckBuilderCopyDeckJsonBtn" type="button" data-i18n="tools.deckBuilder.copyDeck">Copia deck JSON</button>
+              <button class="danger" id="deckBuilderDeleteSavedBtn" type="button" data-i18n="tools.deckBuilder.deleteSelected">Elimina deck scelto</button>
+              <button class="ghost" id="deckBuilderExportAllDecksBtn" type="button" data-i18n="tools.deckBuilder.downloadAll">Scarica tutti i deck</button>
+              <button class="ghost" id="deckBuilderCopyAllDecksBtn" type="button" data-i18n="tools.deckBuilder.copyAll">Copia tutti i deck</button>
+              <button class="ghost" id="deckBuilderImportDecksBtn" type="button" data-i18n="tools.deckBuilder.importFile">Importa file JSON</button>
+              <button class="ghost" id="deckBuilderPasteImportBtn" type="button" data-i18n="tools.deckBuilder.pasteJson">Incolla JSON</button>
+              <button class="ghost" id="deckBuilderAssetManifestBtn" type="button" data-i18n="tools.deckBuilder.assetManifest">Manifest asset carte</button>
             </div>
           </details>
           <input id="deckBuilderImportDecksFile" type="file" accept="application/json,.json" hidden>
@@ -679,20 +688,20 @@
 
       <div class="deckBuilderControls">
         <div>
-          <label for="deckBuilderFactionSelect">Fazione</label>
+          <label for="deckBuilderFactionSelect" data-i18n="tools.deckBuilder.faction">Fazione</label>
           <select id="deckBuilderFactionSelect"></select>
         </div>
         <div>
-          <label for="deckBuilderCommanderSelect">Comandante</label>
+          <label for="deckBuilderCommanderSelect" data-i18n="tools.deckBuilder.commander">Comandante</label>
           <select id="deckBuilderCommanderSelect"></select>
         </div>
         <div>
-          <label for="deckBuilderDeckNameInput">Nome deck</label>
-          <input id="deckBuilderDeckNameInput" type="text" maxlength="64" placeholder="es. Nexus controllo PS" autocomplete="off">
+          <label for="deckBuilderDeckNameInput" data-i18n="tools.deckBuilder.deckName">Nome deck</label>
+          <input id="deckBuilderDeckNameInput" type="text" maxlength="64" placeholder="es. Nexus controllo PS" data-i18n-placeholder="tools.deckBuilder.deckNamePlaceholder" autocomplete="off">
         </div>
         <label class="checkline deckBuilderCustomToggle">
           <input id="deckBuilderIncludeCustomToggle" type="checkbox">
-          Includi carte CUSTOM nel pool
+          <span data-i18n="tools.deckBuilder.includeCustom">Includi carte CUSTOM nel pool</span>
         </label>
         <div class="deckBuilderMeta" id="deckBuilderMetaLine">C2-STABLE-1-F9O2d-APK-M4c · Token Layering & Active Unit Cues</div>
       </div>
@@ -703,30 +712,30 @@
 
       <section class="deckBuilderBox deckBuilderSavedGalleryBox">
         <div class="deckBuilderBoxTitleRow">
-          <h3>Deck disponibili</h3>
-          <span class="help">Seleziona un nome per vedere i dettagli; il caricamento nel draft resta un’azione separata.</span>
+          <h3 data-i18n="tools.deckBuilder.availableDecks">Deck disponibili</h3>
+          <span class="help" data-i18n="tools.deckBuilder.availableHint">Seleziona un nome per vedere i dettagli; il caricamento nel draft resta un’azione separata.</span>
         </div>
         <div id="deckBuilderSavedGallery" class="deckBuilderSavedGallery" aria-live="polite"></div>
       </section>
 
       <section id="deckBuilderImportTextBox" class="deckBuilderImportTextBox" hidden>
-        <label for="deckBuilderImportTextArea">Importa deck da testo JSON</label>
-        <p>Incolla qui il contenuto integrale del file <code>.json</code> esportato da Arena Rubra. Non inserire un percorso file o un indirizzo: deve essere proprio il testo JSON completo, con parentesi graffe iniziali/finali.</p>
+        <label for="deckBuilderImportTextArea" data-i18n="tools.deckBuilder.importText">Importa deck da testo JSON</label>
+        <p data-i18n="tools.deckBuilder.importTextHelp">Incolla qui il contenuto integrale del file .json esportato da Arena Rubra. Non inserire un percorso file o un indirizzo: deve essere proprio il testo JSON completo, con parentesi graffe iniziali/finali.</p>
         <textarea id="deckBuilderImportTextArea" spellcheck="false" placeholder='{
   "kind": "arena-rubra-custom-decks",
   "decks": { ... }
 }'></textarea>
         <div class="deckBuilderImportActions">
-          <button class="primary" id="deckBuilderImportTextConfirmBtn" type="button">Importa testo JSON</button>
-          <button class="ghost" id="deckBuilderImportTextCancelBtn" type="button">Annulla</button>
+          <button class="primary" id="deckBuilderImportTextConfirmBtn" type="button" data-i18n="tools.deckBuilder.importTextConfirm">Importa testo JSON</button>
+          <button class="ghost" id="deckBuilderImportTextCancelBtn" type="button" data-i18n="tools.deckBuilder.cancel">Annulla</button>
         </div>
       </section>
 
       <section class="deckBuilderBox deckBuilderPoolBox">
-        <h3>Pool legale della fazione</h3><p class="deckBuilderCustomHelp">Il toggle CUSTOM aggiunge al pool le carte salvate nel Card Editor. I deck con custom sono salvati come NON UFFICIALI.</p>
+        <h3 data-i18n="tools.deckBuilder.legalPoolTitle">Pool legale della fazione</h3><p class="deckBuilderCustomHelp" data-i18n="tools.deckBuilder.customPoolHelp">Il toggle CUSTOM aggiunge al pool le carte salvate nel Card Editor. I deck con custom sono salvati come NON UFFICIALI.</p>
         <div class="deckBuilderTableWrap deckBuilderPoolTableWrap">
           <table class="deckBuilderTable">
-            <thead><tr><th>Copie</th><th>ID</th><th>Carta</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>Testo / nota</th></tr></thead>
+            <thead><tr><th data-i18n="tools.deckBuilder.copies">Copie</th><th>ID</th><th data-i18n="tools.deckBuilder.card">Carta</th><th data-i18n="tools.deckBuilder.role">Ruolo</th><th data-i18n="tools.deckBuilder.kind">Tipo</th><th>ENE</th><th data-i18n="tools.deckBuilder.textNote">Testo / nota</th></tr></thead>
             <tbody id="deckBuilderPoolBody"></tbody>
           </table>
         </div>
@@ -734,15 +743,15 @@
 
       <section class="deckBuilderBox deckBuilderPreviewBox">
         <div class="deckBuilderBoxTitleRow">
-          <h3>Anteprima renderer carta</h3>
-          <span class="help">Clicca una carta nel draft o nel pool. Il renderer usa frame/placeholder locali e mostra anche i path asset previsti.</span>
+          <h3 data-i18n="tools.deckBuilder.cardPreview">Anteprima renderer carta</h3>
+          <span class="help" data-i18n="tools.deckBuilder.cardPreviewHint">Clicca una carta nel draft o nel pool. Il renderer usa frame/placeholder locali e mostra anche i path asset previsti.</span>
         </div>
         <div class="deckBuilderPreviewLayout">
           <div class="deckBuilderPreviewCanvasWrap">
-            <canvas id="deckBuilderCardPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta Arena Rubra"></canvas>
+            <canvas id="deckBuilderCardPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta Arena Rubra" data-i18n-aria-label="tools.deckBuilder.cardPreviewAria"></canvas>
           </div>
           <div class="deckBuilderPreviewInfo">
-            <div id="deckBuilderCardPreviewMeta" class="deckBuilderMeta">Anteprima non inizializzata.</div>
+            <div id="deckBuilderCardPreviewMeta" class="deckBuilderMeta" data-i18n="tools.deckBuilder.previewNotReady">Anteprima non inizializzata.</div>
             <div id="deckBuilderCardPreviewBody" class="deckBuilderPreviewBody"></div>
           </div>
         </div>
@@ -750,14 +759,14 @@
 
       <div class="deckBuilderColumns">
         <section class="deckBuilderBox">
-          <h3>Starter esclusi dal deck</h3>
+          <h3 data-i18n="tools.deckBuilder.excludedStarters">Starter esclusi dal deck</h3>
           <div id="deckBuilderStarterBox"></div>
         </section>
         <section class="deckBuilderBox">
-          <h3>Deck draft locale</h3>
+          <h3 data-i18n="tools.deckBuilder.localDraft">Deck draft locale</h3>
           <div class="deckBuilderTableWrap">
             <table class="deckBuilderTable">
-              <thead><tr><th>Copie</th><th>ID</th><th>Carta</th><th>Ruolo</th><th>ENE</th><th>Tipo</th></tr></thead>
+              <thead><tr><th data-i18n="tools.deckBuilder.copies">Copie</th><th>ID</th><th data-i18n="tools.deckBuilder.card">Carta</th><th data-i18n="tools.deckBuilder.role">Ruolo</th><th>ENE</th><th data-i18n="tools.deckBuilder.kind">Tipo</th></tr></thead>
               <tbody id="deckBuilderDeckBody"></tbody>
             </table>
           </div>
@@ -1125,63 +1134,63 @@
   </section>
 
 
-  <section id="cardPoolScreen" class="appScreen cardPoolScreen" data-app-screen-panel="cardPool" aria-label="Pool carte Arena Rubra">
+  <section id="cardPoolScreen" class="appScreen cardPoolScreen" data-app-screen-panel="cardPool" aria-label="Pool carte Arena Rubra" data-i18n-aria-label="tools.cardPool.screenLabel">
     <div class="mainMenuBackdrop"></div>
     <div class="deckBuilderCard cardPoolCard">
       <header class="deckBuilderHeader cardPoolHeader">
         <div>
           <div class="mainMenuKicker">Card Pool</div>
-          <h2>Pool carte</h2>
-          <p class="deckBuilderIntro">Consulta il catalogo ufficiale e custom, confronta statistiche e abilità e apri gli strumenti tecnici soltanto quando servono.</p>
+          <h2 data-i18n="tools.cardPool.title">Pool carte</h2>
+          <p class="deckBuilderIntro" data-i18n="tools.cardPool.intro">Consulta il catalogo ufficiale e custom, confronta statistiche e abilità e apri gli strumenti tecnici soltanto quando servono.</p>
         </div>
-        <nav class="deckBuilderHeaderActions cardPoolHeaderActions" aria-label="Azioni Pool carte">
+        <nav class="deckBuilderHeaderActions cardPoolHeaderActions" aria-label="Azioni Pool carte" data-i18n-aria-label="tools.cardPool.actionsLabel">
           <button class="primary" data-app-open-deck-builder type="button">Deck Builder</button>
           <button class="ghost" data-app-open-card-editor type="button">Card Editor</button>
-          <button class="ghost" id="cardPoolDuplicateSelectedBtn" type="button">Duplica selezionata</button>
-          <button class="ghost" data-app-back-menu type="button">Menu principale</button>
+          <button class="ghost" id="cardPoolDuplicateSelectedBtn" type="button" data-i18n="tools.cardPool.duplicate">Duplica selezionata</button>
+          <button class="ghost" data-app-back-menu type="button" data-i18n="tools.cardPool.mainMenu">Menu principale</button>
         </nav>
       </header>
 
-      <section class="deckBuilderControls cardPoolControls" aria-label="Filtri pool carte">
+      <section class="deckBuilderControls cardPoolControls" aria-label="Filtri pool carte" data-i18n-aria-label="tools.cardPool.filtersLabel">
         <label>
-          <span>Fazione</span>
+          <span data-i18n="tools.cardPool.faction">Fazione</span>
           <select id="cardPoolFactionSelect"></select>
         </label>
         <label>
-          <span>Tipo</span>
+          <span data-i18n="tools.cardPool.kind">Tipo</span>
           <select id="cardPoolKindSelect">
-            <option value="all">Tutte</option>
-            <option value="unit" selected>Unità</option>
-            <option value="tactic">Tattiche</option>
-            <option value="mission">Missioni</option>
+            <option value="all" data-i18n="tools.cardPool.allFemale">Tutte</option>
+            <option value="unit" selected data-i18n="tools.cardPool.roles.units">Unità</option>
+            <option value="tactic" data-i18n="tools.cardPool.roles.tactics">Tattiche</option>
+            <option value="mission" data-i18n="tools.cardPool.roles.missions">Missioni</option>
           </select>
         </label>
         <label>
-          <span>Ruolo</span>
+          <span data-i18n="tools.cardPool.role">Ruolo</span>
           <select id="cardPoolRoleSelect">
-            <option value="all">Tutti</option>
-            <option value="commander">Comandanti</option>
+            <option value="all" data-i18n="tools.cardPool.allMale">Tutti</option>
+            <option value="commander" data-i18n="tools.cardPool.roles.commanders">Comandanti</option>
             <option value="pivot">Pivot</option>
             <option value="elite">Elite</option>
-            <option value="mission">Missioni</option>
-            <option value="heavy">Pesanti</option>
+            <option value="mission" data-i18n="tools.cardPool.roles.missions">Missioni</option>
+            <option value="heavy" data-i18n="tools.cardPool.roles.heavy">Pesanti</option>
             <option value="base">Base</option>
-            <option value="tactic">Tattiche</option>
+            <option value="tactic" data-i18n="tools.cardPool.roles.tactics">Tattiche</option>
           </select>
         </label>
         <label>
-          <span>Origine</span>
+          <span data-i18n="tools.cardPool.origin">Origine</span>
           <select id="cardPoolOriginSelect">
-            <option value="all">Tutte</option>
-            <option value="official">Ufficiali</option>
-            <option value="custom">Custom</option>
+            <option value="all" data-i18n="tools.cardPool.allFemale">Tutte</option>
+            <option value="official" data-i18n="tools.cardPool.official">Ufficiali</option>
+            <option value="custom" data-i18n="tools.cardPool.custom">Custom</option>
           </select>
         </label>
         <label>
-          <span>Cerca</span>
-          <input id="cardPoolSearchInput" type="search" placeholder="nome, id, effetto, fazione..." autocomplete="off" />
+          <span data-i18n="tools.cardPool.search">Cerca</span>
+          <input id="cardPoolSearchInput" type="search" placeholder="nome, id, effetto, fazione..." data-i18n-placeholder="tools.cardPool.searchPlaceholder" autocomplete="off" />
         </label>
-        <button class="ghost" id="cardPoolResetFiltersBtn" type="button">Reset filtri</button>
+        <button class="ghost" id="cardPoolResetFiltersBtn" type="button" data-i18n="tools.cardPool.resetFilters">Reset filtri</button>
       </section>
 
       <section id="cardPoolSummary" class="deckBuilderSummary" aria-live="polite"></section>
@@ -1189,39 +1198,39 @@
 
       <section class="deckBuilderBox cardPoolPreviewBox">
         <div class="deckBuilderBoxTitleRow">
-          <h3>Anteprima renderer</h3>
-          <span class="help">Carta, statistiche e abilità allineate; i dati tecnici restano nel pannello Debug.</span>
+          <h3 data-i18n="tools.cardPool.rendererPreview">Anteprima renderer</h3>
+          <span class="help" data-i18n="tools.cardPool.previewHint">Carta, statistiche e abilità allineate; i dati tecnici restano nel pannello Debug.</span>
         </div>
-        <div class="cardPoolPreviewToolbar" aria-label="Controlli anteprima carte">
-          <div class="cardPoolViewModeGroup" role="group" aria-label="Modalità vista pool carte">
-            <span class="cardPoolToolbarLabel">Vista</span>
-            <button class="ghost active" id="cardPoolViewGalleryBtn" type="button">Galleria</button>
-            <button class="ghost" id="cardPoolViewTableBtn" type="button">Tabella</button>
+        <div class="cardPoolPreviewToolbar" aria-label="Controlli anteprima carte" data-i18n-aria-label="tools.cardPool.previewControls">
+          <div class="cardPoolViewModeGroup" role="group" aria-label="Modalità vista pool carte" data-i18n-aria-label="tools.cardPool.viewMode">
+            <span class="cardPoolToolbarLabel" data-i18n="tools.cardPool.viewLabel">Vista</span>
+            <button class="ghost active" id="cardPoolViewGalleryBtn" type="button" data-i18n="tools.cardPool.gallery">Galleria</button>
+            <button class="ghost" id="cardPoolViewTableBtn" type="button" data-i18n="tools.cardPool.table">Tabella</button>
           </div>
-          <div class="cardPoolNavGroup" role="group" aria-label="Navigazione carte filtrate">
-            <button class="ghost" id="cardPoolPrevBtn" type="button">← Precedente</button>
+          <div class="cardPoolNavGroup" role="group" aria-label="Navigazione carte filtrate" data-i18n-aria-label="tools.cardPool.navigation">
+            <button class="ghost" id="cardPoolPrevBtn" type="button" data-i18n="tools.cardPool.previous">← Precedente</button>
             <span class="deckBuilderMeta compactMeta" id="cardPoolSelectionCounter">0/0</span>
-            <button class="ghost" id="cardPoolNextBtn" type="button">Successiva →</button>
+            <button class="ghost" id="cardPoolNextBtn" type="button" data-i18n="tools.cardPool.next">Successiva →</button>
           </div>
-          <div class="cardPoolFocusGroup" role="group" aria-label="Modalità focus anteprima">
-            <button class="primary" id="cardPoolFullscreenOpenBtn" type="button">Apri focus</button>
-            <button class="ghost cardPoolFocusCloseBtn" id="cardPoolFullscreenCloseBtn" type="button">Chiudi focus</button>
+          <div class="cardPoolFocusGroup" role="group" aria-label="Modalità focus anteprima" data-i18n-aria-label="tools.cardPool.focusMode">
+            <button class="primary" id="cardPoolFullscreenOpenBtn" type="button" data-i18n="tools.cardPool.openFocus">Apri focus</button>
+            <button class="ghost cardPoolFocusCloseBtn" id="cardPoolFullscreenCloseBtn" type="button" data-i18n="tools.cardPool.closeFocus">Chiudi focus</button>
           </div>
         </div>
         <div class="cardPoolPreviewLayout">
           <div class="deckBuilderPreviewCanvasWrap cardPoolPreviewCanvasWrap">
-            <canvas id="cardPoolPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta dal pool"></canvas>
+            <canvas id="cardPoolPreviewCanvas" width="1024" height="1536" aria-label="Anteprima carta dal pool" data-i18n-aria-label="tools.cardPool.previewAria"></canvas>
           </div>
-          <aside class="deckBuilderPreviewInfo cardPoolSelectedInfoBox" aria-label="Statistiche e abilità carta selezionata">
-            <div id="cardPoolPreviewMeta" class="deckBuilderMeta cardPoolPreviewMeta">Nessuna carta selezionata.</div>
+          <aside class="deckBuilderPreviewInfo cardPoolSelectedInfoBox" aria-label="Statistiche e abilità carta selezionata" data-i18n-aria-label="tools.cardPool.selectedInfoAria">
+            <div id="cardPoolPreviewMeta" class="deckBuilderMeta cardPoolPreviewMeta" data-i18n="tools.cardPool.noSelection">Nessuna carta selezionata.</div>
             <div id="cardPoolPreviewBody" class="deckBuilderPreviewBody cardPoolPreviewBody"></div>
             <details id="cardPoolDebugDetails" class="cardPoolDebugDetails">
               <summary class="ghost cardPoolDebugSummary">Debug</summary>
               <div class="cardPoolDebugContent">
-                <div id="cardPoolDebugBody" class="deckBuilderPreviewPaths cardPoolDebugBody">Nessuna informazione tecnica disponibile.</div>
+                <div id="cardPoolDebugBody" class="deckBuilderPreviewPaths cardPoolDebugBody" data-i18n="tools.cardPool.noTechnicalInfo">Nessuna informazione tecnica disponibile.</div>
                 <div class="cardPoolDebugActions">
-                  <button class="ghost" id="cardPoolCopySelectedBtn" type="button">Copia carta JSON</button>
-                  <button class="ghost" id="cardPoolCopyManifestBtn" type="button">Copia manifest asset</button>
+                  <button class="ghost" id="cardPoolCopySelectedBtn" type="button" data-i18n="tools.cardPool.copyCard">Copia carta JSON</button>
+                  <button class="ghost" id="cardPoolCopyManifestBtn" type="button" data-i18n="tools.cardPool.copyManifest">Copia manifest asset</button>
                 </div>
               </div>
             </details>
@@ -1231,21 +1240,21 @@
 
       <section class="deckBuilderBox cardPoolGalleryBox" id="cardPoolGalleryWrap">
         <div class="deckBuilderBoxTitleRow">
-          <h3>Galleria renderizzata</h3>
-          <span class="help">Miniature renderer leggere: scorri, tocca o clicca per selezionare.</span>
+          <h3 data-i18n="tools.cardPool.renderedGallery">Galleria renderizzata</h3>
+          <span class="help" data-i18n="tools.cardPool.galleryHint">Miniature renderer leggere: scorri, tocca o clicca per selezionare.</span>
         </div>
         <div id="cardPoolGalleryBody" class="cardPoolGalleryBody"></div>
       </section>
 
       <section class="deckBuilderBox cardPoolTableBox" id="cardPoolTableWrap" hidden>
         <div class="deckBuilderBoxTitleRow">
-          <h3>Catalogo carte</h3>
-          <span class="help">Read-only: tabella dettagliata come vista alternativa alla galleria.</span>
+          <h3 data-i18n="tools.cardPool.catalog">Catalogo carte</h3>
+          <span class="help" data-i18n="tools.cardPool.catalogHint">Read-only: tabella dettagliata come vista alternativa alla galleria.</span>
         </div>
         <div class="deckBuilderTableWrap cardPoolTableWrap">
           <table class="deckBuilderTable cardPoolTable">
             <thead>
-              <tr><th></th><th>Fazione</th><th>Carta</th><th>Kind</th><th>Ruolo</th><th>Tipo</th><th>ENE</th><th>File ID</th></tr>
+              <tr><th></th><th data-i18n="tools.cardPool.faction">Fazione</th><th data-i18n="tools.cardPool.card">Carta</th><th data-i18n="tools.cardPool.kind">Tipo</th><th data-i18n="tools.cardPool.role">Ruolo</th><th data-i18n="tools.cardPool.type">Tipo</th><th>ENE</th><th data-i18n="tools.cardPool.fileId">File ID</th></tr>
             </thead>
             <tbody id="cardPoolTableBody"></tbody>
           </table>
@@ -1267,34 +1276,34 @@
   <div id="gameScreen" class="gameScreen" data-app-screen-panel="game">
   <header class="topTitleBar">
     <div class="topBarAction topBarLeft">
-      <button class="ghost topBarBtn compactTopBarBtn" id="returnMainMenuBtn" type="button">Menu</button>
-      <button class="primary topBarBtn" id="newGameBtn" type="button">Nuova partita</button>
+      <button class="ghost topBarBtn compactTopBarBtn" id="returnMainMenuBtn" type="button" data-i18n="game.menu">Menu</button>
+      <button class="primary topBarBtn" id="newGameBtn" type="button" data-i18n="game.newGame">Nuova partita</button>
     </div>
     <div class="topBarTitle">
       <h1>ARENA RUBRA - <span id="topBuildStage">Starter Game ALPHA</span> <span>(<span id="topBuildVersion">C2-STABLE-1-F9O2d-APK-M4c</span>)</span></h1>
     </div>
     <div class="topBarAction topBarRight">
       <button class="ghost topBarBtn gameDebugHeaderBtn" id="gameDebugHeaderBtn" type="button" aria-haspopup="menu" aria-controls="gameDebugMenu" aria-expanded="false">Debug</button>
-      <section class="arenaMusicControl arenaMusicControlGame" data-arena-music-control aria-label="Controlli audio e presentazione partita">
+      <section class="arenaMusicControl arenaMusicControlGame" data-arena-music-control aria-label="Controlli audio e presentazione partita" data-i18n-aria-label="game.audioControlsLabel">
         <div class="arenaGameAudioRow">
           <button class="ghost arenaMusicToggle" type="button" data-arena-music-toggle aria-pressed="true">Musica ON</button>
           <label class="arenaMusicVolumeLabel">
-            <span class="srOnly">Volume musica</span>
-            <input type="range" min="0" max="100" step="1" value="65" data-arena-music-volume aria-label="Volume musica">
+            <span class="srOnly" data-i18n="game.musicVolume">Volume musica</span>
+            <input type="range" min="0" max="100" step="1" value="65" data-arena-music-volume aria-label="Volume musica" data-i18n-aria-label="game.musicVolume">
             <output data-arena-music-volume-output>65%</output>
           </label>
         </div>
-        <div class="arenaGamePresentationToggles" role="group" aria-label="Effetti, miniature e carte animate">
+        <div class="arenaGamePresentationToggles" role="group" aria-label="Effetti, miniature e carte animate" data-i18n-aria-label="game.presentationGroup">
           <button class="ghost arenaCardMotionToggle compact" type="button" data-arena-card-motion-toggle aria-pressed="false">Carte animate ON</button>
           <button class="ghost arenaTokenFxToggle compact" type="button" data-arena-token-fx-toggle aria-pressed="true">Miniature FX ON</button>
           <button class="ghost arenaSfxToggle compact" type="button" data-arena-sfx-toggle aria-pressed="true">Effetti ON</button>
         </div>
       </section>
-      <button class="danger topBarBtn" id="endTurnBtn" type="button">Fine turno</button>
+      <button class="danger topBarBtn" id="endTurnBtn" type="button" data-i18n="game.endTurn">Fine turno</button>
     </div>
   </header>
 
-  <section class="gameHudStrip" id="gameHudStrip" aria-label="HUD compatta partita">
+  <section class="gameHudStrip" id="gameHudStrip" aria-label="HUD compatta partita" data-i18n-aria-label="game.hudLabel">
     <span class="hudChip hudPrimary" id="gameHudRound">R—</span>
     <span class="hudChip" id="gameHudTurn">Turno: —</span>
     <span class="hudChip" id="gameHudEnergy">ENE —</span>
@@ -1305,20 +1314,20 @@
     <span class="hudChip hudCamera" id="gameHudCamera">Camera: Fit</span>
     <span class="hudChip hudBuild" id="gameHudBuild">C2-STABLE-1-F9O2d-APK-M4c</span>
     <button class="ghost hudDebugBtn" id="gameDebugBtn" type="button" aria-haspopup="menu" aria-controls="gameDebugMenu" aria-expanded="false">Debug</button>
-    <div class="gameComparisonBars" id="gameComparisonBars" aria-label="Confronto controllo PS e presenza unità" aria-live="polite">
+    <div class="gameComparisonBars" id="gameComparisonBars" aria-label="Confronto controllo PS e presenza unità" data-i18n-aria-label="game.comparisonLabel" aria-live="polite">
       <div class="gameComparisonRow" data-comparison-kind="ps">
         <span class="gameComparisonLabel">PS</span>
-        <div class="gameComparisonTrack" role="img" aria-label="Controllo dei Punti Strategici">
+        <div class="gameComparisonTrack" role="img" aria-label="Controllo dei Punti Strategici" data-i18n-aria-label="game.psControlLabel">
           <div class="gameComparisonSegments" id="gameComparisonPsSegments"></div>
         </div>
-        <div class="gameComparisonCounters" id="gameComparisonPsCounters" aria-label="Contatori Punti Strategici"></div>
+        <div class="gameComparisonCounters" id="gameComparisonPsCounters" aria-label="Contatori Punti Strategici" data-i18n-aria-label="game.psCountersLabel"></div>
       </div>
       <div class="gameComparisonRow" data-comparison-kind="units">
-        <span class="gameComparisonLabel">Unità</span>
-        <div class="gameComparisonTrack" role="img" aria-label="Unità e strutture sul campo">
+        <span class="gameComparisonLabel" data-i18n="game.units">Unità</span>
+        <div class="gameComparisonTrack" role="img" aria-label="Unità e strutture sul campo" data-i18n-aria-label="game.unitPresenceLabel">
           <div class="gameComparisonSegments" id="gameComparisonUnitSegments"></div>
         </div>
-        <div class="gameComparisonCounters" id="gameComparisonUnitCounters" aria-label="Contatori unità e strutture"></div>
+        <div class="gameComparisonCounters" id="gameComparisonUnitCounters" aria-label="Contatori unità e strutture" data-i18n-aria-label="game.unitCountersLabel"></div>
       </div>
     </div>
   </section>
@@ -1347,12 +1356,12 @@
   <main class="app mapFirstGameApp" id="mapFirstGameApp">
     <section class="panel setupPanel" data-game-panel="setup">
       <details id="gameOptionsDetails" open>
-        <summary>Opzioni di gioco</summary>
+        <summary data-i18n="game.gameOptions">Opzioni di gioco</summary>
         <div class="body stack">
         <div id="winnerBanner" class="banner"></div>
         <div class="row playerSetupRow">
           <div class="setupField factionField">
-            <label for="p1Faction">Giocatore 1 · Fazione</label>
+            <label for="p1Faction" data-i18n="game.playerFaction" data-i18n-params='{"number":1}'>Giocatore 1 · Fazione</label>
             <select id="p1Faction">
               <option value="Nexus">Nexus</option>
               <option value="Exordium">Exordium</option>
@@ -1362,27 +1371,27 @@
             </select>
           </div>
           <div class="setupField commanderField">
-            <label for="p1Commander">Giocatore 1 · Comandante</label>
+            <label for="p1Commander" data-i18n="game.playerCommander" data-i18n-params='{"number":1}'>Giocatore 1 · Comandante</label>
             <select id="p1Commander"></select>
           </div>
           <div class="setupField modeField">
-            <label for="p1Mode">Giocatore 1 · Controllo</label>
+            <label for="p1Mode" data-i18n="game.playerControl" data-i18n-params='{"number":1}'>Giocatore 1 · Controllo</label>
             <select id="p1Mode">
-              <option value="human">Umano</option>
-              <option value="bot">Bot</option>
+              <option value="human" data-i18n="setup.human">Umano</option>
+              <option value="bot" data-i18n="setup.bot">Bot</option>
             </select>
-            <label for="p1DeckMode">Giocatore 1 · Deck</label>
+            <label for="p1DeckMode" data-i18n="game.playerDeck" data-i18n-params='{"number":1}'>Giocatore 1 · Deck</label>
             <select id="p1DeckMode">
-              <option value="template" selected>Automatico Starter</option>
-              <option value="custom">Personalizzato / Custom Lab</option>
+              <option value="template" selected data-i18n="setup.automaticDeck">Automatico Starter</option>
+              <option value="custom" data-i18n="setup.customDeck">Personalizzato / Custom Lab</option>
             </select>
-            <label for="p1DeckSavedKey">Giocatore 1 · Deck salvato</label>
+            <label for="p1DeckSavedKey" data-i18n="game.playerSavedDeck" data-i18n-params='{"number":1}'>Giocatore 1 · Deck salvato</label>
             <select id="p1DeckSavedKey" class="setupDeckSavedSelect"></select>
           </div>
         </div>
         <div class="row playerSetupRow">
           <div class="setupField factionField">
-            <label for="p2Faction">Giocatore 2 · Fazione</label>
+            <label for="p2Faction" data-i18n="game.playerFaction" data-i18n-params='{"number":2}'>Giocatore 2 · Fazione</label>
             <select id="p2Faction">
               <option value="Exordium">Exordium</option>
               <option value="Nexus">Nexus</option>
@@ -1392,57 +1401,57 @@
             </select>
           </div>
           <div class="setupField commanderField">
-            <label for="p2Commander">Giocatore 2 · Comandante</label>
+            <label for="p2Commander" data-i18n="game.playerCommander" data-i18n-params='{"number":2}'>Giocatore 2 · Comandante</label>
             <select id="p2Commander"></select>
           </div>
           <div class="setupField modeField">
-            <label for="p2Mode">Giocatore 2 · Controllo</label>
+            <label for="p2Mode" data-i18n="game.playerControl" data-i18n-params='{"number":2}'>Giocatore 2 · Controllo</label>
             <select id="p2Mode">
-              <option value="bot">Bot</option>
-              <option value="human">Umano</option>
+              <option value="bot" data-i18n="setup.bot">Bot</option>
+              <option value="human" data-i18n="setup.human">Umano</option>
             </select>
-            <label for="p2DeckMode">Giocatore 2 · Deck</label>
+            <label for="p2DeckMode" data-i18n="game.playerDeck" data-i18n-params='{"number":2}'>Giocatore 2 · Deck</label>
             <select id="p2DeckMode">
-              <option value="template" selected>Automatico Starter</option>
-              <option value="custom">Personalizzato / Custom Lab</option>
+              <option value="template" selected data-i18n="setup.automaticDeck">Automatico Starter</option>
+              <option value="custom" data-i18n="setup.customDeck">Personalizzato / Custom Lab</option>
             </select>
-            <label for="p2DeckSavedKey">Giocatore 2 · Deck salvato</label>
+            <label for="p2DeckSavedKey" data-i18n="game.playerSavedDeck" data-i18n-params='{"number":2}'>Giocatore 2 · Deck salvato</label>
             <select id="p2DeckSavedKey" class="setupDeckSavedSelect"></select>
           </div>
         </div>
         <div>
-          <label for="initiativeMode">Iniziativa iniziale</label>
+          <label for="initiativeMode" data-i18n="setup.initialInitiative">Iniziativa iniziale</label>
           <select id="initiativeMode">
-            <option value="random">Casuale</option>
-            <option value="1">Giocatore 1</option>
-            <option value="2">Giocatore 2</option>
+            <option value="random" data-i18n="setup.random">Casuale</option>
+            <option value="1" data-i18n="setup.player" data-i18n-params='{"number":1}'>Giocatore 1</option>
+            <option value="2" data-i18n="setup.player" data-i18n-params='{"number":2}'>Giocatore 2</option>
           </select>
         </div>
         <div>
-          <label for="botAiMode">AI dei bot</label>
+          <label for="botAiMode" data-i18n="setup.botAi">AI dei bot</label>
           <select id="botAiMode">
-            <option value="base">Base v0.9</option>
-            <option value="advanced" selected>Avanzata v1.8.11</option>
-            <option value="expert">Expert F9T2d · Catena d’assalto di Varran</option>
+            <option value="base" data-i18n="setup.baseAi">Base v0.9</option>
+            <option value="advanced" selected data-i18n="setup.advancedAi">Avanzata v1.8.11</option>
+            <option value="expert" data-i18n="setup.expertAi">Expert F9T2d · Catena d’assalto di Varran</option>
           </select>
         </div>
         <div>
-          <label for="pacePreset">Preset ritmo</label>
+          <label for="pacePreset" data-i18n="setup.pacePreset">Preset ritmo</label>
           <select id="pacePreset">
-            <option value="standard" selected>Standard</option>
-            <option value="competitive">Rapida / Competitive</option>
+            <option value="standard" selected data-i18n="setup.standard">Standard</option>
+            <option value="competitive" data-i18n="setup.competitive">Rapida / Competitive</option>
           </select>
         </div>
         <div>
-          <label for="gameScaleMode">Scala di gioco</label>
+          <label for="gameScaleMode" data-i18n="setup.gameScale">Scala di gioco</label>
           <select id="gameScaleMode">
-            <option value="large_scale" selected>Vasta scala</option>
-            <option value="tactical">Tattica · cap 2 Starter/tipo</option>
+            <option value="large_scale" selected data-i18n="game.largeScaleShort">Vasta scala</option>
+            <option value="tactical" data-i18n="game.tacticalScaleShort">Tattica · cap 2 Starter/tipo</option>
           </select>
         </div>
-        <button class="ghost" id="runBotBtn">Esegui bot / continua</button>
-        <button class="danger" id="concedeBtn">Concedi partita</button>
-        <label class="checkline"><input id="autoResignToggle" type="checkbox" checked /> Resa tecnica automatica dei bot</label>
+        <button class="ghost" id="runBotBtn" data-i18n="game.runBot">Esegui bot / continua</button>
+        <button class="danger" id="concedeBtn" data-i18n="game.concede">Concedi partita</button>
+        <label class="checkline"><input id="autoResignToggle" type="checkbox" checked /> <span data-i18n="setup.autoResign">Resa tecnica automatica dei bot</span></label>
 
         <div class="scorebox">
           <div class="score">
@@ -1456,17 +1465,17 @@
         </div>
 
         <div class="unitCard" id="turnInfo"></div>
-        <div class="help">
+        <div class="help" data-dev-only>
           <strong>Regole Starter Freeze <span id="freezeRulesBuildVersion">C2-STABLE-1-F9S1b1-APK-M4c</span>:</strong> Ogni fazione può scegliere 1 comandante tra 2 opzioni; il comandante scelto entra come unica carta comandante del deck/mano iniziale.  il QG resta una cella-obiettivo vuota e occupabile. Si vince se una propria unità occupa il QG avversario mentre si controlla almeno un PS. Le unità possono sbarcare accanto al QG o accanto a edifici alleati. Income: 3 ENE base + PS. Preset <b>Standard</b>: Pressione dal round 20 + ceil((PS+giocatori)/2), 7 incrementi, limite round 50, cap leggere 10, veicoli movimento 1. Preset <b>Rapida/Competitive</b>: Pressione dal round 20, 5 incrementi, limite round 30 + ceil((PS+giocatori)/2), cap leggere 5 per fazione / 7 per Liberti, veicoli movimento 2. Per avanzare serve il PS centrale designato incluso in almeno ceil(PS/2) PS controllati. Pesanti 2 in campo per blueprint; elite/pivot non-struttura e comandante 1. Le strutture da deck non hanno cap generale; in modalità Tattica resta il cap di 2 strutture Starter vive per giocatore. Il sanguinamento infligge danno diretto agli HP; Spine punisce chi attacca. Dottrine economiche a inizio turno: Nexus ottimizza se tiene 2 PS senza vantaggio ENE eccessivo; Exordium premia parità fanteria/veicoli; Liberti premia minaccia al QG; Agathoi cresce sulla pressione subita; Fabeot prospera quando l'avversario resta a 0 ENE. Mano: cap 10 carte; le pescate oltre cap vanno direttamente negli scarti. Se deck e mano sono vuoti, con 5 ENE si rimescolano gli scarti nel deck e si pescano 3 carte. Dottrina AI C2e-4h: base generale C2e-4a2, integration/regression C2e-4g e dottrina superiore matchup attive per Exordium, Fabeot e Agathoi. Fine Balance C2e-5a: Protocollo di Blocco Nexus infligge 1 danno e costa 1 ENE. MAP1 C2e-6a validata: mappa Starter radius 6, QG sui nuovi bordi esterni e PS invariati per funzione tattica con maggiore spazio di manovra laterale/esterno. Starter Logic Freeze C2-STABLE-1: da questa build la logica Starter è candidata al congelamento; ammessi solo bugfix e interventi non sistemici. Fabeot usa QG bait, split pressure, pazienza nella metà alleata e surrender pressure per colpire comandanti, pivot, PS, mano e risorse quando l’avversario è scoperto. UX tattica D1b: le unità mostrano in mappa HP, DEF e ATT in formato compatto e leggibile; la selezione di una propria unità mobile evidenzia subito le celle raggiungibili.
         </div>
 
 
-        <details>
+        <details data-dev-only>
           <summary>Roster usato nel test</summary>
           <div id="rosterTable"></div>
         </details>
 
-        <details>
+        <details data-dev-only>
           <summary>Architettura v1.8.11c</summary>
           <div class="help">
             <strong>Refactor interno:</strong> dati fazione/abilità/stati separati in registri; funzioni generiche <em>canAct/canMove/canAttack/canUseAbility</em>; costo unità calcolato tramite hook <em>effectiveBlueprintCost</em>; reddito calcolato tramite <em>effectiveIncomeGain</em>; sanguinamento, inibizioni ed effetti economici passano da motori dedicati.
@@ -1521,42 +1530,42 @@
           <span id="mobileMapHudLabel">APK-M4 · mobile</span>
           <div class="mobileMapButtons" role="group" aria-label="Comandi mappa mobile">
             <button class="ghost" id="zoomOutBoardBtn" type="button">−</button>
-            <button class="ghost" id="fitBoardBtn" type="button">Adatta</button>
+            <button class="ghost" id="fitBoardBtn" type="button" data-i18n="game.adapt">Adatta</button>
             <button class="ghost" id="zoomInBoardBtn" type="button">+</button>
-            <button class="ghost" id="openHandDrawerBtn" type="button">Mano</button>
-            <button class="ghost" id="openCommandDrawerBtn" type="button">Cmd</button>
-            <button class="ghost" id="openSetupDrawerBtn" type="button">Opz</button>
+            <button class="ghost" id="openHandDrawerBtn" type="button" data-i18n="game.hand">Mano</button>
+            <button class="ghost" id="openCommandDrawerBtn" type="button" data-i18n="game.commandsShort">Cmd</button>
+            <button class="ghost" id="openSetupDrawerBtn" type="button" data-i18n="game.optionsShort">Opz</button>
           </div>
         </div>
-        <div id="mapCameraControls" class="mapCameraControls" role="group" aria-label="Controlli camera mappa">
-          <button class="ghost" id="cameraZoomOutBtn" type="button" aria-label="Riduci zoom mappa">−</button>
-          <button class="ghost" id="cameraCenterBtn" type="button" aria-label="Centra su unità, obiettivo o QG corrente">Centra</button>
+        <div id="mapCameraControls" class="mapCameraControls" role="group" aria-label="Controlli camera mappa" data-i18n-aria-label="game.mapControlsLabel">
+          <button class="ghost" id="cameraZoomOutBtn" type="button" aria-label="Riduci zoom mappa" data-i18n-aria-label="game.zoomOutLabel">−</button>
+          <button class="ghost" id="cameraCenterBtn" type="button" aria-label="Centra su unità, obiettivo o QG corrente" data-i18n-aria-label="game.centerLabel" data-i18n="game.center">Centra</button>
           <span id="mapCameraZoomLabel" class="mapCameraZoomLabel" aria-live="polite">100%</span>
-          <button class="ghost" id="cameraFitBtn" type="button" aria-label="Adatta tutta la mappa allo schermo">Fit</button>
-          <button class="ghost" id="cameraZoomInBtn" type="button" aria-label="Ingrandisci mappa">+</button>
+          <button class="ghost" id="cameraFitBtn" type="button" aria-label="Adatta tutta la mappa allo schermo" data-i18n-aria-label="game.fitLabel" data-i18n="game.fit">Fit</button>
+          <button class="ghost" id="cameraZoomInBtn" type="button" aria-label="Ingrandisci mappa" data-i18n-aria-label="game.zoomInLabel">+</button>
         </div>
-        <div id="boardVisualStack" class="boardVisualStack" aria-label="Mappa interattiva Arena Rubra: trascina per spostare, usa rotellina o pinch per zoomare">
+        <div id="boardVisualStack" class="boardVisualStack" aria-label="Mappa interattiva Arena Rubra: trascina per spostare, usa rotellina o pinch per zoomare" data-i18n-aria-label="game.boardLabel">
           <div id="mapBgLayer" class="mapLayer mapBgLayer" aria-hidden="true"></div>
-          <div id="board" aria-label="Mappa esagonale Arena Rubra"></div>
+          <div id="board" aria-label="Mappa esagonale Arena Rubra" data-i18n-aria-label="game.hexMapLabel"></div>
           <div id="mapEffectsLayer" class="mapLayer mapEffectsLayer" aria-hidden="true"></div>
           <div id="mapOverlayLayer" class="mapLayer mapOverlayLayer" aria-hidden="true"></div>
         </div>
-        <div id="mapHandOverlay" class="mapHandOverlay" aria-label="Mano rapida sulla mappa">
-          <div class="mapHandOverlayEmpty">Avvia una partita per vedere la mano sulla mappa.</div>
+        <div id="mapHandOverlay" class="mapHandOverlay" aria-label="Mano rapida sulla mappa" data-i18n-aria-label="game.quickHandLabel">
+          <div class="mapHandOverlayEmpty" data-i18n="game.quickHandEmpty">Avvia una partita per vedere la mano sulla mappa.</div>
         </div>
         <aside id="mapHandSelectionPreview" class="mapHandSelectionPreview" aria-label="Anteprima carta selezionata dalla mano rapida" hidden></aside>
-        <aside id="mapActionDock" class="mapActionDock" aria-label="Azioni rapide di fazione sulla mappa">
-          <div class="mapActionDockEmpty">Avvia una partita per vedere le azioni.</div>
+        <aside id="mapActionDock" class="mapActionDock" aria-label="Azioni rapide di fazione sulla mappa" data-i18n-aria-label="game.quickActionsLabel">
+          <div class="mapActionDockEmpty" data-i18n="game.quickActionsEmpty">Avvia una partita per vedere le azioni.</div>
         </aside>
-        <aside id="selectedUnitFloat" class="selectedUnitFloat isCollapsed" aria-label="Unità selezionata e azioni disponibili">
+        <aside id="selectedUnitFloat" class="selectedUnitFloat isCollapsed" aria-label="Unità selezionata e azioni disponibili" data-i18n-aria-label="game.selectedUnitLabel">
           <div class="selectedUnitFloatHeader">
-            <strong id="selectedUnitFloatTitle">Unità selezionata</strong>
-            <button class="ghost compactIconBtn" id="toggleSelectedUnitFloatBtn" type="button" aria-label="Riduci o ingrandisci unità selezionata">+</button>
+            <strong id="selectedUnitFloatTitle" data-i18n="game.selectedUnit">Unità selezionata</strong>
+            <button class="ghost compactIconBtn" id="toggleSelectedUnitFloatBtn" type="button" aria-label="Riduci o ingrandisci unità selezionata" data-i18n-aria-label="game.toggleSelectedUnitLabel">+</button>
           </div>
           <div class="selectedUnitFloatBody">
             <div class="unitCard" id="selectedPanel">
-              <h4>Nessuna unità selezionata</h4>
-              <div class="meta">Clicca una tua unità attiva sulla mappa.</div>
+              <h4 data-i18n="game.noSelectedUnit">Nessuna unità selezionata</h4>
+              <div class="meta" data-i18n="game.selectUnitHint">Clicca una tua unità attiva sulla mappa.</div>
             </div>
             <div class="stack" id="actionPanel"></div>
           </div>
@@ -1564,12 +1573,12 @@
       </section>
 
       <section class="panel cardDebugDock handPrimaryDock" data-game-panel="hand">
-        <h2>Mano / deck C2</h2>
+        <h2 data-i18n="game.handDeck">Mano / deck C2</h2>
         <div class="body">
           <div id="cardZonePanel" class="cardZonePanel">
             <div class="unitCard">
-              <h4>Carte non inizializzate</h4>
-              <div class="meta">Avvia una nuova partita per vedere deck, mano, scarti e starter cards.</div>
+              <h4 data-i18n="game.cardsNotInitialized">Carte non inizializzate</h4>
+              <div class="meta" data-i18n="game.cardsStartHint">Avvia una nuova partita per vedere deck, mano, scarti e starter cards.</div>
             </div>
           </div>
         </div>
@@ -1586,8 +1595,8 @@
       </section>
     </div>
 
-    <section class="panel tacticDock" data-game-panel="actions" aria-label="Tattiche disponibili">
-      <h2>Tattiche</h2>
+    <section class="panel tacticDock" data-game-panel="actions" aria-label="Tattiche disponibili" data-i18n-aria-label="game.availableTacticsLabel">
+      <h2 data-i18n="game.tactics">Tattiche</h2>
       <div class="body stack">
         <div class="stack" id="tacticPanel"></div>
       </div>
@@ -1616,6 +1625,12 @@
 <script src="src/constants.js"></script>
 <script src="src/data_store.js"></script>
 <script src="src/storage.js"></script>
+<script src="src/i18n/core.js"></script>
+<script src="src/i18n/runtime.js"></script>
+<script src="src/i18n/content.js"></script>
+<script src="src/i18n/tutorial.js"></script>
+<script src="data/runtime_profile_build.js"></script>
+<script src="src/runtime_profile.js"></script>
 <script src="src/map_skins.js"></script>
 <script src="src/audio_manager.js"></script>
 <script src="src/presentation_theme.js"></script>
@@ -1626,11 +1641,27 @@
 <script src="data/terrain_registry.js"></script>
 <script src="data/official_maps_f9r3.js"></script>
 <script src="data/official_maps_f9s1b1.js"></script>
+<script src="data/official_maps_f9w2a1.js"></script>
 <script src="data/map_definitions.js"></script>
+<script src="src/map_normalization.js"></script>
+<script src="src/map_pathfinding.js"></script>
+<script src="src/map_validation.js"></script>
+<script src="src/map_persistence.js"></script>
+<script src="src/map_state_queries.js"></script>
 <script src="src/map_runtime.js"></script>
 <script src="src/map_backgrounds.js"></script>
 <script src="src/events.js"></script>
 <script src="src/board.js"></script>
+<script src="src/ai/pressure_perception.js"></script>
+<script src="src/ai/finalization_memory.js"></script>
+<script src="src/ai/faction_maturity.js"></script>
+<script src="src/ai/garrison_planning.js"></script>
+<script src="src/ai/strategic_status.js"></script>
+<script src="src/ai/move_context.js"></script>
+<script src="src/ai/faction_move_scoring.js"></script>
+<script src="src/ai/move_selection.js"></script>
+<script src="src/ai/move_execution.js"></script>
+<script src="src/ai/combat_execution.js"></script>
 <script src="src/ai.js"></script>
 <script src="data/factions.js"></script>
 <script src="data/units_base.js"></script>
@@ -1642,7 +1673,11 @@
 <script src="data/builtin_decks.js"></script>
 <script src="data/cards_base.js"></script>
 <script src="data/tutorial_scenarios.js"></script>
+<script src="src/setup_adapter.js"></script>
 <script src="src/state.js"></script>
+<script src="src/core/state_domains.js"></script>
+<script src="src/core/action_service.js"></script>
+<script src="src/core/game_core.js"></script>
 <script src="src/missions.js"></script>
 <script src="src/mission_ui.js"></script>
 <script src="src/game_scale.js"></script>
@@ -1651,14 +1686,20 @@
 <script src="src/card_assets.js"></script>
 <script src="src/card_motion.js"></script>
 <script src="src/card_renderer.js"></script>
-<script src="src/renderer_calibration_lab.js"></script>
-<script src="src/menu_layout_calibration_lab.js"></script>
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/renderer_calibration_lab.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/renderer_calibration_lab.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/menu_layout_calibration_lab.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/menu_layout_calibration_lab.js"></script> -->
 <script src="src/deck_builder.js"></script>
-<script src="src/card_editor.js"></script>
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/card_editor.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/card_editor.js"></script> -->
 <script src="src/card_pool.js"></script>
-<script src="src/map_editor.js"></script>
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/map_editor.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/map_editor.js"></script> -->
 <script src="src/player_lifecycle.js"></script>
 <script src="src/ffa_attribution.js"></script>
+<script src="src/rules/victory_lifecycle.js"></script>
+<script src="src/rules/pressure_victory.js"></script>
 <script src="src/rules.js"></script>
 <script src="src/player_targeting.js"></script>
 <script src="src/economy.js"></script>
@@ -1675,14 +1716,23 @@
 <script src="src/mission_ai.js"></script>
 <script src="src/stats.js"></script>
 <script src="src/match_telemetry.js"></script>
-<script src="src/expert_ai/expert_common_strategy.js"></script>
-<script src="src/expert_ai/expert_nexus.js"></script>
-<script src="src/expert_ai/expert_exordium.js"></script>
-<script src="src/expert_ai/expert_liberti.js"></script>
-<script src="src/expert_ai/expert_agathoi.js"></script>
-<script src="src/expert_ai/expert_fabeot.js"></script>
-<script src="src/expert_ai/expert_router.js"></script>
-<script src="src/expert_ai/expert_runtime.js"></script>
+<script src="src/data/match_data.js"></script>
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_common_strategy.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_common_strategy.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_nexus.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_nexus.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_exordium.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_exordium.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_liberti.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_liberti.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_agathoi.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_agathoi.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_fabeot.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_fabeot.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_router.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_router.js"></script> -->
+<script>typeof ArenaRuntimeProfile!=="undefined"&&ArenaRuntimeProfile.loadScript("src/expert_ai/expert_runtime.js","dev");</script>
+<!-- AR-AC1 legacy harness declaration: <script src="src/expert_ai/expert_runtime.js"></script> -->
 <script src="src/render.js"></script>
 <script src="src/combat_feedback.js"></script>
 <script src="src/token_fx.js"></script>
@@ -1692,6 +1742,7 @@
 <script src="src/main.js"></script>
 <script src="src/game.js"></script>
 <script src="src/turns.js"></script>
+<script src="src/core/runtime.js"></script>
 <script src="src/controller.js"></script>
 <script src="src/precheck.js"></script>
 <script src="src/panel_manager.js"></script>

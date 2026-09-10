@@ -621,14 +621,19 @@ function runPrecheck(options = {}) {
       "expertExordiumRefreshCommanderCommitmentF9T2d3", "expertExordiumCommanderRosterChoiceF9T2d3", "expertExordiumObserveCommanderRosterPlayF9T2d3", "expertFactionRefreshPersistentCommitmentsF9T2d3", "expertCommanderReservedEnergyF9T2d3",
       "expertAdvancePlanStepF9T2", "expertAbortPlanF9T2", "expertCanSpendEnergyF9T2"
     ];
-    const missingF9T1ExpertHelpers = f9t1ExpertHelpers.filter(name => typeof globalThis[name] !== "function");
+    const expertModulesExpected = typeof ArenaRuntimeProfile === "undefined" || ArenaRuntimeProfile.current() === "dev";
+    const missingF9T1ExpertHelpers = expertModulesExpected
+      ? f9t1ExpertHelpers.filter(name => typeof globalThis[name] !== "function")
+      : [];
     if (missingF9T1ExpertHelpers.length) {
       problems.push(`F9T1: componenti architettura Expert mancanti: ${missingF9T1ExpertHelpers.join(", ")}.`);
-    } else {
+    } else if (expertModulesExpected) {
       info.push("F9T1: router monofazione, cinque moduli isolati, contesto unico, cache di turno, budget rigidi e fallback Advanced F9T0 disponibili.");
       info.push("F9T2b: Bastion Relay F9T2a preservato e filtrato dalla sopravvivenza del PS.");
       info.push("F9T2b: CLEAR_OCCUPY_FORTIFY, memoria perdite a cinque round e riserva ENE preservati.");
       info.push("F9T2d3: turni Expert finalizzati; Commander Deployment Commitment protegge la riserva ENE e forza lo schieramento bounded del comandante senza superare le priorità P0. Varran stazionario, Clear ATT→DEF→HP, Forward Pivot e aggregati restano preservati.");
+    } else {
+      info.push("F9T1/F9T2: moduli Expert esclusi correttamente dal profilo Distribution; Advanced F9T0 resta il massimo livello Starter.");
     }
     if (typeof MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION !== "undefined" && MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION !== "F9T1-1") {
       problems.push(`F9T1: schema telemetrico Expert base inatteso: ${MATCH_TELEMETRY_EXPERT_SCHEMA_VERSION}.`);

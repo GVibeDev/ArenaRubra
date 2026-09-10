@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 const root = path.resolve(__dirname, "..");
 const ui = fs.readFileSync(path.join(root, "src", "ui.js"), "utf8");
 const build = fs.readFileSync(path.join(root, "src", "build_info.js"), "utf8");
@@ -28,13 +29,6 @@ for (const token of [
   'arenaProductProfileSetTextF9W2a'
 ]) assert(ui.includes(token), `missing F9W2a contract token: ${token}`);
 
-for (const token of [
-  'version: "C2-STABLE-1-F9W2d3-APK-M4c"',
-  'buildName: "Agathoi Palette Readability Hotfix"',
-  'buildChannel: "starter2-ui-agathoi-palette-w2d3"',
-  'productProfileDefault: "dev"',
-  'productProfileSwitchable: true',
-  'logicBaseline: "C2-STABLE-1-F9T2c4-APK-M4c"'
-]) assert(build.includes(token), `missing build metadata: ${token}`);
+assertCurrentBuildInfo(build);
 
 console.log("F9W2a profile static smoke: PASS");

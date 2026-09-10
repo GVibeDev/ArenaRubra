@@ -7,6 +7,11 @@
 
 let missionResolutionBusy = false;
 
+function missionRewardI18n(key, fallback, params = {}) {
+  if (typeof arenaI18nText === "function") return arenaI18nText(`missionUi.playReasons.${key}`, fallback, params);
+  return Object.entries(params).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), String(fallback || ""));
+}
+
 function missionRewardPlayerIds() {
   if (typeof missionPlayerIds === "function") return missionPlayerIds();
   if (typeof mapRuntimePlayerIds === "function") return mapRuntimePlayerIds(state) || [];
@@ -58,25 +63,25 @@ function missionCardMatchesRuntime(card, runtime) {
 }
 
 function missionCanPlayOrdinary(side, card=null, options={}) {
-  if (!state) return { ok:false, reason:"Partita non inizializzata" };
-  if (state.winner) return { ok:false, reason:"Partita conclusa" };
-  if (missionInteractionBlocked()) return { ok:false, reason:"Completa prima la scelta della ricompensa Missione" };
+  if (!state) return { ok:false, reason:missionRewardI18n("matchNotInitialized", "Partita non inizializzata") };
+  if (state.winner) return { ok:false, reason:missionRewardI18n("matchEnded", "Partita conclusa") };
+  if (missionInteractionBlocked()) return { ok:false, reason:missionRewardI18n("completeRewardFirst", "Completa prima la scelta della ricompensa Missione") };
   const runtime = typeof missionRuntime === "function" ? missionRuntime(side) : null;
-  if (!runtime || !runtime.active) return { ok:false, reason:"Missione assente" };
-  if (runtime.missionClass !== "ordinary") return { ok:false, reason:"La Missione selezionata è disperata" };
-  if (runtime.played) return { ok:false, reason:"Missione già giocata in questo ciclo" };
-  if (typeof missionIsRecoveryLocked === "function" && missionIsRecoveryLocked(side)) return { ok:false, reason:"Missione recuperata: utilizzabile dal prossimo turno personale" };
-  if (state.currentPlayer !== side) return { ok:false, reason:"Non è il turno del proprietario" };
+  if (!runtime || !runtime.active) return { ok:false, reason:missionRewardI18n("missionMissing", "Missione assente") };
+  if (runtime.missionClass !== "ordinary") return { ok:false, reason:missionRewardI18n("selectedIsDesperate", "La Missione selezionata è disperata") };
+  if (runtime.played) return { ok:false, reason:missionRewardI18n("alreadyPlayed", "Missione già giocata in questo ciclo") };
+  if (typeof missionIsRecoveryLocked === "function" && missionIsRecoveryLocked(side)) return { ok:false, reason:missionRewardI18n("recoveryLocked", "Missione recuperata: utilizzabile dal prossimo turno personale") };
+  if (state.currentPlayer !== side) return { ok:false, reason:missionRewardI18n("notOwnerTurn", "Non è il turno del proprietario") };
   const isBotOwner = Boolean(state.modes && state.modes[side] === "bot");
-  if (isBotOwner && options.allowBot !== true) return { ok:false, reason:"Missione gestita dall’IA" };
-  if (!isBotOwner && botRunning) return { ok:false, reason:"Bot in esecuzione" };
+  if (isBotOwner && options.allowBot !== true) return { ok:false, reason:missionRewardI18n("aiManaged", "Missione gestita dall’IA") };
+  if (!isBotOwner && botRunning) return { ok:false, reason:missionRewardI18n("botRunning", "Bot in esecuzione") };
   const missionCard = card || missionCardInHand(side);
-  if (!missionCard || !missionCardMatchesRuntime(missionCard, runtime)) return { ok:false, reason:"La carta Missione non è nella mano" };
-  if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { ok:false, reason:"Mano bloccata" };
-  if (typeof handCardBlocked === "function" && handCardBlocked(missionCard)) return { ok:false, reason:typeof handCardBlockReason === "function" ? handCardBlockReason(missionCard) : "Missione bloccata" };
+  if (!missionCard || !missionCardMatchesRuntime(missionCard, runtime)) return { ok:false, reason:missionRewardI18n("cardNotInHand", "La carta Missione non è nella mano") };
+  if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { ok:false, reason:missionRewardI18n("handBlocked", "Mano bloccata") };
+  if (typeof handCardBlocked === "function" && handCardBlocked(missionCard)) return { ok:false, reason:typeof handCardBlockReason === "function" ? handCardBlockReason(missionCard) : missionRewardI18n("missionBlocked", "Missione bloccata") };
   if (options.evaluate !== false && typeof missionEvaluateSide === "function") missionEvaluateSide(side, "f9n8_final_validation", { checkpoint:"mission_play", side, round:state.turn });
-  if (!runtime.ready) return { ok:false, reason:"Obiettivi non tutti completati" };
-  return { ok:true, reason:"Missione ordinaria pronta", card:missionCard, runtime };
+  if (!runtime.ready) return { ok:false, reason:missionRewardI18n("objectivesIncomplete", "Obiettivi non tutti completati") };
+  return { ok:true, reason:missionRewardI18n("ordinaryReady", "Missione ordinaria pronta"), card:missionCard, runtime };
 }
 
 function missionRewardStateForSide(side) {
@@ -469,26 +474,26 @@ function missionDesperateMultiplier(runtime) {
 }
 
 function missionCanPlayDesperate(side, card=null, options={}) {
-  if (!state) return { ok:false, reason:"Partita non inizializzata" };
-  if (state.winner) return { ok:false, reason:"Partita conclusa" };
-  if (missionInteractionBlocked()) return { ok:false, reason:"Completa prima la scelta della ricompensa Missione" };
+  if (!state) return { ok:false, reason:missionRewardI18n("matchNotInitialized", "Partita non inizializzata") };
+  if (state.winner) return { ok:false, reason:missionRewardI18n("matchEnded", "Partita conclusa") };
+  if (missionInteractionBlocked()) return { ok:false, reason:missionRewardI18n("completeRewardFirst", "Completa prima la scelta della ricompensa Missione") };
   const runtime = typeof missionRuntime === "function" ? missionRuntime(side) : null;
-  if (!runtime || !runtime.active) return { ok:false, reason:"Missione assente" };
-  if (runtime.missionClass !== "desperate") return { ok:false, reason:"La Missione non è disperata" };
-  if (runtime.played) return { ok:false, reason:"Missione già giocata in questo ciclo" };
-  if (typeof missionIsRecoveryLocked === "function" && missionIsRecoveryLocked(side)) return { ok:false, reason:"Missione recuperata: utilizzabile dal prossimo turno personale" };
-  if (state.currentPlayer !== side) return { ok:false, reason:"Non è il turno del proprietario" };
+  if (!runtime || !runtime.active) return { ok:false, reason:missionRewardI18n("missionMissing", "Missione assente") };
+  if (runtime.missionClass !== "desperate") return { ok:false, reason:missionRewardI18n("notDesperate", "La Missione non è disperata") };
+  if (runtime.played) return { ok:false, reason:missionRewardI18n("alreadyPlayed", "Missione già giocata in questo ciclo") };
+  if (typeof missionIsRecoveryLocked === "function" && missionIsRecoveryLocked(side)) return { ok:false, reason:missionRewardI18n("recoveryLocked", "Missione recuperata: utilizzabile dal prossimo turno personale") };
+  if (state.currentPlayer !== side) return { ok:false, reason:missionRewardI18n("notOwnerTurn", "Non è il turno del proprietario") };
   const isBotOwner = Boolean(state.modes && state.modes[side] === "bot");
-  if (isBotOwner && options.allowBot !== true) return { ok:false, reason:"Missione gestita dall’IA" };
-  if (!isBotOwner && botRunning) return { ok:false, reason:"Bot in esecuzione" };
+  if (isBotOwner && options.allowBot !== true) return { ok:false, reason:missionRewardI18n("aiManaged", "Missione gestita dall’IA") };
+  if (!isBotOwner && botRunning) return { ok:false, reason:missionRewardI18n("botRunning", "Bot in esecuzione") };
   const missionCard = card || missionCardInHand(side);
-  if (!missionCard || !missionCardMatchesRuntime(missionCard, runtime)) return { ok:false, reason:"La carta Missione non è nella mano" };
-  if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { ok:false, reason:"Mano bloccata" };
-  if (typeof handCardBlocked === "function" && handCardBlocked(missionCard)) return { ok:false, reason:typeof handCardBlockReason === "function" ? handCardBlockReason(missionCard) : "Missione bloccata" };
+  if (!missionCard || !missionCardMatchesRuntime(missionCard, runtime)) return { ok:false, reason:missionRewardI18n("cardNotInHand", "La carta Missione non è nella mano") };
+  if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { ok:false, reason:missionRewardI18n("handBlocked", "Mano bloccata") };
+  if (typeof handCardBlocked === "function" && handCardBlocked(missionCard)) return { ok:false, reason:typeof handCardBlockReason === "function" ? handCardBlockReason(missionCard) : missionRewardI18n("missionBlocked", "Missione bloccata") };
   if (options.evaluate !== false && typeof missionEvaluateSide === "function") missionEvaluateSide(side, "f9n9_final_validation", { checkpoint:"mission_play", side, round:state.turn });
   const multiplier = missionDesperateMultiplier(runtime);
-  if (!runtime.ready || multiplier < 1) return { ok:false, reason:"Nessuna condizione disperata soddisfatta" };
-  return { ok:true, reason:`Missione disperata pronta ×${multiplier}`, card:missionCard, runtime, multiplier };
+  if (!runtime.ready || multiplier < 1) return { ok:false, reason:missionRewardI18n("noDesperateCondition", "Nessuna condizione disperata soddisfatta") };
+  return { ok:true, reason:missionRewardI18n("desperateReady", "Missione disperata pronta ×{multiplier}", { multiplier }), card:missionCard, runtime, multiplier };
 }
 
 function missionRewardUnitByUid(uid) {

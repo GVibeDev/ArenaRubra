@@ -1,4 +1,4 @@
-from browser_runtime import chromium_launch_options
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json, re
@@ -147,7 +147,7 @@ result = {
 }
 print(json.dumps(result, ensure_ascii=False, indent=2))
 
-assert initial["build"] == "C2-STABLE-1-F9V4a-APK-M4c", initial
+assert_valid_build_version(initial["build"])
 assert initial["audit"]["ok"] and initial["precheck"]["ok"], initial
 assert initial["menu"] == {"available":5,"starts":5,"lesson2":True}, initial["menu"]
 assert final["active"] is False and final["progress"]["completed"] is True, final

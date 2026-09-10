@@ -33,6 +33,14 @@ const controlCenterStateF9U3 = {
   deferredRefreshTimer: null
 };
 
+function controlCenterI18n(key, fallback, params = {}) {
+  return typeof arenaI18nText === "function" ? arenaI18nText(key, fallback, params) : fallback;
+}
+
+function controlCenterToolI18n(key, fallback, params = {}) {
+  return controlCenterI18n(`tools.controlCenter.${key}`, fallback, params);
+}
+
 function controlCenterEscape(value) {
   return String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -65,7 +73,8 @@ function controlCenterFormatDate(value, withTime = true) {
   const date = new Date(text);
   if (Number.isNaN(date.getTime())) return controlCenterEscape(text.slice(0, withTime ? 19 : 10));
   try {
-    return new Intl.DateTimeFormat("it-IT", {
+    const language = typeof ArenaI18n !== "undefined" && ArenaI18n.currentLanguage() === "en" ? "en-GB" : "it-IT";
+    return new Intl.DateTimeFormat(language, {
       dateStyle: "short",
       ...(withTime ? { timeStyle: "short" } : {})
     }).format(date);
@@ -161,12 +170,12 @@ async function controlCenterReadStorageEstimate() {
 function controlCenterRenderStorageMetric() {
   const metric = controlCenterStateF9U3.storageEstimate;
   if (!metric) {
-    controlCenterSetText("controlCenterStorageSpace", "Calcolo…");
-    controlCenterSetText("controlCenterStorageSpaceMeta", "Stima archivio in corso");
+    controlCenterSetText("controlCenterStorageSpace", controlCenterI18n("menu.status.calculating", "Calcolo…"));
+    controlCenterSetText("controlCenterStorageSpaceMeta", controlCenterI18n("menu.status.storageEstimate", "Stima archivio in corso"));
     return;
   }
   const usageLabel = controlCenterFormatBytes(metric.usage);
-  const quotaLabel = metric.quota ? controlCenterFormatBytes(metric.quota) : "quota non esposta";
+  const quotaLabel = metric.quota ? controlCenterFormatBytes(metric.quota) : controlCenterI18n("menu.status.quotaUnavailable", "quota non esposta");
   controlCenterSetText("controlCenterStorageSpace", usageLabel);
   controlCenterSetText("controlCenterStorageSpaceMeta", metric.quota ? `${usageLabel} / ${quotaLabel}` : `${usageLabel} · ${quotaLabel}`);
   controlCenterSetTone("controlCenterStorageSpaceCard", "good");
@@ -391,9 +400,14 @@ function controlCenterApplyDeveloperMode() {
 }
 
 function controlCenterLastMatchLabel(record) {
-  if (!record) return { value: "Nessun match", meta: "Lo storico è ancora vuoto", tone: "neutral" };
-  const matchup = [record.p1Faction, record.p2Faction].filter(Boolean).join(" vs ") || `${record.playerCount || 2} giocatori`;
-  const winner = record.winnerFaction || "Esito non registrato";
+  if (!record) return {
+    value: controlCenterI18n("menu.status.noMatch", "Nessun match"),
+    meta: controlCenterI18n("menu.status.emptyHistory", "Lo storico è ancora vuoto"),
+    tone: "neutral"
+  };
+  const matchup = [record.p1Faction, record.p2Faction].filter(Boolean).join(" vs ")
+    || controlCenterI18n("menu.status.players", `${record.playerCount || 2} giocatori`, { count: record.playerCount || 2 });
+  const winner = record.winnerFaction || controlCenterI18n("menu.status.outcomeUnavailable", "Esito non registrato");
   const round = Number(record.round || 0);
   return {
     value: `${winner} · R${round || "—"}`,
@@ -410,20 +424,26 @@ function controlCenterRefreshMetrics() {
   const latest = controlCenterLastMatchLabel(controlCenterLatestHistoryRecord());
 
   controlCenterSetText("controlCenterVersion", typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.version : "unknown");
-  controlCenterSetText("controlCenterVersionMeta", typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.buildName : "Build metadata non disponibili");
+  controlCenterSetText("controlCenterVersionMeta", typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.buildName : controlCenterI18n("menu.status.buildMetadataUnavailable", "Build metadata non disponibili"));
   controlCenterSetText("controlCenterLogicBaseline", typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO.logicBaseline : "unknown");
-  controlCenterSetText("controlCenterLogicBaselineMeta", "Baseline logica dichiarata");
+  controlCenterSetText("controlCenterLogicBaselineMeta", controlCenterI18n("menu.status.logicBaselineDeclared", "Baseline logica dichiarata"));
   controlCenterSetText("controlCenterTelemetrySchema", controlCenterTelemetrySchema());
-  controlCenterSetText("controlCenterTelemetrySchemaMeta", "Schema runtime e storico");
+  controlCenterSetText("controlCenterTelemetrySchemaMeta", controlCenterI18n("menu.status.runtimeHistorySchema", "Schema runtime e storico"));
   controlCenterSetText("controlCenterOfficialDecks", officialDecks);
-  controlCenterSetText("controlCenterOfficialDecksMeta", `${controlCenterCustomDeckCount()} deck custom locali`);
+  controlCenterSetText("controlCenterOfficialDecksMeta", controlCenterI18n("menu.status.customDecks", `${controlCenterCustomDeckCount()} deck custom locali`, { count: controlCenterCustomDeckCount() }));
   controlCenterSetText("controlCenterOfficialMaps", officialMaps);
-  controlCenterSetText("controlCenterOfficialMapsMeta", `${controlCenterCustomMapCount()} mappe custom locali`);
+  controlCenterSetText("controlCenterOfficialMapsMeta", controlCenterI18n("menu.status.customMaps", `${controlCenterCustomMapCount()} mappe custom locali`, { count: controlCenterCustomMapCount() }));
   controlCenterSetText("controlCenterLastMatch", latest.value);
   controlCenterSetText("controlCenterLastMatchMeta", latest.meta);
   controlCenterSetTone("controlCenterLastMatchCard", latest.tone);
-  controlCenterSetText("controlCenterDiagnosticErrors", diagnostics.errorCount ? `${diagnostics.errorCount} errori` : "Nessun errore");
-  controlCenterSetText("controlCenterDiagnosticErrorsMeta", `${diagnostics.warningCount || 0} avvisi · ${CONTROL_CENTER_DIAGNOSTIC_ERRORS.length} runtime`);
+  controlCenterSetText("controlCenterDiagnosticErrors", diagnostics.errorCount
+    ? controlCenterI18n("menu.status.errors", `${diagnostics.errorCount} errori`, { count: diagnostics.errorCount })
+    : controlCenterI18n("menu.status.noErrors", "Nessun errore"));
+  controlCenterSetText("controlCenterDiagnosticErrorsMeta", controlCenterI18n(
+    "menu.status.warnings",
+    `${diagnostics.warningCount || 0} avvisi · ${CONTROL_CENTER_DIAGNOSTIC_ERRORS.length} runtime`,
+    { count: diagnostics.warningCount || 0, runtime: CONTROL_CENTER_DIAGNOSTIC_ERRORS.length }
+  ));
   controlCenterSetTone("controlCenterDiagnosticCard", diagnostics.errorCount ? "bad" : diagnostics.warningCount ? "warn" : "good");
   controlCenterRenderStorageMetric();
   controlCenterApplyDeveloperMode();
@@ -481,7 +501,7 @@ function controlCenterOpenPanel(panelKey) {
     panel.classList.add("isOpen");
     panel.setAttribute("aria-hidden", "false");
   }
-  controlCenterSetText("controlCenterPanelTitle", CONTROL_CENTER_PANEL_LABELS[key]);
+  controlCenterSetText("controlCenterPanelTitle", controlCenterToolI18n(`panels.${key}`, CONTROL_CENTER_PANEL_LABELS[key]));
   controlCenterRenderActivePanel();
   const close = typeof document !== "undefined" ? document.getElementById("controlCenterPanelCloseBtn") : null;
   if (close && typeof close.focus === "function") close.focus({ preventScroll: true });
@@ -504,13 +524,14 @@ function controlCenterMetricCard(label, value, meta = "", tone = "neutral") {
 }
 
 function controlCenterMapsHtml() {
-  const definitions = typeof getAvailableMapDefinitions === "function"
+  const sourceDefinitions = typeof getAvailableMapDefinitions === "function"
     ? getAvailableMapDefinitions({ includeInvalid: true })
     : [];
+  const definitions = sourceDefinitions.map(definition => typeof ArenaContentI18n !== "undefined" ? ArenaContentI18n.project("maps", definition, ["name", "description"]) : definition);
   const rows = definitions.map(definition => {
     const validation = typeof validateMapDefinition === "function" ? validateMapDefinition(definition) : { valid: true, errors: [], warnings: [] };
-    const type = definition.official ? "Ufficiale" : "Custom";
-    const status = validation.valid ? (validation.warnings && validation.warnings.length ? `${validation.warnings.length} avvisi` : "Valida") : `${validation.errors ? validation.errors.length : 1} errori`;
+    const type = definition.official ? controlCenterToolI18n("official", "Ufficiale") : "Custom";
+    const status = validation.valid ? (validation.warnings && validation.warnings.length ? controlCenterToolI18n("warningsCount", "{count} avvisi", { count:validation.warnings.length }) : controlCenterToolI18n("validFemale", "Valida")) : controlCenterToolI18n("errorsCount", "{count} errori", { count:validation.errors ? validation.errors.length : 1 });
     const central = typeof getCentralStrategicPoint === "function" ? getCentralStrategicPoint(definition) : null;
     return `<tr data-control-center-map-row="${controlCenterEscape(definition.id)}">
       <td><strong>${controlCenterEscape(definition.name || definition.id)}</strong><small><code>${controlCenterEscape(definition.id)}</code></small></td>
@@ -521,8 +542,8 @@ function controlCenterMapsHtml() {
       <td>${central && Array.isArray(central.coord) ? `[${central.coord.join(",")}]` : "—"}</td>
       <td data-tone="${validation.valid ? (validation.warnings && validation.warnings.length ? "warn" : "good") : "bad"}">${controlCenterEscape(status)}</td>
       <td class="controlCenterTableActions">
-        <button class="primary compact" type="button" data-control-center-map-setup="${controlCenterEscape(definition.id)}">Gioca</button>
-        <button class="ghost compact" type="button" data-control-center-map-edit="${controlCenterEscape(definition.id)}">${definition.official ? "Copia in Editor" : "Modifica"}</button>
+        <button class="primary compact" type="button" data-control-center-map-setup="${controlCenterEscape(definition.id)}">${controlCenterToolI18n("play", "Gioca")}</button>
+        <button class="ghost compact" type="button" data-control-center-map-edit="${controlCenterEscape(definition.id)}">${definition.official ? controlCenterToolI18n("copyToEditor", "Copia in Editor") : controlCenterToolI18n("edit", "Modifica")}</button>
       </td>
     </tr>`;
   }).join("");
@@ -530,17 +551,17 @@ function controlCenterMapsHtml() {
   const custom = definitions.filter(item => item && !item.official).length;
   return `
     <div class="controlCenterPanelLead">
-      <div><strong>Mappe disponibili</strong><p>Consulta geometria, giocatori, PS centrale e validazione; da qui puoi avviare il Setup o aprire una copia modificabile nell’Editor.</p></div>
-      <button class="primary" type="button" data-app-open-map-editor>Apri Map Editor</button>
+      <div><strong>${controlCenterToolI18n("mapsTitle", "Mappe disponibili")}</strong><p>${controlCenterToolI18n("mapsIntro", "Consulta geometria, giocatori, PS centrale e validazione; da qui puoi avviare il Setup o aprire una copia modificabile nell’Editor.")}</p></div>
+      <button class="primary" type="button" data-app-open-map-editor>${controlCenterToolI18n("openMapEditor", "Apri Map Editor")}</button>
     </div>
     <div class="controlCenterMiniMetrics">
-      ${controlCenterMetricCard("Ufficiali", official, "Mappe integrate attive", "good")}
-      ${controlCenterMetricCard("Custom", custom, "Mappe archiviate localmente", custom ? "good" : "neutral")}
-      ${controlCenterMetricCard("Totale", definitions.length, "Valide e non valide visibili", "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("officialPlural", "Ufficiali"), official, controlCenterToolI18n("activeBuiltInMaps", "Mappe integrate attive"), "good")}
+      ${controlCenterMetricCard("Custom", custom, controlCenterToolI18n("localMaps", "Mappe archiviate localmente"), custom ? "good" : "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("total", "Totale"), definitions.length, controlCenterToolI18n("allMapStates", "Valide e non valide visibili"), "neutral")}
     </div>
     <div class="controlCenterTableWrap"><table class="controlCenterTable">
-      <thead><tr><th>Mappa</th><th>Tipo</th><th>Gioc.</th><th>Celle</th><th>PS</th><th>Centro</th><th>Stato</th><th>Azioni</th></tr></thead>
-      <tbody>${rows || `<tr><td colspan="8">Nessuna mappa disponibile.</td></tr>`}</tbody>
+      <thead><tr><th>${controlCenterToolI18n("map", "Mappa")}</th><th>${controlCenterToolI18n("type", "Tipo")}</th><th>${controlCenterToolI18n("playersShort", "Gioc.")}</th><th>${controlCenterToolI18n("cells", "Celle")}</th><th>PS</th><th>${controlCenterToolI18n("center", "Centro")}</th><th>${controlCenterToolI18n("status", "Stato")}</th><th>${controlCenterToolI18n("actions", "Azioni")}</th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="8">${controlCenterToolI18n("noMaps", "Nessuna mappa disponibile.")}</td></tr>`}</tbody>
     </table></div>`;
 }
 
@@ -550,7 +571,7 @@ function controlCenterStatisticsHtml() {
   const wins = {};
   let roundTotal = 0;
   for (const item of safeItems) {
-    const winner = item && item.winnerFaction ? String(item.winnerFaction) : "Pareggio";
+    const winner = item && item.winnerFaction ? String(item.winnerFaction) : controlCenterToolI18n("draw", "Pareggio");
     wins[winner] = (wins[winner] || 0) + 1;
     roundTotal += Number(item && item.round || 0);
   }
@@ -566,20 +587,20 @@ function controlCenterStatisticsHtml() {
   </tr>`).join("");
   return `
     <div class="controlCenterPanelLead">
-      <div><strong>Registro matchup</strong><p>Vista sintetica dei record competitivi persistenti. Tutorial e Match Lab restano esclusi dal registro.</p></div>
+      <div><strong>${controlCenterToolI18n("statsTitle", "Registro matchup")}</strong><p>${controlCenterToolI18n("statsIntro", "Vista sintetica dei record competitivi persistenti. Tutorial e Match Lab restano esclusi dal registro.")}</p></div>
       <div class="controlCenterInlineActions">
-        <button class="ghost" type="button" data-control-center-action="copy-stats">Copia JSON</button>
-        <button class="primary" type="button" data-control-center-action="download-stats">Esporta JSON</button>
+        <button class="ghost" type="button" data-control-center-action="copy-stats">${controlCenterToolI18n("copyJson", "Copia JSON")}</button>
+        <button class="primary" type="button" data-control-center-action="download-stats">${controlCenterToolI18n("exportJson", "Esporta JSON")}</button>
       </div>
     </div>
     <div class="controlCenterMiniMetrics">
-      ${controlCenterMetricCard("Partite", safeItems.length, "Record matchup", safeItems.length ? "good" : "neutral")}
-      ${controlCenterMetricCard("Round medi", average, "Su tutti i record", "neutral")}
-      ${controlCenterMetricCard("Più vittorie", leaders[0] ? `${leaders[0][0]} · ${leaders[0][1]}` : "—", leaders.length ? `${leaders.length} esiti distinti` : "Nessun dato", "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("matches", "Partite"), safeItems.length, controlCenterToolI18n("matchupRecords", "Record matchup"), safeItems.length ? "good" : "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("averageRounds", "Round medi"), average, controlCenterToolI18n("allRecords", "Su tutti i record"), "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("mostWins", "Più vittorie"), leaders[0] ? `${leaders[0][0]} · ${leaders[0][1]}` : "—", leaders.length ? controlCenterToolI18n("distinctOutcomes", "{count} esiti distinti", { count:leaders.length }) : controlCenterToolI18n("noData", "Nessun dato"), "neutral")}
     </div>
     <div class="controlCenterTableWrap"><table class="controlCenterTable">
-      <thead><tr><th>Data</th><th>Matchup</th><th>Vincitore</th><th>Esito</th><th>Round</th><th>Mappa</th></tr></thead>
-      <tbody>${rows || `<tr><td colspan="6">Nessuna statistica registrata.</td></tr>`}</tbody>
+      <thead><tr><th>${controlCenterToolI18n("date", "Data")}</th><th>Matchup</th><th>${controlCenterToolI18n("winner", "Vincitore")}</th><th>${controlCenterToolI18n("outcome", "Esito")}</th><th>Round</th><th>${controlCenterToolI18n("map", "Mappa")}</th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="6">${controlCenterToolI18n("noStats", "Nessuna statistica registrata.")}</td></tr>`}</tbody>
     </table></div>`;
 }
 
@@ -603,20 +624,20 @@ function controlCenterHistoryHtml() {
   const latest = safeItems[0];
   return `
     <div class="controlCenterPanelLead">
-      <div><strong>Storico partite</strong><p>Archivio completo degli esiti con setup, statistiche finali, attribuzione e telemetria quando disponibili.</p></div>
+      <div><strong>${controlCenterToolI18n("historyTitle", "Storico partite")}</strong><p>${controlCenterToolI18n("historyIntro", "Archivio completo degli esiti con setup, statistiche finali, attribuzione e telemetria quando disponibili.")}</p></div>
       <div class="controlCenterInlineActions">
-        <button class="ghost" type="button" data-control-center-action="copy-history">Copia JSON</button>
-        <button class="primary" type="button" data-control-center-action="download-history">Esporta JSON</button>
+        <button class="ghost" type="button" data-control-center-action="copy-history">${controlCenterToolI18n("copyJson", "Copia JSON")}</button>
+        <button class="primary" type="button" data-control-center-action="download-history">${controlCenterToolI18n("exportJson", "Esporta JSON")}</button>
       </div>
     </div>
     <div class="controlCenterMiniMetrics">
-      ${controlCenterMetricCard("Record", safeItems.length, "Limite archivio 500", safeItems.length ? "good" : "neutral")}
-      ${controlCenterMetricCard("Ultimo match", latest ? controlCenterFormatDate(latest.at || latest.recordedAt) : "—", latest ? (latest.winnerFaction || "Esito registrato") : "Nessun dato", "neutral")}
-      ${controlCenterMetricCard("Schema telemetrico", controlCenterTelemetrySchema(), "Ultimo schema disponibile", "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("records", "Record"), safeItems.length, controlCenterToolI18n("archiveLimit", "Limite archivio 500"), safeItems.length ? "good" : "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("latestMatch", "Ultimo match"), latest ? controlCenterFormatDate(latest.at || latest.recordedAt) : "—", latest ? (latest.winnerFaction || controlCenterToolI18n("recordedOutcome", "Esito registrato")) : controlCenterToolI18n("noData", "Nessun dato"), "neutral")}
+      ${controlCenterMetricCard(controlCenterToolI18n("telemetrySchema", "Schema telemetrico"), controlCenterTelemetrySchema(), controlCenterToolI18n("latestSchema", "Ultimo schema disponibile"), "neutral")}
     </div>
     <div class="controlCenterTableWrap"><table class="controlCenterTable">
-      <thead><tr><th>Data</th><th>Giocatori</th><th>Vincitore</th><th>Esito</th><th>Round</th><th>Mappa</th><th>Telemetria</th></tr></thead>
-      <tbody>${rows || `<tr><td colspan="7">Nessuna partita nello storico.</td></tr>`}</tbody>
+      <thead><tr><th>${controlCenterToolI18n("date", "Data")}</th><th>${controlCenterToolI18n("players", "Giocatori")}</th><th>${controlCenterToolI18n("winner", "Vincitore")}</th><th>${controlCenterToolI18n("outcome", "Esito")}</th><th>Round</th><th>${controlCenterToolI18n("map", "Mappa")}</th><th>${controlCenterToolI18n("telemetry", "Telemetria")}</th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="7">${controlCenterToolI18n("noHistory", "Nessuna partita nello storico.")}</td></tr>`}</tbody>
     </table></div>`;
 }
 
@@ -708,54 +729,54 @@ function controlCenterLogHtml() {
 function controlCenterVersionHtml() {
   const build = typeof BUILD_INFO !== "undefined" && BUILD_INFO ? BUILD_INFO : {};
   const rows = [
-    ["Applicazione", build.appName || "Arena Rubra"],
-    ["Stadio", build.stage || "—"],
-    ["Versione completa", build.version || "unknown"],
-    ["Nome build", build.buildName || "—"],
-    ["Data build", build.buildDate || "—"],
-    ["Canale", build.buildChannel || "—"],
-    ["Baseline logica", build.logicBaseline || "—"],
-    ["Schema Control Center", CONTROL_CENTER_SCHEMA_F9U3],
-    ["Schema telemetrico", controlCenterTelemetrySchema()]
+    [controlCenterToolI18n("application", "Applicazione"), build.appName || "Arena Rubra"],
+    [controlCenterToolI18n("stage", "Stadio"), build.stage || "—"],
+    [controlCenterToolI18n("fullVersion", "Versione completa"), build.version || "unknown"],
+    [controlCenterToolI18n("buildName", "Nome build"), build.buildName || "—"],
+    [controlCenterToolI18n("buildDate", "Data build"), build.buildDate || "—"],
+    [controlCenterToolI18n("channel", "Canale"), build.buildChannel || "—"],
+    [controlCenterToolI18n("logicBaseline", "Baseline logica"), build.logicBaseline || "—"],
+    [controlCenterToolI18n("controlCenterSchema", "Schema Control Center"), CONTROL_CENTER_SCHEMA_F9U3],
+    [controlCenterToolI18n("telemetrySchema", "Schema telemetrico"), controlCenterTelemetrySchema()]
   ].map(([label, value]) => `<tr><th>${controlCenterEscape(label)}</th><td>${controlCenterEscape(value)}</td></tr>`).join("");
   return `
     <div class="controlCenterPanelLead">
-      <div><strong>Identità della build</strong><p>Metadati letti dalla fonte unica <code>BUILD_INFO</code>; nessuna etichetta duplicata nel Centro di controllo.</p></div>
-      <button class="primary" type="button" data-control-center-action="copy-build">Copia metadati</button>
+      <div><strong>${controlCenterToolI18n("buildIdentity", "Identità della build")}</strong><p>${controlCenterToolI18n("buildIdentityIntro", "Metadati letti dalla fonte unica BUILD_INFO; nessuna etichetta duplicata nel Centro di controllo.")}</p></div>
+      <button class="primary" type="button" data-control-center-action="copy-build">${controlCenterToolI18n("copyMetadata", "Copia metadati")}</button>
     </div>
     <div class="controlCenterTableWrap"><table class="controlCenterTable controlCenterKeyValueTable"><tbody>${rows}</tbody></table></div>
-    <article class="controlCenterNotesBox"><strong>Note build</strong><p>${controlCenterEscape(build.notes || "Nessuna nota disponibile.")}</p></article>`;
+    <article class="controlCenterNotesBox"><strong>${controlCenterToolI18n("buildNotesTitle", "Note build")}</strong><p>${controlCenterEscape(controlCenterToolI18n("buildNotes", build.notes || "Nessuna nota disponibile."))}</p></article>`;
 }
 
 function controlCenterSettingsHtml() {
   const developer = controlCenterReadDeveloperMode();
   return `
     <div class="controlCenterPanelLead">
-      <div><strong>Preferenze applicazione</strong><p>Le impostazioni vengono salvate nell’archivio locale e riutilizzano i runtime audio, SFX, animazioni carte e FX miniature già esistenti.</p></div>
+      <div><strong>${controlCenterToolI18n("preferencesTitle", "Preferenze applicazione")}</strong><p>${controlCenterToolI18n("preferencesIntro", "Le impostazioni vengono salvate nell’archivio locale e riutilizzano i runtime audio, SFX, animazioni carte e FX miniature già esistenti.")}</p></div>
     </div>
     <div class="controlCenterSettingsGrid">
       <section class="controlCenterSettingsCard" data-arena-music-control>
-        <h3>Audio</h3>
-        <button class="ghost" type="button" data-arena-music-toggle aria-pressed="true">Musica ON</button>
-        <label><span>Volume musica</span><input type="range" min="0" max="100" step="1" data-arena-music-volume><output data-arena-music-volume-output>65%</output></label>
-        <button class="ghost" type="button" data-arena-sfx-toggle aria-pressed="true">Effetti ON</button>
-        <label><span>Volume effetti</span><input type="range" min="0" max="100" step="1" data-arena-sfx-volume><output data-arena-sfx-volume-output>38%</output></label>
+        <h3>${controlCenterToolI18n("audio", "Audio")}</h3>
+        <button class="ghost" type="button" data-arena-music-toggle aria-pressed="true">${controlCenterToolI18n("musicOn", "Musica ON")}</button>
+        <label><span>${controlCenterToolI18n("musicVolume", "Volume musica")}</span><input type="range" min="0" max="100" step="1" data-arena-music-volume><output data-arena-music-volume-output>65%</output></label>
+        <button class="ghost" type="button" data-arena-sfx-toggle aria-pressed="true">${controlCenterToolI18n("effectsOn", "Effetti ON")}</button>
+        <label><span>${controlCenterToolI18n("effectsVolume", "Volume effetti")}</span><input type="range" min="0" max="100" step="1" data-arena-sfx-volume><output data-arena-sfx-volume-output>38%</output></label>
       </section>
       <section class="controlCenterSettingsCard">
-        <h3>Presentazione</h3>
-        <button class="ghost" type="button" data-arena-card-motion-toggle aria-pressed="false">Carte animate ON</button>
-        <button class="ghost" type="button" data-arena-token-fx-toggle aria-pressed="true">Miniature FX ON</button>
-        <p>Le preferenze di movimento ridotto del sistema continuano ad avere priorità sugli effetti non essenziali.</p>
+        <h3>${controlCenterToolI18n("presentation", "Presentazione")}</h3>
+        <button class="ghost" type="button" data-arena-card-motion-toggle aria-pressed="false">${controlCenterToolI18n("animatedCardsOn", "Carte animate ON")}</button>
+        <button class="ghost" type="button" data-arena-token-fx-toggle aria-pressed="true">${controlCenterToolI18n("tokenFxOn", "Miniature FX ON")}</button>
+        <p>${controlCenterToolI18n("reducedMotion", "Le preferenze di movimento ridotto del sistema continuano ad avere priorità sugli effetti non essenziali.")}</p>
       </section>
       <section class="controlCenterSettingsCard">
-        <h3>Modalità sviluppatore</h3>
-        <label class="controlCenterDeveloperToggle"><input id="controlCenterDeveloperModeToggle" type="checkbox" ${developer ? "checked" : ""}><span>Mostra strumenti Debug e laboratori</span></label>
-        <p>In questa candidata di sviluppo è attiva per impostazione predefinita. Le future build pubbliche potranno disattivarla e nascondere Debug.</p>
+        <h3>${controlCenterToolI18n("developerMode", "Modalità sviluppatore")}</h3>
+        <label class="controlCenterDeveloperToggle"><input id="controlCenterDeveloperModeToggle" type="checkbox" ${developer ? "checked" : ""}><span>${controlCenterToolI18n("showDebug", "Mostra strumenti Debug e laboratori")}</span></label>
+        <p>${controlCenterToolI18n("developerModeHint", "In questa candidata di sviluppo è attiva per impostazione predefinita. Le future build pubbliche potranno disattivarla e nascondere Debug.")}</p>
       </section>
       <section class="controlCenterSettingsCard">
-        <h3>Archivio</h3>
-        <p id="controlCenterSettingsStorageSummary">${controlCenterEscape(controlCenterStateF9U3.storageEstimate ? `${controlCenterFormatBytes(controlCenterStateF9U3.storageEstimate.usage)} utilizzati` : "Calcolo spazio in corso")}</p>
-        <button class="ghost" type="button" data-control-center-panel="transfer">Apri Import / Export</button>
+        <h3>${controlCenterToolI18n("archive", "Archivio")}</h3>
+        <p id="controlCenterSettingsStorageSummary">${controlCenterEscape(controlCenterStateF9U3.storageEstimate ? controlCenterToolI18n("storageUsed", "{size} utilizzati", { size:controlCenterFormatBytes(controlCenterStateF9U3.storageEstimate.usage) }) : controlCenterToolI18n("calculatingSpace", "Calcolo spazio in corso"))}</p>
+        <button class="ghost" type="button" data-control-center-panel="transfer">${controlCenterToolI18n("openImportExport", "Apri Import / Export")}</button>
       </section>
     </div>`;
 }
@@ -813,35 +834,35 @@ function controlCenterTransferHtml() {
   const diagnostics = controlCenterStorageDiagnostics();
   return `
     <div class="controlCenterPanelLead">
-      <div><strong>Archivio applicazione</strong><p>Esporta o ripristina un backup versionato di carte custom, deck, mappe, statistiche, cronologia, impostazioni, tutorial e laboratori locali.</p></div>
+      <div><strong>${controlCenterToolI18n("archiveTitle", "Archivio applicazione")}</strong><p>${controlCenterToolI18n("archiveIntro", "Esporta o ripristina un backup versionato di carte custom, deck, mappe, statistiche, cronologia, impostazioni, tutorial e laboratori locali.")}</p></div>
     </div>
     <div class="controlCenterTransferGrid">
       <section class="controlCenterTransferCard">
-        <h3>Esporta</h3>
-        <p>Crea un JSON portabile con tutte le ${keys.length} chiavi riconosciute dal vault locale.</p>
+        <h3>${controlCenterToolI18n("export", "Esporta")}</h3>
+        <p>${controlCenterToolI18n("exportArchiveIntro", "Crea un JSON portabile con tutte le {count} chiavi riconosciute dal vault locale.", { count:keys.length })}</p>
         <div class="controlCenterInlineActions">
-          <button class="ghost" type="button" data-control-center-action="copy-archive">Copia backup JSON</button>
-          <button class="primary" type="button" data-control-center-action="download-archive">Scarica backup JSON</button>
+          <button class="ghost" type="button" data-control-center-action="copy-archive">${controlCenterToolI18n("copyBackup", "Copia backup JSON")}</button>
+          <button class="primary" type="button" data-control-center-action="download-archive">${controlCenterToolI18n("downloadBackup", "Scarica backup JSON")}</button>
         </div>
       </section>
       <section class="controlCenterTransferCard">
-        <h3>Importa</h3>
-        <p>Prima del ripristino viene creato un backup di sicurezza. Le chiavi sconosciute vengono ignorate.</p>
-        <button class="primary" type="button" data-control-center-action="select-import-archive">Seleziona backup JSON</button>
+        <h3>${controlCenterToolI18n("import", "Importa")}</h3>
+        <p>${controlCenterToolI18n("importArchiveIntro", "Prima del ripristino viene creato un backup di sicurezza. Le chiavi sconosciute vengono ignorate.")}</p>
+        <button class="primary" type="button" data-control-center-action="select-import-archive">${controlCenterToolI18n("selectBackup", "Seleziona backup JSON")}</button>
         <input id="controlCenterImportFile" type="file" accept="application/json,.json" hidden>
       </section>
       <section class="controlCenterTransferCard">
-        <h3>Backend</h3>
+        <h3>${controlCenterToolI18n("backend", "Backend")}</h3>
         <dl>
-          <div><dt>Archivio</dt><dd>${controlCenterEscape(diagnostics.backendName || "—")}</dd></div>
+          <div><dt>${controlCenterToolI18n("archive", "Archivio")}</dt><dd>${controlCenterEscape(diagnostics.backendName || "—")}</dd></div>
           <div><dt>Directory</dt><dd>${controlCenterEscape(diagnostics.directory || "ArenaRubraData")}</dd></div>
-          <div><dt>Voci mirror</dt><dd>${Number(diagnostics.entries || 0)}</dd></div>
-          <div><dt>Scritture pendenti</dt><dd>${Number(diagnostics.pendingWrites || 0)}</dd></div>
+          <div><dt>${controlCenterToolI18n("mirrorEntries", "Voci mirror")}</dt><dd>${Number(diagnostics.entries || 0)}</dd></div>
+          <div><dt>${controlCenterToolI18n("pendingWrites", "Scritture pendenti")}</dt><dd>${Number(diagnostics.pendingWrites || 0)}</dd></div>
         </dl>
       </section>
     </div>
-    <div id="controlCenterTransferFeedback" class="controlCenterFeedback" aria-live="polite">Nessuna operazione eseguita.</div>
-    <details class="controlCenterJsonDetails"><summary>Chiavi incluse</summary><pre>${controlCenterEscape(keys.join("\n"))}</pre></details>`;
+    <div id="controlCenterTransferFeedback" class="controlCenterFeedback" aria-live="polite">${controlCenterToolI18n("noOperation", "Nessuna operazione eseguita.")}</div>
+    <details class="controlCenterJsonDetails"><summary>${controlCenterToolI18n("includedKeys", "Chiavi incluse")}</summary><pre>${controlCenterEscape(keys.join("\n"))}</pre></details>`;
 }
 
 function controlCenterRenderActivePanel() {
@@ -859,11 +880,11 @@ function controlCenterRenderActivePanel() {
     transfer: controlCenterTransferHtml
   };
   const renderer = renderers[controlCenterStateF9U3.activePanel];
-  body.innerHTML = renderer ? renderer() : `<div class="controlCenterEmptyState">Pannello non disponibile.</div>`;
+  body.innerHTML = renderer ? renderer() : `<div class="controlCenterEmptyState">${controlCenterToolI18n("panelUnavailable", "Pannello non disponibile.")}</div>`;
   controlCenterBindDynamicPanelControls();
 }
 
-function controlCenterCopyText(text, message = "Dati copiati negli appunti.") {
+function controlCenterCopyText(text, message = controlCenterToolI18n("copied", "Dati copiati negli appunti.")) {
   if (typeof arenaStorageCopyText === "function") return arenaStorageCopyText(String(text || ""), message);
   if (typeof f9fCopyText === "function") return f9fCopyText(String(text || ""), message);
   if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") return navigator.clipboard.writeText(String(text || ""));
@@ -872,7 +893,7 @@ function controlCenterCopyText(text, message = "Dati copiati negli appunti.") {
 
 function controlCenterDownloadText(text, filename, mime = "application/json") {
   if (typeof arenaStorageDownloadText === "function") return arenaStorageDownloadText(String(text || ""), filename, mime);
-  return controlCenterCopyText(text, `Download non disponibile: ${filename}. Contenuto copiato.`);
+  return controlCenterCopyText(text, controlCenterToolI18n("downloadUnavailable", "Download non disponibile: {filename}. Contenuto copiato.", { filename }));
 }
 
 function controlCenterStatsEnvelope() {
@@ -915,15 +936,15 @@ function controlCenterSetFeedback(message, tone = "neutral") {
 }
 
 async function controlCenterImportArchiveFile(file) {
-  if (!file) return { ok: false, restored: [], issues: ["Nessun file selezionato"] };
+  if (!file) return { ok: false, restored: [], issues: [controlCenterToolI18n("noFile", "Nessun file selezionato")] };
   let parsed;
   try {
     parsed = JSON.parse(await file.text());
   } catch (error) {
-    return { ok: false, restored: [], issues: [`JSON non valido: ${error && error.message ? error.message : error}`] };
+    return { ok: false, restored: [], issues: [controlCenterToolI18n("invalidJson", "JSON non valido: {error}", { error:error && error.message ? error.message : error })] };
   }
   const entries = parsed && parsed.entries && typeof parsed.entries === "object" && !Array.isArray(parsed.entries) ? parsed.entries : null;
-  if (!entries) return { ok: false, restored: [], issues: ["Il backup non contiene un dizionario entries valido."] };
+  if (!entries) return { ok: false, restored: [], issues: [controlCenterToolI18n("invalidEntries", "Il backup non contiene un dizionario entries valido.")] };
   const known = new Set(controlCenterKnownStorageKeys());
   const safeEntries = {};
   const ignored = [];
@@ -934,14 +955,14 @@ async function controlCenterImportArchiveFile(file) {
     }
     safeEntries[key] = controlCenterClone(value);
   }
-  if (!Object.keys(safeEntries).length) return { ok: false, restored: [], issues: ["Nessuna chiave Arena Rubra riconosciuta nel backup."] };
+  if (!Object.keys(safeEntries).length) return { ok: false, restored: [], issues: [controlCenterToolI18n("noKnownKeys", "Nessuna chiave Arena Rubra riconosciuta nel backup.")] };
 
   try {
     if (typeof ArenaDataStore !== "undefined" && ArenaDataStore && typeof ArenaDataStore.createBackup === "function") {
       await ArenaDataStore.createBackup("pre-f9u3-import");
     }
   } catch (error) {
-    return { ok: false, restored: [], issues: [`Backup di sicurezza fallito: ${error && error.message ? error.message : error}`] };
+    return { ok: false, restored: [], issues: [controlCenterToolI18n("safetyBackupFailed", "Backup di sicurezza fallito: {error}", { error:error && error.message ? error.message : error })] };
   }
 
   let restored = [];
@@ -959,7 +980,7 @@ async function controlCenterImportArchiveFile(file) {
       }
     }
   } catch (error) {
-    return { ok: false, restored, issues: [`Ripristino fallito: ${error && error.message ? error.message : error}`] };
+    return { ok: false, restored, issues: [controlCenterToolI18n("restoreFailed", "Ripristino fallito: {error}", { error:error && error.message ? error.message : error })] };
   }
   controlCenterStateF9U3.lastDiagnostics = null;
   controlCenterRefresh();
@@ -982,22 +1003,22 @@ function controlCenterOpenMapInEditor(mapId) {
 
 function controlCenterHandleAction(action) {
   const key = String(action || "");
-  if (key === "copy-stats") return controlCenterCopyText(controlCenterActionPayload("stats"), "Statistiche JSON copiate.");
+  if (key === "copy-stats") return controlCenterCopyText(controlCenterActionPayload("stats"), controlCenterToolI18n("statsCopied", "Statistiche JSON copiate."));
   if (key === "download-stats") return controlCenterDownloadText(controlCenterActionPayload("stats"), `arena-rubra-statistiche-${controlCenterSafeFilename(new Date().toISOString())}.json`);
-  if (key === "copy-history") return controlCenterCopyText(controlCenterActionPayload("history"), "Cronologia JSON copiata.");
+  if (key === "copy-history") return controlCenterCopyText(controlCenterActionPayload("history"), controlCenterToolI18n("historyCopied", "Cronologia JSON copiata."));
   if (key === "download-history") return controlCenterDownloadText(controlCenterActionPayload("history"), `arena-rubra-cronologia-${controlCenterSafeFilename(new Date().toISOString())}.json`);
-  if (key === "copy-telemetry") return controlCenterCopyText(controlCenterActionPayload("telemetry"), "Telemetria JSON copiata.");
+  if (key === "copy-telemetry") return controlCenterCopyText(controlCenterActionPayload("telemetry"), controlCenterToolI18n("telemetryCopied", "Telemetria JSON copiata."));
   if (key === "download-telemetry") return controlCenterDownloadText(controlCenterActionPayload("telemetry"), `arena-rubra-telemetria-${controlCenterSafeFilename(new Date().toISOString())}.json`);
-  if (key === "copy-log") return controlCenterCopyText(controlCenterActionPayload("log"), "Log copiato.");
+  if (key === "copy-log") return controlCenterCopyText(controlCenterActionPayload("log"), controlCenterToolI18n("logCopied", "Log copiato."));
   if (key === "download-log") return controlCenterDownloadText(controlCenterActionPayload("log"), `arena-rubra-log-${controlCenterSafeFilename(new Date().toISOString())}.txt`, "text/plain");
-  if (key === "copy-build") return controlCenterCopyText(controlCenterActionPayload("build"), "Metadati build copiati.");
+  if (key === "copy-build") return controlCenterCopyText(controlCenterActionPayload("build"), controlCenterToolI18n("buildCopied", "Metadati build copiati."));
   if (key === "run-diagnostics") {
     controlCenterStateF9U3.lastDiagnostics = controlCenterRunDiagnostics({ source: "control-center-manual" });
     controlCenterRefreshMetrics();
     controlCenterRenderActivePanel();
     return controlCenterStateF9U3.lastDiagnostics;
   }
-  if (key === "copy-diagnostics") return controlCenterCopyText(controlCenterActionPayload("diagnostics"), "Diagnostica JSON copiata.");
+  if (key === "copy-diagnostics") return controlCenterCopyText(controlCenterActionPayload("diagnostics"), controlCenterToolI18n("diagnosticsCopied", "Diagnostica JSON copiata."));
   if (key === "download-diagnostics") return controlCenterDownloadText(controlCenterActionPayload("diagnostics"), `arena-rubra-diagnostica-${controlCenterSafeFilename(new Date().toISOString())}.json`);
   if (key === "clear-runtime-errors") {
     CONTROL_CENTER_DIAGNOSTIC_ERRORS.length = 0;
@@ -1013,7 +1034,7 @@ function controlCenterHandleAction(action) {
     controlCenterRefresh();
     return true;
   }
-  if (key === "copy-archive") return controlCenterCopyText(controlCenterActionPayload("archive"), "Backup completo copiato.");
+  if (key === "copy-archive") return controlCenterCopyText(controlCenterActionPayload("archive"), controlCenterToolI18n("backupCopied", "Backup completo copiato."));
   if (key === "download-archive") return controlCenterDownloadText(controlCenterActionPayload("archive"), `arena-rubra-backup-${controlCenterSafeFilename(new Date().toISOString())}.json`);
   if (key === "select-import-archive") {
     const input = typeof document !== "undefined" ? document.getElementById("controlCenterImportFile") : null;
@@ -1058,11 +1079,11 @@ function controlCenterBindDynamicPanelControls() {
     importFile.dataset.controlCenterBound = "1";
     importFile.addEventListener("change", async () => {
       const file = importFile.files && importFile.files[0];
-      controlCenterSetFeedback(file ? `Importazione di ${file.name}…` : "Nessun file selezionato.", "neutral");
+      controlCenterSetFeedback(file ? controlCenterToolI18n("importingFile", "Importazione di {filename}…", { filename:file.name }) : controlCenterToolI18n("noFilePeriod", "Nessun file selezionato."), "neutral");
       const result = await controlCenterImportArchiveFile(file);
       controlCenterSetFeedback(result.ok
-        ? `Import completato: ${result.restored.length} chiavi ripristinate${result.ignored && result.ignored.length ? ` · ${result.ignored.length} ignorate` : ""}.`
-        : `Import fallito: ${(result.issues || ["errore sconosciuto"]).join("; ")}`,
+        ? controlCenterToolI18n("importComplete", "Import completato: {count} chiavi ripristinate{ignored}.", { count:result.restored.length, ignored:result.ignored && result.ignored.length ? controlCenterToolI18n("ignoredKeys", " · {count} ignorate", { count:result.ignored.length }) : "" })
+        : controlCenterToolI18n("importFailed", "Import fallito: {details}", { details:(result.issues || [controlCenterToolI18n("unknownError", "errore sconosciuto")]).join("; ") }),
       result.ok ? "good" : "bad");
       importFile.value = "";
     });

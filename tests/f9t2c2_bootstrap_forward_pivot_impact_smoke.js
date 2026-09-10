@@ -1,5 +1,6 @@
 "use strict";
 const fs=require("fs"),path=require("path"),vm=require("vm"),assert=require("assert");
+const {assertCurrentBuildInfo}=require("./helpers/build_info_contract");
 const ROOT=path.resolve(__dirname,".."); let checks=0;
 const ok=(v,m)=>{assert.ok(v,m);checks++}; const equal=(a,b,m)=>{assert.strictEqual(a,b,m);checks++};
 const same=(a,b)=>Array.isArray(a)&&Array.isArray(b)&&a.join(",")===b.join(",");
@@ -81,5 +82,5 @@ ok(ai.includes("botRunTokenCurrentF9T2c2")&&ai.includes("activeBotRunTokenF9T2c2
 ok(game.indexOf("invalidateBotRunForNewMatchF9T2c2")<game.indexOf("createInitialGameState"),"invalidazione precedente alla creazione del nuovo stato");
 ok(telemetry.includes('MATCH_TELEMETRY_EXPERT_DOCTRINE_SCHEMA_VERSION = "F9T2d3-1"'),"schema telemetrico F9T2c2");
 ok(telemetry.includes("expertForwardPivotsDeployed")&&telemetry.includes("allExordiumPivotsTracked")&&telemetry.includes("forwardPivotLateImpacts"),"denominatori Pivot separati");
-ok(build.includes('version: "C2-STABLE-1-F9V3c-APK-M4c"')&&build.includes('buildChannel: "starter2-result-flow-v3c"'),"metadata candidata corretti");
+assertCurrentBuildInfo(build); checks++;
 console.log(`F9T2c2 Bootstrap & Forward Pivot Impact smoke: ${checks}/${checks} verifiche superate`);

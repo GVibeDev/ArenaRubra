@@ -1,6 +1,25 @@
 from pathlib import Path
 import os
+import re
 import shutil
+
+
+CURRENT_LOGIC_BASELINE = "C2-STABLE-1-F9T2c4-APK-M4c"
+BUILD_VERSION_PATTERN = re.compile(r"^C2-STABLE-1-F9[A-Za-z0-9]+-APK-M4c$")
+
+
+def is_valid_build_version(value):
+    return bool(BUILD_VERSION_PATTERN.fullmatch(str(value or "")))
+
+
+def assert_valid_build_version(value):
+    assert is_valid_build_version(value), f"invalid Arena Rubra build version: {value!r}"
+    return value
+
+
+def assert_valid_logic_baseline(value):
+    assert value == CURRENT_LOGIC_BASELINE, f"validated logic baseline changed: {value!r}"
+    return value
 
 
 def chromium_executable():

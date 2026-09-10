@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1440, "height": 1000})
     page = context.new_page()
     page.set_default_timeout(8000)
@@ -103,14 +100,19 @@ with sync_playwright() as p:
 
     final = page.evaluate("""() => {
       const history = arenaStorageReadMatchHistory();
+      const historyRecord = history[0] || null;
+      const telemetryRecord = historyRecord ? arenaStorageFindMatchTelemetryF9W1a(historyRecord.matchId) : null;
       return {
         status:state.matchTelemetry.status,
         final:state.matchTelemetry.final,
         durationMs:state.matchTelemetry.durationMs,
         jsonSchema:JSON.parse(currentMatchTelemetryJson()).schemaVersion,
         historyCount:history.length,
-        historyHasTelemetry:Boolean(history[0] && history[0].matchTelemetry),
-        historySchema:history[0] && history[0].matchTelemetry ? history[0].matchTelemetry.schemaVersion : null,
+        historyRecordSchema:historyRecord && historyRecord.schemaVersion,
+        historyHasEmbeddedTelemetry:Boolean(historyRecord && (historyRecord.matchTelemetry || historyRecord.f9n3Telemetry)),
+        telemetryRefSchema:historyRecord && historyRecord.telemetryRef ? historyRecord.telemetryRef.schemaVersion : null,
+        telemetryStoreSchema:telemetryRecord && telemetryRecord.schemaVersion,
+        telemetryPayloadSchema:telemetryRecord && telemetryRecord.payload ? telemetryRecord.payload.schemaVersion : null,
         rngCalls:state.matchTelemetry.rng.calls
       };
     }""")
@@ -144,7 +146,7 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert initial["build"] == "C2-STABLE-1-F9U2b-APK-M4c", initial
+assert_valid_build_version(initial["build"])
 assert initial["schema"] == "F9Q3e1-2", initial
 assert initial["status"] == "active", initial
 assert initial["seed"] == "F9Q3E1-SMOKE-SEED", initial
@@ -169,8 +171,11 @@ assert final["status"] == "complete", final
 assert final["final"]["winnerSide"] == 1 and final["final"]["winType"] == "test_telemetry", final
 assert final["durationMs"] >= 0, final
 assert final["jsonSchema"] == "F9Q3e1-2", final
-assert final["historyCount"] >= 1 and final["historyHasTelemetry"], final
-assert final["historySchema"] == "F9Q3e1-2", final
+assert final["historyCount"] >= 1 and final["historyRecordSchema"] == "AR-MATCH-2", final
+assert final["historyHasEmbeddedTelemetry"] is False, final
+assert final["telemetryRefSchema"] == "AR-TELEMETRY-2", final
+assert final["telemetryStoreSchema"] == "AR-TELEMETRY-2", final
+assert final["telemetryPayloadSchema"] == "F9Q3e1-2", final
 assert final["rngCalls"] > 0, final
 
 assert repeat["firstPlayer"] == initial["firstPlayer"], (initial, repeat)

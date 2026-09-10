@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const assert = require("assert");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -49,12 +50,7 @@ const build = context.__build;
 const snapshot = vm.runInContext("__snapshot(state)", context);
 const normalized = JSON.parse(JSON.stringify(snapshot));
 
-assert.equal(build.version, "C2-STABLE-1-F9V3c-APK-M4c");
-assert.equal(build.buildName, "Tutorial Challenge I · Elimination");
-assert.equal(build.buildChannel, "starter2-tutorial-v2e");
-assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c");
-assert.ok(build.notes.includes("stato autorevole"));
-assert.ok(build.notes.includes("F9Q3e1-2"));
+assertCurrentBuildInfo(build);
 
 assert.ok(html.includes('id="gameComparisonBars"'));
 assert.ok(html.includes('id="gameComparisonPsSegments"'));
@@ -85,7 +81,7 @@ assert.ok(uiSource.includes("renderF9U1bComparisonBars"));
 assert.ok(!uiSource.includes("matchTelemetryRecord"));
 assert.ok(!uiSource.includes("MATCH_TELEMETRY_STATE"));
 assert.ok(renderSource.includes('abilitySlot.hidden = !hasPrimaryActiveAbility'));
-assert.ok(renderSource.includes('inspectorTitle.textContent = selected.name'));
+assert.ok(renderSource.includes('inspectorTitle.textContent = renderContentText("units", selected, "name", selected.name'));
 assert.ok(css.includes('.gameComparisonBars'));
 assert.ok(css.includes('.gameComparisonSegment'));
 assert.ok(css.includes('.gameComparisonCounter'));

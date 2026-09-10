@@ -4,6 +4,7 @@ Richiede checkout completo Arena Rubra e Playwright. Non viene eseguito dal solo
 pacchetto overwrite perché index.html/css/assets restano nella baseline.
 """
 from __future__ import annotations
+from browser_runtime import chromium_launch_options
 
 import argparse
 import contextlib
@@ -25,7 +26,7 @@ def serve(root: Path, port: int):
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int, default=0)
     args = parser.parse_args()
     root = args.root.resolve()
     if not (root / "index.html").exists():
@@ -34,11 +35,12 @@ def main() -> int:
     from playwright.sync_api import sync_playwright
 
     server = serve(root, args.port)
+    bound_port = int(server.server_address[1])
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(**chromium_launch_options())
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
-            page.goto(f"http://127.0.0.1:{args.port}/index.html", wait_until="networkidle")
+            page.goto(f"http://127.0.0.1:{bound_port}/index.html", wait_until="networkidle")
             if page.locator("#splashEnterBtn").is_visible():
                 page.locator("#splashEnterBtn").click()
             page.wait_for_function("() => typeof arenaUiThemeSnapshotF9W2c === 'function' && typeof arenaMenuThemeApplyF9W2b === 'function'")

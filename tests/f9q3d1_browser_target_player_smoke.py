@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,11 +9,7 @@ errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=True,
-        executable_path="/usr/bin/chromium",
-        args=["--no-sandbox", "--allow-file-access-from-files"],
-    )
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1365, "height": 900})
     page = context.new_page()
     page.on("pageerror", lambda exc: errors.append(str(exc)))
@@ -32,6 +29,7 @@ with sync_playwright() as p:
       state = {
         players:[{id:1},{id:2},{id:3},{id:4,eliminated:true}],
         turnOrder:[1,2,3,4], currentPlayer:1, winner:null, turn:6,
+        aiFinalizationF9T0:{schema:'F9T0-1'},
         factions:{1:'Fabeot',2:'Nexus',3:'Exordium',4:'Liberti'},
         modes:{1:'human',2:'bot',3:'bot',4:'bot'},
         energy:{1:20,2:4,3:8,4:9}, pressure:{1:0,2:1,3:2,4:3},
@@ -158,7 +156,7 @@ with sync_playwright() as p:
 
     browser.close()
 
-assert initial["version"].startswith("C2-STABLE-1-F9"), initial
+assert_valid_build_version(initial["version"])
 assert initial["active"] == [2,3], initial
 assert initial["usury"] == [2,3], initial
 assert initial["embargo"] == [2,3], initial

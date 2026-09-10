@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -69,7 +70,7 @@ def set_ffa_snapshot(page):
 page_errors=[]
 console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
 
     desktop_context=browser.new_context(viewport={'width':1440,'height':960})
     desktop=desktop_context.new_page()
@@ -127,7 +128,7 @@ with sync_playwright() as p:
     mobile_result=set_ffa_snapshot(mobile)
     browser.close()
 
-assert desktop_result['build']=='C2-STABLE-1-F9U2b-APK-M4c',desktop_result
+assert_valid_build_version(desktop_result['build'])
 assert desktop_result['snapshot']['psTotal']==5,desktop_result
 assert desktop_result['snapshot']['psNeutral']==1,desktop_result
 assert desktop_result['snapshot']['unitTotal']==4,desktop_result

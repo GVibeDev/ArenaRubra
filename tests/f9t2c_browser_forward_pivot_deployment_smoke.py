@@ -1,9 +1,10 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json,re
 ROOT=Path(__file__).resolve().parents[1]; errors=[]; console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,executable_path="/usr/bin/chromium",args=["--no-sandbox","--allow-file-access-from-files"])
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={"width":1366,"height":900}); page.set_default_timeout(120000)
     page.on("pageerror",lambda exc:errors.append(str(exc))); page.on("console",lambda msg:console_errors.append(msg.text) if msg.type=="error" else None)
     index=(ROOT/"index.html").read_text(encoding="utf-8"); scripts=re.findall(r'<script\s+src="([^"]+)"\s*></script>',index)
@@ -51,7 +52,7 @@ with sync_playwright() as p:
       return {build:BUILD_INFO.version,moduleId:moduleIdBefore,invoked:invokedBefore,goal:before&&before.goal,steps:before&&before.orderedSteps.map(x=>x.action),reservedEnergy:before&&before.reservedEnergy,sourceStructureId:before&&before.exordium&&before.exordium.sourceStructureId,objectiveType:before&&before.exordium&&before.exordium.objectiveType,choice:choice?{source:choice.source,blueprintId:choice.bp.id,coord:choice.coord,cost:choice.cost}:null,executed,pivotId:pivot&&pivot.uid,tracked:tracked?JSON.parse(JSON.stringify(tracked)):null,impact:impact?JSON.parse(JSON.stringify(impact)):null,summary,turn:JSON.parse(JSON.stringify(turn)),module:JSON.parse(JSON.stringify(module)),active:Object.keys(expertRuntimeStateF9T1.activeByPlayer).length};
     }""")
     browser.close()
-assert result['build']=='C2-STABLE-1-F9T2d3-APK-M4c',result
+assert_valid_build_version(result['build'])
 assert result['moduleId']=='expert-exordium-f9t2d3' and result['invoked']==1,result
 assert result['goal']=='EXORDIUM_FORWARD_PIVOT_DEPLOYMENT' and result['steps']==['deploy_pivot_forward'],result
 assert result['reservedEnergy']>0 and result['sourceStructureId'],result

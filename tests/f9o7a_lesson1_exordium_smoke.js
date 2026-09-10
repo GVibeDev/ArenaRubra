@@ -61,7 +61,7 @@ for (const api of [
 ]) assert.ok(runtime.includes(`function ${api}`), `API mancante: ${api}`);
 for (const command of ["spawn_unit", "grant_card", "pass_turn", "script_attack_and_end_turn"])
   assert.ok(runtime.includes(`case "${command}"`), `Comando scenario mancante: ${command}`);
-assert.ok(runtime.includes('title:"LEZIONE COMPLETATA"'));
+assert.ok(runtime.includes('title:tutorialRuntimeI18n("tutorial.lessonCompleted", "LEZIONE COMPLETATA")'));
 assert.ok(!runtime.includes('Scenario tecnico F9O6'));
 
 const cards = read("data/cards_base.js");

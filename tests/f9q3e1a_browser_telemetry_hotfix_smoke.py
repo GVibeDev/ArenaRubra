@@ -1,3 +1,4 @@
+from browser_runtime import assert_valid_build_version, chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -8,7 +9,7 @@ page_errors = []
 console_errors = []
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path="/usr/bin/chromium", args=["--no-sandbox", "--allow-file-access-from-files"])
+    browser = p.chromium.launch(**chromium_launch_options())
     context = browser.new_context(viewport={"width": 1365, "height": 900})
     page = context.new_page()
     page.set_default_timeout(8000)
@@ -85,7 +86,7 @@ with sync_playwright() as p:
     }""")
     browser.close()
 
-assert result["build"] == "C2-STABLE-1-F9U2b-APK-M4c", result
+assert_valid_build_version(result["build"])
 assert result["schema"] == "F9Q3e1-2", result
 assert "0" not in result["playerKeys"], result
 assert result["ps1"]["psControlChanges"] == 2 and result["ps1"]["psGained"] == 2, result

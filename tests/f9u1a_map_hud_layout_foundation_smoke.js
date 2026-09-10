@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const assert = require("assert");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = relative => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -18,11 +19,7 @@ vm.createContext(context);
 vm.runInContext(`${buildSource}\n;globalThis.__build=BUILD_INFO;`, context, { filename:"build_info.js" });
 const build = context.__build;
 
-assert.equal(build.version, "C2-STABLE-1-F9V3c-APK-M4c", "versione candidata corretta");
-assert.equal(build.buildName, "Tutorial Challenge I · Elimination", "nome build corretto");
-assert.equal(build.buildChannel, "starter2-tutorial-v2e", "canale candidato corretto");
-assert.equal(build.logicBaseline, "C2-STABLE-1-F9T2c4-APK-M4c", "baseline logica validata corretta");
-assert.ok(build.notes.includes("F9Q3e1-2"), "schema telemetrico dichiarato invariato");
+assertCurrentBuildInfo(build);
 
 assert.ok(html.includes('id="gameDebugBtn"'), "pulsante Debug desktop presente nella barra stato");
 assert.ok(html.includes('id="gameDebugHeaderBtn"'), "pulsante Debug header/mobile presente");

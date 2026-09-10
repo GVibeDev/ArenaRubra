@@ -15,6 +15,11 @@
 // - main.js/map/movement future: isOnPS, buildCellStrategicScore, chooseBuildCell, chooseSpawnCell
 // - render/events: log, EventTypes, renderAll
 
+function deploymentI18n(key, fallback, params = {}) {
+  if (typeof arenaI18nText === "function") return arenaI18nText(`game.${key}`, fallback, params);
+  return Object.entries(params).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), String(fallback || ""));
+}
+
 
 
     // =====================================================
@@ -36,35 +41,35 @@
     }
 
     function starterCardActionState(side, card) {
-      if (!state || !card) return { canUse: false, reason: "Starter assente", actionText: "Non disponibile" };
+      if (!state || !card) return { canUse: false, reason: deploymentI18n("starterMissing", "Starter assente"), actionText: deploymentI18n("unavailable", "Non disponibile") };
 
       const bp = blueprintForStarterCard(card, side);
       const isCurrent = state.currentPlayer === side;
       const isHuman = state.modes && state.modes[side] === "human";
-      const actionText = bp && bp.type === "Struttura" ? "Costruisci starter" : "Piazza starter";
+      const actionText = bp && bp.type === "Struttura" ? deploymentI18n("buildStarter", "Costruisci starter") : deploymentI18n("placeStarter", "Piazza starter");
 
-      if (!bp) return { canUse: false, reason: "Blueprint non trovato", actionText };
-      if (state.winner) return { canUse: false, reason: "Partita conclusa", actionText };
-      if (!isCurrent) return { canUse: false, reason: "Non è il turno", actionText };
-      if (!isHuman) return { canUse: false, reason: "Controllo bot", actionText };
-      if (botRunning) return { canUse: false, reason: "Bot in esecuzione", actionText };
+      if (!bp) return { canUse: false, reason: deploymentI18n("blueprintNotFound", "Blueprint non trovato"), actionText };
+      if (state.winner) return { canUse: false, reason: deploymentI18n("matchEnded", "Partita conclusa"), actionText };
+      if (!isCurrent) return { canUse: false, reason: deploymentI18n("notYourTurn", "Non è il turno"), actionText };
+      if (!isHuman) return { canUse: false, reason: deploymentI18n("botControl", "Controllo bot"), actionText };
+      if (botRunning) return { canUse: false, reason: deploymentI18n("botRunning", "Bot in esecuzione"), actionText };
       if (purchaseLimitReached(side, bp)) return { canUse: false, reason: limitReason(side, bp), actionText };
       const capState = typeof tacticalStarterCapState === "function" ? tacticalStarterCapState(side, card.starterRole) : { blocked:false };
-      if (capState.blocked) return { canUse:false, reason:`Cap Tattica ${capState.count}/${capState.cap} per questo tipo`, actionText };
-      if (state.energy[side] < effectiveHandUnitCardCost(side, card, bp)) return { canUse: false, reason: "ENE insufficiente", actionText };
+      if (capState.blocked) return { canUse:false, reason:deploymentI18n("tacticalCap", "Cap Tattica {count}/{cap} per questo tipo", { count:capState.count, cap:capState.cap }), actionText };
+      if (state.energy[side] < effectiveHandUnitCardCost(side, card, bp)) return { canUse: false, reason: deploymentI18n("energyInsufficient", "ENE insufficiente"), actionText };
 
       if (bp.type === "Struttura") {
         const builder = getSelectedUnit();
         const unitBuildReady = Boolean(builder && builder.side === side && canBuildStructures(builder) && !builder.acted && buildableCells(builder).length);
         const hqBuildReady = typeof canBuildFromOwnHq === "function" && canBuildFromOwnHq(side, bp);
         if (!unitBuildReady && !hqBuildReady) {
-          return { canUse: false, reason: "Nessuna cella libera adiacente", actionText };
+          return { canUse: false, reason: deploymentI18n("noAdjacentFreeCell", "Nessuna cella libera adiacente"), actionText };
         }
       } else if (!spawnCellsFor(side, bp).length) {
-        return { canUse: false, reason: "Nessuna cella di sbarco", actionText };
+        return { canUse: false, reason: deploymentI18n("noDeployCell", "Nessuna cella di sbarco"), actionText };
       }
 
-      return { canUse: true, reason: "Pronto", actionText };
+      return { canUse: true, reason: deploymentI18n("ready", "Pronto"), actionText };
     }
 
     function beginStarterCardPurchase(cardUid) {
@@ -348,7 +353,7 @@
     }
 
     function handCardActionState(side, card) {
-      if (!state || !card) return { canUse: false, reason: "Carta assente", actionText: "Non disponibile" };
+      if (!state || !card) return { canUse: false, reason: deploymentI18n("cardMissing", "Carta assente"), actionText: deploymentI18n("unavailable", "Non disponibile") };
 
       const isCurrent = state.currentPlayer === side;
       const isHuman = state.modes && state.modes[side] === "human";
@@ -357,51 +362,51 @@
         const runtime = typeof missionRuntime === "function" ? missionRuntime(side) : null;
         const status = typeof missionUiStatus === "function" ? missionUiStatus(side) : null;
         const canOpen = Boolean(state.currentPlayer === side && state.modes && state.modes[side] === "human" && !botRunning);
-        const playable = typeof missionUiPlayCheck === "function" ? missionUiPlayCheck(side, card, { evaluate:false, source:"hand_render" }) : { ok:false, reason:"Runtime Missione non disponibile" };
+        const playable = typeof missionUiPlayCheck === "function" ? missionUiPlayCheck(side, card, { evaluate:false, source:"hand_render" }) : { ok:false, reason:deploymentI18n("missionRuntimeUnavailable", "Runtime Missione non disponibile") };
         const reason = status ? `${status.label} · ${playable.reason || status.detail}` : playable.reason;
-        return { canUse:canOpen, reason, actionText:playable.ok ? "Gioca Missione" : "Mostra progressi" };
+        return { canUse:canOpen, reason, actionText:playable.ok ? deploymentI18n("playMission", "Gioca Missione") : deploymentI18n("showProgress", "Mostra progressi") };
       }
 
       if (card.sourceType === "tactic") {
         const implemented = typeof isC2c1SingleDamageTacticCard === "function" && isC2c1SingleDamageTacticCard(card);
-        const playable = typeof canUseHandTacticCard === "function" ? canUseHandTacticCard(side, card) : { ok:false, reason:"Controller tattiche non disponibile" };
-        const actionText = implemented ? "Gioca ora" : "Tattica data-only";
-        if (!isCurrent) return { canUse:false, reason:"Non è il turno", actionText };
-        if (!isHuman) return { canUse:false, reason:"Controllo bot", actionText };
-        if (botRunning) return { canUse:false, reason:"Bot in esecuzione", actionText };
+        const playable = typeof canUseHandTacticCard === "function" ? canUseHandTacticCard(side, card) : { ok:false, reason:deploymentI18n("tacticControllerUnavailable", "Controller tattiche non disponibile") };
+        const actionText = implemented ? deploymentI18n("playNow", "Gioca ora") : deploymentI18n("dataOnlyTactic", "Tattica data-only");
+        if (!isCurrent) return { canUse:false, reason:deploymentI18n("notYourTurn", "Non è il turno"), actionText };
+        if (!isHuman) return { canUse:false, reason:deploymentI18n("botControl", "Controllo bot"), actionText };
+        if (botRunning) return { canUse:false, reason:deploymentI18n("botRunning", "Bot in esecuzione"), actionText };
         if (!implemented) return { canUse:false, reason:playable.reason, actionText };
         return { canUse: Boolean(playable.ok), reason: playable.reason, actionText };
       }
 
       if (!isPlayableUnitHandCard(card)) {
-        return { canUse: false, reason: "Carta non unità", actionText: "Non giocabile" };
+        return { canUse: false, reason: deploymentI18n("notUnitCard", "Carta non unità"), actionText: deploymentI18n("unplayable", "Non giocabile") };
       }
 
       const bp = blueprintForHandCard(card, side);
-      const actionText = bp && bp.type === "Struttura" ? "Costruisci carta" : "Gioca carta";
+      const actionText = bp && bp.type === "Struttura" ? deploymentI18n("buildCard", "Costruisci carta") : deploymentI18n("playCard", "Gioca carta");
 
-      if (!bp) return { canUse: false, reason: "Blueprint non trovato", actionText };
-      if (state.winner) return { canUse: false, reason: "Partita conclusa", actionText };
-      if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { canUse:false, reason:"Mano bloccata", actionText };
+      if (!bp) return { canUse: false, reason: deploymentI18n("blueprintNotFound", "Blueprint non trovato"), actionText };
+      if (state.winner) return { canUse: false, reason: deploymentI18n("matchEnded", "Partita conclusa"), actionText };
+      if (typeof playerHandLocked === "function" && playerHandLocked(side)) return { canUse:false, reason:deploymentI18n("handBlocked", "Mano bloccata"), actionText };
       if (typeof handCardBlocked === "function" && handCardBlocked(card)) return { canUse:false, reason:handCardBlockReason(card), actionText };
-      if (!isCurrent) return { canUse: false, reason: "Non è il turno", actionText };
-      if (!isHuman) return { canUse: false, reason: "Controllo bot", actionText };
-      if (botRunning) return { canUse: false, reason: "Bot in esecuzione", actionText };
+      if (!isCurrent) return { canUse: false, reason: deploymentI18n("notYourTurn", "Non è il turno"), actionText };
+      if (!isHuman) return { canUse: false, reason: deploymentI18n("botControl", "Controllo bot"), actionText };
+      if (botRunning) return { canUse: false, reason: deploymentI18n("botRunning", "Bot in esecuzione"), actionText };
       if (purchaseLimitReached(side, bp)) return { canUse: false, reason: limitReason(side, bp), actionText };
-      if (state.energy[side] < effectiveHandUnitCardCost(side, card, bp)) return { canUse: false, reason: "ENE insufficiente", actionText };
+      if (state.energy[side] < effectiveHandUnitCardCost(side, card, bp)) return { canUse: false, reason: deploymentI18n("energyInsufficient", "ENE insufficiente"), actionText };
 
       if (bp.type === "Struttura") {
         const builder = getSelectedUnit();
         const unitBuildReady = Boolean(builder && builder.side === side && canBuildStructures(builder) && !builder.acted && buildableCells(builder).length);
         const hqBuildReady = typeof canBuildFromOwnHq === "function" && canBuildFromOwnHq(side, bp);
         if (!unitBuildReady && !hqBuildReady) {
-          return { canUse: false, reason: "Serve un costruttore attivo con spazio oppure il proprio QG libero", actionText };
+          return { canUse: false, reason: deploymentI18n("builderOrHqRequired", "Serve un costruttore attivo con spazio oppure il proprio QG libero"), actionText };
         }
       } else if (!spawnCellsFor(side, bp).length) {
-        return { canUse: false, reason: "Nessuna cella di sbarco", actionText };
+        return { canUse: false, reason: deploymentI18n("noDeployCell", "Nessuna cella di sbarco"), actionText };
       }
 
-      return { canUse: true, reason: "Pronto", actionText };
+      return { canUse: true, reason: deploymentI18n("ready", "Pronto"), actionText };
     }
 
     function beginHandCardPlay(cardUid) {

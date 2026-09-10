@@ -1,0 +1,2928 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "arena-rubra-starter-1.0-content-freeze",
+  "releaseTarget": "Arena Rubra Starter 1.0 — Desktop / Web",
+  "sourceBaseline": "fef34ddf34fa20e111fbfe0d6721448b7e5bc6c5",
+  "generator": "tools/generate_starter_1_0_manifest.js",
+  "deterministic": true,
+  "policy": {
+    "decisions": [
+      "KEEP",
+      "REDESIGN",
+      "REMOVE"
+    ],
+    "defaultCurrentCatalogDecision": "KEEP",
+    "redesignRequiresReason": true,
+    "removedContentPolicy": "Compatibility resolution only; no new assets or localization. Physical removal is deferred to a separately approved migration.",
+    "generatedAtExcluded": true
+  },
+  "summary": {
+    "totalContentItems": 272,
+    "units": 115,
+    "starterTactics": 10,
+    "deckTactics": 70,
+    "missions": 15,
+    "builtInDecks": 50,
+    "officialMaps": 10,
+    "legacyMaps": 2,
+    "explicitAssetReferences": 5,
+    "decisions": {
+      "KEEP": 270,
+      "REMOVE": 2
+    },
+    "unitsByFactionAndRole": {
+      "Nexus": {
+        "Fanteria": 7,
+        "Veicolo": 8,
+        "Struttura": 6,
+        "Comandante": 2
+      },
+      "Exordium": {
+        "Fanteria": 7,
+        "Veicolo": 9,
+        "Struttura": 5,
+        "Comandante": 2
+      },
+      "Liberti": {
+        "Fanteria": 7,
+        "Veicolo": 9,
+        "Struttura": 5,
+        "Comandante": 2
+      },
+      "Agathoi": {
+        "Fanteria": 7,
+        "Veicolo": 6,
+        "Struttura": 8,
+        "Comandante": 2
+      },
+      "Fabeot": {
+        "Fanteria": 8,
+        "Veicolo": 6,
+        "Struttura": 7,
+        "Comandante": 2
+      }
+    },
+    "starterTacticsByFaction": {
+      "Nexus": 2,
+      "Exordium": 2,
+      "Liberti": 2,
+      "Agathoi": 2,
+      "Fabeot": 2
+    },
+    "deckTacticsByFaction": {
+      "Nexus": 14,
+      "Exordium": 14,
+      "Liberti": 14,
+      "Agathoi": 14,
+      "Fabeot": 14
+    },
+    "missionsByFactionAndClass": {
+      "Nexus": {
+        "ordinary": 2,
+        "desperate": 1
+      },
+      "Exordium": {
+        "ordinary": 2,
+        "desperate": 1
+      },
+      "Liberti": {
+        "ordinary": 2,
+        "desperate": 1
+      },
+      "Agathoi": {
+        "ordinary": 2,
+        "desperate": 1
+      },
+      "Fabeot": {
+        "ordinary": 2,
+        "desperate": 1
+      }
+    },
+    "builtInDecksByFactionAndCategory": {
+      "Nexus": {
+        "mission": 2,
+        "tactical": 8
+      },
+      "Exordium": {
+        "mission": 2,
+        "tactical": 8
+      },
+      "Liberti": {
+        "mission": 2,
+        "tactical": 8
+      },
+      "Agathoi": {
+        "mission": 2,
+        "tactical": 8
+      },
+      "Fabeot": {
+        "mission": 2,
+        "tactical": 8
+      }
+    },
+    "officialMapsByPlayerCount": {
+      "2": 3,
+      "3": 2,
+      "4": 5
+    }
+  },
+  "catalogs": {
+    "units": [
+      {
+        "id": "NX2B01",
+        "name": "Droide di Sicurezza",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "2fd607cb8e3e9e335d234b72cd32f8e28d2e7029601ec93bf4be2e48081ef892",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX2B04",
+        "name": "Drone Militare Pesante",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "ebf8caa63d9193b16d1e5e6778403a3949a89aec7f668701379f68dae5f4d404",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX2B05",
+        "name": "Cyborg Incursore",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "dfd72edd1c8520a3a0cae0e8cdf2b737eb724af9f8cd676f1f26f66f78b9dc70",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX3B01",
+        "name": "Quad Ricognitore",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "f9d2950796f4fb80d3d48bb16010d5498e962d0c610d2fbb66517d4229ff370a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX3B03",
+        "name": "Mech Pesante",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "579aa39f85a9d7d676ba252e5190e115e59ca0a0e2a1efd023bbe8dba043e44d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX4B03",
+        "name": "Bunker",
+        "faction": "Nexus",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "09c44c6d329459fa4e4e2981c9fd796a4afc4621dbb87c12619852d986c66395",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXPIV01",
+        "name": "Fortezza Mobile",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "f2a94fb3326c09147669b819a87e9d2e4795a0eff3e731773fbccfbec170b56f",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXCMD01",
+        "name": "Avatex",
+        "faction": "Nexus",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "37d5fb9a1214c1d35b588462b2159784b2059caaea27bf8280699772be94ac3d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXCMD02",
+        "name": "Unità Comando",
+        "faction": "Nexus",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "632a01791a0b197162bb6b34cf7dd36daba47311857fa32b7479fb63f185290e",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX0B00",
+        "name": "Nodo Comando Nexus",
+        "faction": "Nexus",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "5249df6073609f905fba6a723e365e9d2b30b2d7597d0752435e8265903a941d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F01",
+        "name": "Fante Robot",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "df5e4174d407d73c82b311f163d7fd9cda147aae6b787d0a49566ce06bf280cc",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F02",
+        "name": "Drone Geniere",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "86bf8394a4e649af1355010d7e7fabaf955b6003096538e929e4e1849bf37c70",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F03",
+        "name": "Mech Leggero",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "714dbde6a8f145cfdd1ce7f3afa450749e3b0bf444f5bcc56148ad845e6351d9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F04",
+        "name": "Corazzato Assalto",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Elite",
+        "contentHash": "431e06dfd209321a8f4bd826ab7cda5484d533938ec05950f1145d42484dff54",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F05",
+        "name": "Corazzato Posamine",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Elite",
+        "contentHash": "142df9346b9a97bec3aaf2c40daa9e67960ec8d75b9c108954aa4a8fd202f7d6",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F06",
+        "name": "Barriera Difensiva",
+        "faction": "Nexus",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "38839c6995e2fed17858afd0613eb37d08d7627e31e186e7523bd7f81fef2538",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F07",
+        "name": "Barriera Armata",
+        "faction": "Nexus",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "e9f983b6f42d86389d9b6ea2bb847efd319932eed851978907575d07133f75a4",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F08",
+        "name": "Fabbrica Automatizzata",
+        "faction": "Nexus",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "4caf5b7c913ad246d8dcf9576cf66aabec9758e6a4f5659820913fb1af120e5f",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXC1F09",
+        "name": "Torre Difensiva",
+        "faction": "Nexus",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "02f3db9e73fa465e4c0cacfcb9ae46c9e5cc350ee1b4d7a2fc31d77d49c0d574",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX1B01",
+        "name": "Guardia di Aurex",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "e0709d9f663397df38e7d610459efa199f262cb7d3151f890ea6045c4f2f1cfa",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX1B04",
+        "name": "Legionario Pesante",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "8f70c57195c54d6396e3269dbfc2c7c77ab8b3659e8f9257d63e80e223d52b66",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX2B01",
+        "name": "Veicolo Ricognitore",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "7174cf4278d10b2e643fbb44de0e2a3693dc314aac9c313af927dbfe1c2563c1",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX2B03",
+        "name": "Carro Medio Exordium",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "6b8256ca974481fcc0e8b5bdefec31c10019ce43e11f691ea4ce1e929457751b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX2B04",
+        "name": "Artiglieria Exordium",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Elite",
+        "contentHash": "593e9d472f3840976e3ac0393a8bbf48040be83d675015b8337f2259009314d3",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX4B02",
+        "name": "Bastione Armato",
+        "faction": "Exordium",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "feaa1d02b48faf2f3e563ad8f1c99b265935dee5e511c10ec6c7be08cb45a0fe",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXPIV01",
+        "name": "Orgoglio di Aurex",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "0185a76a4037316fe30983cf38652f42892655bbefecd0dbe6c9b36e6dff1392",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX0B00",
+        "name": "Varran",
+        "faction": "Exordium",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "2d12e5effe994934207dcb47d127cec94d9ecb967a90d814364e2fe8b5045c2d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXCMD02",
+        "name": "Nemira",
+        "faction": "Exordium",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "67451a31fb930c046ad177709d7fbbd64ad098aa3a2324666854f8940a2342d8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F01",
+        "name": "Il Tribuno",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "a804bdbc8b702cee4a613b94d6a1f0aa70d65df939824834db8244e36e042f96",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F02",
+        "name": "Legionario d'Assedio",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "f097bf8a090bf673a10d74eebe0f131639207e96acc502cffbcf981bab2404b4",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F03",
+        "name": "Legionario Scelto",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "1c3852ce6a56b046e7c40f60f2ce98fbdf64ee8c5456dbeb1be9a9d615e353a2",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F04",
+        "name": "Cursor",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "ca34c2b0c035e0a27f1fa68640c6ed266a407f7e7b1fa6e1d40ff4e0448e3dbd",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F05",
+        "name": "Carro Leggero",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "d048fe06748ddac4258bf7459e1002545b548a269207090c2cd8da5e4dc7644a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F06",
+        "name": "Testudo",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "919c1741baedb4772ffcda079c6d4d4e13aeb0c0b15dfe1f3e258cf5fd9a5c71",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F07",
+        "name": "Iupiter",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Elite",
+        "contentHash": "3077d15d52c38c56668851a2258119b19a8d501666d89ed72cd832c7597e8bc9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F08",
+        "name": "Avamposto Exordium",
+        "faction": "Exordium",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "4a90424d2a52af2cfdf863ce577fa177450a6ffcb801549acc0b6481117a3074",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F09",
+        "name": "Caserma Fanteria",
+        "faction": "Exordium",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "d95475d75922f2ed0c8ad963a767b63fc803ea63311b4fc3fda36468a43548df",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXC1F10",
+        "name": "Torretta Lanciafiamme",
+        "faction": "Exordium",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "33f40e0ec8e6eeba9c28fec7f480793dc0dba050bdb39b684805df6cede36e31",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX2B01",
+        "name": "Miliziano Liberto",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "40c0b46a91b66cac5d2a6d15ee0afbfb4bb3021dbd3c93bc09679a4d8c37f628",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX2B02",
+        "name": "Predone Liberto",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "c3c2cca83451dd18a891720b1c5b86be9c3b7d35591dbb118c60aa899f639f02",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX3B02",
+        "name": "Moto Guerriglia",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "9cf55959575d1e7fbc7445c64075c716ddd89eadcd5bce2eeb65c1d4c605b76d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX3B01",
+        "name": "Buggy Predone",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "a205a4a733e68aea7eee047cfa8f2421c8899b0a6b47bea625ed9d20620ff115",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX3B03",
+        "name": "Carro Recuperato Titanus",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Elite",
+        "contentHash": "641a22b6fc9de1766b26b21affd8b0c3135c2c790e4d3278d56e6fc924a810b5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX4B01",
+        "name": "Punto di Raccolta",
+        "faction": "Liberti",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "e11c303055aa6c3e6b4e346de2aeadf9daf7ee7a4cba7fbff3707169afa5fae6",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXPIV01",
+        "name": "Bestia della Fossa",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "e67343df20f32e382dae2c895521c9163f4bb6fe63bec2f0731268cd8adb04bc",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX0B00",
+        "name": "Rauk del Ripudio",
+        "faction": "Liberti",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "6df1ba53272536d1c2fb426aec7e6af8e7dccee0e2acd3c303e07c0d3e88d116",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXCMD02",
+        "name": "Pravus dei Sanguis",
+        "faction": "Liberti",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "71c4e948513cee8df737c402c6f305640c47e0f4351157976ef29684469d4cf3",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1F01",
+        "name": "Avanguardia Liberta",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "e76b0e3a725f28422a46c50bdcebee567f2f72519b59850a177faff1a5ae58f2",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1F02",
+        "name": "Predone Sanguis",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "e2e5e8e4fc5d68855210598da145cc27a770ba29cc5d7462270f0e1c7cd8f765",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1F03",
+        "name": "Buggy Demolitore",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "4e04e665197ebb4910770aa00663a7d8f016e52a157f5ba4c1cf4dfc9a41f8ad",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1HA01",
+        "name": "Predone cacciacarri",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "88e3566d50a9b6b888cca4e15bc9748c0e405279021f96e3b90fc13150d9c6c9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1HA02",
+        "name": "Predone corazzato",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "d1d0481ad3cf97f3520b6d9bb348bba319b7d8102194ee4415c76afeac79a363",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1HA03",
+        "name": "Buggy da Sbarco",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "9454c3c3fb55a63c0ca1c5a349cb65f9f3b95cd20f764a1b97b950ab6e450197",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1HA04",
+        "name": "Ariete Liberto",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "d71272ad1a9cb784a78e23ba26b90811f20caa27712b39d72dff806382a01c64",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXC1HA05",
+        "name": "Forte di Rottami",
+        "faction": "Liberti",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "689522be72dfa90114a62530e8b7ccd732439e54cae9051e6c50285559050abd",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG1B01",
+        "name": "Custode Agathoi",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "fb0bd6542d9d6ff578c68e8a0251f66a640f0ed218437ec786761c9504fa3e8b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG1B02",
+        "name": "Oplita di Confine",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "f62c6fb45fc3dbf4c04f1f00b4d95de720813a8f3a38c987d4437531b223cda8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG1B03",
+        "name": "Lancia Verde",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "3093405c1f43b1aca347b37ed534785426219e43c0906a08030e78d3a0aaa12d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG2B01",
+        "name": "Carro Falange",
+        "faction": "Agathoi",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "9381846f2a2085980b82d040f10e53751c377b935bb3eea529c1f81e7764dc54",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG2B02",
+        "name": "Aratro Corazzato",
+        "faction": "Agathoi",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "5e8f2a708b05fad25e7285f0c6e159071274b8e7ef31e3c106b2b799b679e461",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG4B01",
+        "name": "Radura Curativa",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "3f80de1bb9156221cc2ad35c12267a4b4bccd15211cbdbfb9cf222e8dcd80875",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG4B02",
+        "name": "Bastione di Pietra Viva",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "b2977d4edfefde0df7cb5858b7cac3ce75f25eeb7b74684bd887002407fce6e0",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGPIV01",
+        "name": "Selva Simbiotica",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Pivot",
+        "contentHash": "5801ec332d2d6364a9ec3b6507e175f3e04c143c450b9f151f62a297f4a00a73",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG0B00",
+        "name": "Alexandros",
+        "faction": "Agathoi",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "55be57f3e84fce0153aa1049254a5d40bfd7eec766b7616dbf1a989cdebee54a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGCMD02",
+        "name": "Dycaios",
+        "faction": "Agathoi",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "1391feda2e804a5a5bd3a84101426dee41947ed1ca70dd8b4bf0badfd1476424",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F01",
+        "name": "Theron",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "0307a86deebd04073b3773b0fb6b192e2c6c0923b458eec8a6b6d0c44eec43df",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F02",
+        "name": "Apheton",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "4ebedd69a93743d8336ad271b9461f2e038edc5a94ed121339a5c8e965136018",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F03",
+        "name": "Phylax Difensore",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "b1651b6cd55e8696339cd94b73be0ba978ffb53aa8be186adf9864078d433bb5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F04",
+        "name": "Anthropos di Pietra",
+        "faction": "Agathoi",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "883c16447401d65972426d161b0f2136531ec4c2389375554141ab4645e37a73",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F05",
+        "name": "Aratron Camminatore",
+        "faction": "Agathoi",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "056296082df49a927b811b81e3b699b798b1b4dfcd82dc1fa018097cc2ad607b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F06",
+        "name": "Karyon Mobile",
+        "faction": "Agathoi",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "cbff56cdd5d58557f88fc3585251b596ee3a08a5b6166707e75b5d013982d14a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F07",
+        "name": "Oplon da Raccolto",
+        "faction": "Agathoi",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "6b63206f797d79a57be43584ad215146cfdd5a26204a092fd0e7a0c12f0cfeba",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F08",
+        "name": "Tholos Sacro",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "80f42bc3a0c623dcdcabe5a41011a05e6b626ba2aa7b5b1d66ede87ad2480746",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F09",
+        "name": "Peribolos Murario",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "6b02c497eccd3db4adc9be60c981628a8c2c901f1ead405bea37af77cc32060a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F10",
+        "name": "Ekklesion del Raccolto",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "050c02f23e9822fe8702508855625924d0f9fb7b7f29a2633a4648547b321cae",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F11",
+        "name": "Cisterna Radicata",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "36352fdf5944a36a1ee9a369d0d5cdc85b947665fa61b07b18c54151dab75df0",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGC1F12",
+        "name": "Domos Cosmico",
+        "faction": "Agathoi",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "7991651cd65a06682e5d0d7a904805521727b2b33b709ec8692f283202eb9441",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB1B01",
+        "name": "Adepto Fabeot",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "9cae2f0346bc5125fe7f20029459e6b3f5093eb2672183f904f917f07135766d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB1B02",
+        "name": "Iniziato Fabeot",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "2a9259da0e1d81019fb4a6213835c648ed62f007cfd7c45f172a69db6f541b1a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB1B03",
+        "name": "Maestro Fabeot",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "f171049cd879e021ea522b46e9ca57d4a0469195e9d9e2fa17e009c95fe1ce7c",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB2B01",
+        "name": "Inseguitore Fabeot",
+        "faction": "Fabeot",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "e5c8f263270ae58f0f4c3ce7bb28d3f5cee3791827bbefb160d2a92c3564771f",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB2B02",
+        "name": "Persecutore Fabeot",
+        "faction": "Fabeot",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "52f2883f710b2e5fc3d38ceaeff09c3eb73faa210ba23ea0682cb5cf67f54d97",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB4B01",
+        "name": "Avamposto Fabeot",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "96bad94a35439f53adc0130d1373b963d3b9bbd124e5db26879c9c50b57a2a85",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBPIV01",
+        "name": "Cittadella Fabeot",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "39639cc400e3714e657f32dc7bf9711b951445be1072638463328dc220fa8fd7",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB0B00",
+        "name": "Gerarca Fabeot",
+        "faction": "Fabeot",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "49568cfc075021846664dd349c8a99e3051419054de42c025d3c9aeed5cf70be",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBCMD02",
+        "name": "Emissario della Torre",
+        "faction": "Fabeot",
+        "role": "Comandante",
+        "weight": "Base",
+        "contentHash": "7bca7bab37ea2f15b731e677c2e41b052f6c8db4602a4cd976ce0876bc17ebb9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F01",
+        "name": "Spia Silente",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "01b6f5496af0b14d824122f7e43f2c14b1d1d16a442fc9bb68c3bcb159cccdfa",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F02",
+        "name": "Agente Opportunista",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "e2ec8d2d0deadcab8c86d97e0e0a48756423d0c1b47a8151bda7c83f56af328a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F03",
+        "name": "Agente Espropriatore",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "e4cd99b144ddcacc320010677f41a63c099b085759ad0f344d61a7befedb925c",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F04",
+        "name": "Architetto Nero",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Pivot",
+        "contentHash": "79a21776802eef1c8b950435cba36c4d76cf01d5c9d82f63b135efad7d0adf6f",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F05",
+        "name": "Agente Sabotatore",
+        "faction": "Fabeot",
+        "role": "Fanteria",
+        "weight": "Elite",
+        "contentHash": "9c36389d2233928fc59d9eae63108d595e76e1cdfe0d464ae449b7b8fc1bb0e8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F06",
+        "name": "Matrice Multigenica",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "ec86342b9abdfd630e0ebb4fade9b11db3b42cb592a82425f74ac37739063774",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F07",
+        "name": "Cabina Dislocante",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Pesante",
+        "contentHash": "08d82f711fcc584416870e535acb88688f77186291f0245278bcfffbedf56212",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1F08",
+        "name": "Modulo di Duplicazione",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "1e1950a539558b4961c0994f943e09bdf28b5fe72d0cdc167b66c57f790b9ead",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1HA01",
+        "name": "Lancia Fabeot",
+        "faction": "Fabeot",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "e4fd05617ef95d3fc394618bb38fc5bfa035107eb30d8dd9bd187bbc5454e2b7",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBC1HA02",
+        "name": "Prima Linea Fabeot",
+        "faction": "Fabeot",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "0636fa198227a34783b925580710565061afd5547b24f90fab7dbd1b0bbdfc59",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXS1A01",
+        "name": "Vettore Nexus",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "4d7efcd94cde4bbb294632261c495aeb1b8fbe8e4fa099b4ae453fbd81703f33",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXS1A02",
+        "name": "Riparatore Nexus",
+        "faction": "Nexus",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "948605f273778e13793002b283f93a68a12a9ffec8158581f4287df5df972edc",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXS1A03",
+        "name": "Artiglieria Nexus",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "0f53784d7b7e4a55d05fd1449a2bdd183b9d3d11a8367b225f49c910ee78d2bf",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXS1A01",
+        "name": "Apotecario Exordium",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Leggera",
+        "contentHash": "4eb9a7088da7d349c380b7124a9cf33961ece2e6dea1c0777cf95cfb4587ef72",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXS1A02",
+        "name": "Mortaista Exordium",
+        "faction": "Exordium",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "58aaf557d246797d991d53e25ab888b168e77d7016156cdfa34329d279d29cd6",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXS1A03",
+        "name": "Deposito Spedizioni",
+        "faction": "Exordium",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "a49a5219efccd74c91a8320e2eb599ea34de933e71326ae05b661d0f227e00df",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBS1A01",
+        "name": "Predone Attentatore",
+        "faction": "Liberti",
+        "role": "Fanteria",
+        "weight": "Pesante",
+        "contentHash": "b606ff48903db742259ef3d61287ff23398b85e495d73220220782498547248b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBS1A02",
+        "name": "Segugio Liberto",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "3dd9533409dbd6cd943f9d6c42a267c75e4dbb0cd4c90075b298d6aad22b1405",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBS1A03",
+        "name": "Baracche dei Predoni",
+        "faction": "Liberti",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "cbd1d199df1e7b31308a971c860fa8a72ddc8032a1486ab634915a418a6ab316",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBS1A04",
+        "name": "Barricata di Rottami",
+        "faction": "Liberti",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "cc86c6e9a36696d00e62d40019ae04ded5589e5f5667bbef11736b81ee2a4a84",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBS1A05",
+        "name": "Tenda del Capo Clan",
+        "faction": "Liberti",
+        "role": "Struttura",
+        "weight": "Elite",
+        "contentHash": "16e20b62c226a1e777c00b04044f70722bba360107542b245cd4aef30fa29d6b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBS1A01",
+        "name": "Corriere Fabeot",
+        "faction": "Fabeot",
+        "role": "Veicolo",
+        "weight": "Leggero",
+        "contentHash": "167dd73b3a7a56d8351f9a326bf687de1af8c09b0207ac4a994f11cecc17c008",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBS1A02",
+        "name": "Cacciacarri Fabeot",
+        "faction": "Fabeot",
+        "role": "Veicolo",
+        "weight": "Pesante",
+        "contentHash": "331a716dbc7f819b8d3f7ee0fa97e9828a43ffea9be34555786c6edf320c73bb",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBS1A03",
+        "name": "Rifugio Fabeot",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Leggera",
+        "contentHash": "617424a02ad23db2bf06e32e742d4e50a15e5f004274a1597e6d68bc19b6d479",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXPIV02",
+        "name": "UCB Unità Corazzata da Battaglia",
+        "faction": "Nexus",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "aa9f16a59ab24473d7ee6e6450a8d751ec7a358de9fb2f0b7fa8f5aab7fd6c3b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXPIV02",
+        "name": "Mech d'Assalto",
+        "faction": "Exordium",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "4e42f70db3f6994662f2200466685ccffc01d72a2c7f1a00fa1f87260ffd180b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LXPIV02",
+        "name": "Camion Corazzato",
+        "faction": "Liberti",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "a7271a88d058a03dfa4b5d9bfc828a9e34dbe1bafd618a53361d7dcb5d1c6d54",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGPIV02",
+        "name": "Giganthropos",
+        "faction": "Agathoi",
+        "role": "Veicolo",
+        "weight": "Pivot",
+        "contentHash": "f2d49498fc51c2e252030522d340adf502ac56aa148de0eaaf60a70db608e256",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBPIV02",
+        "name": "La Torre dell'Architetto",
+        "faction": "Fabeot",
+        "role": "Struttura",
+        "weight": "Pivot",
+        "contentHash": "e7bf2cf7a7602d693f19013f8c9f35433deddba45a26ea6cfff2ee5932a49aff",
+        "decision": "KEEP"
+      }
+    ],
+    "starterTactics": [
+      {
+        "id": "NX_TAC_RECALC",
+        "name": "Ricalcolo Strategico",
+        "faction": "Nexus",
+        "kind": "healArmorOnPS",
+        "contentHash": "a304464929a83bf7d10bba1b2f79f8e08b5a9948f0240bd055bbbff17a52f0d4",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NX_TAC_BLOCK",
+        "name": "Protocollo di Blocco",
+        "faction": "Nexus",
+        "kind": "damageNearPS",
+        "contentHash": "bf4a668d739bc4fcd7c24bff99db25111d5f0e7a6484d242a7b90f324419971c",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX_TAC_ORDER",
+        "name": "Ordine d’Assalto",
+        "faction": "Exordium",
+        "kind": "assaultOrder",
+        "contentHash": "58938ed04747cbc8a08ba48b76e03bcaa71054fd7a835430a47b1fca212d9230",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EX_TAC_PUSH",
+        "name": "Spinta di Guerra",
+        "faction": "Exordium",
+        "kind": "warPush",
+        "contentHash": "e398ab8249919bffa93187916fcfc23af216b73477203b07620bc119bcb8f8b3",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX_TAC_HORDE",
+        "name": "Carica dell’Orda",
+        "faction": "Liberti",
+        "kind": "hordeCharge",
+        "contentHash": "5e5c270acc595f0d83547d04210d8000c518a8b1fa7af3976534ad437d469b2a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LX_TAC_RAID",
+        "name": "Razzie Rapide",
+        "faction": "Liberti",
+        "kind": "raidMark",
+        "contentHash": "9c894266b1dd66373feecf7a9e9c6994e66dd41535e1b620d5a9c51e51b73594",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG_TAC_ROOTS",
+        "name": "Radici Difensive",
+        "faction": "Agathoi",
+        "kind": "defensiveRoots",
+        "contentHash": "5afc5cbd6b341b3018351b01e83990c2c41f7c8cd229f0ac860433adc957bcdd",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AG_TAC_WALL",
+        "name": "Muro Verde",
+        "faction": "Agathoi",
+        "kind": "greenWall",
+        "contentHash": "76e4445bf37aa2dff1deb7a48b38af0b1d8808c5749e832330bbc99d8ca229e8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB_TAC_CHOKE",
+        "name": "Strozzatura Logistica",
+        "faction": "Fabeot",
+        "kind": "logisticChoke",
+        "contentHash": "96d6d6cc5b554b2431f56320a5a556c766364ea94187897c9073cd486a7bd928",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FB_TAC_CONTRACT",
+        "name": "Contratto Capestro",
+        "faction": "Fabeot",
+        "kind": "contractTrap",
+        "contentHash": "1036631e0de83ee93be4b764272d1bea845afd620a1e6521f1239aa5c7e3f91e",
+        "decision": "KEEP"
+      }
+    ],
+    "deckTactics": [
+      {
+        "id": "NXTAC01",
+        "name": "Colpo di mortaio",
+        "faction": "Nexus",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c1",
+        "contentHash": "d65043c28523cfbfdb885ee94021aaa52692604ab9eeea0f0b5c62e4cb273493",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC02",
+        "name": "Artiglieria di precisione",
+        "faction": "Nexus",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c1",
+        "contentHash": "7d4a748fdefb543d5bdba24d5fdbcec8c461020b9a7647a66de916c3c0fc1125",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC03",
+        "name": "Missile Jam",
+        "faction": "Nexus",
+        "category": "Sistema d’Arma / Dispositivo",
+        "implementationStatus": "playable_c2c2",
+        "contentHash": "bb8bff4ecfc8c2a2fda652f5308bfdabc65be5cd2ef5a152fa0a30223667cd2c",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC04",
+        "name": "Bombardamento aereo",
+        "faction": "Nexus",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c4",
+        "contentHash": "c25b727d0cfc6b788edfe3e94eff2b1ad932e0672591c90cc53386996a1c382a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC05",
+        "name": "Passaggio tattico",
+        "faction": "Nexus",
+        "category": "Operazione",
+        "implementationStatus": "playable",
+        "contentHash": "4a95e9e93b3eb2009bd6f2eec7c1e3ab3dda50d493e2c4ac3c979dca548bbdb6",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC06",
+        "name": "Fossato",
+        "faction": "Nexus",
+        "category": "Intervento / Terreno",
+        "implementationStatus": "playable_c2c5",
+        "contentHash": "e9a5a0506a7ad692050d87987ab48f3b665a53313ab6a4cf5f70b8c8c16cd869",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC07",
+        "name": "Ricalcolo ENE",
+        "faction": "Nexus",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c6b",
+        "contentHash": "0cd3bcae69a61f5c0afc2d00cb50a835d821b32c466eb226a243fc3617f5cb3e",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC08",
+        "name": "Richiesta rifornimenti",
+        "faction": "Nexus",
+        "category": "Operazione / Logistica",
+        "implementationStatus": "playable_c2c6a",
+        "contentHash": "575b1ca5fa314e087f7ab2a2bb74041f6f4a41624f18b02b22e328eb9a119ae0",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC09",
+        "name": "Difesa impenetrabile",
+        "faction": "Nexus",
+        "category": "Dispositivo / Difesa",
+        "implementationStatus": "playable_c2c3",
+        "contentHash": "4732d81cc659b7f044bfefc5fff5338c7aa3f5092b3a723cd0689fed18ae7c15",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC10",
+        "name": "Disabilita sistemi",
+        "faction": "Nexus",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c3",
+        "contentHash": "2bbaf3799c310a589cc0717390e00b05c31988e2ef7afc893ebd9a74d1e35f13",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC11",
+        "name": "Puntatori avanzati",
+        "faction": "Nexus",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c4a",
+        "contentHash": "2e90b4b63b42f7dcde6d471b09f15dcfb757a491dc0366e8c0676a77b567986a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC12",
+        "name": "Riparazione sul campo",
+        "faction": "Nexus",
+        "category": "Intervento",
+        "implementationStatus": "playable_c2c8b",
+        "contentHash": "a2843fa6a37935ef849acc4eb11d699231552594322c7795fe254e92a2c909b7",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC01",
+        "name": "Artiglieria anticarro",
+        "faction": "Exordium",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c1",
+        "contentHash": "b62cf97d581bbda874c61db775450c87d6b453d827854f82e363c556c2188d71",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC02",
+        "name": "Artiglieria pesante",
+        "faction": "Exordium",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c1",
+        "contentHash": "d58cfbac239b97cbfac94114ba33868cf1e3b516b59470abd80df196a88e6c7a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC03",
+        "name": "Missile EMP",
+        "faction": "Exordium",
+        "category": "Sistema d’Arma / Dispositivo",
+        "implementationStatus": "playable_c2c2",
+        "contentHash": "3be6a5eb6cf1822d99397b321ed03be677b072ab96eba83e8dc5ed47d207d225",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC04",
+        "name": "Obliteratore",
+        "faction": "Exordium",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c8c",
+        "contentHash": "bbf2b12c17e9095a68523e6c9ad3edd227a365ae209e36d9d8d4e0dfc7a77758",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC05",
+        "name": "Manovra d’attacco",
+        "faction": "Exordium",
+        "category": "Operazione",
+        "implementationStatus": "playable",
+        "contentHash": "a4fdf9da3436974aaa9c0f8f8b378319f49eaba1f4901e73b212b8ae52c8dcff",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC06",
+        "name": "Neutralizza Armamenti",
+        "faction": "Exordium",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c2",
+        "contentHash": "6922101ab5ebbab93e88890942bec167b6b339fe2a906887d89af58cfcda998d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC07",
+        "name": "Ricalcolo ENE",
+        "faction": "Exordium",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c6b",
+        "contentHash": "1a6852dbf6c8e01d7e3a9eec2830ad28f524ac94770de43e59afb9c3e5a438e2",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC08",
+        "name": "Rifornimenti in arrivo",
+        "faction": "Exordium",
+        "category": "Operazione / Logistica",
+        "implementationStatus": "playable_c2c6a",
+        "contentHash": "cc1582e76d8f97f5a7ac9061275b16c689b834ecfaf6c70769ca19e995ca1a77",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC09",
+        "name": "Inibitore d’attacco",
+        "faction": "Exordium",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c3",
+        "contentHash": "c333ea36a111307314dc98916bf75a6500bcf67654ead889ca373eaf65d24846",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC10",
+        "name": "Campo statico",
+        "faction": "Exordium",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c8c",
+        "contentHash": "213ab0914c992b6486e748b2e610cf1a6287de48aa5b2ec2be426b7ae4388a92",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC11",
+        "name": "Dispositivo di Puntamento",
+        "faction": "Exordium",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c8",
+        "contentHash": "f5465127b290de0ad88b9f0626b197b408797f22bd569dafe55abd0a43643da8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC12",
+        "name": "Ordine di Varran",
+        "faction": "Exordium",
+        "category": "Operazione / Ordine",
+        "implementationStatus": "playable_c2c8b",
+        "contentHash": "26213cb16fd328e5a5cee8c31dcf945e8be986a6ce8121c35386bc193e176dc9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC01",
+        "name": "Chiamata dei Miliziani",
+        "faction": "Liberti",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c5c",
+        "contentHash": "4e5a2a00efb5b0c2548b9196e14bb3909276d35de85d70062e154f59c8db78b7",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC02",
+        "name": "Chiamata alle Armi",
+        "faction": "Liberti",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c5c",
+        "contentHash": "c1dbd56f16aeee0d8a21cfb6505f166ae5190351624b75f359830bdc4dda8178",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC03",
+        "name": "Chiamata dei Clan",
+        "faction": "Liberti",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c5c",
+        "contentHash": "0e875e66d6306f71c870bcaf3f6567c8a6024f31b35164aa1f7d204154e40b55",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC04",
+        "name": "Il Clan Risponde",
+        "faction": "Liberti",
+        "category": "Operazione / Carta pivot",
+        "implementationStatus": "playable_c2c5c",
+        "contentHash": "75560cd9ec273720d3cdb116214f193b0b2b09716cec64e51a76c007a3dbac67",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC05",
+        "name": "Granata Sporca",
+        "faction": "Liberti",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_c2c2",
+        "contentHash": "c305c8e1c962c3248cec6b5312121524bc03eba6ba40c9e03dce223ebbd73207",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC06",
+        "name": "Carica da Demolizione",
+        "faction": "Liberti",
+        "category": "Intervento / Sistema d’Arma",
+        "implementationStatus": "playable_c2c1",
+        "contentHash": "b8da5b3bb2e1ea75e6839fde701155a551c9dd4a9862243446898e996e4ba89f",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC07",
+        "name": "Ultima Corsa",
+        "faction": "Liberti",
+        "category": "Operazione / Intervento",
+        "implementationStatus": "playable_c2c8c",
+        "contentHash": "a4c39b2ecea4c3eba6c382e7dc446072e8300d15b8a5c618b200081814ead3a5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC08",
+        "name": "Marchio dei Sanguis",
+        "faction": "Liberti",
+        "category": "Operazione / Marchio",
+        "implementationStatus": "playable_c2c8b",
+        "contentHash": "a52656e9a47f7443bfae28b1a09ac0934dc4e1b133813cd72151c4e03ed5b9cc",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC09",
+        "name": "Predoni in Agguato",
+        "faction": "Liberti",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c8",
+        "contentHash": "64ace9891404e99ab9b1059f4e5372872ba7cf0cb079ed454a9aee235364c8af",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC10",
+        "name": "Campione della Fossa",
+        "faction": "Liberti",
+        "category": "Operazione / Rito di combattimento",
+        "implementationStatus": "playable_c2c8b",
+        "contentHash": "d2f0126051262fd54f4a307e06defea2ad4f1511e09ac972a9a84e009feef632",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC11",
+        "name": "Tributo dei Clan",
+        "faction": "Liberti",
+        "category": "Operazione",
+        "implementationStatus": "playable_c2c6a",
+        "contentHash": "e467b9a325535e001845eb820a695ce1bd28d340f6e31af2350b912b5f9c0281",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC12",
+        "name": "L’Orda si Muove",
+        "faction": "Liberti",
+        "category": "Operazione / Movimento",
+        "implementationStatus": "playable",
+        "contentHash": "f418062b8e0b70f9e34a67d3207cf6aa180bf1497acb42e2906dc617e506c705",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC13",
+        "name": "Cacciatore Sanguis",
+        "faction": "Liberti",
+        "category": "Operazione / Marchio",
+        "implementationStatus": "playable_c2c8c",
+        "contentHash": "d94bf7ee4bee4b7e7ca30e65d65db2fd6e5303a21c50de129c290db552049bcf",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBTAC14",
+        "name": "Esca d’Attacco",
+        "faction": "Liberti",
+        "category": "Operazione / Imboscata",
+        "implementationStatus": "playable_c2c8",
+        "contentHash": "a2854ec1f81313d36a365e3b6f8379d2877a46e357adbba6ac400c7b58b05340",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC01",
+        "name": "Barricata Verde",
+        "faction": "Agathoi",
+        "category": "Intervento / Terreno",
+        "implementationStatus": "playable_c2c5",
+        "contentHash": "649c1bed96cf89422ac5fe07ddeb60b7eab750178cf3dac7d295c268a61c2d5a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC02",
+        "name": "Anatema Vegetale",
+        "faction": "Agathoi",
+        "category": "Terreno / Rito naturale",
+        "implementationStatus": "playable_c2c5",
+        "contentHash": "779c6be8c29fd1eeaf35bc480eaf5ce8135ef8c330aa9772b1e5f0dc37712845",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC03",
+        "name": "Sentiero dei Rovi",
+        "faction": "Agathoi",
+        "category": "Terreno / Trappola",
+        "implementationStatus": "playable_c2c5",
+        "contentHash": "c83b8bf75ebe0d2020bd5be5355a733fbb41f90d4d9ea26bf9edcd5ee2d7f6fb",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC04",
+        "name": "Bastione Ligneo",
+        "faction": "Agathoi",
+        "category": "Intervento / Fortificazione",
+        "implementationStatus": "playable_c2c4a",
+        "contentHash": "6f6047146dd645fa5a8814eafa2f26a9fda8762671011cc8adaa850eb400407a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC05",
+        "name": "Natura Vigile",
+        "faction": "Agathoi",
+        "category": "Operazione / Difesa naturale",
+        "implementationStatus": "playable_c2c8",
+        "contentHash": "af327e558f9e887f7ff558856e50f6ec230d938a8879e3eb730e34838107c094",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC06",
+        "name": "Fortezza Verde",
+        "faction": "Agathoi",
+        "category": "Fortificazione / Crescita strutturale",
+        "implementationStatus": "playable_c2c4a",
+        "contentHash": "79d926cfbdde0d969f58996356399a14e20429da4b35f28f67a66dd2ae7b7edb",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC07",
+        "name": "Manto di Rovi",
+        "faction": "Agathoi",
+        "category": "Difesa naturale",
+        "implementationStatus": "playable_c2c2",
+        "contentHash": "14f518bd074fe76feb945eaa438abbc619be57d96e3829c97a5169d355720bda",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC08",
+        "name": "Carovane di Mercanti",
+        "faction": "Agathoi",
+        "category": "Operazione / Logistica",
+        "implementationStatus": "playable_c2c6a",
+        "contentHash": "fdea06e61d8a499041610493bce79ef3b5f60eae151e65603966af98a76f31d9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC09",
+        "name": "Seme della Ricchezza",
+        "faction": "Agathoi",
+        "category": "Crescita / Economia",
+        "implementationStatus": "playable_c2c6b",
+        "contentHash": "f869f63067e6b947476ea6b50c46e7151cb699ac7be0bf58375e33081ae66668",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC01",
+        "name": "Ipnosi",
+        "faction": "Fabeot",
+        "category": "Operazione / Controllo mentale",
+        "implementationStatus": "playable_c2c3",
+        "contentHash": "06f160402f4eec83ce46e7c678c58e6158e14c0384b827cbc714c7e35b00efe8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC02",
+        "name": "Diploma da Mentalista",
+        "faction": "Fabeot",
+        "category": "Dispositivo / Addestramento mentale",
+        "implementationStatus": "playable_c2c4a",
+        "contentHash": "69fb356046f70ea540d7d7e8bd3bf02dc6e8c2800b6ea0ed776d2bd8d2c4fda0",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC03",
+        "name": "Congedo Forzato",
+        "faction": "Fabeot",
+        "category": "Operazione / Rimozione amministrativa",
+        "implementationStatus": "playable_c2c7a",
+        "contentHash": "324ea4851222e00e6a48332d207468595c2ef42e46ddcfd4dca2d341f1e15000",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC04",
+        "name": "Dottrina del Tradimento",
+        "faction": "Fabeot",
+        "category": "Operazione / Corruzione",
+        "implementationStatus": "playable_c2c7b",
+        "contentHash": "47270b58001e72fca6b12580e690e2e9b2f3b10476f54be36a02d6f8c7899925",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC05",
+        "name": "Taglia sulla Testa",
+        "faction": "Fabeot",
+        "category": "Operazione / Contratto",
+        "implementationStatus": "playable_c2c7a",
+        "contentHash": "5aab7720cef5b3b9d808d0d18e9385a0bda330e44244f37182c3af2d03ef2efb",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC06",
+        "name": "Contratto Capestro",
+        "faction": "Fabeot",
+        "category": "Operazione / Contratto",
+        "implementationStatus": "playable_c2c7a",
+        "contentHash": "7c84811a98ab0057bdebecb280c7c4d9778a88cf6fb60a0174e2d7a52973bb0d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC07",
+        "name": "Embargo",
+        "faction": "Fabeot",
+        "category": "Operazione / Blocco logistico",
+        "implementationStatus": "playable_c2c7a",
+        "contentHash": "73f3310b0bf234f1c81323a0d03e1280e572054c50a65b5f39a451b493b955aa",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC08",
+        "name": "Contratto da Sicario",
+        "faction": "Fabeot",
+        "category": "Operazione / Contratto",
+        "implementationStatus": "playable_c2c6b",
+        "contentHash": "2e6b852689a08c84382e07a8dec76325a3c48022b9b98b1b613e0d6863221b61",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC09",
+        "name": "Contratto di Usura",
+        "faction": "Fabeot",
+        "category": "Operazione / Debito",
+        "implementationStatus": "playable_c2c6b",
+        "contentHash": "3e63624b3e24394ae1ef1605d607265d67824a4c7df6894bbd05ed56daaa18d3",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC10",
+        "name": "Dispositivo Stealth",
+        "faction": "Fabeot",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_c2c3",
+        "contentHash": "a21b7c12ff9373c7bf7e0dba835ba0aee3a75d5c4aadeb5adca13a840f293ec5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC11",
+        "name": "Pacco Bomba",
+        "faction": "Fabeot",
+        "category": "Dispositivo / Sistema d’Arma",
+        "implementationStatus": "playable_c2c4",
+        "contentHash": "01e04709c5b7ae17cbc8f1e75adeb96c1c4b2f247ff5accc6a7832c67bd50857",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC12",
+        "name": "Attacco Ingannevole",
+        "faction": "Fabeot",
+        "category": "Operazione / Inganno",
+        "implementationStatus": "playable_c2c4a",
+        "contentHash": "5ac29e932481a2e5bf9dfc37334000c53d9e62d56051fd5289982d08a2d0c194",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC13",
+        "name": "Kit di Riparazione",
+        "faction": "Nexus",
+        "category": "Intervento",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "2bff8a87fce612c8dcc5adc98c160650c299bfae3d894eb891e8df1d631d31b5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXTAC14",
+        "name": "Visore Multispettrale",
+        "faction": "Nexus",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "f668f6cb661d0e36cc2e6a5ee6ada0cae48a6d33d35101798dc674584a71e670",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC13",
+        "name": "Puntatore Imperiale",
+        "faction": "Exordium",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "4270a27bb67cba74a4447cea196982e61c882c42c38019a3448a01fe4165132e",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXTAC14",
+        "name": "Meccanico",
+        "faction": "Exordium",
+        "category": "Intervento",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "7d5db40b843c1a6b53b56d5f6507447f77d8386d5b0d4aaaea6db6cd6a44e4cb",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC10",
+        "name": "Furia Verde",
+        "faction": "Agathoi",
+        "category": "Operazione",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "72082ad00638dc20a965b2c7fb983c8cc7012ab23f31d0599c0980c6bd413ca5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC11",
+        "name": "Ballista Agathoi",
+        "faction": "Agathoi",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "9ce8461a7657d5c8f39d07a5f7d0a6a66e187b360f3fbb3625bbffdbf70c7431",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC12",
+        "name": "Campo Minato",
+        "faction": "Agathoi",
+        "category": "Intervento / Terreno",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "bf5a3533c7a785fe7d287af0ec226e0973d746d3db1b584d13a179432e79d124",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC13",
+        "name": "Dispiegamento",
+        "faction": "Agathoi",
+        "category": "Operazione",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "4ef86fa607e953dc2e057ffad3d80e4aaecab930da441a3446516a42a6b947c5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGTAC14",
+        "name": "Vedetta Agathoi",
+        "faction": "Agathoi",
+        "category": "Dispositivo",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "b76932cc77f7a7d722d7cb907c6cbdf7eaf6222b4e89809039fa30e386f58ca7",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC13",
+        "name": "Doppio Colpo",
+        "faction": "Fabeot",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "4cb1af89e2657a0f1aca63f0ce60b567fd964b6046781dd53884d9de085f3d0a",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FABTAC14",
+        "name": "Doppio Colpo Pesante",
+        "faction": "Fabeot",
+        "category": "Sistema d’Arma",
+        "implementationStatus": "playable_f9s1a",
+        "contentHash": "3982cd0ae0ecee5fa61277d87a6f60c479e932bd54c95c4438c17908f6a5ff40",
+        "decision": "KEEP"
+      }
+    ],
+    "missions": [
+      {
+        "id": "NXMSN01",
+        "name": "Civiltà Algoritmica",
+        "faction": "Nexus",
+        "missionClass": "ordinary",
+        "contentHash": "a1bb06e0de8c9334602a6293857d0db71b1c41b1f84e94febd3d1b5bc2245526",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXMSN02",
+        "name": "Mainframe",
+        "faction": "Nexus",
+        "missionClass": "ordinary",
+        "contentHash": "520fc37c77da84d6ea963e4c0ce012fd2252e13a12aaa2ca65a881366e999c8b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "NXMSND01",
+        "name": "Punto di Ripristino",
+        "faction": "Nexus",
+        "missionClass": "desperate",
+        "contentHash": "48d0577f7e72009b97e92b2e938a9b03f619badd6c98fca5796753a8e4ba3917",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXMSN01",
+        "name": "Triumphale Iter",
+        "faction": "Exordium",
+        "missionClass": "ordinary",
+        "contentHash": "911b21429c474d7850b639dce03616e03f6b60040eda8ae03fb636ff60e6019f",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXMSN02",
+        "name": "Ordo Legio",
+        "faction": "Exordium",
+        "missionClass": "ordinary",
+        "contentHash": "5e16b95c7f30c67f81886948ad04eb5a9e2ed7d7ff512282f6392c886d7a2bb0",
+        "decision": "KEEP"
+      },
+      {
+        "id": "EXMSND01",
+        "name": "Ultimo Assalto",
+        "faction": "Exordium",
+        "missionClass": "desperate",
+        "contentHash": "d8222f11b8b25d5fb7e81fe09248090dc2f1d9c8f3948d9ac859f633e75d4cce",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBMSN01",
+        "name": "Arena Selvaggia",
+        "faction": "Liberti",
+        "missionClass": "ordinary",
+        "contentHash": "3ec160e994a0dda39be52ccb03498760638461cb66aae7e32974005820c9de9e",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBMSN02",
+        "name": "Sangue e Sabbia",
+        "faction": "Liberti",
+        "missionClass": "ordinary",
+        "contentHash": "fa8474c98a2efbdc996a7f2084def38f54922e4594d8c57c2370a7dc767bd2c8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "LBMSND01",
+        "name": "Ultima Possibilità",
+        "faction": "Liberti",
+        "missionClass": "desperate",
+        "contentHash": "cca6f2aef5112aa18f9b73880329ea4945851619dc8e69ca97c7031bda2388b5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGMSN01",
+        "name": "Tafos Lithos",
+        "faction": "Agathoi",
+        "missionClass": "ordinary",
+        "contentHash": "5407b52fc435517f883b4fa4febe10a7dc456eb937b22e7193b832b46af7f87e",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGMSN02",
+        "name": "Erkos",
+        "faction": "Agathoi",
+        "missionClass": "ordinary",
+        "contentHash": "d1db79ce3950ea520ada505adcd475bb9896662b78df25e773d754a9c54c18c3",
+        "decision": "KEEP"
+      },
+      {
+        "id": "AGMSND01",
+        "name": "Primo Verae",
+        "faction": "Agathoi",
+        "missionClass": "desperate",
+        "contentHash": "188b25bed9524c5b274b4269cb1e418c543a771568fb297612813bf533f1d2ea",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBMSN01",
+        "name": "Ex Lucis Tenebrae",
+        "faction": "Fabeot",
+        "missionClass": "ordinary",
+        "contentHash": "88f822a177c210f92860e6fc8b9f627127398320bee1c0aa86e32f10eca27a0b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBMSN02",
+        "name": "Cospirazione",
+        "faction": "Fabeot",
+        "missionClass": "ordinary",
+        "contentHash": "25cb5dd7508a99c74cf1e79f75680588bc4b92913b154d0cf0ef58183e8643c3",
+        "decision": "KEEP"
+      },
+      {
+        "id": "FBMSND01",
+        "name": "Anatema",
+        "faction": "Fabeot",
+        "missionClass": "desperate",
+        "contentHash": "d4f9bbd8d58f3a1febcf0dc027ea211fce2de3796e822a719f1682ec3357cae4",
+        "decision": "KEEP"
+      }
+    ],
+    "builtInDecks": [
+      {
+        "key": "Nexus::NXCMD01::nexus-avatex-civilta-algoritmica",
+        "name": "Nexus · Avatex · Civiltà Algoritmica",
+        "faction": "Nexus",
+        "commanderId": "NXCMD01",
+        "pivotId": "NXPIV01",
+        "missionId": "NXMSN01",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "e17f9a0298a689855480d643b26e980d64054df133fa4273e480873be4b936bd",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD01::bastione-mobile",
+        "name": "Bastione Mobile",
+        "faction": "Nexus",
+        "commanderId": "NXCMD01",
+        "pivotId": "NXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "475c762b5508ec9cd397fe3fa3a5cc08042e9115b791c97d27f605d5225d2800",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD01::presidio-reticolare",
+        "name": "Presidio Reticolare",
+        "faction": "Nexus",
+        "commanderId": "NXCMD01",
+        "pivotId": "NXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "9bea93a90908230adec07252f009fe5eb9a404b3788a8b9acd2394824e48e79a",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD01::tramonto-sul-ps",
+        "name": "Tramonto sul PS",
+        "faction": "Nexus",
+        "commanderId": "NXCMD01",
+        "pivotId": "NXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "492a6038183a39b982ad1e96f72d22afb0c7f24b9234ce702bb0f87c267e54b5",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD01::cuneo-di-precisione",
+        "name": "Cuneo di Precisione",
+        "faction": "Nexus",
+        "commanderId": "NXCMD01",
+        "pivotId": "NXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "aa052d59caec9a1984112b2ccc07199098f4b2ce94062672d8c525b3c1885985",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD02::nexus-uc-mainframe",
+        "name": "Nexus · UC · Mainframe",
+        "faction": "Nexus",
+        "commanderId": "NXCMD02",
+        "pivotId": "NXPIV01",
+        "missionId": "NXMSN02",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "78ef46fd4cf02474f7363b9e740e0ec1fae6ff58e1295dd3aea69a3a1c1dff23",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD02::logistica-di-massa",
+        "name": "Logistica di Massa",
+        "faction": "Nexus",
+        "commanderId": "NXCMD02",
+        "pivotId": "NXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "cd496e248fcf5cac622fd7b03120ba6a68d15c52547de587319c22bd46b00434",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD02::convoglio-corazzato",
+        "name": "Convoglio Corazzato",
+        "faction": "Nexus",
+        "commanderId": "NXCMD02",
+        "pivotId": "NXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "8e4e15c9df73784c9cb7ca3455f67cc544792292cf768ec38d93baf402680724",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD02::sbarco-a-tenaglia",
+        "name": "Sbarco a Tenaglia",
+        "faction": "Nexus",
+        "commanderId": "NXCMD02",
+        "pivotId": "NXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "0bed64c2164e86d079863c0fc90eeeee3c886b7314f094ee15e7555ec3e11494",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Nexus::NXCMD02::batteria-di-soppressione",
+        "name": "Batteria di Soppressione",
+        "faction": "Nexus",
+        "commanderId": "NXCMD02",
+        "pivotId": "NXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "ea77b0bb2105587bf635e234c3d715a42ce3552d02828f3e3780adf972de74c1",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EX0B00::exordium-varran-triumphale-iter",
+        "name": "Exordium · Varran · Triumphale Iter",
+        "faction": "Exordium",
+        "commanderId": "EX0B00",
+        "pivotId": "EXPIV01",
+        "missionId": "EXMSN01",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "58158f57b9e9070d74f011d2ec39d348b2717230fff2f0f3434af4ed6f385b2c",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EX0B00::doppio-assalto-imperiale",
+        "name": "Doppio Assalto Imperiale",
+        "faction": "Exordium",
+        "commanderId": "EX0B00",
+        "pivotId": "EXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "03f514feed25199cb681d09672cfd2f4cded8e04ebdb12f0f3dbcbd63676eef6",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EX0B00::decapitazione-cremisi",
+        "name": "Decapitazione Cremisi",
+        "faction": "Exordium",
+        "commanderId": "EX0B00",
+        "pivotId": "EXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "0a5905b07a41bc8c35bfea8bd952e3a3d0ac38f673318ef1bec6fddb55020f87",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EX0B00::breccia-cremisi",
+        "name": "Breccia Cremisi",
+        "faction": "Exordium",
+        "commanderId": "EX0B00",
+        "pivotId": "EXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "6d4a20163f9d654e1c3ba2db0fe6aa5a2c905e04063a6f5a4d639660cc89ac8f",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EX0B00::linea-di-soppressione",
+        "name": "Linea di Soppressione",
+        "faction": "Exordium",
+        "commanderId": "EX0B00",
+        "pivotId": "EXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "05cc3220ba8f3ce67ceb51291bd9bc1b2a88a1a0ee73271eb46f84a69bc4d4a8",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EXCMD02::exordium-nemira-ordo-legio",
+        "name": "Exordium · Nemira · Ordo Legio",
+        "faction": "Exordium",
+        "commanderId": "EXCMD02",
+        "pivotId": null,
+        "missionId": "EXMSN02",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "511177c625c6ef790af43d5683bbe3a7bf38b871a76378b3e320742c40becdc2",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EXCMD02::orgoglio-immortale",
+        "name": "Orgoglio Immortale",
+        "faction": "Exordium",
+        "commanderId": "EXCMD02",
+        "pivotId": "EXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "fa62eca44e459658bfa0f5cbb95b784b65e418a4fb503378f16a3739ef7db72f",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EXCMD02::trionfo-progressivo",
+        "name": "Trionfo Progressivo",
+        "faction": "Exordium",
+        "commanderId": "EXCMD02",
+        "pivotId": "EXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "5b0858c36ee91dc43f169782c790fe3d86df52c76a6a491b818ae41c927f59ed",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EXCMD02::ferro-e-soccorso",
+        "name": "Ferro e Soccorso",
+        "faction": "Exordium",
+        "commanderId": "EXCMD02",
+        "pivotId": "EXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "57c9438695703146e033ada2e502da3a2ce156c9be25469f01275baa73addf92",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Exordium::EXCMD02::falange-d-assedio",
+        "name": "Falange d’Assedio",
+        "faction": "Exordium",
+        "commanderId": "EXCMD02",
+        "pivotId": "EXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "ce461beff2b5be7397e34fea3491ebba354d21dbedb47e4a8847e23f466ac15e",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LX0B00::liberti-rauk-arena-selvaggia",
+        "name": "Liberti · Rauk · Arena Selvaggia",
+        "faction": "Liberti",
+        "commanderId": "LX0B00",
+        "pivotId": "LXPIV01",
+        "missionId": "LBMSN01",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "2580fe9fa392dfc79b2d76c1c650b95f82f2e891b66a81d73b89146f5699cdd1",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LX0B00::orda-della-fossa",
+        "name": "Orda della Fossa",
+        "faction": "Liberti",
+        "commanderId": "LX0B00",
+        "pivotId": "LXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "ad54cfc473ddbb808903e6a84bfabd88effc5fb662b9632b91d86c4887833278",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LX0B00::campioni-del-branco",
+        "name": "Campioni del Branco",
+        "faction": "Liberti",
+        "commanderId": "LX0B00",
+        "pivotId": "LXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "46f5909cac7200da0f3042fef913f2de42e479859f6084688eb25a88375bbc4e",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LX0B00::convoglio-del-ripudio",
+        "name": "Convoglio del Ripudio",
+        "faction": "Liberti",
+        "commanderId": "LX0B00",
+        "pivotId": "LXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "fb02f715b1e2881c9f93e9428aaa9470f9cf72044f36aba6d4793dd9a10efc2c",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LX0B00::schianto-di-massa",
+        "name": "Schianto di Massa",
+        "faction": "Liberti",
+        "commanderId": "LX0B00",
+        "pivotId": "LXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "b433d898473ebe0eeaad7635c1ca2ebdee234e92a913c6c64ae0c15153cf47f9",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LXCMD02::liberti-pravus-sangue-e-sabbia",
+        "name": "Liberti · Pravus · Sangue e Sabbia",
+        "faction": "Liberti",
+        "commanderId": "LXCMD02",
+        "pivotId": "LXPIV01",
+        "missionId": "LBMSN02",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "15c7b71c6f386a5373e0212df09db2ad500d4d8b4e1e17380933e7b4dae906c6",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LXCMD02::sanguis-dell-orda",
+        "name": "Sanguis dell’Orda",
+        "faction": "Liberti",
+        "commanderId": "LXCMD02",
+        "pivotId": "LXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "ec396f98571265c5d8e0588e66e2c91faa65721d0b703b31b606cc1682682c32",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LXCMD02::arena-d-agguato",
+        "name": "Arena d’Agguato",
+        "faction": "Liberti",
+        "commanderId": "LXCMD02",
+        "pivotId": "LXPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "d7957f8ff5646591efff89d3fcc6e83ae1631d495b4e8ce581f1c04a24a85b70",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LXCMD02::emorragia-mobile",
+        "name": "Emorragia Mobile",
+        "faction": "Liberti",
+        "commanderId": "LXCMD02",
+        "pivotId": "LXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "f9919f68e2d06fb684d61b26f17bbe2855881d77e1c342bab9c0b4e1907a21e3",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Liberti::LXCMD02::carovana-del-macello",
+        "name": "Carovana del Macello",
+        "faction": "Liberti",
+        "commanderId": "LXCMD02",
+        "pivotId": "LXPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "43d0e4a7a612a55ea0ea7e41b8679d60eae1447c82d0b4b22f2b78b9df8205a5",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AG0B00::agathoi-alexandros-tafos-lithos",
+        "name": "Agathoi · Alexandros · Tafos Lithos",
+        "faction": "Agathoi",
+        "commanderId": "AG0B00",
+        "pivotId": "AGPIV01",
+        "missionId": "AGMSN01",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "d0efa877e368cffa32480f75fbad31af2414bca5a580415ce74c489e4bc85ab3",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AG0B00::citta-vivente",
+        "name": "Città Vivente",
+        "faction": "Agathoi",
+        "commanderId": "AG0B00",
+        "pivotId": "AGPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "15676dbd41ccb7e0fcb6fda0323e4cfe176d12ea5f623d440843640a19785102",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AG0B00::santuario-inespugnabile",
+        "name": "Santuario Inespugnabile",
+        "faction": "Agathoi",
+        "commanderId": "AG0B00",
+        "pivotId": "AGPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "1029c9be518e4dee260bc2a284601389328954a75ac7567ddd67d7654ed8bee3",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AG0B00::muro-in-marcia",
+        "name": "Muro in Marcia",
+        "faction": "Agathoi",
+        "commanderId": "AG0B00",
+        "pivotId": "AGPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "d2eae6389293652317b158ca8cc9849774901b12143e2a333fed02001dfb69c8",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AG0B00::furia-del-colosso",
+        "name": "Furia del Colosso",
+        "faction": "Agathoi",
+        "commanderId": "AG0B00",
+        "pivotId": "AGPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "a6b7617730d421a42650b2e78047a5167474dc9aa9ab5aff1df63982222d324b",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AGCMD02::agathoi-dikayos-erkos",
+        "name": "Agathoi · Dikayos · Erkos",
+        "faction": "Agathoi",
+        "commanderId": "AGCMD02",
+        "pivotId": "AGPIV01",
+        "missionId": "AGMSN02",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "b590fe7d9130728f99fa04511cf53fc8a863eb52feb38d5c5c6b7f2423c82351",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AGCMD02::agora-dei-rovi",
+        "name": "Agorà dei Rovi",
+        "faction": "Agathoi",
+        "commanderId": "AGCMD02",
+        "pivotId": "AGPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "d5281c47b93a56b61d91630388f45816346939259299e0405adbe92eaf7ff01e",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AGCMD02::reticolo-di-reazione",
+        "name": "Reticolo di Reazione",
+        "faction": "Agathoi",
+        "commanderId": "AGCMD02",
+        "pivotId": "AGPIV01",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "0681c635e28aaee08ffd16cfa83a63bbd6b48cb5e9dec831c4ba6a3ff169dad6",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AGCMD02::spine-di-erkos",
+        "name": "Spine di Erkos",
+        "faction": "Agathoi",
+        "commanderId": "AGCMD02",
+        "pivotId": "AGPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "a535abcb39dbcb9258631ea161089248c742e205cba05163b9de975664b91c98",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Agathoi::AGCMD02::caccia-nella-falange",
+        "name": "Caccia nella Falange",
+        "faction": "Agathoi",
+        "commanderId": "AGCMD02",
+        "pivotId": "AGPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "8ec7441eef114cb2480822d96515841764759784942b1b696b611f7bbc91913b",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FB0B00::fabeot-gerarca-ex-lucis-tenebrae",
+        "name": "Fabeot · Gerarca · Ex Lucis Tenebrae",
+        "faction": "Fabeot",
+        "commanderId": "FB0B00",
+        "pivotId": "FBC1F04",
+        "missionId": "FBMSN01",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "a0675d1ecd3f9fde7cd4531b3562201b0f989d35b39c574701415fa1d0e71a6a",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FB0B00::sentenza-di-stasi",
+        "name": "Sentenza di Stasi",
+        "faction": "Fabeot",
+        "commanderId": "FB0B00",
+        "pivotId": "FBC1F04",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "b1edff8c615fccced6ed81934b710c4af24c20d8b58c1027d7eac09d34e415ff",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FB0B00::esecuzione-porpora",
+        "name": "Esecuzione Porpora",
+        "faction": "Fabeot",
+        "commanderId": "FB0B00",
+        "pivotId": "FBC1F04",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "d0d5d39c01f76a0575669ba6ecbec79f81c1671de5f5bad29e6427de78e4b6ff",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FB0B00::camera-di-condanna",
+        "name": "Camera di Condanna",
+        "faction": "Fabeot",
+        "commanderId": "FB0B00",
+        "pivotId": "FBPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "02f54a737804c2f00271a7bd6bc79a94e41f2db2dbdd0932013ac349efd41bbe",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FB0B00::acquisizione-territoriale",
+        "name": "Acquisizione Territoriale",
+        "faction": "Fabeot",
+        "commanderId": "FB0B00",
+        "pivotId": "FBPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "7807431366cabaccf75218b99ef0545451aeeec3a3b4ef5d2d5ba5a0058fac06",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FBCMD02::fabeot-emissario-cospirazione",
+        "name": "Fabeot · Emissario · Cospirazione",
+        "faction": "Fabeot",
+        "commanderId": "FBCMD02",
+        "pivotId": "FBC1F04",
+        "missionId": "FBMSN02",
+        "category": "mission",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "3bffcb2d10b6bd373bf0b54e10b0c8e0d0f8708f092d586c592ddad11df6a1d2",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FBCMD02::logistica-compromessa",
+        "name": "Logistica Compromessa",
+        "faction": "Fabeot",
+        "commanderId": "FBCMD02",
+        "pivotId": "FBC1F04",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "c08370d2edae1b93ac415a5689ebcfa9064430e72885db640ace149fbcc3e64e",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FBCMD02::falsa-abbondanza",
+        "name": "Falsa Abbondanza",
+        "faction": "Fabeot",
+        "commanderId": "FBCMD02",
+        "pivotId": "FBC1F04",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "d7986d8d8c5e2fc95032fcd6edca85c93fd7ca3569e7014d2ed2affeebfff469",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FBCMD02::torre-dell-embargo",
+        "name": "Torre dell’Embargo",
+        "faction": "Fabeot",
+        "commanderId": "FBCMD02",
+        "pivotId": "FBPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "6e5c2fe4b4a9972411f1667c77d663f971d816a1748e6bfd274d8a7edbfe1b42",
+        "decision": "KEEP"
+      },
+      {
+        "key": "Fabeot::FBCMD02::rete-di-dislocazione",
+        "name": "Rete di Dislocazione",
+        "faction": "Fabeot",
+        "commanderId": "FBCMD02",
+        "pivotId": "FBPIV02",
+        "missionId": null,
+        "category": "tactical",
+        "countedCards": 30,
+        "valid": true,
+        "contentHash": "5b9a8fa6c580a40e954cac8ad4e77575272b126596a78a381800948082bba607",
+        "decision": "KEEP"
+      }
+    ],
+    "officialMaps": [
+      {
+        "id": "map1_starter",
+        "name": "Campo Starter",
+        "playerCount": 2,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "e7db8dfc046305efdd53fbfab3bbdf9bfd178b08884661aa6a15fb794cc37312",
+        "decision": "KEEP"
+      },
+      {
+        "id": "custom_single_ms0nf51r",
+        "name": "Diamond 4",
+        "playerCount": 4,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "2530b71dfd90c30874da0f9c67f57c2d99927088a783403bb5b1b30406fdd9ef",
+        "decision": "KEEP"
+      },
+      {
+        "id": "map1_starter_copy",
+        "name": "Claustro Clash",
+        "playerCount": 4,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "47962b9b1a9817fb3369083394de82b8144e8cd84dffa6551ea15fd17af0f66d",
+        "decision": "KEEP"
+      },
+      {
+        "id": "custom_double_ms0ra3ds",
+        "name": "Narrow Path",
+        "playerCount": 2,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "c2bf56a6d70f59f8439dc1cfc8465a5ad66dbd931eeb949554fb1eafa5a3e9b8",
+        "decision": "KEEP"
+      },
+      {
+        "id": "map3_quadrivium_copy",
+        "name": "Triple Battlefield",
+        "playerCount": 4,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "03c30d11bfabe1d37898431d757b7cf03297b99e594bf821353968586f14138b",
+        "decision": "KEEP"
+      },
+      {
+        "id": "custom_double_ms0cunhu",
+        "name": "The Valley",
+        "playerCount": 3,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "044dfa7a747fecce6f91a926685df7a3c7b438e5f68d85b3f3620f33c00054fa",
+        "decision": "KEEP"
+      },
+      {
+        "id": "custom_triple_ms3r4ifn",
+        "name": "Central hotspot",
+        "playerCount": 3,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "a23c5249ddd01e9991bafd6147c7ecc244f2cf8adbecff3fb2e88fb021bdbba5",
+        "decision": "KEEP"
+      },
+      {
+        "id": "custom_double_ms3ppdyc",
+        "name": "Plains 2G large",
+        "playerCount": 2,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "1f6e628abb4d929a614d8526008d4b5c763e272b14ed999630193fc1da7a63d9",
+        "decision": "KEEP"
+      },
+      {
+        "id": "custom_triple_ms3s2abv",
+        "name": "La Trappola",
+        "playerCount": 4,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "d9e92c4564afba26fcaaf66284eff68d2d743cacd3b7c456142e57cef052a198",
+        "decision": "KEEP"
+      },
+      {
+        "id": "map10_snow_bf_4pl_3x",
+        "name": "Snow BF - 4PL - 3x",
+        "playerCount": 4,
+        "enabled": true,
+        "official": true,
+        "valid": true,
+        "validationErrors": [],
+        "contentHash": "62d39d73a3672a3548eb5839de9821ad4a8c1cafc21ad9d4ba236e2faf021a99",
+        "decision": "KEEP"
+      }
+    ],
+    "legacyMaps": [
+      {
+        "id": "map2_triumvirate",
+        "name": "Triumvirato Rubro",
+        "playerCount": 3,
+        "enabled": false,
+        "official": true,
+        "valid": false,
+        "validationErrors": [
+          {
+            "code": "E_MAP_CENTRAL_PS_NOT_EQUIDISTANT",
+            "message": "Il PS centrale deve essere equidistante in linea retta da tutti i QG; distanze: 10, 10, 6.",
+            "coord": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "contentHash": "689eae5a6dc5fc456e739ea8c03b3b77334bd564eaa3ab6cbe4f3e08b7f4a256",
+        "decision": "REMOVE",
+        "reason": "Legacy map disabled by F9R3: its central strategic point is not equidistant from every headquarters. Keep resolver/storage compatibility only.",
+        "supportPolicy": "compatibility-only-no-new-assets-or-localization"
+      },
+      {
+        "id": "map3_quadrivium",
+        "name": "Quadrivio Spezzato",
+        "playerCount": 4,
+        "enabled": false,
+        "official": true,
+        "valid": false,
+        "validationErrors": [
+          {
+            "code": "E_MAP_CENTRAL_PS_NOT_EQUIDISTANT",
+            "message": "Il PS centrale deve essere equidistante in linea retta da tutti i QG; distanze: 12, 9, 9, 12.",
+            "coord": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "contentHash": "f3d65d22f804e29f5a136e05b42be442e0c2847137932e137d67c57a9988f031",
+        "decision": "REMOVE",
+        "reason": "Legacy map disabled by F9R3: its central strategic point is not equidistant from every headquarters. Keep resolver/storage compatibility only.",
+        "supportPolicy": "compatibility-only-no-new-assets-or-localization"
+      }
+    ]
+  },
+  "assetReferences": [
+    {
+      "path": "assets/maps/backgrounds/f9r3_narrow_path_desertcenter.webp",
+      "exists": true,
+      "bytes": 696704,
+      "sha256": "674b4b3369b4d01b1defe1f216c23e8ae60e5dd99d0283dd749e67b4910a5f93",
+      "owners": [
+        {
+          "category": "map",
+          "id": "custom_double_ms0ra3ds",
+          "decision": "KEEP"
+        }
+      ],
+      "decision": "KEEP"
+    },
+    {
+      "path": "assets/maps/backgrounds/map-bg-custom_double_ms3ppdyc-plains_webp-ms3qzmsc.webp",
+      "exists": true,
+      "bytes": 3492178,
+      "sha256": "a40452d38bb67a5f8767e2e411383e48f9e3fd3c5a4b9dd05e9a5a9216bda7dc",
+      "owners": [
+        {
+          "category": "map",
+          "id": "custom_double_ms3ppdyc",
+          "decision": "KEEP"
+        }
+      ],
+      "decision": "KEEP"
+    },
+    {
+      "path": "assets/maps/backgrounds/map-bg-custom_triple_ms3r4ifn-ruins_webp-ms3rwq9c.webp",
+      "exists": true,
+      "bytes": 2890810,
+      "sha256": "5df2e20482575eb3ab3ca4e4f477f6440e2093a89ac7df471ba60996e8f23238",
+      "owners": [
+        {
+          "category": "map",
+          "id": "custom_triple_ms3r4ifn",
+          "decision": "KEEP"
+        }
+      ],
+      "decision": "KEEP"
+    },
+    {
+      "path": "assets/maps/backgrounds/map-bg-custom_triple_ms3s2abv-trap_webp-ms3skg6o.webp",
+      "exists": true,
+      "bytes": 3245958,
+      "sha256": "fa7fbfc9926ca29436409e9e55dbb67bea243d6393e5da672f373d3c3224102c",
+      "owners": [
+        {
+          "category": "map",
+          "id": "custom_triple_ms3s2abv",
+          "decision": "KEEP"
+        }
+      ],
+      "decision": "KEEP"
+    },
+    {
+      "path": "assets/maps/backgrounds/snow_bf_4pl_3x.webp",
+      "exists": true,
+      "bytes": 626004,
+      "sha256": "6cb3ea1fa2f67c7b509a6e57dca0d787fcf5deac3c7e8059796d605be779e8dd",
+      "owners": [
+        {
+          "category": "map",
+          "id": "map10_snow_bf_4pl_3x",
+          "decision": "KEEP"
+        }
+      ],
+      "decision": "KEEP"
+    }
+  ],
+  "findings": {
+    "duplicateIds": [],
+    "missingReferences": [],
+    "illegalDecks": [],
+    "invalidKeptMaps": [],
+    "invalidRemovedMaps": [
+      {
+        "id": "map2_triumvirate",
+        "errors": [
+          {
+            "code": "E_MAP_CENTRAL_PS_NOT_EQUIDISTANT",
+            "message": "Il PS centrale deve essere equidistante in linea retta da tutti i QG; distanze: 10, 10, 6.",
+            "coord": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "id": "map3_quadrivium",
+        "errors": [
+          {
+            "code": "E_MAP_CENTRAL_PS_NOT_EQUIDISTANT",
+            "message": "Il PS centrale deve essere equidistante in linea retta da tutti i QG; distanze: 12, 9, 9, 12.",
+            "coord": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "undecidedContent": [],
+    "redesignWithoutReason": [],
+    "removeSupportViolations": []
+  },
+  "catalogHash": "eab4dadff4d9f6d4bc8e99bd38d7331e4d1559e69d40547b0039a75c1f140709"
+}

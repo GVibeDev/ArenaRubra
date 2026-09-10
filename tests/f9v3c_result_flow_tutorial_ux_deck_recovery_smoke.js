@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { assertCurrentBuildInfo } = require("./helpers/build_info_contract");
 
 const ROOT = path.resolve(__dirname, "..");
 const calls = [];
@@ -165,8 +166,7 @@ for (const token of [
   "Vai alla Prova sul campo I"
 ]) if (!source.includes(token)) throw new Error(`F9V3c source contract missing ${token}`);
 
-if (ev("BUILD_INFO.version") !== "C2-STABLE-1-F9V3c-APK-M4c") throw new Error("Build version invalid");
-if (ev("BUILD_INFO.buildChannel") !== "starter2-result-flow-v3c") throw new Error("Build channel invalid");
+assertCurrentBuildInfo(ev("BUILD_INFO"));
 
 console.log(JSON.stringify({
   ok:true,

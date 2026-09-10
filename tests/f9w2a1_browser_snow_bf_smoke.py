@@ -1,4 +1,5 @@
 from __future__ import annotations
+from browser_runtime import chromium_launch_options
 import contextlib
 import http.server
 import os
@@ -44,12 +45,16 @@ def main() -> None:
         raise SystemExit("F9W2a1 browser smoke richiede il checkout completo, non il solo overwrite ZIP.")
 
     with local_server(ROOT) as url, sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(**chromium_launch_options())
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
         errors: list[str] = []
         page.on("pageerror", lambda exc: errors.append(str(exc)))
         page.goto(url, wait_until="domcontentloaded")
-        page.wait_for_function("() => typeof getMapDefinitionById === 'function' && typeof arenaInstallOfficialSnowMapF9W2a1 === 'function'")
+        page.wait_for_function(
+            "() => typeof getMapDefinitionById === 'function' "
+            "&& typeof F9W2A1_OFFICIAL_MAP_DEFINITIONS === 'object'"
+        )
+        assert page.evaluate("typeof arenaInstallOfficialSnowMapF9W2a1") == "undefined"
 
         definition = page.evaluate(f"getMapDefinitionById('{MAP_ID}')")
         assert definition["official"] is True

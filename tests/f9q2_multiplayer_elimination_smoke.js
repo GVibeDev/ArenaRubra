@@ -8,7 +8,14 @@ const root = path.resolve(__dirname, "..");
 const files = [
   "data/terrain_registry.js",
   "data/map_definitions.js",
+  "src/map_normalization.js",
+  "src/map_pathfinding.js",
+  "src/map_validation.js",
+  "src/map_persistence.js",
+  "src/map_state_queries.js",
   "src/map_runtime.js",
+  "src/rules/victory_lifecycle.js",
+  "src/rules/pressure_victory.js",
   "src/rules.js"
 ];
 const prefix = `
@@ -61,4 +68,3 @@ console.log("F9Q2 multiplayer elimination smoke: OK");
 
 const source = prefix + files.map(file => fs.readFileSync(path.join(root, file), "utf8")).join("\n") + checks;
 new Function("assert", "console", source)(assert, console);
-

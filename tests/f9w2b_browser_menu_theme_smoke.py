@@ -1,4 +1,5 @@
 from __future__ import annotations
+from browser_runtime import chromium_launch_options
 import contextlib
 import http.server
 import os
@@ -51,12 +52,17 @@ def main() -> None:
         raise SystemExit("F9W2b browser smoke richiede il checkout completo, non il solo overwrite ZIP.")
 
     with local_server(ROOT) as url, sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(**chromium_launch_options())
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
         errors: list[str] = []
         page.on("pageerror", lambda exc: errors.append(str(exc)))
         page.goto(url, wait_until="domcontentloaded")
-        page.wait_for_function("() => typeof arenaMenuThemeSnapshotF9W2b === 'function' && typeof arenaProductProfileSetF9W2a === 'function'")
+        page.wait_for_function("""() =>
+            typeof arenaMenuThemeSnapshotF9W2b === 'function'
+            && typeof arenaProductProfileSetF9W2a === 'function'
+            && arenaMenuThemeCurrentF9W2b() === 'rubra_classic'
+            && document.documentElement.dataset.arenaMenuTheme === 'rubra_classic'
+        """)
 
         snapshot = page.evaluate("arenaMenuThemeSnapshotF9W2b()")
         assert snapshot["key"] == "rubra_classic", snapshot
@@ -78,7 +84,11 @@ def main() -> None:
         # Persistence survives reload.
         page.evaluate("arenaMenuThemeApplyF9W2b('fabeot_vesper', {persist:true})")
         page.reload(wait_until="domcontentloaded")
-        page.wait_for_function("() => typeof arenaMenuThemeSnapshotF9W2b === 'function'")
+        page.wait_for_function("""() =>
+            typeof arenaMenuThemeSnapshotF9W2b === 'function'
+            && arenaMenuThemeCurrentF9W2b() === 'fabeot_vesper'
+            && document.documentElement.dataset.arenaMenuTheme === 'fabeot_vesper'
+        """)
         assert page.evaluate("arenaMenuThemeCurrentF9W2b()") == "fabeot_vesper"
         assert page.evaluate("document.documentElement.dataset.arenaMenuTheme") == "fabeot_vesper"
 
@@ -90,10 +100,15 @@ def main() -> None:
         assert page.locator("#arenaMenuThemeSelectF9W2b").is_visible()
 
         style_text = page.evaluate("document.getElementById('arenaMenuThemeStylesF9W2b').textContent")
+        board_selectors = page.evaluate("""() => Array.from(
+            document.getElementById('arenaMenuThemeStylesF9W2b').sheet.cssRules
+        ).map(rule => rule.selectorText || '').filter(selector =>
+            selector.replaceAll(':not(#boardWrap)', '').includes('#board')
+        )""")
         assert ".mainMenuScreen" in style_text
         assert ".controlCenterPanelSheet" in style_text
         assert ".gameScreen" not in style_text
-        assert "#board" not in style_text
+        assert not board_selectors, board_selectors
 
         assert not errors, f"Browser page errors: {errors}"
         browser.close()

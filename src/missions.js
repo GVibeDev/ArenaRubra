@@ -6,6 +6,11 @@
 
 let missionTrackerProcessing = false;
 
+function missionTrackerI18n(key, fallback, params = {}) {
+  if (typeof arenaI18nText === "function") return arenaI18nText(`missionUi.trackerDetails.${key}`, fallback, params);
+  return Object.entries(params).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), String(fallback || ""));
+}
+
 function ensureMissionTelemetry() {
   if (!state) return null;
   if (!state.missionTelemetry) state.missionTelemetry = { byMission:{} };
@@ -52,7 +57,8 @@ function missionSupportedMetrics() {
 
 function missionDefinitionById(id) {
   if (!id || typeof MISSION_DEFINITIONS === "undefined") return null;
-  return MISSION_DEFINITIONS.find(def => def && def.id === id) || null;
+  const definition = MISSION_DEFINITIONS.find(def => def && def.id === id) || null;
+  return definition && typeof arenaContentMission === "function" ? arenaContentMission(definition) : definition;
 }
 
 function missionCardForSide(side) {
@@ -77,7 +83,7 @@ function missionEntryState(item) {
     sourceEnemySide:null,
     satisfied:false,
     completed:false,
-    detail:"Non valutato",
+    detail:missionTrackerI18n("notEvaluated", "Non valutato"),
     lastUpdatedAt:null
   };
 }
@@ -316,7 +322,7 @@ function missionResolveMetric(side, item, runtime, context={}) {
       const ene = state.energy[side] || 0;
       const hand = state.hand && state.hand[side] ? state.hand[side].length : 0;
       satisfied = missionCompare(ene, item.energy.operator, item.energy.value) && missionCompare(hand, item.hand.operator, item.hand.value);
-      current = `${ene} ENE / ${hand} carte`; target = `${item.energy.value} ENE / ${item.hand.value} carte`;
+      current = missionTrackerI18n("energyCards", "{energy} ENE / {cards} carte", { energy:ene, cards:hand }); target = missionTrackerI18n("energyCards", "{energy} ENE / {cards} carte", { energy:item.energy.value, cards:item.hand.value });
       detail = `${current}`;
       return {current,target,satisfied,detail};
     }
@@ -327,20 +333,20 @@ function missionResolveMetric(side, item, runtime, context={}) {
       const control = Number(missionCentralCell() && missionCentralCell().control || 0);
       const match = checkpointEnemy ? control === checkpointEnemy : enemies.includes(control);
       current = match; target = true;
-      detail = match && control ? `${missionPlayerLabel(control)} controlla il PS centrale` : "Nessun avversario valido controlla il PS centrale";
+      detail = match && control ? missionTrackerI18n("controlsCentral", "{player} controlla il PS centrale", { player:missionPlayerLabel(control) }) : missionTrackerI18n("noCentralOpponent", "Nessun avversario valido controlla il PS centrale");
       break;
     }
     case "enemy_pressure": {
       const values = enemies.map(enemySide => ({ side:enemySide, value:Number(state.pressure && state.pressure[enemySide] || 0) }));
       const best = values.sort((a,b) => b.value - a.value || a.side - b.side)[0] || {side:null,value:0};
       current = best.value;
-      detail = best.side ? `${missionPlayerLabel(best.side)}: ${best.value} Pressione` : "Nessun avversario attivo";
+      detail = best.side ? missionTrackerI18n("playerPressure", "{player}: {value} Pressione", { player:missionPlayerLabel(best.side), value:best.value }) : missionTrackerI18n("noActiveOpponent", "Nessun avversario attivo");
       break;
     }
     case "enemy_pivot_and_commander_in_play": {
       const matchSide = enemies.find(enemySide => missionPivotInPlay(enemySide) && missionCommanderInPlay(enemySide)) || null;
       current = Boolean(matchSide); target = true; satisfied = Boolean(matchSide);
-      return {current,target,satisfied,detail:matchSide ? `${missionPlayerLabel(matchSide)} mantiene Pivot e Comandante` : "Nessun singolo avversario mantiene insieme Pivot e Comandante", sourceEnemySide:matchSide};
+      return {current,target,satisfied,detail:matchSide ? missionTrackerI18n("keepsPivotCommander", "{player} mantiene Pivot e Comandante", { player:missionPlayerLabel(matchSide) }) : missionTrackerI18n("noPivotCommanderOpponent", "Nessun singolo avversario mantiene insieme Pivot e Comandante"), sourceEnemySide:matchSide};
     }
     case "vehicles_in_play": current = missionUnits(side).filter(u => u.type === "Veicolo").length; break;
     case "enemy_units_destroyed": current = counters.enemyUnitsDestroyed; break;
@@ -349,7 +355,7 @@ function missionResolveMetric(side, item, runtime, context={}) {
       const vehicles = missionUnits(side).filter(u => u.type === "Veicolo").length;
       satisfied = (!item.requireNonZero || infantry + vehicles > 0) && infantry === vehicles;
       current = `${infantry}:${vehicles}`; target = "1:1";
-      return {current,target,satisfied,detail:`Fanterie ${infantry}, veicoli ${vehicles}`};
+      return {current,target,satisfied,detail:missionTrackerI18n("infantryVehicles", "Fanterie {infantry}, veicoli {vehicles}", { infantry, vehicles })};
     }
     case "enemy_structures_destroyed": current = counters.enemyStructuresDestroyed; break;
     case "enemy_units_destroyed_in_owner_turn": current = counters.enemyUnitsDestroyedCurrentOwnerTurn; break;
@@ -359,7 +365,7 @@ function missionResolveMetric(side, item, runtime, context={}) {
       const values = candidates.map(enemySide => ({side:enemySide,value:missionControlledPs(enemySide)}));
       const best = values.sort((a,b)=>b.value-a.value || a.side-b.side)[0] || {side:null,value:0};
       current = best.value;
-      detail = best.side ? `${missionPlayerLabel(best.side)} controlla ${best.value} PS` : "Nessun avversario attivo";
+      detail = best.side ? missionTrackerI18n("controlsSp", "{player} controlla {value} PS", { player:missionPlayerLabel(best.side), value:best.value }) : missionTrackerI18n("noActiveOpponent", "Nessun avversario attivo");
       break;
     }
     case "own_commander_destroyed": current = counters.ownCommanderDestroyed; target = true; break;
@@ -375,7 +381,7 @@ function missionResolveMetric(side, item, runtime, context={}) {
       const ownCount = missionUnits(side).length;
       const matchSide = candidates.find(enemySide => missionUnits(enemySide).length > ownCount) || null;
       current = Boolean(matchSide); target = true;
-      detail = matchSide ? `${missionPlayerLabel(matchSide)} ha ${missionUnits(matchSide).length} unità contro ${ownCount}` : `Nessun avversario supera le tue ${ownCount} unità`;
+      detail = matchSide ? missionTrackerI18n("unitsAgainst", "{player} ha {enemy} unità contro {own}", { player:missionPlayerLabel(matchSide), enemy:missionUnits(matchSide).length, own:ownCount }) : missionTrackerI18n("noMoreUnits", "Nessun avversario supera le tue {count} unità", { count:ownCount });
       break;
     }
     case "own_commander_or_pivot_destroyed": current = counters.ownCommanderDestroyed || counters.ownPivotDestroyed; target = true; break;
@@ -400,11 +406,11 @@ function missionResolveMetric(side, item, runtime, context={}) {
       const ownEnergy = Number(state.energy && state.energy[side] || 0);
       const matchSide = candidates.find(enemySide => Number(state.energy && state.energy[enemySide] || 0) > ownEnergy) || null;
       current = Boolean(matchSide); target = true;
-      detail = matchSide ? `${missionPlayerLabel(matchSide)} ha ${state.energy[matchSide] || 0} ENE contro ${ownEnergy}` : `Nessun avversario supera i tuoi ${ownEnergy} ENE`;
+      detail = matchSide ? missionTrackerI18n("energyAgainst", "{player} ha {enemy} ENE contro {own}", { player:missionPlayerLabel(matchSide), enemy:state.energy[matchSide] || 0, own:ownEnergy }) : missionTrackerI18n("noMoreEnergy", "Nessun avversario supera i tuoi {count} ENE", { count:ownEnergy });
       break;
     }
     default:
-      return {current:0,target, satisfied:false, detail:`Metrica non supportata: ${item.metric}`, warning:true};
+      return {current:0,target, satisfied:false, detail:missionTrackerI18n("unsupportedMetric", "Metrica non supportata: {metric}", { metric:item.metric }), warning:true};
   }
 
   satisfied = missionCompare(current, item.operator || "gte", target);
@@ -477,7 +483,7 @@ function missionEvaluateSide(side, reason="manual", context={}) {
       }
       entry.completed = entry.completed || entry.streak >= item.consecutive;
       const sourceLabel = entry.sourceEnemySide ? ` · ${missionPlayerLabel(entry.sourceEnemySide)}` : "";
-      entry.detail = `${entry.detail}${sourceLabel} · serie ${entry.streak}/${item.consecutive}`;
+      entry.detail = missionTrackerI18n("streak", "{detail}{source} · serie {current}/{target}", { detail:entry.detail, source:sourceLabel, current:entry.streak, target:item.consecutive });
     } else if (!item.consecutive) {
       if (item.cumulative || definition.missionClass === "ordinary") entry.completed = entry.completed || entry.satisfied;
       else entry.completed = entry.satisfied;

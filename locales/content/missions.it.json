@@ -1,0 +1,268 @@
+{
+  "content": {
+    "missionLabels": {
+      "card": {
+        "objectives": "Obiettivi",
+        "conditions": "Condizioni",
+        "reward": "Ricompensa"
+      }
+    },
+    "missions": {
+      "NXMSN01": {
+        "name": "Civiltà Algoritmica",
+        "objectives": {
+          "o1": {
+            "text": "Controlla almeno 2 PS a un checkpoint di inizio turno personale."
+          },
+          "o2": {
+            "text": "Costruisci 3 strutture totali adiacenti o sovrapposte a un PS o QG."
+          },
+          "o3": {
+            "text": "Possiedi contemporaneamente almeno 8 ENE e 6 carte in mano."
+          }
+        },
+        "reward": {
+          "text": "Gioca 1 carta a costo 0, poi gioca 2 carte con costo ridotto di 1 ENE."
+        }
+      },
+      "NXMSN02": {
+        "name": "Mainframe",
+        "objectives": {
+          "o1": {
+            "text": "Controlla il PS centrale a un checkpoint di inizio turno personale."
+          },
+          "o2": {
+            "text": "Usa 3 effetti di tattiche o abilità con tag PS."
+          },
+          "o3": {
+            "text": "Mantieni una tua unità Pivot in gioco."
+          }
+        },
+        "reward": {
+          "text": "Guadagna immediatamente 2 ENE per ogni PS che controlli."
+        }
+      },
+      "NXMSND01": {
+        "name": "Punto di Ripristino",
+        "conditions": {
+          "c1": {
+            "text": "Almeno un avversario attivo controlla il PS centrale per 5 round consecutivi."
+          },
+          "c2": {
+            "text": "Almeno un avversario attivo ha 3 o più Pressione."
+          },
+          "c3": {
+            "text": "Uno stesso avversario attivo mantiene contemporaneamente Pivot e Comandante in gioco."
+          }
+        },
+        "reward": {
+          "text": "Per ogni condizione rispettata: guadagna 3 ENE e pesca 1 carta (massimo ×3)."
+        }
+      },
+      "EXMSN01": {
+        "name": "Triumphale Iter",
+        "objectives": {
+          "o1": {
+            "text": "Mantieni almeno 4 veicoli in gioco."
+          },
+          "o2": {
+            "text": "Distruggi 3 unità nemiche."
+          },
+          "o3": {
+            "text": "Mantieni una tua unità Pivot in gioco."
+          }
+        },
+        "reward": {
+          "text": "Pesca 3 carte; quelle carte costano 1 ENE in meno."
+        }
+      },
+      "EXMSN02": {
+        "name": "Ordo Legio",
+        "objectives": {
+          "o1": {
+            "text": "Mantieni un rapporto esatto 50/50 tra fanterie e veicoli per 2 turni personali consecutivi."
+          },
+          "o2": {
+            "text": "Distruggi 2 strutture nemiche."
+          },
+          "o3": {
+            "text": "Distruggi almeno 2 unità nemiche nello stesso turno personale."
+          }
+        },
+        "reward": {
+          "text": "Pesca 3 carte; quelle carte costano 1 ENE in meno."
+        }
+      },
+      "EXMSND01": {
+        "name": "Ultimo Assalto",
+        "conditions": {
+          "c1": {
+            "text": "Gli avversari hanno distrutto complessivamente 2 tuoi veicoli pesanti."
+          },
+          "c2": {
+            "text": "Uno stesso avversario controlla almeno 2 PS per 3 suoi turni personali consecutivi."
+          },
+          "c3": {
+            "text": "Un avversario ha distrutto il tuo Comandante."
+          }
+        },
+        "reward": {
+          "text": "Per ogni condizione: 1 veicolo distinto ignora la DEF nel prossimo attacco e 1 fanteria distinta può agire due volte nel round corrente."
+        }
+      },
+      "LBMSN01": {
+        "name": "Arena Selvaggia",
+        "objectives": {
+          "o1": {
+            "text": "Metti in gioco 7 unità nel corso del ciclo Missione."
+          },
+          "o2": {
+            "text": "Attiva Superiorità Numerica su 3 nemici distinti."
+          },
+          "o3": {
+            "text": "Rimani senza carte ordinarie in mano."
+          }
+        },
+        "reward": {
+          "text": "Pesca 5 carte."
+        }
+      },
+      "LBMSN02": {
+        "name": "Sangue e Sabbia",
+        "objectives": {
+          "o1": {
+            "text": "Infliggi 10 danni totali da Sanguinamento."
+          },
+          "o2": {
+            "text": "Metti in gioco almeno 2 unità tramite tattiche."
+          },
+          "o3": {
+            "text": "Porta una tua unità entro R6 da almeno un QG avversario attivo."
+          }
+        },
+        "reward": {
+          "text": "Guadagna immediatamente 5 ENE."
+        }
+      },
+      "LBMSND01": {
+        "name": "Ultima Possibilità",
+        "conditions": {
+          "c1": {
+            "text": "Gli avversari hanno distrutto complessivamente 8 tue unità."
+          },
+          "c2": {
+            "text": "Uno stesso avversario ha più unità di te per 3 suoi turni personali consecutivi."
+          },
+          "c3": {
+            "text": "Un avversario ha distrutto il tuo Comandante o una tua Pivot."
+          }
+        },
+        "reward": {
+          "text": "Nel round corrente puoi ripetere 1 attacco per ogni condizione rispettata (massimo 3)."
+        }
+      },
+      "AGMSN01": {
+        "name": "Tafos Lithos",
+        "objectives": {
+          "o1": {
+            "text": "Metti in gioco almeno 2 unità dal costo di 3 o più ENE."
+          },
+          "o2": {
+            "text": "Usa 3 abilità difensive: buff DEF o non bersagliabilità."
+          },
+          "o3": {
+            "text": "Porta il deck a 15 carte o meno."
+          }
+        },
+        "reward": {
+          "text": "Pesca 5 carte."
+        }
+      },
+      "AGMSN02": {
+        "name": "Erkos",
+        "objectives": {
+          "o1": {
+            "text": "Costruisci un gruppo con almeno 3 strutture alleate collegate per adiacenza."
+          },
+          "o2": {
+            "text": "Infliggi 6 danni totali con Spine."
+          },
+          "o3": {
+            "text": "Dal round 12 in poi, possiedi almeno 12 ENE."
+          }
+        },
+        "reward": {
+          "text": "Guadagna immediatamente 10 ENE."
+        }
+      },
+      "AGMSND01": {
+        "name": "Primo Verae",
+        "conditions": {
+          "c1": {
+            "text": "Gli avversari hanno distrutto complessivamente 2 tue strutture."
+          },
+          "c2": {
+            "text": "Uno stesso avversario controlla il PS centrale per 5 suoi turni personali consecutivi."
+          },
+          "c3": {
+            "text": "Un avversario ha distrutto il tuo Comandante o una tua Pivot."
+          }
+        },
+        "reward": {
+          "text": "Per ogni condizione, 1 unità distinta ottiene Scudo Fasico e non è bersagliabile nel round corrente."
+        }
+      },
+      "FBMSN01": {
+        "name": "Ex Lucis Tenebrae",
+        "objectives": {
+          "o1": {
+            "text": "Mantieni 2 tuoi veicoli entro R3 da almeno un PS."
+          },
+          "o2": {
+            "text": "Applica un Marchio 3 volte."
+          },
+          "o3": {
+            "text": "Controlla il PS centrale per 2 turni personali consecutivi."
+          }
+        },
+        "reward": {
+          "text": "Scegli un avversario attivo: perde metà del proprio deposito ENE, arrotondata per difetto."
+        }
+      },
+      "FBMSN02": {
+        "name": "Cospirazione",
+        "objectives": {
+          "o1": {
+            "text": "Guadagna 3 ENE tramite la dottrina Fabeot."
+          },
+          "o2": {
+            "text": "Metti sotto il tuo controllo 2 unità appartenenti a una qualsiasi fazione avversaria."
+          },
+          "o3": {
+            "text": "Manipola il deposito ENE di uno o più avversari 5 volte complessive."
+          }
+        },
+        "reward": {
+          "text": "Scegli un avversario attivo: quel giocatore sceglie e scarta metà delle proprie carte ordinarie in mano, arrotondata per difetto."
+        }
+      },
+      "FBMSND01": {
+        "name": "Anatema",
+        "conditions": {
+          "c1": {
+            "text": "Uno stesso avversario possiede più ENE di te per 3 suoi turni personali consecutivi."
+          },
+          "c2": {
+            "text": "Gli avversari hanno distrutto complessivamente 6 tue unità."
+          },
+          "c3": {
+            "text": "Almeno un avversario attivo ha 3 o più Pressione."
+          }
+        },
+        "reward": {
+          "text": "Per ogni condizione, scegli 1 unità distinta appartenente a qualsiasi avversario attivo: è stordita per 1 turno del suo proprietario."
+        }
+      }
+    }
+  }
+}

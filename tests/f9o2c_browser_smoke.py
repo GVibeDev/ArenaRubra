@@ -1,3 +1,4 @@
+from browser_runtime import chromium_launch_options
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 import json
@@ -5,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 errors=[]
 console_errors=[]
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox','--allow-file-access-from-files'])
+    browser=p.chromium.launch(**chromium_launch_options())
     page=browser.new_page(viewport={"width":900,"height":520}, is_mobile=True, has_touch=True)
     page.on('pageerror', lambda exc: errors.append(str(exc)))
     page.on('console', lambda msg: console_errors.append(msg.text) if msg.type=='error' else None)
@@ -27,6 +28,9 @@ with sync_playwright() as p:
     page.add_script_tag(path=str(ROOT/'src/mobile.js'))
     page.add_script_tag(path=str(ROOT/'src/camera_interaction.js'))
     page.wait_for_timeout(120)
+    # Sincronizza una volta la geometria della fixture prima di impostare una
+    # camera manuale: il primo render registra sempre version/map id correnti.
+    page.evaluate("renderAll()")
     page.evaluate('''() => {
       apkM4Camera.mobile=true;
       document.body.classList.add('mobile-apk-m4');
@@ -43,7 +47,11 @@ with sync_playwright() as p:
     after=page.evaluate('''() => ({fitScale:apkM4Camera.fitScale,zoom:apkM4Camera.zoom,x:apkM4Camera.x,y:apkM4Camera.y,mode:apkM4Camera.mode})''')
     assert after==before, (before,after)
     # L'input manuale resta operativo e non viene annullato dal render bot successivo.
-    page.evaluate('''() => { cameraSetZoom(1.25,{animate:false}); cameraInteractionPanBy(14,-9); }''')
+    page.evaluate('''() => {
+      cameraSetZoom(1.25,{animate:false});
+      cameraInteractionPanBy(14,-9);
+      applyApkM4Camera();
+    }''')
     manual=page.evaluate('''() => ({fitScale:apkM4Camera.fitScale,zoom:apkM4Camera.zoom,x:apkM4Camera.x,y:apkM4Camera.y,mode:apkM4Camera.mode})''')
     page.evaluate('''() => { for(let i=0;i<80;i++) renderAll(); }''')
     page.wait_for_timeout(120)
