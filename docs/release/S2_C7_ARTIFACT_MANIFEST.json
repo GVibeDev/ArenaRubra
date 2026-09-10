@@ -3,7 +3,7 @@
   "artifact": "ArenaRubra-Starter-1.0-Web",
   "target": "Desktop / Web",
   "profile": "distribution",
-  "sourceCommit": "10e3f463dfee3ec0d74abbb7178a9ea9e7c51378",
+  "sourceCommit": "3158f730ff16852acceb74d811fdd846dd0bb6cd",
   "sourceState": "clean-checkout",
   "cleanCheckout": true,
   "build": {
