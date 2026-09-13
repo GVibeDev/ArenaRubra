@@ -3,7 +3,7 @@
   "artifact": "ArenaRubra-Starter-1.0-Web",
   "target": "Desktop / Web",
   "profile": "distribution",
-  "sourceCommit": "3158f730ff16852acceb74d811fdd846dd0bb6cd",
+  "sourceCommit": "42f055fc4088f1410ec0ef288111da8383209be8",
   "sourceState": "clean-checkout",
   "cleanCheckout": true,
   "build": {
@@ -2087,8 +2087,8 @@
     },
     {
       "path": "css/style.css",
-      "bytes": 328580,
-      "sha256": "459419f0ef3559f0b7e34832f5ae3c78391dfaa93f59e9f8a97ace3e155050b3"
+      "bytes": 328789,
+      "sha256": "3742988a8c05ddd1923a72362c06a47697c6af2643e946b50fea09816318b106"
     },
     {
       "path": "data/builtin_decks.js",
@@ -2227,8 +2227,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 110180,
-      "sha256": "d04a607a3e8cfa48768951f303e3584c9eb08a1d2cb0e61bcd898dc8a0e040b7"
+      "bytes": 110246,
+      "sha256": "e891430fb528d5bb0574583f38e58f13895d9d1394702202c21e20da541c5f28"
     },
     {
       "path": "LICENSE",
@@ -2376,9 +2376,14 @@
       "sha256": "8e356aef008a468aae2995368d18a1d77b9db3236bf961a2a35930cd0b5f98ae"
     },
     {
+      "path": "src/android_runtime_diagnostics.js",
+      "bytes": 10466,
+      "sha256": "338f8970f0483928451ff738ee7e24200117fd8b409e3f4ad412bb1748c9ab4c"
+    },
+    {
       "path": "src/app.js",
-      "bytes": 42586,
-      "sha256": "5a2d80cd88a6078546487863f8481899b397395198fca91a5ce95ce1f885bc12"
+      "bytes": 42828,
+      "sha256": "ce0a724fd62319438ed19c2902bb69bfe2fdb0804765be0521e3c51c769a1471"
     },
     {
       "path": "src/audio_manager.js",
@@ -2452,8 +2457,8 @@
     },
     {
       "path": "src/control_center.js",
-      "bytes": 65929,
-      "sha256": "7dab94ef0353455c0e2008de7e13b08b97a591324da479ad59303bd6b57f71b4"
+      "bytes": 66186,
+      "sha256": "03e29d50f1c88762055a6d13070a9bff0c6fe235c3a9ab214360755d78a9cfdf"
     },
     {
       "path": "src/controller.js",
@@ -2587,8 +2592,8 @@
     },
     {
       "path": "src/i18n/runtime.js",
-      "bytes": 6977,
-      "sha256": "1c3b3d7cd619454284b1c2bab8a9e7ad1e635c28b94f679cc3785315a8b543e5"
+      "bytes": 7068,
+      "sha256": "6e25f84031e931dac9a9570827cd8a3ca5d9e5c8a68a2e6fa5fb99d3d71bcd6f"
     },
     {
       "path": "src/i18n/tutorial.js",
@@ -2792,7 +2797,7 @@
     }
   ],
   "summary": {
-    "files": 555,
-    "bytes": 151146364
+    "files": 556,
+    "bytes": 151157695
   }
 }
