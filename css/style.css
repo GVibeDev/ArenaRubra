@@ -1811,9 +1811,19 @@ body.app-screen-game:not(.mobile-apk-m4) .gameScreen {
   padding-bottom: 72px;
 }
 
-body.app-screen-game:not(.mobile-apk-m4) .gameHudStrip {
+body.app-screen-game:not(.mobile-apk-m4) .gameTopStack {
   position: sticky;
-  top: 58px;
+  top: 0;
+  z-index: 20;
+}
+
+body.app-screen-game:not(.mobile-apk-m4) .gameTopStack > .topTitleBar,
+body.app-screen-game:not(.mobile-apk-m4) .gameTopStack > .gameHudStrip {
+  position: relative;
+  top: auto;
+}
+
+body.app-screen-game:not(.mobile-apk-m4) .gameHudStrip {
   z-index: 19;
   display: flex;
   align-items: center;

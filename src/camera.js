@@ -350,8 +350,10 @@ function syncBoardCameraAfterRender() {
     fitToBoard({ animate:false });
     return;
   }
-  if (geometryChanged) refreshBoardCameraForGeometry(geometry, { mapChanged });
-  applyBoardCamera({ animate:false, refreshGeometry:geometryChanged, skipClamp:!geometryChanged });
+  if (geometryChanged) {
+    refreshBoardCameraForGeometry(geometry, { mapChanged });
+    applyBoardCamera({ animate:false, refreshGeometry:true });
+  }
   if (typeof cameraInteractionUpdateControls === "function") cameraInteractionUpdateControls();
 }
 

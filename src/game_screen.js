@@ -10,7 +10,9 @@ const gameScreenUiState = {
   logDockCollapsed: false,
   lastHudModeText: "",
   lastMapReturnAt: 0,
-  inspectedUnitId: null
+  inspectedUnitId: null,
+  verticalStackBound: false,
+  verticalStackFrame: 0
 };
 
 function safeText(id, value) {
@@ -40,6 +42,27 @@ function gameScreenDisplayedUnit() {
 function gameScreenDisplayedUnitId() {
   const unit = gameScreenDisplayedUnit();
   return unit && unit.uid ? unit.uid : null;
+}
+
+function gameScreenSyncVerticalStackGeometry() {
+  if (typeof document === "undefined") return null;
+  const screen = document.getElementById("gameScreen");
+  const header = screen && screen.querySelector(".topTitleBar");
+  if (!screen || !header || typeof header.getBoundingClientRect !== "function") return null;
+  const rect = header.getBoundingClientRect();
+  if (!Number.isFinite(rect.bottom) || rect.height <= 0) return null;
+  const headerBottom = Math.max(0, rect.bottom);
+  screen.style.setProperty("--game-header-bottom", `${headerBottom}px`);
+  return headerBottom;
+}
+
+function gameScreenScheduleVerticalStackGeometry() {
+  if (typeof window === "undefined") return;
+  if (gameScreenUiState.verticalStackFrame) window.cancelAnimationFrame(gameScreenUiState.verticalStackFrame);
+  gameScreenUiState.verticalStackFrame = window.requestAnimationFrame(() => {
+    gameScreenUiState.verticalStackFrame = 0;
+    gameScreenSyncVerticalStackGeometry();
+  });
 }
 
 function gameScreenInspectUnit(unitOrId) {
@@ -243,6 +266,7 @@ function closeActionsPanelAfterAcceptedTactic() {
 
 function renderGameHud() {
   if (typeof document === "undefined") return;
+  gameScreenSyncVerticalStackGeometry();
   const buildLabel = typeof buildInfoLabel === "function" ? buildInfoLabel() : "C2-STABLE-1-F9P1b-APK-M4c";
   safeText("gameHudBuild", buildLabel);
   syncSelectedUnitFloatState();
@@ -368,6 +392,12 @@ function initializeGameScreenShell() {
   if (typeof document === "undefined") return;
   if (typeof initializeGamePanelManager === "function") initializeGamePanelManager();
   if (typeof initializeBoardCamera === "function") initializeBoardCamera();
+  if (!gameScreenUiState.verticalStackBound && typeof window !== "undefined") {
+    gameScreenUiState.verticalStackBound = true;
+    window.addEventListener("resize", gameScreenScheduleVerticalStackGeometry, { passive:true });
+    window.addEventListener("orientationchange", gameScreenScheduleVerticalStackGeometry, { passive:true });
+    window.addEventListener("arena:languagechange", gameScreenScheduleVerticalStackGeometry);
+  }
   const bar = document.getElementById("gameActionBar");
   if (bar && bar.dataset.bound !== "1") {
     bar.dataset.bound = "1";
@@ -400,4 +430,5 @@ function initializeGameScreenShell() {
   }
 
   renderGameHud();
+  gameScreenScheduleVerticalStackGeometry();
 }
