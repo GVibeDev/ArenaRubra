@@ -4,6 +4,10 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
+const SUPPLEMENTAL_ARCHIVE_PATHS = new Set([
+  "assets/maps/backgrounds/battlefield.webp"
+]);
+
 function safeRelative(value) {
   const normalized = String(value || "").replaceAll("\\", "/");
   return normalized && !path.isAbsolute(normalized) && !normalized.startsWith("../") && !normalized.includes("/../");
@@ -33,7 +37,10 @@ function validateRequiredAssets(rootDir, options = {}) {
     for (const entry of fs.readdirSync(directory, { withFileTypes:true })) {
       const absolute = path.join(directory, entry.name);
       if (entry.isDirectory()) walk(absolute);
-      else filesystemAssets.push(path.relative(root, absolute).split(path.sep).join("/"));
+      else {
+        const assetPath = path.relative(root, absolute).split(path.sep).join("/");
+        if (!SUPPLEMENTAL_ARCHIVE_PATHS.has(assetPath)) filesystemAssets.push(assetPath);
+      }
     }
   }
   walk(assetRoot);

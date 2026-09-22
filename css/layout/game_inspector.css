@@ -2,16 +2,16 @@
    Theme layers may style the surface but must not set these properties. */
 body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloat {
   position: fixed;
-  top: 72px;
+  top: var(--game-header-bottom, 72px);
   right: 14px;
   left: auto;
   bottom: auto;
   transform: none;
   width: min(420px, calc(100vw - 28px));
-  max-height: calc(100dvh - 86px);
+  max-height: calc(100dvh - var(--game-header-bottom, 72px) - 14px);
 }
 body.app-screen-game:not(.mobile-apk-m4) .selectedUnitFloatBody {
-  max-height: calc(100dvh - 130px);
+  max-height: calc(100dvh - var(--game-header-bottom, 72px) - 58px);
 }
 body.app-screen-game:not(.mobile-apk-m4) .selectedUnitPreviewCanvasWrap {
   width: 100%;

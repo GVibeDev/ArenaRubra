@@ -10,5 +10,4 @@
 - Consolidated 2–4 player official maps, free-for-all elimination, Strategic Pressure, match history/telemetry, deck lifecycle, Missions, Tutorial and Field Trials.
 - Added canonical bilingual rules, Player Guide, glossary, licensing notes, website copy and a generated statistics register.
 
-This remains a candidate until the full S2-C7 regression/performance/packaging gate and the explicitly authorized release process are complete. No document in this folder declares human validation.
-
+The automated S2-C7 regression, performance, packaging, clean-checkout CI and authorized GitHub Pages publication gates are complete for `1.0.0-rc.1`. This remains a release candidate pending human release approval; no document in this folder declares human validation.

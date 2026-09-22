@@ -1,8 +1,8 @@
 # S2-C7 — Release regression and artifact gate
 
-Status: **PASS** — 2026-09-10.
+Status: **PASS** — 2026-09-13.
 
-The complete technical regression is green. The final Distribution artifact was generated from clean commit `10e3f463dfee3ec0d74abbb7178a9ea9e7c51378`, and its embedded inventory, checksums, runtime profile and browser behavior all pass.
+The complete technical regression is green. The final Distribution artifact was regenerated from clean commit `42f055fc4088f1410ec0ef288111da8383209be8`, and its embedded inventory, checksums, runtime profile and browser behavior all pass. GitHub Actions run `34779658530` completed successfully for the same commit, including build and GitHub Pages deployment.
 
 ## Coverage and changes
 
@@ -17,20 +17,22 @@ The complete technical regression is green. The final Distribution artifact was 
 ## Verification executed
 
 - Regression matrix — PASS: 30 coverage rows, 10 manifest-driven maps.
-- Complete source-tree JavaScript smoke suite — PASS: 181/181 checks, including the Node/Playwright Golden Match and release-matrix tests. The post-staging artifact-final smoke also passes independently.
+- Complete source-tree JavaScript smoke suite — PASS: 182/182 checks, including the Node/Playwright Golden Match, HUD geometry and release-matrix tests. The post-staging artifact-final smoke also passes independently.
+- Complete Python/browser smoke suite — PASS: 71/71 checks in GitHub Actions, including the Agathoi image-tone smoke with its declared Pillow dependency.
 - Golden Matches — PASS: five deterministic fixtures, each repeated with the expected hash; 2P/3P/4P paths cover 40/60/80 action turns.
 - Browser release matrix, source tree — PASS: all 10 official maps and five player/bot configurations; startup about 16.0 s, initialization 36–64 ms, rendering 4–11 ms, bot turns about 515–531 ms, bounded heap growth and no non-fallback runtime errors.
 - Browser release matrix, staged artifact — PASS: equivalent Distribution coverage; startup 15.7 s, map initialization 71–124 ms, rendering 8–24 ms, bot turns 545–584 ms, heap growth about 15.4 MB, no overflow or non-fallback runtime errors.
 - Required-assets gate — PASS: 69 required assets present and integrity-checked; all 472 repository assets classified.
 - Distribution staging gate — PASS: 99/99 checks.
-- Final artifact smoke — PASS: 555 payload files, 151,146,364 bytes, exact checksums, licenses, Distribution boot, `1.0.0-rc.1` metadata, English flow, new game and precheck; no DEV requests or page errors.
+- Final artifact smoke — PASS: 556 payload files, 151,157,695 bytes, exact checksums, licenses, Distribution boot, `1.0.0-rc.1` metadata, English flow, new game and precheck; no DEV requests or page errors.
 - DOC-FREEZE and frozen content/localization gates — PASS; catalog hash remains `eab4dadff4d9f6d4bc8e99bd38d7331e4d1559e69d40547b0039a75c1f140709`.
+- Clean-checkout CI and deploy — PASS: workflow run `34779658530`, build job `103784209811` and deploy job `103787214013` all concluded successfully for `42f055f`.
 
 ## Clean-checkout provenance
 
 The artifact evidence records:
 
-- source commit `10e3f463dfee3ec0d74abbb7178a9ea9e7c51378`;
+- source commit `42f055fc4088f1410ec0ef288111da8383209be8`;
 - `sourceState: clean-checkout`;
 - `cleanCheckout: true`;
 - build version `1.0.0-rc.1`.
@@ -39,11 +41,10 @@ The packaging provenance requirement is satisfied. The evidence manifest and SHA
 
 ## Not run
 
-- The Python browser suite could not start because `playwright.sync_api` is unavailable in the bundled Python runtime. The corresponding required browser paths were exercised by the green Node/Playwright suite; this is an environment limitation, not an observed application regression.
 - Desktop-wrapper packaging is not planned by the current release matrix; Desktop/Web Distribution is the scoped deliverable.
 - Human gameplay assessment is not claimed.
 
 ## Residual risks
 
 - Optional artwork/audio candidate URLs can return fallback-domain 404 responses. Required assets are checksum-gated and the declared fallbacks work; future asset additions must be reclassified.
-- CI success on the artifact’s exact source commit is an S2-RC prerequisite and has not been evidenced locally.
+- Automated technical readiness and publication do not replace the outstanding human gameplay and release approval process.

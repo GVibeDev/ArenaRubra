@@ -45,7 +45,8 @@ def snapshot(page):
       diagnosticTone: document.getElementById('controlCenterDiagnosticCard')?.dataset.tone,
       debugHidden: document.getElementById('mainMenuOptionsBtn')?.hidden,
       resumeDisabled: document.getElementById('mainMenuResumeBtn')?.disabled,
-      resumeMarkup: document.getElementById('mainMenuResumeBtn')?.innerHTML,
+      resumeTitle: document.querySelector('#mainMenuResumeBtn strong')?.textContent.trim(),
+      resumeHint: document.querySelector('#mainMenuResumeBtn small')?.textContent.trim(),
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       snap: controlCenterSnapshot()
     })""")
@@ -172,7 +173,7 @@ assert desktop['diagnostics'] == 'Nessun errore' and desktop['diagnosticTone'] i
 assert desktop['snap']['diagnostics']['errorCount'] == 0, desktop
 assert desktop['snap']['officialDecks'] == 50 and desktop['snap']['officialMaps'] == 10, desktop
 assert desktop['debugHidden'] is False and desktop['resumeDisabled'] is True, desktop
-assert '<strong>Riprendi</strong>' in desktop['resumeMarkup'] and '<small>Nessuna sessione attiva</small>' in desktop['resumeMarkup'], desktop
+assert desktop['resumeTitle'] == 'Riprendi' and desktop['resumeHint'] == 'Nessuna sessione attiva', desktop
 assert desktop['overflow'] <= 1, desktop
 
 assert version_panel['open'] and version_panel['title'] == 'Versione' and 'Baseline logica' in version_panel['text'], version_panel

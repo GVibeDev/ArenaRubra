@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "AR-S2-CI-EVIDENCE-1",
+  "sourceCommit": "42f055fc4088f1410ec0ef288111da8383209be8",
+  "branch": "main",
+  "status": "success",
+  "recordedAt": "2026-09-13T21:03:58Z",
+  "workflow": {
+    "name": "Deploy Arena Rubra to GitHub Pages",
+    "event": "push",
+    "runId": 34779658530,
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-09-13T20:05:10Z",
+    "startedAt": "2026-09-13T20:05:10Z",
+    "completedAt": "2026-09-13T20:26:27Z",
+    "url": "https://github.com/GVibeDev/ArenaRubra/actions/runs/34779658530"
+  },
+  "jobs": [
+    {
+      "id": 103784209811,
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-13T20:05:14Z",
+      "completedAt": "2026-09-13T20:26:14Z",
+      "url": "https://github.com/GVibeDev/ArenaRubra/actions/runs/34779658530/job/103784209811"
+    },
+    {
+      "id": 103787214013,
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-09-13T20:26:18Z",
+      "completedAt": "2026-09-13T20:26:26Z",
+      "url": "https://github.com/GVibeDev/ArenaRubra/actions/runs/34779658530/job/103787214013"
+    }
+  ],
+  "deployment": {
+    "status": "success",
+    "url": "https://gvibedev.cc/ArenaRubra/",
+    "httpStatus": 200,
+    "buildVersion": "1.0.0-rc.1",
+    "logicBaseline": "C2-STABLE-1-F9T2c4-APK-M4c"
+  }
+}

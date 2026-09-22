@@ -34,4 +34,6 @@ assert(!workflow.includes("path: _site\n"));
 assert(workflow.includes('npm install --prefix "$RUNNER_TEMP/arena-node-runtime" --no-save --ignore-scripts playwright@1.62.0'));
 assert(workflow.includes('NODE_PATH=$RUNNER_TEMP/arena-node-runtime/node_modules'));
 assert(workflow.includes('PYTHONDONTWRITEBYTECODE: "1"'));
-console.log(`AR-AC1 CI gate contract smoke: ${requiredBeforeUpload.length + 6}/${requiredBeforeUpload.length + 6} OK`);
+assert(workflow.includes('- "release/**"'), "release branches do not trigger CI");
+assert.strictEqual((workflow.match(/if: github\.ref == 'refs\/heads\/main'/g) || []).length, 3, "Pages configure/upload/deploy must be main-only");
+console.log(`AR-AC1 CI gate contract smoke: ${requiredBeforeUpload.length + 8}/${requiredBeforeUpload.length + 8} OK`);

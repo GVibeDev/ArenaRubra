@@ -162,10 +162,15 @@ function refreshMainMenuResumeState() {
     : appI18n("menu.play.resumeUnavailable", "Nessuna sessione attiva");
   const title = resumeBtn.querySelector("strong");
   const hint = resumeBtn.querySelector("small");
-  if (title) title.textContent = appI18n("menu.play.resumeTitle", "Riprendi");
-  if (hint) hint.textContent = hasGame
-    ? appI18n("menu.play.resumeHint", "Sessione runtime corrente")
-    : appI18n("menu.play.resumeUnavailable", "Nessuna sessione attiva");
+  if (title) {
+    title.setAttribute("data-i18n", "menu.play.resumeTitle");
+    title.textContent = appI18n("menu.play.resumeTitle", "Riprendi");
+  }
+  if (hint) {
+    const hintKey = hasGame ? "menu.play.resumeHint" : "menu.play.resumeUnavailable";
+    hint.setAttribute("data-i18n", hintKey);
+    hint.textContent = appI18n(hintKey, hasGame ? "Sessione runtime corrente" : "Nessuna sessione attiva");
+  }
   if (!title && !hint) resumeBtn.textContent = hasGame
     ? appI18n("menu.play.resumeGame", "Riprendi partita")
     : appI18n("menu.play.resumeGameUnavailable", "Riprendi partita non disponibile");
@@ -621,6 +626,7 @@ function initializeArenaAppShell() {
       if (typeof arenaSfxSyncControlsF9O5a === "function") arenaSfxSyncControlsF9O5a();
       if (typeof cardMotionSyncControls === "function") cardMotionSyncControls();
       if (typeof tokenFxSyncControlsF9O5a === "function") tokenFxSyncControlsF9O5a();
+      if (typeof controlCenterRefreshMetrics === "function") controlCenterRefreshMetrics();
       if (typeof ArenaI18n !== "undefined") ArenaI18n.apply(document);
     });
   }

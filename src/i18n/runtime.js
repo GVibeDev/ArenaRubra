@@ -161,9 +161,10 @@ const ArenaI18n = (() => {
   })();
 
   function translate(key, params = {}, fallback = "") {
-    if (!state.service) return fallback || String(key || "");
+    const fallbackValue = fallback ? ArenaI18nCore.interpolate(fallback, params) : String(key || "");
+    if (!state.service) return fallbackValue;
     const value = state.service.t(key, params);
-    return value === key && fallback ? fallback : value;
+    return value === key && fallback ? fallbackValue : value;
   }
 
   const api = Object.freeze({
