@@ -12,11 +12,11 @@
   "summary": {
     "required": {
       "files": 69,
-      "bytes": 40694403
+      "bytes": 40530889
     },
     "optional": {
-      "files": 340,
-      "bytes": 106075083
+      "files": 342,
+      "bytes": 106057553
     },
     "devOnly": {
       "files": 17,
