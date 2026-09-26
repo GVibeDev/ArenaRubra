@@ -12,7 +12,7 @@ const audio = fs.readFileSync(path.join(root, "src", "audio_manager.js"), "utf8"
 const sfx = fs.readFileSync(path.join(root, "src", "sfx_manager.js"), "utf8");
 
 assert.strictEqual(manifest.inventoryVersion, "S2-C6-VISUAL-ASSET-INVENTORY-1");
-assert.strictEqual(Object.values(manifest.summary).reduce((sum, group) => sum + group.files, 0), 472);
+assert.strictEqual(Object.values(manifest.summary).reduce((sum, group) => sum + group.files, 0), 474);
 assert.strictEqual(manifest.required.length, 69);
 assert.strictEqual(manifest.unused.length, 1);
 assert.strictEqual(manifest.unused[0].path, "assets/cards/art/nexus/units/-0");

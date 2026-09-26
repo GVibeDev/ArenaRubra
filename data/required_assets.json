@@ -2870,6 +2870,13 @@
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
     {
+      "path": "assets/ui/faction_skins/fabeot_vesper/crest.webp",
+      "bytes": 3446,
+      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
       "path": "assets/ui/faction_skins/fabeot_vesper/divider.webp",
       "bytes": 12074,
       "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
@@ -2891,23 +2898,16 @@
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
     {
-      "path": "assets/ui/faction_skins/nexus_basalt/divider.webp",
-      "bytes": 12074,
-      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
-      "owner": "ui-skin",
-      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
-    },
-    {
-      "path": "assets/ui/faction_skins/fabeot_vesper/crest.webp",
-      "bytes": 3446,
-      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
-      "owner": "ui-skin",
-      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
-    },
-    {
       "path": "assets/ui/faction_skins/nexus_basalt/crest.webp",
       "bytes": 3446,
       "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/divider.webp",
+      "bytes": 12074,
+      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     }
