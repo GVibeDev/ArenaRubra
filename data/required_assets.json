@@ -202,57 +202,57 @@
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/corner_bl.webp",
-      "bytes": 10896,
-      "sha256": "5f11b1192db9069ce2dfa37932d4c0d853e3054e526d39bb149df08f916239eb",
+      "bytes": 5512,
+      "sha256": "a7c35381a766ada1dd95cbb2d25a47be94505d87060f9f2df63b94a97dcc1232",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/corner_br.webp",
-      "bytes": 10924,
-      "sha256": "2338483f4434c78206206715f5564436ddb1a2c786f7db0a8825bb86426aec70",
+      "bytes": 5350,
+      "sha256": "900bbea2b601334f4672fa9eac69d026f55d47c1f9905661ea1be2970c828e13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/corner_tl.webp",
-      "bytes": 10790,
-      "sha256": "09b855a959899a4105fbae79e9af77a584dcf8d6788d697d2437cf67992cf652",
+      "bytes": 5486,
+      "sha256": "734c23594a447db62dc8be7004c3bfa28c1609032d569aed22603fdc0e9eac1c",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/corner_tr.webp",
-      "bytes": 10888,
-      "sha256": "264b3dd2fe9713a4c65be6632d0be0540e53ebcaf78028c5a97d494d56c22aed",
+      "bytes": 5676,
+      "sha256": "b26ac98fe87d020b8e3def47f99e5001b9017cc16fc5be6a2ee2ec4a4366a218",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/edge_bottom.webp",
-      "bytes": 6966,
-      "sha256": "a2385041392c1193d647448e0ad5ffd75fcd6f55bd161b2ed74a1b2644b2a43d",
+      "bytes": 5314,
+      "sha256": "9812fdbcc3b9b3d372370e8e31f64f5c7166f1d6a72231210ee6223659618001",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/edge_left.webp",
-      "bytes": 8058,
-      "sha256": "7d5163694a2b92377a5fb9b5c5583e9308484dac3b1c791bdfb64b59f3f3c912",
+      "bytes": 3786,
+      "sha256": "39d7fcef0764255bac1bd5d10694bd551ed8b70d349a756c08e229add8180f92",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/edge_right.webp",
-      "bytes": 8096,
-      "sha256": "0dcb9479cf61d59bb88ebe8e18a5da10836ce611ed23468b143cae9da6803f45",
+      "bytes": 3992,
+      "sha256": "a31558960e880755276225647092a0e4ae08cf7b7b87e84665a33c4b513630ba",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/edge_top.webp",
-      "bytes": 10154,
-      "sha256": "11e6821a8c34146f5ae2ca65421844874d6bfd48ddd1ea6f336e0e84837c5b32",
+      "bytes": 4990,
+      "sha256": "5b03ff16412d9134da40fea6dc3350318edea77dea2e1288c86e6a02338d5d13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
@@ -328,57 +328,57 @@
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/corner_bl.webp",
-      "bytes": 7922,
-      "sha256": "e5b5d949a66958064cbd29ec37d984e87fc7aa8fad3d4c73b815e7703b75fd7a",
+      "bytes": 5512,
+      "sha256": "a7c35381a766ada1dd95cbb2d25a47be94505d87060f9f2df63b94a97dcc1232",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/corner_br.webp",
-      "bytes": 7942,
-      "sha256": "ff531214366ee0a97209fa92fd1f378f46fee9f0b6f4f4a3983316c3fdd108f1",
+      "bytes": 5350,
+      "sha256": "900bbea2b601334f4672fa9eac69d026f55d47c1f9905661ea1be2970c828e13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/corner_tl.webp",
-      "bytes": 7902,
-      "sha256": "ad3261b8888f87e3f8117e43f80a93c5a29a63ea346905734816c3c465775957",
+      "bytes": 5486,
+      "sha256": "734c23594a447db62dc8be7004c3bfa28c1609032d569aed22603fdc0e9eac1c",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/corner_tr.webp",
-      "bytes": 7860,
-      "sha256": "899d696d52e444beb361c4cea6381a47ee873b4b9f8caa997551d3c92ca3fb1d",
+      "bytes": 5676,
+      "sha256": "b26ac98fe87d020b8e3def47f99e5001b9017cc16fc5be6a2ee2ec4a4366a218",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/edge_bottom.webp",
-      "bytes": 10422,
-      "sha256": "bcf6b4b3e37a7c5b6a587abdbba42db7c731a6f909628ea7ee097fa8d3b2bb51",
+      "bytes": 5314,
+      "sha256": "9812fdbcc3b9b3d372370e8e31f64f5c7166f1d6a72231210ee6223659618001",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/edge_left.webp",
-      "bytes": 8720,
-      "sha256": "f3d9f40708eb9452696b87cc4198ac469df18e0620557880ab8ed7862fb20f56",
+      "bytes": 3786,
+      "sha256": "39d7fcef0764255bac1bd5d10694bd551ed8b70d349a756c08e229add8180f92",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/edge_right.webp",
-      "bytes": 8730,
-      "sha256": "b74284782aa7664db3a1caffdb27a13e4b4a3e004de0f6ed029ca40b8cd1b8de",
+      "bytes": 3992,
+      "sha256": "a31558960e880755276225647092a0e4ae08cf7b7b87e84665a33c4b513630ba",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/edge_top.webp",
-      "bytes": 10462,
-      "sha256": "0d06def0456a81ac6d11090b34e5494c564c008f8c03d036cba301ad892995f6",
+      "bytes": 4990,
+      "sha256": "5b03ff16412d9134da40fea6dc3350318edea77dea2e1288c86e6a02338d5d13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
@@ -391,57 +391,57 @@
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_bl.webp",
-      "bytes": 12954,
-      "sha256": "5b60706b7c278cdb5effc9652d3ab6f87a933af3b9050c302eb36c42d56d09d0",
+      "bytes": 5512,
+      "sha256": "a7c35381a766ada1dd95cbb2d25a47be94505d87060f9f2df63b94a97dcc1232",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_br.webp",
-      "bytes": 13034,
-      "sha256": "929861a245ae746cbd0627b8012da9743fdeb457d665b3e3b74fca7bc56ab573",
+      "bytes": 5350,
+      "sha256": "900bbea2b601334f4672fa9eac69d026f55d47c1f9905661ea1be2970c828e13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_tl.webp",
-      "bytes": 12966,
-      "sha256": "b50155809b3f453f01922e9cc824cc6f4956a86e2f7a921b86756b84b529890e",
+      "bytes": 5486,
+      "sha256": "734c23594a447db62dc8be7004c3bfa28c1609032d569aed22603fdc0e9eac1c",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/corner_tr.webp",
-      "bytes": 12938,
-      "sha256": "7d019e20e3d885a8e75c5ab72288f9073f8b3efa92a6af33dd5030ffb5f51d95",
+      "bytes": 5676,
+      "sha256": "b26ac98fe87d020b8e3def47f99e5001b9017cc16fc5be6a2ee2ec4a4366a218",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_bottom.webp",
-      "bytes": 19762,
-      "sha256": "1e3d3d0475b9fb0338e4137cbc5b2219f377dc7db5e3ad92061a626a3dbbae34",
+      "bytes": 5314,
+      "sha256": "9812fdbcc3b9b3d372370e8e31f64f5c7166f1d6a72231210ee6223659618001",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_left.webp",
-      "bytes": 9086,
-      "sha256": "5c1a7c68d39b8b6834c70d67e055c347bc0f71a8426cb92788e1ce77214edeea",
+      "bytes": 3786,
+      "sha256": "39d7fcef0764255bac1bd5d10694bd551ed8b70d349a756c08e229add8180f92",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_right.webp",
-      "bytes": 8816,
-      "sha256": "af7f8c73c43b6b4390410c715e6a13e0d8f97963b7933be9e5dc1fc882cf32c5",
+      "bytes": 3992,
+      "sha256": "a31558960e880755276225647092a0e4ae08cf7b7b87e84665a33c4b513630ba",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/edge_top.webp",
-      "bytes": 25436,
-      "sha256": "048253ec65712a5e3d2458547fa37a15ea3748868f27b063a3fd0f5a8b3b3dff",
+      "bytes": 4990,
+      "sha256": "5b03ff16412d9134da40fea6dc3350318edea77dea2e1288c86e6a02338d5d13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
@@ -454,57 +454,57 @@
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/corner_bl.webp",
-      "bytes": 7922,
-      "sha256": "e5b5d949a66958064cbd29ec37d984e87fc7aa8fad3d4c73b815e7703b75fd7a",
+      "bytes": 5512,
+      "sha256": "a7c35381a766ada1dd95cbb2d25a47be94505d87060f9f2df63b94a97dcc1232",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/corner_br.webp",
-      "bytes": 7942,
-      "sha256": "ff531214366ee0a97209fa92fd1f378f46fee9f0b6f4f4a3983316c3fdd108f1",
+      "bytes": 5350,
+      "sha256": "900bbea2b601334f4672fa9eac69d026f55d47c1f9905661ea1be2970c828e13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/corner_tl.webp",
-      "bytes": 7902,
-      "sha256": "ad3261b8888f87e3f8117e43f80a93c5a29a63ea346905734816c3c465775957",
+      "bytes": 5486,
+      "sha256": "734c23594a447db62dc8be7004c3bfa28c1609032d569aed22603fdc0e9eac1c",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/corner_tr.webp",
-      "bytes": 7860,
-      "sha256": "899d696d52e444beb361c4cea6381a47ee873b4b9f8caa997551d3c92ca3fb1d",
+      "bytes": 5676,
+      "sha256": "b26ac98fe87d020b8e3def47f99e5001b9017cc16fc5be6a2ee2ec4a4366a218",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/edge_bottom.webp",
-      "bytes": 8914,
-      "sha256": "7e15da1b872d2389dde5bdad3fc48b1a5a4e0db464055d0930e2877098d0f519",
+      "bytes": 5314,
+      "sha256": "9812fdbcc3b9b3d372370e8e31f64f5c7166f1d6a72231210ee6223659618001",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/edge_left.webp",
-      "bytes": 6444,
-      "sha256": "10b7111b9c1c53fbd57d88055fead2b89b4cfa66b9a9ef8c5daac23dd6ffd213",
+      "bytes": 3786,
+      "sha256": "39d7fcef0764255bac1bd5d10694bd551ed8b70d349a756c08e229add8180f92",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/edge_right.webp",
-      "bytes": 6320,
-      "sha256": "520537ba711d3a8d9075840a39d8b44dd9dc3aa99a3d0bd425c88a6831d67590",
+      "bytes": 3992,
+      "sha256": "a31558960e880755276225647092a0e4ae08cf7b7b87e84665a33c4b513630ba",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/edge_top.webp",
-      "bytes": 8910,
-      "sha256": "850e9e2d5677706479ed7dd213ae8c2618ac84336f8227eeaf46f15f6ec716a7",
+      "bytes": 4990,
+      "sha256": "5b03ff16412d9134da40fea6dc3350318edea77dea2e1288c86e6a02338d5d13",
       "owner": "ui-skin",
       "reason": "five-skin modular geometry slot"
     },
@@ -2843,15 +2843,15 @@
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/crest.webp",
-      "bytes": 5368,
-      "sha256": "fbf5d02978395bdef7a33db07c5b445a8923287962d69d81014bbe2838c7753a",
+      "bytes": 3446,
+      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
     {
       "path": "assets/ui/faction_skins/agathoi_kleos/divider.webp",
-      "bytes": 12372,
-      "sha256": "b67bbd1f2e86928c8050e860926325df28cbbbd9f0e1f606342be90ec62717ec",
+      "bytes": 12074,
+      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
@@ -2871,29 +2871,43 @@
     },
     {
       "path": "assets/ui/faction_skins/fabeot_vesper/divider.webp",
-      "bytes": 10790,
-      "sha256": "df637d5fc740435f5869182b7cb8f8c2c163240ede40c2c8bc86a7c61b0b3664",
+      "bytes": 12074,
+      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/crest.webp",
-      "bytes": 23994,
-      "sha256": "4d111350f3f77962ac9fa049140add214e4a05d3ca6ae64f4dcd910fc9c2a8b3",
+      "bytes": 3446,
+      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
     {
       "path": "assets/ui/faction_skins/liberti_sine_vinculis/divider.webp",
-      "bytes": 18494,
-      "sha256": "eb3cf026283288484c144fde8bcc0d3b134e77aba7c5b32970e637221494e6a0",
+      "bytes": 12074,
+      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     },
     {
       "path": "assets/ui/faction_skins/nexus_basalt/divider.webp",
-      "bytes": 8592,
-      "sha256": "fb6e5d8a285df29e7ebe714d4c3487879543f0744763b11bfdc892f262b1ac64",
+      "bytes": 12074,
+      "sha256": "39997922a697544c903d861579d67f284cd483b81f165827607345166f9f280d",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/fabeot_vesper/crest.webp",
+      "bytes": 3446,
+      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
+      "owner": "ui-skin",
+      "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
+    },
+    {
+      "path": "assets/ui/faction_skins/nexus_basalt/crest.webp",
+      "bytes": 3446,
+      "sha256": "3f39a8a47e78a2f308235a8d35a1798bbc9aa6f6d688b7e734fa748b318fac70",
       "owner": "ui-skin",
       "reason": "runtime enhancement with procedural, CSS, text, or silent fallback"
     }
