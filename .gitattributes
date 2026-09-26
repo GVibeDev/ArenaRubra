@@ -1,1 +1,4 @@
 *.md whitespace=-trailing-space
+data/starter_1_0_manifest.json text eol=lf
+data/required_assets.json text eol=lf
+assets/ui/faction_skins/*/manifest.txt text eol=lf

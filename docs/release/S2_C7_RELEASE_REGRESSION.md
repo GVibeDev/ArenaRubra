@@ -2,6 +2,14 @@
 
 Status: **PASS** — 2026-09-13.
 
+Evidence scope note:
+
+The counts in the original S2-C7 section — including **472 classified assets** and **556 payload files** — describe the immutable clean RC1 artifact produced from commit `42f055fc4088f1410ec0ef288111da8383209be8`.
+
+They are retained as historical provenance and must not be rewritten to impersonate later source state.
+
+Current-main post-RC evidence is recorded separately below.
+
 The complete technical regression is green. The final Distribution artifact was regenerated from clean commit `42f055fc4088f1410ec0ef288111da8383209be8`, and its embedded inventory, checksums, runtime profile and browser behavior all pass. GitHub Actions run `34779658530` completed successfully for the same commit, including build and GitHub Pages deployment.
 
 ## Coverage and changes
@@ -48,3 +56,48 @@ The packaging provenance requirement is satisfied. The evidence manifest and SHA
 
 - Optional artwork/audio candidate URLs can return fallback-domain 404 responses. Required assets are checksum-gated and the declared fallbacks work; future asset additions must be reclassified.
 - Automated technical readiness and publication do not replace the outstanding human gameplay and release approval process.
+
+## Post-RC revalidation — 2026-09-26
+
+Current `main`:
+
+`6c6cf3e61887fb9fc18b9a1ba543baff59cbba09`
+
+GitHub Actions run:
+
+`36233581578`
+
+Observed results:
+
+- Node behavior suite: **183/183 PASS**
+- Python/browser suite: **71/71 PASS**
+- S2-C6 browser visual gate: **PASS**
+- S2-C6 static presentation gate: **PASS**
+- required assets: **69 required / 474 classified**
+- staged DEV profile: **PASS**
+- staged Distribution profile: **PASS**
+- staged Distribution browser boot: **PASS**
+- staged release matrix: **PASS**
+- final artifact smoke: **PASS**
+- generated payload: **558 files**
+- generated payload bytes: **150,979,214**
+- version: `1.0.0-rc.1`
+- deploy: **PASS**
+
+GitHub Pages artifact:
+
+- ID: `10903702423`
+- archive bytes: **147,130,366**
+- SHA-256:
+  `117b15ce6bbf50206e2856f74c82c2872f676926641536a18945e52582a9e3b7`
+
+The generated post-RC artifact records:
+
+```text
+sourceState: working-tree
+cleanCheckout: false
+```
+
+This proves current-main regression and deployment health but does not supersede the canonical clean-checkout artifact provenance.
+
+Final Starter 1.0 promotion requires clean artifact evidence generated from the final immutable source commit.
